@@ -1,0 +1,13 @@
+.dialog-page {
+  padding-top: 93px;
+  background-image: url(../../../images/dialog-bg.svg);
+  background-size: cover;
+  background-position: left center;
+}
+
+.dialog-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}

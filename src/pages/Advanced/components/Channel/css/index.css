@@ -1,0 +1,67 @@
+.advanced-channel-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+}
+
+.advanced-channel-ip {
+  font-size: 13px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.advanced-channel-name-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.advanced-channel-name {
+  line-height: 1;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.advanced-channel-status {
+  margin-left: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 100px;
+  background-color: #57c46c;
+  margin-left: 7.5px;
+  line-height: 1;
+}
+
+.advanced-channel-status-offline {
+  background-color: #e23e3e;
+}
+
+.advanced-channel-address {
+  font-size: 13px;
+  line-height: 1;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+p.advanced-channel-name {
+  line-height: 1;
+  font-weight: bold;
+}
+
+.advanced-channel-capacity-container {
+  display: flex;
+}
+
+.advanced-channel-capacity {
+  font-weight: 600;
+  width: 50%;
+  border-right: 2px solid white;
+  font-size: 14px;
+}
+
+.advanced-channel-capacity-container .advanced-channel-capacity:last-of-type {
+  text-align: right;
+  border-right: 0;
+}

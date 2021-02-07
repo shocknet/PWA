@@ -1,0 +1,39 @@
+.contacts-search {
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+  outline: none !important;
+}
+
+.contacts-search-input-container {
+  display: flex;
+  width: 100%;
+  height: 52px;
+  align-items: center;
+  padding: 0px 13px;
+  background-color: #001220;
+  border: 1px solid #eaebeb;
+}
+
+.contacts-search-input {
+  height: 100%;
+  flex: 1;
+  margin-left: 10px;
+  background-color: transparent;
+  border: 0;
+  font-family: "Poppins";
+  outline: none;
+  color: #f2f2f2;
+}
+
+.contacts-search-suggestions {
+  position: absolute;
+  bottom: -1px;
+  transform: translateY(100%);
+  width: 100%;
+  background-color: #001220;
+  height: 150px;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 11px 7px -6px rgba(0, 0, 0, 0.25);
+  overflow: auto;
+}

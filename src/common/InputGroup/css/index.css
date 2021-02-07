@@ -1,0 +1,48 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.group-disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.group-label {
+  font-weight: bold;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.group-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px;
+  border: 1px solid #4285b9c9;
+  background-color: #212937;
+}
+
+.group-input-textarea-container {
+  padding: 0;
+}
+
+.group-input {
+  width: 100%;
+  font-size: 14px;
+  color: #bcbcbc;
+  background-color: transparent;
+  border: 0;
+  font-family: Poppins;
+}
+
+.group-input:focus {
+  outline: none;
+}
+
+.group-input-textarea {
+  padding: 15px 18px;
+  min-width: 100%;
+  min-height: 73px;
+}

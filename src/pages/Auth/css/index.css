@@ -1,0 +1,67 @@
+.auth-page-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 0;
+}
+
+.auth-form-container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-form-container-title {
+  font-size: 23px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 17px 25px;
+  font-size: 14px;
+  border: 2px solid #5383b4;
+  background-color: #202020;
+  color: rgba(255, 255, 255, 0.774);
+  font-family: "Poppins";
+  margin-bottom: 20px;
+}
+
+form.auth-form {
+  width: 100%;
+  max-width: 300px;
+}
+
+button.submit-btn {
+  background-color: #5383b4;
+  color: white;
+  font-weight: bold;
+  font-family: "Poppins";
+  border: 0;
+  width: 100%;
+  padding: 15px 0;
+  border-radius: 8px;
+  font-size: 18px;
+  border: 2px solid #edfdff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+.input-field-error {
+  border-color: #f34b4b;
+}
+
+.error-container {
+  color: #f34b4b;
+  margin-bottom: 15px;
+  margin-top: -5px;
+}

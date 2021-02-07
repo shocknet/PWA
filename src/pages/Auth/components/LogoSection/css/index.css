@@ -1,0 +1,9 @@
+.auth-logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img.auth-logo {
+  width: 190px;
+}

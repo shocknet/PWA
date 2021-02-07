@@ -1,0 +1,129 @@
+@import-normalize;
+
+@font-face {
+  font-family: shockicons;
+  src: url("../fonts/icomoon.eot?hqhemx");
+  src: url("../fonts/icomoon.eot?hqhemx#iefix") format("embedded-opentype"),
+    url("../fonts/icomoon.ttf?hqhemx") format("truetype"),
+    url("../fonts/icomoon.woff?hqhemx") format("woff"),
+    url("../fonts/icomoon.svg?hqhemx#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: shockicons !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-thin-back:before {
+  content: "\e90c";
+}
+.icon-thin-wallet:before {
+  content: "\e900";
+}
+.icon-thin-chat:before {
+  content: "\e901";
+}
+.icon-thin-feed:before {
+  content: "\e902";
+}
+.icon-thin-profile:before {
+  content: "\e903";
+}
+.icon-solid-lightning:before {
+  content: "\e904";
+}
+.icon-solid-help:before {
+  content: "\e905";
+}
+.icon-solid-power:before {
+  content: "\e906";
+}
+.icon-solid-profile:before {
+  content: "\e907";
+}
+.icon-solid-scan:before {
+  content: "\e908";
+}
+.icon-solid-spending-rule:before {
+  content: "\e909";
+}
+.icon-solid-wallet:before {
+  content: "\e90a";
+}
+.icon-solid-key:before {
+  content: "\e90b";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --main-blue: #4285b9;
+  --loading-blue: #37536f;
+  --dark-blue: #212937;
+
+  --white: white;
+  --white-smoke: #ebebeb;
+  --light-gray: #a2a3a7;
+  --gray: #707070;
+  --dark-gray: #292929;
+
+  --black: #001220;
+  --main-black: #1a2028;
+  --secondary-black: #18191d;
+  --background-black: #16191c;
+  --body-background: #292e35;
+
+  --green: #57c46c;
+  --yellow: #f5a623;
+  --mist-blue: #27455c;
+}
+
+html,
+body {
+  position: fixed;
+  padding: 0;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--main-black);
+  min-width: 100%;
+  min-height: 100vh;
+  color: white;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.unselectable {
+  user-select: none;
+}

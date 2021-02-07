@@ -1,0 +1,78 @@
+#root {
+  height: 100%;
+  max-width: 600px;
+  width: 100vw;
+  margin: auto;
+  background-color: #292e35;
+}
+
+.ShockWallet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bottom-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 21px 0;
+  background-color: #16191c;
+  flex-shrink: 0;
+}
+
+.bottom-nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 31px;
+  text-decoration: none;
+}
+
+a.bottom-nav-btn {
+  color: #4285b9;
+}
+
+a.bottom-nav-btn.active-nav-btn {
+  color: white;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-height: 100vh;
+  overflow: auto;
+  height: 100%;
+}
+
+.ptr__children {
+  overflow: hidden auto !important;
+}
+
+.inputs-group {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.unit-dropdown {
+  font-size: 24px;
+  border: 0;
+  background-color: transparent;
+  font-family: Poppins;
+  font-weight: 400;
+  height: 55px;
+  padding-left: 26px;
+  color: white;
+}
+
+.unit-dropdown option {
+  background-color: #001220;
+}

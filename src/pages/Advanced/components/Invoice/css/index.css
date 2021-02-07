@@ -1,0 +1,67 @@
+.advanced-invoice-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 25px;
+}
+
+.advanced-invoice-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 100px;
+  background-color: #4285b9;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.advanced-invoice-info {
+  display: flex;
+  align-items: center;
+  width: 70%;
+}
+
+.advanced-invoice-author {
+  width: calc(100% - 55px);
+}
+
+p.advanced-invoice-author-name {
+  font-weight: bold;
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+p.advanced-invoice-type {
+  font-size: 13px;
+}
+
+p.advanced-invoice-time {
+  font-size: 12px;
+  color: #ebebeb;
+}
+
+p.advanced-invoice-value {
+  font-size: 16px;
+  color: #ebebeb;
+  font-weight: 500;
+}
+
+p.advanced-invoice-usd {
+  font-size: 12px;
+  color: #f5a623;
+}
+
+.advanced-invoice-value-container {
+  text-align: right;
+}
+
+.advanced-invoice-container {
+  padding: 15px 25px;
+  background-color: #16191c;
+  border-bottom: 1px solid white;
+}
+
+.page-container.advanced-page {
+  background-color: #16191c;
+}

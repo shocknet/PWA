@@ -1,0 +1,121 @@
+.loading-wall {
+  margin-bottom: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 88px;
+}
+
+.loading-wall-text {
+  font-weight: bold;
+  margin-top: 70px;
+  color: white;
+  opacity: 0.6;
+}
+
+.loading-circle {
+  position: relative;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  background-color: var(--loading-blue);
+  border-radius: 50%;
+  animation: loading 1.5s cubic-bezier(0.8, 0.5, 0.2, 1.4) infinite;
+  transform-origin: bottom center;
+  margin-right: 7px;
+  opacity: 1;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateY(0px);
+    background-color: var(--loading-blue);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(50px);
+    background-color: var(--loading-blue);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px);
+    background-color: var(--loading-blue);
+    opacity: 0;
+  }
+}
+
+@keyframes loading-small {
+  0% {
+    transform: translateY(0px);
+    background-color: var(--loading-blue);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(20px);
+    background-color: var(--loading-blue);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px);
+    background-color: var(--loading-blue);
+    opacity: 0;
+  }
+}
+
+.loading-wall.loading-small {
+  margin-bottom: 0;
+  min-height: 75px;
+}
+
+.loading-wall.loading-small .loading-circle {
+  width: 12px;
+  height: 12px;
+  animation: loading-small 1.5s cubic-bezier(0.8, 0.5, 0.2, 1.4) infinite;
+}
+
+.loading-wall.loading-small .loading-wall-icon .loading-circle:last-of-type {
+  margin-right: 0;
+}
+
+.loading-wall.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 0;
+  z-index: 10;
+}
+
+.loading-circle-1 {
+  animation-delay: 0.1s;
+}
+
+.loading-circle-2 {
+  animation-delay: 0.2s;
+}
+
+.loading-circle-3 {
+  animation-delay: 0.3s;
+}
+
+.loading-circle-4 {
+  animation-delay: 0.4s;
+}
+
+.loading-circle-5 {
+  animation-delay: 0.5s;
+}
+
+.loading-wall.loading-small .loading-circle-1 {
+  animation-delay: 0.1s;
+}
+
+.loading-wall.loading-small .loading-circle-2 {
+  animation-delay: 0.2s;
+}
+
+.loading-wall.loading-small .loading-circle-3 {
+  animation-delay: 0.3s;
+}

@@ -1,0 +1,78 @@
+.slide-pay-container {
+  width: 100%;
+  margin-top: 50px;
+  padding: 30px 50px;
+}
+
+.slide-pay {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60px;
+  border-radius: 100px;
+  padding-left: 45px;
+  background-color: #16191c;
+  border: 2px solid #4285b9;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.slide-pay-container.slide-disabled {
+  opacity: 0.6;
+  backdrop-filter: blur(8px);
+  filter: grayscale(0.4);
+  pointer-events: none;
+}
+
+.slide-pay-progress {
+  position: absolute;
+  width: 0;
+  height: 100%;
+  left: 0px;
+  background-color: #4285b9;
+  border-radius: 100px;
+  z-index: 2;
+}
+
+.slide-pay-handle {
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  width: 80px;
+  background-color: #212937;
+  transform: translateY(-50%);
+  border-radius: 100px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  cursor: grab;
+  z-index: 3;
+  transition: color 0.2s ease;
+}
+
+.slide-transition {
+  transition: all 0.2s ease;
+}
+
+.slide-pay-handle.slide-success {
+  left: calc(100% - 36px) !important;
+}
+
+.slide-pay-progress.slide-success {
+  width: 100% !important;
+}
+
+.slide-pay-handle-image {
+  height: 60px;
+}
+
+.slide-pay-text {
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.8;
+  user-select: none;
+}

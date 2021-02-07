@@ -1,0 +1,47 @@
+/* ADD MODAL */
+
+.modal {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  z-index: 100;
+}
+
+.modal-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #16191cb8;
+  z-index: 0;
+}
+
+.modal-open .modal-container {
+  transform: translateY(0%);
+  opacity: 1;
+}
+
+.modal-container {
+  position: relative;
+  width: 90%;
+  background-color: #23282d;
+  border-radius: 15px;
+  transform: translateY(100%);
+  opacity: 0;
+  z-index: 1;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}

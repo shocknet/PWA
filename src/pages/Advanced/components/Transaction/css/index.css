@@ -1,0 +1,40 @@
+.advanced-transaction-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 25px;
+}
+
+p.advanced-transaction-type {
+  font-size: 13px;
+}
+
+p.advanced-transaction-time {
+  font-size: 12px;
+  color: #ebebeb;
+}
+
+p.advanced-transaction-value {
+  font-size: 16px;
+  color: #ebebeb;
+  font-weight: 500;
+}
+
+p.advanced-transaction-usd {
+  font-size: 12px;
+  color: #4285b9;
+}
+
+.advanced-transaction-value-container {
+  text-align: right;
+}
+
+.advanced-transaction-container {
+  padding: 15px 25px;
+  background-color: #16191c;
+  border-bottom: 1px solid white;
+}
+
+.page-container.advanced-page {
+  background-color: #16191c;
+}

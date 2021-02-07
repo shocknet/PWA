@@ -1,0 +1,82 @@
+.suggestion {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 13px;
+  border-bottom: 1px solid #ffffff24;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background-color: rgba(66, 133, 185, 0.35);
+}
+
+.suggestion:active {
+  background-color: rgba(66, 133, 185, 0.1) !important;
+}
+
+.suggestion.suggestion-selected {
+  border: 0;
+  background-color: #396b94;
+  border-radius: 6px;
+  margin-bottom: 30px;
+  height: 52px;
+}
+
+.suggestion-avatar {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  background-color: #4285b9;
+  align-items: center;
+  justify-content: center;
+  margin-right: 11px;
+  flex-shrink: 0;
+}
+
+.suggestion-icon {
+  opacity: 0.7;
+}
+
+.suggestion-name {
+  width: 70%;
+  font-size: 12px;
+  color: #ccc;
+  font-family: "Poppins";
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+p.suggestion-type {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+.suggestion-info-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.suggestion-info {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  width: 100%;
+}
+
+.remove-contact-button {
+  flex-shrink: 0;
+}
+
+.suggestion-selected .suggestion-info-container {
+  width: 80%;
+}
