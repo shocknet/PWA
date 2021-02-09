@@ -27,6 +27,7 @@ const OverviewPage = () => {
   );
 
   useEffect(() => {
+    fetchWalletBalance()(dispatch);
     fetchUSDRate()(dispatch);
     fetchWalletBalance()(dispatch);
     fetchUnifiedTransactions()(dispatch);

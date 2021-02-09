@@ -45,3 +45,37 @@
   z-index: 1;
   transition: transform 0.3s ease, opacity 0.2s ease;
 }
+
+.modal-form {
+  width: 100%;
+  padding-top: 15px;
+}
+
+.modal-form .group {
+  padding: 17px 25px;
+}
+
+.modal-submit-container {
+  margin-top: 15px;
+}
+
+.modal-submit-btn {
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+  border: 0;
+  background-color: var(--main-blue);
+  color: white;
+  padding: 15px 0;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.25s ease;
+}
+
+.modal-submit-btn:hover {
+  background-color: var(--hovered-blue);
+}
+
+.modal-submit-btn:active {
+  opacity: 0.7;
+}

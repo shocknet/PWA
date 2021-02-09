@@ -144,6 +144,7 @@ const SendPage = () => {
             onChange={onInputChange}
             value={amount}
             disabled={contact?.type === "invoice"}
+            inputMode="decimal"
           />
           <select
             name="unit"
