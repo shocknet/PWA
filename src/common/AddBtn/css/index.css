@@ -1,4 +1,5 @@
 .add-btn-container {
+  --btn-radius: 56px;
   display: flex;
   position: absolute;
   bottom: 12px;
@@ -26,22 +27,20 @@
 }
 
 .add-btn-large {
+  --btn-radius: 64px;
+}
+
+.add-btn-small {
+  --btn-radius: 40px;
+}
+
+.add-btn-large > .add-btn {
   box-shadow: 0 2px 14px -4px rgba(0, 0, 0, 0.16);
 }
 
 .add-btn-round {
-  width: 56px;
-  height: 56px;
-}
-
-.add-btn-round.add-btn-large {
-  width: 64px;
-  height: 64px;
-}
-
-.add-btn-round.add-btn-small {
-  width: 40px;
-  height: 40px;
+  width: var(--btn-radius);
+  height: var(--btn-radius);
 }
 
 .add-btn-extended {
@@ -49,9 +48,8 @@
   height: 45px;
 }
 
-.add-btn-extended.add-btn-small {
-  padding: 0px 18px;
-  height: 40px;
+.add-btn-small .add-btn-extended {
+  height: var(--btn-radius);
 }
 
 .add-btn-nested {
@@ -81,14 +79,14 @@
   display: flex;
   align-items: center;
   position: absolute;
-  right: calc(100% - 56px);
+  right: calc(100% - (var(--btn-radius) / 2));
   top: 50%;
   transform: translateY(-50%);
   visibility: hidden;
   overflow: hidden;
   z-index: 10;
   padding: 10px;
-  padding-right: 56px;
+  padding-right: calc(var(--btn-radius) / 2);
   border-radius: 100px;
 }
 

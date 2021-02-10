@@ -188,3 +188,27 @@ export const connectPeer = ({ publicKey, host }) => async dispatch => {
     throw err?.response?.data ?? err;
   }
 };
+
+export const openChannel = ({
+  publicKey = "",
+  channelCapacity = 0,
+  pushAmount = 0
+}) => async (dispatch, getState) => {
+  try {
+    const { feeRates, rate } = getState().fees;
+    console.log(feeRates, rate, feeRates[rate]);
+    await Http.post("/api/lnd/openchannel", {
+      pubkey: publicKey,
+      channelCapacity: channelCapacity.toString(),
+      channelPushAmount: pushAmount.toString(),
+      satPerByte: feeRates[rate]
+    });
+
+    const data = await fetchChannels()(dispatch);
+
+    return data.channels;
+  } catch (err) {
+    console.error(err);
+    throw err?.response?.data ?? err;
+  }
+};

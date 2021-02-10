@@ -14,13 +14,15 @@ import Invoice from "./components/Invoice";
 import Transaction from "./components/Transaction";
 import Channel from "./components/Channel";
 import Peer from "./components/Peer";
-import "./css/index.css";
 import AddPeerModal from "./components/AddPeerModal";
+import AddChannelModal from "./components/AddChannelModal";
+import "./css/index.css";
 
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
   const [page, setPage] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
+  const [addChannelOpen, setAddChannelOpen] = useState(false);
 
   const dispatch = useDispatch();
   const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
@@ -55,6 +57,10 @@ const AdvancedPage = () => {
   const toggleAddPeerOpen = useCallback(() => {
     setAddPeerOpen(!addPeerOpen);
   }, [addPeerOpen]);
+
+  const toggleAddChannelOpen = useCallback(() => {
+    setAddChannelOpen(!addChannelOpen);
+  }, [addChannelOpen]);
 
   const openTransactionsAccordion = useCallback(() => {
     openAccordion("transactions");
@@ -152,7 +158,12 @@ const AdvancedPage = () => {
               ))}
             </div>
             <AddBtn nestedMode>
-              <AddBtn label="ADD PEER" small onClick={toggleAddPeerOpen} />
+              <AddBtn
+                label="ADD PEER"
+                small
+                onClick={toggleAddPeerOpen}
+                icon="link"
+              />
             </AddBtn>
           </div>
         </div>
@@ -209,11 +220,23 @@ const AdvancedPage = () => {
                   key={channel.chan_id}
                 />
               ))}
+              <AddBtn nestedMode>
+                <AddBtn
+                  label="ADD CHANNEL"
+                  small
+                  onClick={toggleAddChannelOpen}
+                  icon="exchange-alt"
+                />
+              </AddBtn>
             </div>
           </div>
         </div>
       </div>
       <AddPeerModal open={addPeerOpen} toggleModal={toggleAddPeerOpen} />
+      <AddChannelModal
+        open={addChannelOpen}
+        toggleModal={toggleAddChannelOpen}
+      />
     </div>
   );
 };

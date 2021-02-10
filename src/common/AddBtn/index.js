@@ -38,14 +38,18 @@ const AddBtn = ({
   }, [label]);
 
   return (
-    <div className="add-btn-container">
+    <div
+      className={classNames({
+        "add-btn-container": true,
+        "add-btn-large": large,
+        "add-btn-small": small
+      })}
+    >
       <div
         className={classNames({
           "add-btn": true,
           "add-btn-round": !label,
           "add-btn-extended": !!label,
-          "add-btn-large": large,
-          "add-btn-small": small,
           "add-btn-open": optionsOpen,
           "add-btn-nested": nestedMode
         })}
