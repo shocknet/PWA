@@ -9,7 +9,7 @@
   width: 45px;
   height: 45px;
   border-radius: 100px;
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   margin-right: 10px;
   flex-shrink: 0;
 }
@@ -38,18 +38,18 @@ p.advanced-invoice-type {
 
 p.advanced-invoice-time {
   font-size: 12px;
-  color: #ebebeb;
+  color: var(--white-smoke);
 }
 
 p.advanced-invoice-value {
   font-size: 16px;
-  color: #ebebeb;
+  color: var(--white-smoke);
   font-weight: 500;
 }
 
 p.advanced-invoice-usd {
   font-size: 12px;
-  color: #f5a623;
+  color: var(--yellow);
 }
 
 .advanced-invoice-value-container {
@@ -58,10 +58,10 @@ p.advanced-invoice-usd {
 
 .advanced-invoice-container {
   padding: 15px 25px;
-  background-color: #16191c;
+  background-color: var(--background-black);
   border-bottom: 1px solid white;
 }
 
 .page-container.advanced-page {
-  background-color: #16191c;
+  background-color: var(--background-black);
 }

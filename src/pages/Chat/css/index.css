@@ -8,7 +8,7 @@
 .chat-bottom-bar {
   padding: 24px;
   padding-top: 10px;
-  background-color: #1a2028;
+  background-color: var(--main-black);
 }
 
 .chat-input-container {
@@ -16,7 +16,7 @@
   align-items: center;
   padding: 8px 12px;
   border-radius: 100px;
-  background-color: #292929;
+  background-color: var(--dark-gray);
 }
 
 .chat-input-btn {
@@ -26,9 +26,9 @@
   width: 45px;
   height: 45px;
   border-radius: 100px;
-  background-color: #1a2028;
+  background-color: var(--main-black);
   margin-right: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px rgba(var(--black), 0.25);
 }
 
 .chat-input-btn img {
@@ -41,7 +41,7 @@
   font-size: 15px;
   font-family: "Poppins", sans-serif;
   flex: 1;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(var(--white-rgb), 0.7);
   line-height: 20px;
   min-height: 20px;
   max-height: 60px;
@@ -51,7 +51,7 @@
 
 .chat-input:empty::before {
   content: "Type anything...";
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(var(--white-rgb), 0.3);
 }
 
 .chat-input:focus {
@@ -76,7 +76,7 @@ p.chat-permission-bar-title {
 
 .chat-permission-bar {
   padding: 20px;
-  background-color: #191c21;
+  background-color: var(--secondary-black);
 }
 
 .chat-permission-bar-actions {
@@ -90,8 +90,8 @@ p.chat-permission-bar-title {
   padding: 11px 32px;
   font-weight: bold;
   border-radius: 4px;
-  background-color: #5383b4;
-  border: 2px solid rgba(237, 253, 255, 0.5);
+  background-color: var(--btn-blue);
+  border: 2px solid rgba(var(--btn-blue-border-rgb), 0.5);
   margin-right: 10px;
   width: 30%;
   text-align: center;
@@ -101,27 +101,27 @@ p.chat-permission-bar-title {
 
 .chat-permission-bar-action:hover {
   background-color: #3a6794;
-  border: 2px solid rgba(237, 253, 255, 0.3);
+  border: 2px solid rgba(var(--btn-blue-border-rgb), 0.3);
 }
 
 .chat-permission-bar-action:active {
-  color: #ffffff80;
+  color: rgba(var(--white-rgb), 0.5);
   background-color: #33597e;
-  border: 2px solid rgba(237, 253, 255, 0.1);
+  border: 2px solid rgba(var(--btn-blue-border-rgb), 0.1);
 }
 
 .chat-permission-bar-action-decline {
-  background-color: #e64040;
-  border-color: rgba(237, 253, 255, 0.5);
+  background-color: var(--failure-red);
+  border-color: rgba(var(--btn-blue-border-rgb), 0.5);
 }
 
 .chat-permission-bar-action-decline:hover {
   background-color: #b82f2f;
-  border-color: rgba(237, 253, 255, 0.3);
+  border-color: rgba(var(--btn-blue-border-rgb), 0.3);
 }
 
 .chat-permission-bar-action-decline:active {
-  color: #ffffff80;
+  color: rgba(var(--white-rgb), 0.5);
   background-color: #a32a2a;
   border-color: rgba(90, 186, 199, 0.1);
 }

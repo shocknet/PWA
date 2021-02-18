@@ -26,7 +26,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #16191cb8;
+  background-color: rgba(var(--background-black-rgb), 0.72);
   z-index: 0;
 }
 
@@ -38,7 +38,7 @@
 .modal-container {
   position: relative;
   width: 90%;
-  background-color: #23282d;
+  background-color: var(--modal-body-bg);
   border-radius: 15px;
   transform: translateY(100%);
   opacity: 0;
