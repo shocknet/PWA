@@ -31,15 +31,3 @@
   font-weight: bold;
   font-size: 14px;
 }
-
-.form-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 13px;
-  border-radius: 6px;
-  color: white;
-  font-weight: bold;
-  margin-bottom: 15px;
-  background-color: #e23e3e;
-}

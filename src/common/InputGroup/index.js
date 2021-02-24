@@ -9,13 +9,20 @@ const InputGroup = ({
   inputAction,
   actionIcon,
   value,
-  inputMode = "none",
+  inputMode = "text",
   type = "text",
   element = "input",
+  small = false,
   disabled
 }) => {
   return (
-    <div className={classNames({ group: true, "group-disabled": disabled })}>
+    <div
+      className={classNames({
+        group: true,
+        "group-disabled": disabled,
+        "group-small": small
+      })}
+    >
       <p className="group-label">{label}</p>
       <div
         className={classNames({

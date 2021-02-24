@@ -98,6 +98,13 @@ p.advanced-accordion-title {
   overflow: hidden;
 }
 
+.advanced-accordion-content-container {
+  position: relative;
+  display: flex;
+  height: 100%;
+  overflow: auto;
+}
+
 .advanced-accordion-container.accordion-open .advanced-accordion-header {
   background-color: var(--main-blue);
   cursor: default;
@@ -105,6 +112,8 @@ p.advanced-accordion-title {
 
 .advanced-accordion-container .advanced-accordion-content {
   opacity: 0;
+  overflow: auto;
+  flex: 1;
   transition: all 0.3s ease;
 }
 

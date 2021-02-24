@@ -6,7 +6,7 @@ const INITIAL_STATE = {
   APIPublicKey: null
 };
 
-const auth = (state = INITIAL_STATE, action) => {
+const encryption = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.SET_AUTH_STEP: {
       return action.data;
@@ -16,4 +16,4 @@ const auth = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default auth;
+export default encryption;

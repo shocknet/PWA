@@ -1,4 +1,5 @@
 import Http from "axios";
+import FieldError from "../utils/FieldError";
 
 export const ACTIONS = {
   LOAD_BALANCE: "wallet/balance/load",
@@ -11,6 +12,9 @@ export const ACTIONS = {
   LOAD_MORE_INVOICES: "wallet/invoices/loadMore",
   LOAD_PAYMENTS: "wallet/payments/load",
   LOAD_MORE_PAYMENTS: "wallet/payments/loadMore",
+  LOAD_PEERS: "wallet/peers/load",
+  ADD_PEER: "wallet/peers/add",
+  REMOVE_PEER: "wallet/peers/remove",
   LOAD_RECENT_TRANSACTIONS: "wallet/recentTransactions/load",
   RESET_RECENT_TRANSACTIONS: "wallet/recentTransactions/reset"
 };
@@ -82,6 +86,17 @@ export const fetchChannels = () => async dispatch => {
   return data;
 };
 
+export const fetchPeers = () => async dispatch => {
+  const { data } = await Http.get("/api/lnd/listpeers");
+
+  dispatch({
+    type: ACTIONS.LOAD_PEERS,
+    data: data.peers
+  });
+
+  return data;
+};
+
 export const fetchInvoices = ({
   page,
   itemsPerPage = 10,
@@ -143,4 +158,57 @@ export const fetchUnifiedTransactions = () => async dispatch => {
   });
 
   return data;
+};
+
+export const connectPeer = ({ publicKey, host }) => async dispatch => {
+  try {
+    await Http.post("/api/lnd/connectpeer", {
+      pubkey: publicKey,
+      host: host
+    });
+
+    const newPeer = {
+      pub_key: publicKey,
+      address: host,
+      bytes_sent: 0,
+      bytes_recv: 0,
+      sat_sent: 0,
+      sat_recv: 0,
+      inbound: false
+    };
+
+    dispatch({
+      type: ACTIONS.ADD_PEER,
+      data: newPeer
+    });
+
+    return newPeer;
+  } catch (err) {
+    console.error(err);
+    throw err?.response?.data ?? err;
+  }
+};
+
+export const openChannel = ({
+  publicKey = "",
+  channelCapacity = 0,
+  pushAmount = 0
+}) => async (dispatch, getState) => {
+  try {
+    const { feeRates, rate } = getState().fees;
+    console.log(feeRates, rate, feeRates[rate]);
+    await Http.post("/api/lnd/openchannel", {
+      pubkey: publicKey,
+      channelCapacity: channelCapacity.toString(),
+      channelPushAmount: pushAmount.toString(),
+      satPerByte: feeRates[rate]
+    });
+
+    const data = await fetchChannels()(dispatch);
+
+    return data.channels;
+  } catch (err) {
+    console.error(err);
+    throw err?.response?.data ?? err;
+  }
 };

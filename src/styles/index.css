@@ -74,6 +74,7 @@
 
 :root {
   --main-blue: #4285b9;
+  --hovered-blue: #519cd4;
   --loading-blue: #37536f;
   --dark-blue: #212937;
 
@@ -122,6 +123,22 @@ ul {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Remove PWA "tells" */
+button,
+input,
+textarea {
+  outline: none !important;
+  border: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+button {
+  user-select: none;
+  font-weight: bold;
+  background-color: var(--main-blue);
+  color: white;
 }
 
 .unselectable {

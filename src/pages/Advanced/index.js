@@ -1,22 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import classNames from "classnames";
-import Big from "big.js";
-import MainNav from "../../common/MainNav";
-import Invoice from "./components/Invoice";
-import Transaction from "./components/Transaction";
-import Channel from "./components/Channel";
-import "./css/index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { convertSatsToUSD, formatNumber } from "../../utils/Number";
+import classNames from "classnames";
 import {
   fetchChannels,
   fetchInvoices,
+  fetchPeers,
   fetchTransactions
 } from "../../actions/WalletActions";
+import { convertSatsToUSD, formatNumber } from "../../utils/Number";
+import MainNav from "../../common/MainNav";
+import AddBtn from "../../common/AddBtn";
+import Invoice from "./components/Invoice";
+import Transaction from "./components/Transaction";
+import Channel from "./components/Channel";
+import Peer from "./components/Peer";
+import AddPeerModal from "./components/AddPeerModal";
+import AddChannelModal from "./components/AddChannelModal";
+import "./css/index.css";
 
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
   const [page, setPage] = useState(1);
+  const [addPeerOpen, setAddPeerOpen] = useState(false);
+  const [addChannelOpen, setAddChannelOpen] = useState(false);
 
   const dispatch = useDispatch();
   const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
@@ -24,13 +30,15 @@ const AdvancedPage = () => {
   const transactions = useSelector(({ wallet }) => wallet.transactions);
   const invoices = useSelector(({ wallet }) => wallet.invoices);
   const channels = useSelector(({ wallet }) => wallet.channels);
+  const peers = useSelector(({ wallet }) => wallet.peers);
   const USDRate = useSelector(({ wallet }) => wallet.USDRate);
 
   useEffect(() => {
     const reset = page === 1;
     dispatch(fetchTransactions({ page, reset }));
-    dispatch(fetchChannels({ page, reset }));
     dispatch(fetchInvoices({ page, reset }));
+    dispatch(fetchChannels());
+    dispatch(fetchPeers());
   }, [page, dispatch]);
 
   const confirmedBalanceUSD = useMemo(
@@ -45,6 +53,14 @@ const AdvancedPage = () => {
   const openAccordion = useCallback(accordion => {
     setSelectedAccordion(accordion);
   }, []);
+
+  const toggleAddPeerOpen = useCallback(() => {
+    setAddPeerOpen(!addPeerOpen);
+  }, [addPeerOpen]);
+
+  const toggleAddChannelOpen = useCallback(() => {
+    setAddChannelOpen(!addChannelOpen);
+  }, [addChannelOpen]);
 
   const openTransactionsAccordion = useCallback(() => {
     openAccordion("transactions");
@@ -105,15 +121,17 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Transactions</p>
           </div>
-          <div className="advanced-accordion-content">
-            {transactions.content.map(transaction => (
-              <Transaction
-                date={transaction.time_stamp}
-                hash={transaction.tx_hash}
-                value={formatNumber(transaction.amount)}
-                key={transaction.tx_hash}
-              />
-            ))}
+          <div className="advanced-accordion-content-container">
+            <div className="advanced-accordion-content">
+              {transactions.content.map(transaction => (
+                <Transaction
+                  date={transaction.time_stamp}
+                  hash={transaction.tx_hash}
+                  value={formatNumber(transaction.amount)}
+                  key={transaction.tx_hash}
+                />
+              ))}
+            </div>
           </div>
         </div>
         <div
@@ -128,7 +146,26 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Peers</p>
           </div>
-          <div className="advanced-accordion-content"></div>
+          <div className="advanced-accordion-content-container">
+            <div className="advanced-accordion-content">
+              {peers.map(peer => (
+                <Peer
+                  address={peer.address}
+                  publicKey={peer.pub_key}
+                  sent={peer.sat_sent}
+                  received={peer.sat_recv}
+                />
+              ))}
+            </div>
+            <AddBtn nestedMode>
+              <AddBtn
+                label="ADD PEER"
+                small
+                onClick={toggleAddPeerOpen}
+                icon="link"
+              />
+            </AddBtn>
+          </div>
         </div>
         <div
           className={classNames({
@@ -142,16 +179,21 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Invoices</p>
           </div>
-          <div className="advanced-accordion-content">
-            {invoices.content.map(invoice => (
-              <Invoice
-                paymentRequest={invoice.payment_request}
-                date={invoice.creation_date}
-                value={formatNumber(invoice.value)}
-                message={invoice.memo}
-                key={invoice.payment_request}
-              />
-            ))}
+          <div className="advanced-accordion-content-container">
+            <div className="advanced-accordion-content">
+              {invoices.content
+                .slice()
+                .reverse()
+                .map(invoice => (
+                  <Invoice
+                    paymentRequest={invoice.payment_request}
+                    date={invoice.creation_date}
+                    value={formatNumber(invoice.value)}
+                    message={invoice.memo}
+                    key={invoice.payment_request}
+                  />
+                ))}
+            </div>
           </div>
         </div>
         <div
@@ -166,20 +208,35 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Channels</p>
           </div>
-          <div className="advanced-accordion-content">
-            {channels.map(channel => (
-              <Channel
-                address={channel.remote_pubkey}
-                receivable={channel.remote_balance}
-                sendable={channel.local_balance}
-                ip={channel.ip}
-                active={channel.active}
-                key={channel.chan_id}
-              />
-            ))}
+          <div className="advanced-accordion-content-container">
+            <div className="advanced-accordion-content">
+              {channels.map(channel => (
+                <Channel
+                  address={channel.remote_pubkey}
+                  receivable={channel.remote_balance}
+                  sendable={channel.local_balance}
+                  ip={channel.ip}
+                  active={channel.active}
+                  key={channel.chan_id}
+                />
+              ))}
+              <AddBtn nestedMode>
+                <AddBtn
+                  label="ADD CHANNEL"
+                  small
+                  onClick={toggleAddChannelOpen}
+                  icon="exchange-alt"
+                />
+              </AddBtn>
+            </div>
           </div>
         </div>
       </div>
+      <AddPeerModal open={addPeerOpen} toggleModal={toggleAddPeerOpen} />
+      <AddChannelModal
+        open={addChannelOpen}
+        toggleModal={toggleAddChannelOpen}
+      />
     </div>
   );
 };

@@ -24,6 +24,14 @@
   background-color: #212937;
 }
 
+.group-small .group-label {
+  margin-bottom: 10px;
+}
+
+.group-small .group-input-container {
+  padding: 7px 10px;
+}
+
 .group-input-textarea-container {
   padding: 0;
 }

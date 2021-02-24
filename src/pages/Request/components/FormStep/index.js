@@ -8,6 +8,7 @@ const FormStep = ({ onInputChange, amount, description }) => (
         label="Enter Amount"
         onChange={onInputChange}
         value={amount}
+        inputMode="decimal"
       />
       <select name="unit" className="unit-dropdown" onChange={onInputChange}>
         <option value="sats">Sats</option>
