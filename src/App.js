@@ -17,6 +17,8 @@ const SendPage = React.lazy(() => import("./pages/Send"));
 const RequestPage = React.lazy(() => import("./pages/Request"));
 const AuthPage = React.lazy(() => import("./pages/Auth"));
 
+const PublishContentPage = React.lazy(() => import("./pages/Profile/publishContent"));
+
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
   const authorizedComponent = authenticated ? component : AuthPage;
@@ -61,6 +63,7 @@ const App = () => {
             <PrivateRoute path="/send" exact component={SendPage} />
             <PrivateRoute path="/request" exact component={RequestPage} />
             <PrivateRoute path="/profile" exact component={ProfilePage} />
+            <PrivateRoute path="/publishContent" exact component={PublishContentPage} />
             <Redirect to="/overview" />
           </Switch>
         </Suspense>

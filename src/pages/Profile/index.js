@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
+import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
+
+import {setSeedProviderPub} from '../../actions/ContentActions'
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -12,9 +15,13 @@ import QRCodeIcon from "../../images/qrcode.svg";
 import "./css/index.css";
 
 const ProfilePage = () => {
+  const dispatch = useDispatch()
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
   const displayName = useSelector(({ node }) => node.displayName);
   const publicKey = useSelector(({ node }) => node.publicKey);
+  const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
+  const [localSeedPub,setLocalSeedPub] = useState(seedProviderPub)
   const avatar = useSelector(({ node }) => node.avatar);
   const processedDisplayName = useMemo(
     () => processDisplayName(publicKey, displayName),
@@ -24,10 +31,32 @@ const ProfilePage = () => {
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
+  const toggleConfigModal = useCallback(() => {
+    
+    setProfileConfigModalOpen(!profileConfigModalOpen);
+  }, [profileConfigModalOpen]);
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(publicKey);
   }, [publicKey]);
+
+  const onInputChange = useCallback(e => {
+    const { value, name } = e.target;
+    switch (name) {
+      case "localPub": {
+        setLocalSeedPub(value);
+        return;
+      }
+      default:
+        return;
+    }
+  })
+  const onUpdatePub = useCallback(() => {
+    setSeedProviderPub(localSeedPub)(dispatch)
+  },[localSeedPub])
+  const onCancel = useCallback(() => {
+    setLocalSeedPub(seedProviderPub)
+  },[seedProviderPub])
 
   return (
     <div className="page-container profile-page">
@@ -41,25 +70,25 @@ const ProfilePage = () => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam,
               blanditiis
             </p>
-            <div className="config-btn">
+            <div className="config-btn" onClick={toggleConfigModal}>
               <i className="config-btn-icon icon-solid-spending-rule" />
               <p className="config-btn-text">Config</p>
             </div>
           </div>
         </div>
         <div className="profile-choices-container">
+          <button className="profile-choice-container">
+            <i className="profile-choice-icon fas fa-user"></i>
+            <p className="profile-choice-text">Offer a Product</p>
+          </button>
           <div className="profile-choice-container">
             <i className="profile-choice-icon fas fa-user"></i>
             <p className="profile-choice-text">Offer a Product</p>
           </div>
-          <div className="profile-choice-container">
+          <Link to={"/publishContent"} className="profile-choice-container" >
             <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Offer a Product</p>
-          </div>
-          <div className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Offer a Product</p>
-          </div>
+            <p className="profile-choice-text">Publish Content</p>
+          </Link>
           <div className="profile-choice-container">
             <i className="profile-choice-icon fas fa-user"></i>
             <p className="profile-choice-text">Offer a Product</p>
@@ -85,6 +114,21 @@ const ProfilePage = () => {
           <div className="profile-clipboard-container" onClick={copyClipboard}>
             <img src={ClipboardIcon} className="profile-clipboard-icon" />
             <p className="profile-clipboard-text">Tap to copy to clipboard</p>
+          </div>
+        </Modal>
+        <Modal
+          toggleModal={toggleConfigModal}
+          modalOpen={profileConfigModalOpen}
+          
+          contentStyle={{
+            padding: "40px 30px"
+          }}
+        >
+          <div>
+            
+            <input type='text' placeholder={localSeedPub} name="localPub" onChange={onInputChange} />
+            <button onClick={onUpdatePub}>UPDATE</button>
+            <button onClick={onCancel}>CANCEL</button>
           </div>
         </Modal>
         <AddBtn
