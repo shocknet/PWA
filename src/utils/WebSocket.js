@@ -24,8 +24,8 @@ export const disconnectSocket = socket => {
 const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
   new Promise((resolve, reject) => {
     try {
-      console.log("getChats Executed", `http://${hostIP}/${namespace}`);
-      const DataSocket = SocketIO.connect(`http://${hostIP}/${namespace}`, {
+      console.log("getChats Executed", `${hostIP}/${namespace}`);
+      const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
         ...options,
         query: {
           token: authToken
@@ -81,7 +81,7 @@ export const rifle = (host, query, publicKeyForDecryption) => {
 
   opts.query.publicKeyForDecryption = publicKeyForDecryption ?? "";
 
-  const socket = SocketIO(`http://${host}/gun`, opts);
+  const socket = SocketIO(`${host}/gun`, opts);
 
   return socket;
 };
