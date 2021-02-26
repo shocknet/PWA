@@ -16,9 +16,9 @@
   width: 100%;
   padding: 15px;
   border-radius: 6px;
-  background-color: #001220;
-  border: 2px solid #eaebeb;
-  box-shadow: 0 3px 6px rgba(255, 255, 255, 0.16);
+  background-color: var(--black);
+  border: 2px solid var(--white-smoke);
+  box-shadow: 0 3px 6px rgba(var(--white-rgb), 0.16);
   margin-bottom: 30px;
 }
 

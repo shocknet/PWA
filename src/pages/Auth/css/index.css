@@ -30,9 +30,9 @@
   width: 100%;
   padding: 17px 25px;
   font-size: 14px;
-  border: 2px solid #5383b4;
-  background-color: #202020;
-  color: rgba(255, 255, 255, 0.774);
+  border: 2px solid var(--btn-blue);
+  background-color: var(--input-black);
+  color: rgba(var(--white-rgb), 0.77);
   font-family: "Poppins";
   margin-bottom: 20px;
 }
@@ -43,23 +43,23 @@ form.auth-form {
 }
 
 button.submit-btn {
-  background-color: #5383b4;
+  background-color: var(--btn-blue);
   color: white;
   border: 0;
   width: 100%;
   padding: 15px 0;
   border-radius: 8px;
   font-size: 18px;
-  border: 2px solid #edfdff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+  border: 2px solid var(--btn-blue-border);
+  box-shadow: 0 3px 10px rgba(var(--black), 0.16);
 }
 
 .input-field-error {
-  border-color: #f34b4b;
+  border-color: var(--failure-red);
 }
 
 .error-container {
-  color: #f34b4b;
+  color: var(--failure-red);
   margin-bottom: 15px;
   margin-top: -5px;
 }

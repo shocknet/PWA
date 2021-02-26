@@ -27,13 +27,13 @@
   width: 12px;
   height: 12px;
   border-radius: 100px;
-  background-color: #57c46c;
+  background-color: var(--green);
   margin-left: 7.5px;
   line-height: 1;
 }
 
 .advanced-channel-status-offline {
-  background-color: #e23e3e;
+  background-color: var(--failure-red);
 }
 
 .advanced-channel-address {

@@ -4,8 +4,8 @@
   justify-content: center;
   padding: 15px 20px;
   border-radius: 15px 15px 0 0;
-  border-bottom: 1px solid #ffffff26;
-  background-color: #2c333a;
+  border-bottom: 1px solid rgba(var(--white-rgb), 0.15);
+  background-color: var(--modal-head-bg);
 }
 
 .modal-head-close {
@@ -18,12 +18,12 @@
   width: 36px;
   height: 36px;
   border-radius: 100px;
-  background-color: #e63f3f;
+  background-color: var(--failure-red);
   transform: translate(25%, -25%);
   cursor: pointer;
 }
 
 p.modal-head-title {
   font-weight: bold;
-  color: #ffffffd9;
+  color: rgba(var(--white-rgb), 0.85);
 }

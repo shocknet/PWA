@@ -3,7 +3,7 @@
   max-width: 600px;
   width: 100vw;
   margin: auto;
-  background-color: #292e35;
+  background-color: var(--body-background);
 }
 
 .ShockWallet {
@@ -20,7 +20,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 21px 0;
-  background-color: #16191c;
+  background-color: var(--background-black);
   flex-shrink: 0;
 }
 
@@ -34,7 +34,7 @@
 }
 
 a.bottom-nav-btn {
-  color: #4285b9;
+  color: var(--main-blue);
 }
 
 a.bottom-nav-btn.active-nav-btn {
@@ -74,7 +74,7 @@ a.bottom-nav-btn.active-nav-btn {
 }
 
 .unit-dropdown option {
-  background-color: #001220;
+  background-color: var(--black);
 }
 
 .form-error {
@@ -86,5 +86,5 @@ a.bottom-nav-btn.active-nav-btn {
   color: white;
   font-weight: bold;
   margin-bottom: 15px;
-  background-color: #e23e3e;
+  background-color: var(--failure-red);
 }

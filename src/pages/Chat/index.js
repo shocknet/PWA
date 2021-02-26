@@ -76,7 +76,7 @@ const ChatPage = () => {
 
     return async () => {
       const resolvedSubscription = await subscription;
-      resolvedSubscription.close();
+      resolvedSubscription?.close();
     };
   }, [dispatch, gunPublicKey, recipientPublicKey]);
 
