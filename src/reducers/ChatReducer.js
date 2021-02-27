@@ -1,3 +1,6 @@
+/**
+ * @format
+ */
 import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
 
 const INITIAL_STATE = {

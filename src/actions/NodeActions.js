@@ -18,9 +18,7 @@ export const resetNodeInfo = () => dispatch => {
 
 export const fetchNodeHealth = hostIP => async dispatch => {
   try {
-    const { data } = await Http.get(
-      `${hostIP}/healthz`
-    );
+    const { data } = await Http.get(`${hostIP}/healthz`);
 
     if (data.APIStatus?.message) {
       dispatch({
@@ -47,11 +45,11 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       type: AUTH_ACTIONS.RESET_AUTH_INFO
     });
   }
-  const done = (host,health) => {
+  const done = (host, health) => {
     const { walletStatus } = health.LNDStatus;
 
     Http.defaults.baseURL = `${host}`;
-  
+
     dispatch({
       type: ACTIONS.SET_HOST_IP,
       data: host
@@ -60,22 +58,22 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       type: AUTH_ACTIONS.SET_AUTH_STEP,
       data: walletStatus === "locked" ? "unlockWallet" : "gunAuth"
     });
-  }
-  let nodeHealthHttps
-  try{
-    nodeHealthHttps = await fetchNodeHealth(`https://${hostIP}`)(dispatch)
-    if(nodeHealthHttps){
-      nodeHealthHttps.withProtocolHostIP = `https://${hostIP}`
-      done(`https://${hostIP}`,nodeHealthHttps)
-      return nodeHealthHttps
+  };
+  let nodeHealthHttps;
+  try {
+    nodeHealthHttps = await fetchNodeHealth(`https://${hostIP}`)(dispatch);
+    if (nodeHealthHttps) {
+      nodeHealthHttps.withProtocolHostIP = `https://${hostIP}`;
+      done(`https://${hostIP}`, nodeHealthHttps);
+      return nodeHealthHttps;
     }
-  }catch(e){
-    console.log(e)
+  } catch (e) {
+    console.log(e);
   }
-  console.error('cannot establish https connection, will try http')
+  console.error("cannot establish https connection, will try http");
   const nodeHealth = await fetchNodeHealth(`http://${hostIP}`)(dispatch);
-  nodeHealth.withProtocolHostIP = `http://${hostIP}`
-  done(`http://${hostIP}`,nodeHealth)
+  nodeHealth.withProtocolHostIP = `http://${hostIP}`;
+  done(`http://${hostIP}`, nodeHealth);
   return nodeHealthHttps || nodeHealth;
 };
 
