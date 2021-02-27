@@ -87,6 +87,7 @@
     ]
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.11",
     "eslint-config-prettier": "^8.1.0",
     "prettier": "^2.2.1"
   }
