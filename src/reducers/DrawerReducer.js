@@ -1,3 +1,6 @@
+/**
+ * @format
+ */
 import { ACTIONS } from "../actions/DrawerActions";
 
 const INITIAL_STATE = {
