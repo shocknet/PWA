@@ -1,4 +1,6 @@
 import { combineReducers } from "redux";
+import * as Common from "shock-common";
+
 import NodeReducer from "./NodeReducer";
 import AuthReducer from "./AuthReducer";
 import WalletReducer from "./WalletReducer";
@@ -12,7 +14,12 @@ const reducers = combineReducers({
   wallet: WalletReducer,
   chat: ChatReducer,
   drawer: DrawerReducer,
-  fees: FeesReducer
+  fees: FeesReducer,
+  users: () => {
+    return {} as Record<string, Common.User>;
+  }
 });
+
+export type State = ReturnType<typeof reducers>;
 
 export default reducers;
