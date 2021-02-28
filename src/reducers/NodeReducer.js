@@ -27,8 +27,9 @@ const node = (state = INITIAL_STATE, action) => {
         publicKey,
         authTokenExpirationDate
       } = action.data;
+
       Http.defaults.headers.common.Authorization = `Bearer ${authToken}`;
-      console.log(Http.defaults.headers.common.Authorization);
+
       return {
         ...state,
         authToken,

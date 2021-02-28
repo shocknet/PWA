@@ -108,11 +108,11 @@ export const subscribeChatMessages = (
     return null;
   }
 
-  const incomingMessages = rifle(
-    hostIP,
-    `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
-    recipientPublicKey
-  );
+  const incomingMessages = rifle({
+    host: hostIP,
+    query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
+    publicKey: recipientPublicKey
+  });
 
   incomingMessages.on("$shock", (message, id) => {
     if (!message.body || message.body === initialMessagePrefix) {
@@ -122,10 +122,6 @@ export const subscribeChatMessages = (
       type: ACTIONS.RECEIVED_MESSAGE,
       data: { ...message, id, recipientPublicKey, localId: id }
     });
-  });
-
-  incomingMessages.on("$error", error => {
-    console.log(error);
   });
 
   return incomingMessages;

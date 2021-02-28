@@ -34,7 +34,10 @@ const ProfilePage = () => {
       <div className="profile-container">
         <div className="profile-cover" />
         <div className="profile-info-container">
-          <div className="profile-avatar" />
+          <div
+            className="profile-avatar"
+            style={{ backgroundImage: `url(${avatar})` }}
+          />
           <div className="profile-info">
             <p className="profile-name">{processedDisplayName}</p>
             <p className="profile-desc">
@@ -83,7 +86,11 @@ const ProfilePage = () => {
             Other users can scan this code to contact you
           </p>
           <div className="profile-clipboard-container" onClick={copyClipboard}>
-            <img src={ClipboardIcon} className="profile-clipboard-icon" />
+            <img
+              src={ClipboardIcon}
+              className="profile-clipboard-icon"
+              alt=""
+            />
             <p className="profile-clipboard-text">Tap to copy to clipboard</p>
           </div>
         </Modal>

@@ -5,6 +5,7 @@ import WalletReducer from "./WalletReducer";
 import ChatReducer from "./ChatReducer";
 import DrawerReducer from "./DrawerReducer";
 import FeesReducer from "./FeesReducer";
+import FeedReducer from "./FeedReducer";
 
 const reducers = combineReducers({
   node: NodeReducer,
@@ -12,7 +13,8 @@ const reducers = combineReducers({
   wallet: WalletReducer,
   chat: ChatReducer,
   drawer: DrawerReducer,
-  fees: FeesReducer
+  fees: FeesReducer,
+  feed: FeedReducer
 });
 
 export default reducers;
