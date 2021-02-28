@@ -17,6 +17,7 @@
     "gun": "0.2020.520",
     "jwt-decode": "^3.1.2",
     "localforage": "^1.9.0",
+    "lodash": "^4.17.21",
     "luxon": "^1.25.0",
     "qrcode.react": "^1.0.1",
     "ramda": "^0.27.1",
