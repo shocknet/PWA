@@ -153,8 +153,7 @@ const SendPage = () => {
             value={unit}
             disabled={contact?.type === "invoice"}
           >
-            <option value="sats">Sats</option>
-            <option value="msats">mSats</option>
+            <option value="sats">sats</option>
             <option value="btc">BTC</option>
           </select>
         </div>
