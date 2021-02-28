@@ -96,7 +96,6 @@ export const attachMedia = (posts = [], torrentMode = true) => {
                 }
 
                 const torrentElements = document.querySelectorAll(target);
-                console.log("Torrent Elements:", torrentElements);
                 torrentElements.forEach(torrentElement => {
                   const contentURL = decodeURIComponent(
                     item.magnetURI.replace(/.*(ws=)/gi, "")
@@ -129,7 +128,6 @@ export const attachMedia = (posts = [], torrentMode = true) => {
                       return;
                     }
 
-                    console.log("Caching loaded file...", fileName, blob);
                     await saveFile(fileName, blob);
                     const element = document.querySelector(target);
                     if (element.dataset.played === "false") {

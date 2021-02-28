@@ -41,14 +41,24 @@ const subscribeUserProfile = key => async (dispatch, getState) => {
   return subscription;
 };
 
-export const loadSharedPost = (postId, publicKey) => async dispatch => {
-  const { data: post } = await Http.get(
-    `/api/gun/otheruser/${publicKey}/load/posts>${postId}`
-  );
+export const loadSharedPost = (
+  postId,
+  publicKey,
+  sharerPublicKey
+) => async dispatch => {
+  const [{ data: post }, { data: profile }] = await Promise.all([
+    Http.get(`/api/gun/otheruser/${publicKey}/load/posts>${postId}`),
+    Http.get(`/api/gun/otheruser/${publicKey}/load/Profile`)
+  ]);
 
   dispatch({
     type: ACTIONS.LOAD_SHARED_POST,
-    data: { ...post, author: publicKey, id: postId }
+    data: {
+      ...post.data,
+      author: profile.data,
+      sharerId: sharerPublicKey,
+      id: postId
+    }
   });
 };
 
@@ -59,6 +69,7 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
     query: `${publicKey}::posts::on`
   });
   subscription.on("$shock", posts => {
+    const { follows } = getState().feed;
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -68,16 +79,20 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
       .map(([key]) => key);
 
     newPosts.map(async id => {
-      const { data: post } = await Http.get(
-        `/api/gun/otheruser/${publicKey}/load/posts>${id}`
-      );
+      const [{ data: post }, { data: profile }] = await Promise.all([
+        Http.get(`/api/gun/otheruser/${publicKey}/load/posts>${id}`),
+        Http.get(`/api/gun/otheruser/${publicKey}/load/Profile`)
+      ]);
+      const author = follows.find(follow => follow.user === publicKey);
 
       dispatch({
         type: ACTIONS.ADD_USER_POST,
         data: {
           ...post.data,
           id,
-          author: publicKey
+          author,
+          authorId: publicKey,
+          type: "post"
         }
       });
     });
@@ -87,7 +102,7 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
         type: ACTIONS.DELETE_USER_POST,
         data: {
           id,
-          author: publicKey,
+          authorId: publicKey,
           type: "post"
         }
       })
@@ -106,6 +121,7 @@ export const subscribeSharedUserPosts = publicKey => async (
     query: `${publicKey}::sharedPosts::on`
   });
   subscription.on("$shock", posts => {
+    const { follows } = getState().feed;
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -118,18 +134,20 @@ export const subscribeSharedUserPosts = publicKey => async (
       const { data: post } = await Http.get(
         `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
       );
+      const author = follows.find(follow => follow.user === publicKey);
 
       dispatch({
         type: ACTIONS.ADD_USER_POST,
         data: {
           ...post.data,
           id,
-          author: publicKey,
+          author,
+          authorId: publicKey,
           type: "shared"
         }
       });
 
-      await loadSharedPost(id, publicKey);
+      await loadSharedPost(id, post.data.originalAuthor, publicKey)(dispatch);
     });
 
     deletedPosts.map(id =>
@@ -137,7 +155,7 @@ export const subscribeSharedUserPosts = publicKey => async (
         type: ACTIONS.DELETE_USER_POST,
         data: {
           id,
-          author: publicKey
+          authorId: publicKey
         }
       })
     );
@@ -154,7 +172,6 @@ export const subscribeFollows = () => (dispatch, getState) => {
   });
 
   subscription.on("$shock", async (follow, key) => {
-    console.log("New Follow:", follow, key);
     if (typeof key !== "string") {
       console.warn(`Invalid follow key received: ${key}`);
       return;
@@ -174,6 +191,7 @@ export const subscribeFollows = () => (dispatch, getState) => {
     dispatch(addFollow(follow));
     dispatch(subscribeUserProfile(follow.user));
     dispatch(subscribeUserPosts(follow.user));
+    dispatch(subscribeSharedUserPosts(follow.user));
   });
 
   return subscription;

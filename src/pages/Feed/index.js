@@ -17,20 +17,27 @@ const FeedPage = () => {
   const follows = useSelector(({ feed }) => feed.follows);
   const posts = useSelector(({ feed }) => feed.posts);
   const followedPosts = useMemo(() => {
-    const followedUserIds = follows.map(follow => follow.user);
-    const feed = Object.entries(posts)
-      .filter(([author, posts]) => followedUserIds.includes(author) && posts)
-      .map(([author, posts]) => {
-        const user = follows.find(follow => follow.user === author);
-        return posts.map(post => {
-          return { ...post, author: user };
-        });
-      })
-      .reduce((posts, userPosts) => [...posts, ...userPosts], [])
-      .sort((a, b) => b.date - a.date);
+    if (posts) {
+      const feed = Object.values(posts)
+        .reduce((posts, userPosts) => [...posts, ...userPosts], [])
+        .map(post => {
+          if (post.type === "post") {
+            const follow = follows.find(
+              follow => follow.user === post.author.user
+            );
 
-    return feed;
-  }, [follows, posts]);
+            return { ...post, author: follow.profile };
+          }
+
+          return post;
+        })
+        .sort((a, b) => b.date - a.date);
+
+      return feed;
+    }
+
+    return [];
+  }, [posts]);
 
   useEffect(() => {
     const subscription = dispatch(subscribeFollows());
@@ -42,7 +49,7 @@ const FeedPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    attachMedia(followedPosts);
+    attachMedia(followedPosts.filter(post => post.type === "post"));
   }, [followedPosts]);
 
   return (
@@ -50,7 +57,7 @@ const FeedPage = () => {
       <div className="following-bar-container">
         <UserIcon addButton large main />
         <div className="following-bar-list">
-          {follows.map(follow => (
+          {follows?.map(follow => (
             <UserIcon
               username={processDisplayName(
                 follow.user,
@@ -68,18 +75,32 @@ const FeedPage = () => {
         <p className="tab">Videos</p>
       </div>
       <div className="posts-holder">
-        {followedPosts.map(post => (
-          <Post
-            id={post.id}
-            timestamp={post.date ?? 0}
-            contentItems={post.contentItems}
-            avatar={`data:image/png;base64,${post.author.profile?.avatar}`}
-            username={processDisplayName(
-              post.author.user,
-              post.author.profile?.displayName
-            )}
-          />
-        ))}
+        {followedPosts.map(post => {
+          if (post.type === "shared") {
+            return (
+              <SharedPost
+                originalPost={post.originalPost}
+                originalPostProfile={post.originalPost?.author}
+                sharedTimestamp={post.shareDate}
+                sharerProfile={post.author.profile}
+                postPublicKey={post.originalAuthor}
+              />
+            );
+          }
+
+          return (
+            <Post
+              id={post.id}
+              timestamp={post.date}
+              contentItems={post.contentItems}
+              avatar={`data:image/png;base64,${post.author?.avatar}`}
+              username={processDisplayName(
+                post.author?.user,
+                post.author?.displayName
+              )}
+            />
+          );
+        })}
       </div>
       <BottomBar />
     </div>

@@ -17,7 +17,12 @@ const feed = (state = INITIAL_STATE, action) => {
       );
 
       if (existingFollow) {
-        return state;
+        return {
+          ...state,
+          follows: state.follows.map(follow =>
+            follow.user === data.user ? data : follow
+          )
+        };
       }
 
       return {
@@ -53,7 +58,8 @@ const feed = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.ADD_USER_POST: {
       const { data } = action;
-      const userPosts = state.posts[data.author] ?? [];
+      const authorId = data.authorId;
+      const userPosts = state.posts[authorId] ?? [];
       const existingPost = userPosts.find(post => data.id === post.id);
 
       if (existingPost) {
@@ -64,13 +70,13 @@ const feed = (state = INITIAL_STATE, action) => {
         ...state,
         posts: {
           ...state.posts,
-          [data.author]: [...userPosts, data]
+          [authorId]: [...userPosts, data]
         }
       };
     }
     case ACTIONS.DELETE_USER_POST: {
-      const { id, author } = action.data;
-      const userPosts = (state.posts[author] ?? []).filter(
+      const { id, authorId } = action.data;
+      const userPosts = (state.posts[authorId] ?? []).filter(
         post => post.id !== id
       );
 
@@ -78,7 +84,7 @@ const feed = (state = INITIAL_STATE, action) => {
         ...state,
         posts: {
           ...state.posts,
-          [author]: userPosts
+          [authorId]: userPosts
         }
       };
     }
@@ -92,8 +98,8 @@ const feed = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.LOAD_SHARED_POST: {
       const { data } = action;
-      const { id, author } = data;
-      const userPosts = state.posts[author] ?? [];
+      const { id, sharerId } = data;
+      const userPosts = state.posts[sharerId] ?? [];
       const updatedPosts = userPosts.map(post => {
         if (post.id === id && post.type === "shared") {
           return {
@@ -105,7 +111,13 @@ const feed = (state = INITIAL_STATE, action) => {
         return post;
       });
 
-      return updatedPosts;
+      return {
+        ...state,
+        posts: {
+          ...state.posts,
+          [sharerId]: updatedPosts
+        }
+      };
     }
     default:
       return state;

@@ -19,7 +19,9 @@ const SharedPost = ({
   openTipModal
 }) => {
   const loadPostMedia = useCallback(async () => {
-    attachMedia([originalPost], false);
+    if (originalPost) {
+      attachMedia([originalPost], false);
+    }
   }, [originalPost]);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const SharedPost = ({
           ></div>
           <div className="details">
             <p>{sharerProfile?.displayName}</p>
-            <p>{DateTime.fromMillis(sharedTimestamp).fromNow()}</p>
+            <p>{DateTime.fromMillis(sharedTimestamp).toRelative()}</p>
           </div>
         </div>
       </div>
@@ -60,7 +62,7 @@ const SharedPost = ({
             tipValue={originalPost.tipValue}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
-            contentItems={originalPost.contentItems}
+            contentItems={originalPost.contentItems ?? {}}
             username={
               originalPostProfile.displayName ?? originalPostProfile.alias
             }

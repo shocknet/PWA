@@ -38,7 +38,6 @@ export const fetchUSDRate = () => async dispatch => {
   const { data } = await Http.get(
     "https://api.coindesk.com/v1/bpi/currentprice.json"
   );
-  console.log("Coindesk:", data, data.bpi.USD.rate_float);
   const exchangeRate = data.bpi.USD.rate.replace(/,/g, "");
 
   dispatch({
@@ -196,7 +195,6 @@ export const openChannel = ({
 }) => async (dispatch, getState) => {
   try {
     const { feeRates, rate } = getState().fees;
-    console.log(feeRates, rate, feeRates[rate]);
     await Http.post("/api/lnd/openchannel", {
       pubkey: publicKey,
       channelCapacity: channelCapacity.toString(),

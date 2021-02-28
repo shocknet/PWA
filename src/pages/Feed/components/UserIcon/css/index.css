@@ -17,7 +17,7 @@
 
 .followed-user-main {
   position: relative;
-  box-shadow: 18px -4px 10px rgb(39 44 54);
+  box-shadow: 10px -4px 10px #272c36;
   z-index: 10000;
 }
 
