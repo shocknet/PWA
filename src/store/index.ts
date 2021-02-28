@@ -38,3 +38,5 @@ const initializedStore = initializeStore();
 export const store = initializedStore.store;
 
 export const persistor = initializedStore.persistor;
+
+export * from "./selectors";
