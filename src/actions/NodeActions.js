@@ -45,7 +45,6 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       type: AUTH_ACTIONS.RESET_AUTH_INFO
     });
   }
-
   const done = (host, health) => {
     const { walletStatus } = health.LNDStatus;
 
