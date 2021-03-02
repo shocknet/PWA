@@ -16,21 +16,11 @@ const FeedPage = () => {
   const dispatch = useDispatch();
   const follows = useSelector(({ feed }) => feed.follows);
   const posts = useSelector(({ feed }) => feed.posts);
+  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const followedPosts = useMemo(() => {
     if (posts) {
       const feed = Object.values(posts)
         .reduce((posts, userPosts) => [...posts, ...userPosts], [])
-        .map(post => {
-          if (post.type === "post") {
-            const follow = follows.find(
-              follow => follow.user === post.author.user
-            );
-
-            return { ...post, author: follow.profile };
-          }
-
-          return post;
-        })
         .sort((a, b) => b.date - a.date);
 
       return feed;
@@ -57,15 +47,16 @@ const FeedPage = () => {
       <div className="following-bar-container">
         <UserIcon addButton large main />
         <div className="following-bar-list">
-          {follows?.map(follow => (
-            <UserIcon
-              username={processDisplayName(
-                follow.user,
-                follow.profile?.displayName
-              )}
-              avatar={`data:image/png;base64,${follow.profile?.avatar}`}
-            />
-          ))}
+          {follows?.map(follow => {
+            const publicKey = follow.user;
+            const profile = userProfiles[publicKey] ?? {};
+            return (
+              <UserIcon
+                username={processDisplayName(publicKey, profile.displayName)}
+                avatar={`data:image/png;base64,${profile.avatar}`}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -76,14 +67,18 @@ const FeedPage = () => {
       </div>
       <div className="posts-holder">
         {followedPosts.map(post => {
+          const profile = userProfiles[post.authorId];
+
           if (post.type === "shared") {
+            const originalPublicKey = post.originalAuthor;
+            const originalProfile = userProfiles[originalPublicKey];
             return (
               <SharedPost
                 originalPost={post.originalPost}
-                originalPostProfile={post.originalPost?.author}
+                originalPostProfile={originalProfile}
                 sharedTimestamp={post.shareDate}
-                sharerProfile={post.author.profile}
-                postPublicKey={post.originalAuthor}
+                sharerProfile={profile}
+                postPublicKey={originalPublicKey}
               />
             );
           }
@@ -93,11 +88,8 @@ const FeedPage = () => {
               id={post.id}
               timestamp={post.date}
               contentItems={post.contentItems}
-              avatar={`data:image/png;base64,${post.author?.avatar}`}
-              username={processDisplayName(
-                post.author?.user,
-                post.author?.displayName
-              )}
+              avatar={`data:image/png;base64,${profile?.avatar}`}
+              username={processDisplayName(profile?.user, profile?.displayName)}
             />
           );
         })}

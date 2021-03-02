@@ -1,6 +1,10 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
 import { disconnectRifleSocket, rifle } from "../utils/WebSocket";
+import {
+  subscribeUserProfile,
+  unsubscribeUserProfile
+} from "./UserProfilesActions";
 
 export const ACTIONS = {
   RESET_FEED: "feed/reset",
@@ -25,37 +29,21 @@ export const addFollow = follow => dispatch =>
     data: follow
   });
 
-const subscribeUserProfile = key => async (dispatch, getState) => {
-  const { hostIP } = getState().node;
-  const subscription = rifle({
-    host: hostIP,
-    query: `${key}::Profile::on`,
-    reconnect: true
-  });
-  subscription.on("$shock", profile => {
-    dispatch({
-      type: ACTIONS.UPDATE_FOLLOW,
-      data: { key, ...profile }
-    });
-  });
-  return subscription;
-};
-
 export const loadSharedPost = (
   postId,
   publicKey,
   sharerPublicKey
 ) => async dispatch => {
-  const [{ data: post }, { data: profile }] = await Promise.all([
-    Http.get(`/api/gun/otheruser/${publicKey}/load/posts>${postId}`),
-    Http.get(`/api/gun/otheruser/${publicKey}/load/Profile`)
-  ]);
+  const { data: post } = await Http.get(
+    `/api/gun/otheruser/${publicKey}/load/posts>${postId}`
+  );
+  dispatch(subscribeUserProfile(publicKey));
 
   dispatch({
     type: ACTIONS.LOAD_SHARED_POST,
     data: {
       ...post.data,
-      author: profile.data,
+      authorId: publicKey,
       sharerId: sharerPublicKey,
       id: postId
     }
@@ -69,7 +57,6 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
     query: `${publicKey}::posts::on`
   });
   subscription.on("$shock", posts => {
-    const { follows } = getState().feed;
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -79,18 +66,15 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
       .map(([key]) => key);
 
     newPosts.map(async id => {
-      const [{ data: post }, { data: profile }] = await Promise.all([
-        Http.get(`/api/gun/otheruser/${publicKey}/load/posts>${id}`),
-        Http.get(`/api/gun/otheruser/${publicKey}/load/Profile`)
-      ]);
-      const author = follows.find(follow => follow.user === publicKey);
+      const { data: post } = await Http.get(
+        `/api/gun/otheruser/${publicKey}/load/posts>${id}`
+      );
 
       dispatch({
         type: ACTIONS.ADD_USER_POST,
         data: {
           ...post.data,
           id,
-          author,
           authorId: publicKey,
           type: "post"
         }
@@ -121,7 +105,6 @@ export const subscribeSharedUserPosts = publicKey => async (
     query: `${publicKey}::sharedPosts::on`
   });
   subscription.on("$shock", posts => {
-    const { follows } = getState().feed;
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -134,14 +117,12 @@ export const subscribeSharedUserPosts = publicKey => async (
       const { data: post } = await Http.get(
         `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
       );
-      const author = follows.find(follow => follow.user === publicKey);
 
       dispatch({
         type: ACTIONS.ADD_USER_POST,
         data: {
           ...post.data,
           id,
-          author,
           authorId: publicKey,
           type: "shared"
         }
@@ -178,7 +159,7 @@ export const subscribeFollows = () => (dispatch, getState) => {
     }
 
     if (!follow) {
-      disconnectRifleSocket(`${key}::Profile::on`);
+      unsubscribeUserProfile(key);
       dispatch(removeFollow(key));
       return;
     }
