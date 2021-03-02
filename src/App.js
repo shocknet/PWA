@@ -16,8 +16,8 @@ const ChatPage = React.lazy(() => import("./pages/Chat"));
 const SendPage = React.lazy(() => import("./pages/Send"));
 const RequestPage = React.lazy(() => import("./pages/Request"));
 const AuthPage = React.lazy(() => import("./pages/Auth"));
+const FeedPage = React.lazy(() => import("./pages/Feed"));
 const MoonPayPage = React.lazy(() => import("./pages/MoonPay"));
-
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
@@ -63,6 +63,7 @@ const App = () => {
             <PrivateRoute path="/send" exact component={SendPage} />
             <PrivateRoute path="/request" exact component={RequestPage} />
             <PrivateRoute path="/profile" exact component={ProfilePage} />
+            <PrivateRoute path="/feed" exact component={FeedPage} />
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <Redirect to="/overview" />
           </Switch>

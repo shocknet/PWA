@@ -23,7 +23,7 @@ const InputGroup = ({
         "group-small": small
       })}
     >
-      <p className="group-label">{label}</p>
+      {label ? <p className="group-label">{label}</p> : null}
       <div
         className={classNames({
           "group-input-container": true,

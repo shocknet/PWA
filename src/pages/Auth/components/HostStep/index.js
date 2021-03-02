@@ -26,13 +26,10 @@ const HostStep = () => {
       try {
         e.preventDefault();
         setError(null);
-        let noProtocolHostIP = hostIP
-        if(hostIP.startsWith("http://")){
-          noProtocolHostIP = hostIP.slice(7)
-        } else if (hostIP.startsWith("https://")){
-          noProtocolHostIP = hostIP.slice(8)
-        }
-        const {withProtocolHostIP} = await connectHost(noProtocolHostIP)(dispatch);
+        const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
+        const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
+          dispatch
+        );
         connectSocket(withProtocolHostIP);
       } catch (error) {
         setError("Unable to connect to host");

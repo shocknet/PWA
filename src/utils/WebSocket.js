@@ -4,6 +4,8 @@ import FieldError from "./FieldError";
 
 const options = { reconnection: true, rejectUnauthorized: false };
 
+const rifleSockets = new Map();
+
 export let GunSocket = null;
 
 export let LNDSocket = null;
@@ -24,7 +26,7 @@ export const disconnectSocket = socket => {
 const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
   new Promise((resolve, reject) => {
     try {
-      console.log("getChats Executed", `${hostIP}/${namespace}`);
+      console.log("DataSocket Executed", `${hostIP}/${namespace}`);
       const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
         ...options,
         query: {
@@ -72,18 +74,44 @@ const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
     }
   });
 
-export const rifle = (host, query, publicKeyForDecryption) => {
+export const disconnectRifleSocket = query => {
+  const cachedSocket = rifleSockets.get(query);
+
+  if (cachedSocket) {
+    cachedSocket.off("*");
+    cachedSocket.close();
+    rifleSockets.delete(query);
+  }
+};
+
+export const rifle = ({ host, query, publicKey, reconnect }) => {
   const opts = {
     query: {
-      $shock: query
+      $shock: query,
+      publicKeyForDecryption: publicKey ?? ""
     }
   };
 
-  opts.query.publicKeyForDecryption = publicKeyForDecryption ?? "";
+  const cachedSocket = rifleSockets.get(query);
 
-  const socket = SocketIO(`${host}/gun`, opts);
+  if (reconnect && cachedSocket) {
+    disconnectRifleSocket(query);
+  }
 
-  return socket;
+  if (!cachedSocket || reconnect) {
+    const socket = SocketIO(`${host}/gun`, opts);
+    rifleSockets.set(query, socket);
+
+    socket.on("$error", err => {
+      console.error(`Gun rifle error (${query})`);
+
+      console.error(err);
+    });
+
+    return socket;
+  }
+
+  return cachedSocket;
 };
 
 export const getChats = async ({ hostIP, authToken }) => {

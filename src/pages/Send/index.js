@@ -83,7 +83,6 @@ const SendPage = () => {
         feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
         memo: description
       });
-      console.log(gunPayment);
     }
   }, [amount, contact, description]);
 

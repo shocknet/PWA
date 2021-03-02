@@ -59,21 +59,28 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       data: walletStatus === "locked" ? "unlockWallet" : "gunAuth"
     });
   };
+
   let nodeHealthHttps;
+  const sanitizedHostIP = hostIP.replace(/^http(s)?:\/\//, "");
   try {
-    nodeHealthHttps = await fetchNodeHealth(`https://${hostIP}`)(dispatch);
+    nodeHealthHttps = await fetchNodeHealth(`https://${sanitizedHostIP}`)(
+      dispatch
+    );
     if (nodeHealthHttps) {
-      nodeHealthHttps.withProtocolHostIP = `https://${hostIP}`;
-      done(`https://${hostIP}`, nodeHealthHttps);
+      nodeHealthHttps.withProtocolHostIP = `https://${sanitizedHostIP}`;
+      done(`https://${sanitizedHostIP}`, nodeHealthHttps);
       return nodeHealthHttps;
     }
   } catch (e) {
     console.log(e);
   }
+
   console.error("cannot establish https connection, will try http");
-  const nodeHealth = await fetchNodeHealth(`http://${hostIP}`)(dispatch);
-  nodeHealth.withProtocolHostIP = `http://${hostIP}`;
-  done(`http://${hostIP}`, nodeHealth);
+  const nodeHealth = await fetchNodeHealth(`http://${sanitizedHostIP}`)(
+    dispatch
+  );
+  nodeHealth.withProtocolHostIP = `http://${sanitizedHostIP}`;
+  done(`http://${sanitizedHostIP}`, nodeHealth);
   return nodeHealthHttps || nodeHealth;
 };
 
