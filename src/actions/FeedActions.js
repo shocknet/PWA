@@ -14,7 +14,8 @@ export const ACTIONS = {
   LOAD_POSTS: "feed/posts/load",
   ADD_USER_POST: "feed/posts/add",
   DELETE_USER_POST: "feed/posts/delete",
-  LOAD_SHARED_POST: "feed/sharedPosts/load"
+  LOAD_SHARED_POST: "feed/sharedPosts/load",
+  POST_TIPPED: "feed/posts/tipped"
 };
 
 export const removeFollow = key => dispatch =>
@@ -176,4 +177,28 @@ export const subscribeFollows = () => (dispatch, getState) => {
   });
 
   return subscription;
+};
+
+export const sendTipPost = ({
+  publicKey,
+  postId,
+  amount
+}) => async dispatch => {
+  const { data } = await Http.post("/api/lnd/unifiedTrx", {
+    type: "tip",
+    amt: amount,
+    to: publicKey,
+    memo: "Post Tipped!",
+    feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
+    ackInfo: postId
+  });
+  console.log(data);
+  dispatch({
+    type: ACTIONS.POST_TIPPED,
+    data: {
+      publicKey,
+      postId,
+      amount
+    }
+  });
 };

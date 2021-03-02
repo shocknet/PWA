@@ -136,9 +136,10 @@ const Post = ({
 
     openTipModal({
       targetType: "post",
-      postID: id
+      postID: id,
+      publicKey
     });
-  }, [id, isOnlineNode, openTipModal]);
+  }, [id, isOnlineNode, openTipModal, publicKey]);
 
   useEffect(() => {
     Tooltip.rebuild();

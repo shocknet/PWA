@@ -68,6 +68,8 @@
   padding: 15px 0;
   font-size: 16px;
   cursor: pointer;
+  text-align: center;
+  font-weight: bold;
   opacity: 1;
   transition: all 0.25s ease;
 }

@@ -135,6 +135,8 @@ export const attachMedia = (posts = [], torrentMode = true) => {
                       renderCachedFile(cachedFile, target);
                     }
                   });
+
+                  return file;
                 });
               });
             });

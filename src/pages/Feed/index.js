@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
@@ -7,6 +7,7 @@ import BottomBar from "../../common/BottomBar";
 import UserIcon from "./components/UserIcon";
 import Post from "../../common/Post";
 import SharedPost from "../../common/Post/SharedPost";
+import SendTipModal from "./components/SendTipModal";
 
 import { subscribeFollows } from "../../actions/FeedActions";
 
@@ -17,6 +18,8 @@ const FeedPage = () => {
   const follows = useSelector(({ feed }) => feed.follows);
   const posts = useSelector(({ feed }) => feed.posts);
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
+  const [tipModalData, setTipModalOpen] = useState(null);
+
   const followedPosts = useMemo(() => {
     if (posts) {
       const feed = Object.values(posts)
@@ -28,6 +31,17 @@ const FeedPage = () => {
 
     return [];
   }, [posts]);
+
+  const toggleTipModal = useCallback(
+    tipData => {
+      if (tipModalData || !tipData) {
+        setTipModalOpen(null);
+      }
+
+      setTipModalOpen(tipData);
+    },
+    [tipModalData]
+  );
 
   useEffect(() => {
     const subscription = dispatch(subscribeFollows());
@@ -79,6 +93,9 @@ const FeedPage = () => {
                 sharedTimestamp={post.shareDate}
                 sharerProfile={profile}
                 postPublicKey={originalPublicKey}
+                openTipModal={toggleTipModal}
+                // TODO: User online status handling
+                isOnlineNode
               />
             );
           }
@@ -90,10 +107,15 @@ const FeedPage = () => {
               contentItems={post.contentItems}
               avatar={`data:image/png;base64,${profile?.avatar}`}
               username={processDisplayName(profile?.user, profile?.displayName)}
+              publicKey={post.authorId}
+              openTipModal={toggleTipModal}
+              // TODO: User online status handling
+              isOnlineNode
             />
           );
         })}
       </div>
+      <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
       <BottomBar />
     </div>
   );

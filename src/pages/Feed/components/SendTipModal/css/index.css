@@ -1,0 +1,36 @@
+.tip-form .form-error {
+  margin-bottom: 17px;
+}
+
+.tip-modal-desc {
+  padding: 0 25px;
+  text-align: center;
+  color: var(--text-white);
+}
+
+.tip-modal-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 30px;
+}
+
+i.tip-success-icon {
+  font-size: 55px;
+  margin-bottom: 8px;
+  color: var(--main-blue);
+}
+
+p.tip-success-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+p.tip-success-desc {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.8;
+  color: var(--text-white);
+}
