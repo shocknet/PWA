@@ -74,7 +74,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
           {loading ? <Loader overlay text="Sending Tip..." /> : null}
           <p className="tip-modal-desc">
             Please specify the amount of sats you'd like to tip this user with
-            below and we'll generate an invoice for you to scan.
+            below.
           </p>
           <InputGroup
             name="amount"
