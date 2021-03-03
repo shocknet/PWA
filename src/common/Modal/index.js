@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import classNames from "classnames";
 import ModalContent from "./components/ModalContent/index.js";
 import ModalTitle from "./components/ModalTitle";
@@ -10,14 +10,19 @@ const Modal = ({
   modalTitle = "",
   children,
   contentStyle = {}
-}) => (
-  <div className={classNames({ modal: true, "modal-open": modalOpen })}>
-    <div className="modal-backdrop" onClick={toggleModal} />
-    <div className="modal-container">
-      <ModalTitle title={modalTitle} toggleModal={toggleModal} />
-      <ModalContent style={contentStyle}>{children}</ModalContent>
+}) => {
+  const closeModal = useCallback(() => {
+    toggleModal();
+  }, [toggleModal]);
+  return (
+    <div className={classNames({ modal: true, "modal-open": modalOpen })}>
+      <div className="modal-backdrop" onClick={closeModal} />
+      <div className="modal-container">
+        <ModalTitle title={modalTitle} toggleModal={closeModal} />
+        <ModalContent style={contentStyle}>{children}</ModalContent>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Modal;

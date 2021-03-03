@@ -15,7 +15,7 @@ p.chat-message-text {
   display: inline-flex;
   padding: 16px 18px;
   border-radius: 38px;
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   line-height: 22px;
   font-size: 16px;
   font-weight: bold;
@@ -26,7 +26,7 @@ p.chat-message-text {
 p.chat-message-text::before {
   content: "";
   border: 13px solid transparent;
-  border-top: 26px solid #4285b9;
+  border-top: 26px solid var(--main-blue);
   position: absolute;
   right: 0;
   bottom: -4px;
@@ -34,12 +34,12 @@ p.chat-message-text::before {
 }
 
 .chat-message-received p.chat-message-text {
-  background-color: #1a2028;
+  background-color: var(--main-black);
 }
 
 .chat-message-received p.chat-message-text::before {
   right: initial;
   left: 0;
   transform: rotate(55deg) translate(2%, 45%);
-  border-top-color: #1a2028;
+  border-top-color: var(--main-black);
 }

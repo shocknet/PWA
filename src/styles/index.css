@@ -73,25 +73,70 @@
 }
 
 :root {
+  /* Color variables prefixed with "-rgb" are in rgb format, 
+     this way we can control the transparency for each color using rgba. 
+     Example: `rgba(var(--main-blue), 0.8)` */
   --main-blue: #4285b9;
+  --main-blue-rgb: 66, 133, 185;
   --loading-blue: #37536f;
+  --loading-blue-rgb: 55, 83, 111;
+  --btn-blue: #5383b4;
+  --btn-blue-rgb: 83, 131, 180;
+  --btn-blue-border: #edfdff;
+  --btn-blue-border-rgb: 237, 253, 255;
+  --text-blue: #64bbff;
+  --text-blue-rgb: 100, 187, 255;
+  --hovered-blue: #519cd4;
+  --hovered-blue-rgb: 81, 156, 212;
+  --pressed-blue: #396b94;
+  --pressed-blue-rgb: 57, 107, 148;
+  --pressed-blue-border: #2f5a7b;
+  --pressed-blue-border-rgb: 47, 90, 123;
   --dark-blue: #212937;
+  --dark-blue-rgb: 33, 41, 55;
 
-  --white: white;
+  --text-white: #cccccc;
+  --text-white-rgb: 204, 204, 204;
+  --text-gray: #9c9c9c;
+  --text-gray-rgb: 156, 156, 156;
+  --input-white: #f2f2f2;
+  --input-white-rgb: 242, 242, 242;
+  --white: #ffffff;
+  --white-rgb: 255, 255, 255;
   --white-smoke: #ebebeb;
+  --white-smoke-rgb: 235, 235, 235;
   --light-gray: #a2a3a7;
+  --light-gray-rgb: 162, 163, 167;
   --gray: #707070;
+  --gray-rgb: 112, 112, 112;
   --dark-gray: #292929;
+  --dark-gray-rgb: 41, 41, 41;
 
-  --black: #001220;
   --main-black: #1a2028;
+  --main-black-rgb: 26, 32, 40;
   --secondary-black: #18191d;
+  --secondary-black-rgb: 24, 25, 29;
   --background-black: #16191c;
+  --background-black-rgb: 22, 25, 28;
+  --input-black: #202020;
+  --input-black-rgb: 32, 32, 32;
   --body-background: #292e35;
+  --body-background-rgb: 41, 46, 53;
+  --modal-head-bg: #2c333a;
+  --modal-head-bg-rgb: 44, 51, 58;
+  --modal-body-bg: #23282d;
+  --modal-body-bg-rgb: 35, 40, 45;
+  --black: #001220;
+  --black-rgb: 0, 18, 32;
 
   --green: #57c46c;
+  --green-rgb: 87, 196, 108;
   --yellow: #f5a623;
+  --yellow-rgb: 245, 166, 35;
   --mist-blue: #27455c;
+  --mist-blue-rgb: 39, 69, 92;
+  --failure-red: #e23e3e;
+  --failure-red-rgb: 226, 62, 62;
 }
 
 html,
@@ -122,6 +167,22 @@ ul {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Remove PWA "tells" */
+button,
+input,
+textarea {
+  outline: none !important;
+  border: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+button {
+  user-select: none;
+  font-weight: bold;
+  background-color: var(--main-blue);
+  color: white;
 }
 
 .unselectable {

@@ -13,8 +13,8 @@
   min-height: 60px;
   border-radius: 100px;
   padding-left: 45px;
-  background-color: #16191c;
-  border: 2px solid #4285b9;
+  background-color: var(--background-black);
+  border: 2px solid var(--main-blue);
   pointer-events: none;
   transition: all 0.2s ease;
 }
@@ -31,7 +31,7 @@
   width: 0;
   height: 100%;
   left: 0px;
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   border-radius: 100px;
   z-index: 2;
 }
@@ -45,10 +45,10 @@
   justify-content: center;
   height: 80px;
   width: 80px;
-  background-color: #212937;
+  background-color: var(--dark-blue);
   transform: translateY(-50%);
   border-radius: 100px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px rgba(var(--black), 0.16);
   cursor: grab;
   z-index: 3;
   transition: color 0.2s ease;

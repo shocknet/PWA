@@ -83,7 +83,6 @@ const SendPage = () => {
         feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
         memo: description
       });
-      console.log(gunPayment);
     }
   }, [amount, contact, description]);
 
@@ -144,6 +143,7 @@ const SendPage = () => {
             onChange={onInputChange}
             value={amount}
             disabled={contact?.type === "invoice"}
+            inputMode="decimal"
           />
           <select
             name="unit"
@@ -152,8 +152,7 @@ const SendPage = () => {
             value={unit}
             disabled={contact?.type === "invoice"}
           >
-            <option value="sats">Sats</option>
-            <option value="msats">mSats</option>
+            <option value="sats">sats</option>
             <option value="btc">BTC</option>
           </select>
         </div>

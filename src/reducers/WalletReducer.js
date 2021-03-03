@@ -13,6 +13,7 @@ const INITIAL_STATE = {
   payments: { content: [], page: -1, totalPages: 0, totalItems: 0 },
   channels: [],
   invoices: { content: [], page: -1, totalPages: 0, totalItems: 0 },
+  peers: [],
   // Includes transactions, payments and invoices combined with a unified schema
   // and sorted by date
   recentTransactions: []
@@ -48,6 +49,30 @@ const wallet = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         USDRate: data
+      };
+    }
+    case ACTIONS.LOAD_PEERS: {
+      const { data } = action;
+
+      return {
+        ...state,
+        peers: data
+      };
+    }
+    case ACTIONS.ADD_PEER: {
+      const { data } = action;
+
+      return {
+        ...state,
+        peers: [data, ...state.peers]
+      };
+    }
+    case ACTIONS.REMOVE_PEER: {
+      const { data } = action;
+
+      return {
+        ...state,
+        peers: state.peers.filter(peer => peer.pub_key !== data.publicKey)
       };
     }
     case ACTIONS.LOAD_CHANNELS: {

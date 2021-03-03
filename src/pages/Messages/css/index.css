@@ -1,5 +1,5 @@
 .messages-page {
-  background-color: #16191c;
+  background-color: var(--background-black);
 }
 
 .messages-container {
@@ -44,14 +44,14 @@ p.messages-section-title {
   border: 2px solid #44484c;
   border-radius: 8px;
   background-color: #2c333a;
-  box-shadow: 0 4px 17px -7px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 17px -7px rgba(var(--black), 0.15);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
 }
 
 .send-request-card:active {
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   border: 2px solid #2a597e;
 }
 
@@ -82,12 +82,13 @@ i.send-request-card-icon {
 }
 
 .send-request-error {
+  width: 100%;
   padding: 8px;
   text-align: center;
   font-weight: bold;
   background-color: #e63f3f;
   font-size: 13px;
-  color: #ffffffe6;
+  color: rgba(var(--white-rgb), 0.9);
 }
 
 .send-request-cards {

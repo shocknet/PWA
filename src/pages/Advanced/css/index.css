@@ -1,5 +1,5 @@
 .advanced-page {
-  background-color: #16191c;
+  background-color: var(--background-black);
 }
 
 .advanced-header {
@@ -57,7 +57,7 @@ p.advanced-balance-usd {
 .advanced-accordion-header {
   padding: 15px 25px;
   font-weight: bold;
-  background-color: #001220;
+  background-color: var(--black);
   border: 0px solid white;
   border-bottom: 1px solid white;
   cursor: pointer;
@@ -65,7 +65,7 @@ p.advanced-balance-usd {
 }
 
 .advanced-accordion-header:hover {
-  background-color: #27455c;
+  background-color: var(--mist-blue);
 }
 
 p.advanced-accordion-title {
@@ -98,6 +98,13 @@ p.advanced-accordion-title {
   overflow: hidden;
 }
 
+.advanced-accordion-content-container {
+  position: relative;
+  display: flex;
+  height: 100%;
+  overflow: auto;
+}
+
 .advanced-accordion-container.accordion-open .advanced-accordion-header {
   background-color: var(--main-blue);
   cursor: default;
@@ -105,6 +112,8 @@ p.advanced-accordion-title {
 
 .advanced-accordion-container .advanced-accordion-content {
   opacity: 0;
+  overflow: auto;
+  flex: 1;
   transition: all 0.3s ease;
 }
 
@@ -123,7 +132,7 @@ p.advanced-accordion-title {
   width: 45px;
   height: 45px;
   border-radius: 100px;
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   margin-right: 10px;
   flex-shrink: 0;
 }

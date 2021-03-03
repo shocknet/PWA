@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 22px;
-  background-color: #212937;
-  border: 1px solid #4285b9;
+  background-color: var(--dark-blue);
+  border: 1px solid var(--main-blue);
   margin-bottom: 7px;
 }
 
@@ -19,18 +19,18 @@
   margin-right: 5px;
   flex-shrink: 0;
   border-radius: 100px;
-  background-color: #181e27;
+  background-color: var(--secondary-black);
 }
 
 p.transaction-author-username {
   font-weight: bold;
   margin-bottom: 5px;
-  color: #9c9c9c;
+  color: var(--text-gray);
 }
 
 p.transaction-author-text {
   font-size: 12px;
-  color: #ebebeb;
+  color: var(--white-smoke);
   font-weight: 500;
 }
 
@@ -40,7 +40,7 @@ p.transaction-author-text {
 
 p.transaction-timestamp {
   font-size: 11px;
-  color: #9c9c9c;
+  color: var(--text-gray);
   text-align: right;
   line-height: 1;
   margin-bottom: 5px;
@@ -55,11 +55,11 @@ p.transaction-value-btc {
 
 p.transaction-value-usd {
   font-size: 12px;
-  color: #64bbff;
+  color: var(--text-blue);
   text-align: right;
   font-weight: 600;
 }
 
 .recent-activity-entries {
-  background-color: #16191c;
+  background-color: var(--background-black);
 }

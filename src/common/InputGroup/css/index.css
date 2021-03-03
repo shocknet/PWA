@@ -20,8 +20,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 18px;
-  border: 1px solid #4285b9c9;
-  background-color: #212937;
+  border: 1px solid rgba(var(--main-blue-rgb), 0.8);
+  background-color: var(--dark-blue);
+}
+
+.group-small .group-label {
+  margin-bottom: 10px;
+}
+
+.group-small .group-input-container {
+  padding: 7px 10px;
 }
 
 .group-input-textarea-container {
@@ -31,7 +39,7 @@
 .group-input {
   width: 100%;
   font-size: 14px;
-  color: #bcbcbc;
+  color: var(--input-white);
   background-color: transparent;
   border: 0;
   font-family: Poppins;

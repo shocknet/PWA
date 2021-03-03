@@ -27,7 +27,7 @@
   height: 122px;
   width: 122px;
   border-radius: 100px;
-  background-color: #202020;
+  background-color: var(--dark-gray);
   box-shadow: 0 0 0px 7px var(--gray);
   flex-shrink: 0;
   margin-right: 30px;

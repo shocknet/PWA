@@ -1,5 +1,5 @@
 .page-container.overview-page {
-  background-color: #292e35;
+  background-color: var(--body-background);
 }
 
 .overview-header {
@@ -34,7 +34,7 @@ span.overview-balance-unit {
 p.overview-balance-usd {
   font-size: 12px;
   font-weight: bold;
-  color: #4285b9;
+  color: var(--main-blue);
   letter-spacing: 1px;
   margin-top: 4px;
 }
@@ -51,8 +51,8 @@ p.overview-balance-usd {
   text-align: center;
   padding: 18px;
   border-radius: 8px;
-  border: 2px solid #4285b9;
-  color: #4285b9;
+  border: 2px solid var(--main-blue);
+  color: var(--main-blue);
   font-weight: 600;
   text-decoration: none;
 }
@@ -63,7 +63,7 @@ p.overview-action-text {
 }
 
 .overview-action.overview-action-request {
-  background-color: #4285b9;
+  background-color: var(--main-blue);
   color: white;
   border: 1px solid white;
 }

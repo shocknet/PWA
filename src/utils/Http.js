@@ -10,8 +10,6 @@ Http.interceptors.request.use(async config => {
       ?.replace(/(http(s)?:\/\/)/gi, "")
       .split("/")[0];
 
-    console.log(config.url, sanitizedBaseURL, hostIP);
-
     if (config.url.indexOf("/") === 0) {
       config.headers.common.Authorization = `Bearer ${authToken}`;
     }
