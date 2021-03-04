@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
 
@@ -24,7 +24,7 @@ const SharedPost = ({
     }
   }, [originalPost]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     Tooltip.rebuild();
     loadPostMedia();
   }, [loadPostMedia]);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
@@ -52,8 +52,11 @@ const FeedPage = () => {
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    attachMedia(followedPosts.filter(post => post.type === "post"));
+  useLayoutEffect(() => {
+    attachMedia(
+      followedPosts.filter(post => post.type === "post"),
+      false
+    );
   }, [followedPosts]);
 
   return (
