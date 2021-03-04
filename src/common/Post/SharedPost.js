@@ -47,9 +47,7 @@ const SharedPost = ({
       </div>
 
       <div className="shared-content">
-        {!originalPost ? (
-          <Loader text="Loading Post..." />
-        ) : originalPost && originalPostProfile ? (
+        {originalPost && originalPostProfile ? (
           <Post
             id={originalPost.id}
             timestamp={originalPost.date}
@@ -68,7 +66,9 @@ const SharedPost = ({
             }
             isOnlineNode={isOnlineNode}
           />
-        ) : null}
+        ) : (
+          <Loader text="Loading Post..." />
+        )}
       </div>
     </div>
   );
