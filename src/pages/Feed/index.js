@@ -1,17 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
 
 import BottomBar from "../../common/BottomBar";
 import UserIcon from "./components/UserIcon";
-import Post from "../../common/Post";
-import SharedPost from "../../common/Post/SharedPost";
 import SendTipModal from "./components/SendTipModal";
+import Loader from "../../common/Loader";
 
 import { subscribeFollows } from "../../actions/FeedActions";
 
 import "./css/index.css";
+
+const Post = React.lazy(() => import("../../common/Post"));
+const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
   const dispatch = useDispatch();
@@ -52,8 +61,11 @@ const FeedPage = () => {
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    attachMedia(followedPosts.filter(post => post.type === "post"));
+  useLayoutEffect(() => {
+    attachMedia(
+      followedPosts.filter(post => post.type === "post"),
+      false
+    );
   }, [followedPosts]);
 
   return (
@@ -87,31 +99,38 @@ const FeedPage = () => {
             const originalPublicKey = post.originalAuthor;
             const originalProfile = userProfiles[originalPublicKey];
             return (
-              <SharedPost
-                originalPost={post.originalPost}
-                originalPostProfile={originalProfile}
-                sharedTimestamp={post.shareDate}
-                sharerProfile={profile}
-                postPublicKey={originalPublicKey}
-                openTipModal={toggleTipModal}
-                // TODO: User online status handling
-                isOnlineNode
-              />
+              <Suspense fallback={<Loader />}>
+                <SharedPost
+                  originalPost={post.originalPost}
+                  originalPostProfile={originalProfile}
+                  sharedTimestamp={post.shareDate}
+                  sharerProfile={profile}
+                  postPublicKey={originalPublicKey}
+                  openTipModal={toggleTipModal}
+                  // TODO: User online status handling
+                  isOnlineNode
+                />
+              </Suspense>
             );
           }
 
           return (
-            <Post
-              id={post.id}
-              timestamp={post.date}
-              contentItems={post.contentItems}
-              avatar={`data:image/png;base64,${profile?.avatar}`}
-              username={processDisplayName(profile?.user, profile?.displayName)}
-              publicKey={post.authorId}
-              openTipModal={toggleTipModal}
-              // TODO: User online status handling
-              isOnlineNode
-            />
+            <Suspense fallback={<Loader />}>
+              <Post
+                id={post.id}
+                timestamp={post.date}
+                contentItems={post.contentItems}
+                avatar={`data:image/png;base64,${profile?.avatar}`}
+                username={processDisplayName(
+                  profile?.user,
+                  profile?.displayName
+                )}
+                publicKey={post.authorId}
+                openTipModal={toggleTipModal}
+                // TODO: User online status handling
+                isOnlineNode
+              />
+            </Suspense>
           );
         })}
       </div>
