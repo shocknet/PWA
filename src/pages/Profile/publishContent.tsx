@@ -15,6 +15,8 @@ import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
+import Video from "../../common/Post/components/Video";
+import {addPublishedContent} from '../../actions/ContentActions'
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   //@ts-ignore
@@ -63,9 +65,11 @@ const PublishContentPage = () => {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${tokens[0]}`,
+            "Access-Control-Allow-Origin": "*"
           },
           body: formData,
         })
+        //return Promise.resolve({data:{torrent:{magnet:"somerandomyo"}}})
       })
       .then(res => {
         console.log(res)
@@ -75,7 +79,23 @@ const PublishContentPage = () => {
         console.log(res)
         const {torrent} = res.data
         const {magnet} = torrent
-
+        const [firstFile] = mediaPreviews
+        console.log(firstFile)
+        let type = 'image/embedded'
+        if(firstFile.type === 'video'){
+          type = 'video/embedded'
+        }
+        const contentItem = {
+          type,
+          magnetURI:magnet,
+          width:0,
+          height:0
+        }
+        return addPublishedContent(contentItem)(dispatch)
+      })
+      .then(response => {
+        console.log("content publish complete")
+        console.log(response)
       })
       .catch(err => {
         setError("seed token request failed")
@@ -83,7 +103,7 @@ const PublishContentPage = () => {
       })
 
     },
-    [title,description,selectedFiles, dispatch, setError]
+    [title,description,selectedFiles,mediaPreviews, dispatch, setError]
   );
   const onDiscard = useCallback(
     async e => {
@@ -115,7 +135,7 @@ const PublishContentPage = () => {
     
     console.log(e.target.files)
     setSelectedFiles(e.target.files)
-    const promises = Array.from(e.target.files).map(file => {
+    const promises = Array.from(e.target.files).map((file,index) => {
       console.log("doing file...")
       return new Promise(res => {
         //@ts-ignore
@@ -125,10 +145,10 @@ const PublishContentPage = () => {
 
         reader.onload = function (e) {
           if(type.startsWith('image/')){
-            res({type:'image',uri:e.target.result})
+            res({type:'image',uri:e.target.result,index})
           }
           if(type.startsWith('video/')){
-            res({type:'video',uri:e.target.result})
+            res({type:'video',uri:e.target.result,index})
           }
         }
         //@ts-ignore
@@ -159,7 +179,7 @@ const PublishContentPage = () => {
   },[videoFile])
   return (<div className="publish-content-form-container">
     {loading ? (
-      <Loader overlay fullScreen text="Unlocking Wallet..." />
+      <Loader overlay fullScreen text="" />
     ) : null}
     <DialogNav  drawerVisible={false} pageTitle="PUBLISH CONTENT" />
   
@@ -186,10 +206,10 @@ const PublishContentPage = () => {
       <div >
         {mediaPreviews.length > 0 && mediaPreviews.map(prev => {
           if(prev.type === 'image'){
-            return <img src={prev.uri} width={100} className="m-1"></img>
+            return <img src={prev.uri} key={prev.index.toString()} width={100} className="m-1" ></img>
           }
           if(prev.type === 'video'){
-            return <video src={prev.uri} width={100} controls className="m-1"></video>
+            return <video src={prev.uri} key={prev.index.toString()} controls width={100} className="m-1"></video>
           }
         })}
       </div>

@@ -92,10 +92,10 @@ const ProfilePage = () => {
             <i className="profile-choice-icon fas fa-user"></i>
             <p className="profile-choice-text">Publish Content</p>
           </Link>
-          <div className="profile-choice-container">
+          <Link to={"/createPost"} className="profile-choice-container" >
             <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Offer a Product</p>
-          </div>
+            <p className="profile-choice-text">Create Post</p>
+          </Link>
         </div>
         <Modal
           toggleModal={toggleModal}

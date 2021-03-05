@@ -20,6 +20,7 @@ const FeedPage = React.lazy(() => import("./pages/Feed"));
 const MoonPayPage = React.lazy(() => import("./pages/MoonPay"));
 
 const PublishContentPage = React.lazy(() => import("./pages/Profile/publishContent"));
+const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
@@ -68,6 +69,7 @@ const App = () => {
             <PrivateRoute path="/publishContent" exact component={PublishContentPage} />
             <PrivateRoute path="/feed" exact component={FeedPage} />
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
+            <PrivateRoute path="/createPost" exact component={createPostPage} />
             <Redirect to="/overview" />
           </Switch>
         </Suspense>
