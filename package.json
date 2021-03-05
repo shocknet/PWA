@@ -25,7 +25,7 @@
     "react": "^17.0.1",
     "react-animated-number": "^0.4.4",
     "react-contenteditable": "^3.3.5",
-    "react-copy-to-clipboard": "^5.0.2",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-device-detect": "^1.14.0",
     "react-dom": "^17.0.1",
     "react-medium-image-zoom": "^4.3.1",
