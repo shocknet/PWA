@@ -36,7 +36,7 @@ export const loadSharedPost = (
   sharerPublicKey
 ) => async dispatch => {
   const { data: post } = await Http.get(
-    `/api/gun/otheruser/${publicKey}/load/posts>${postId}`
+    `/api/gun/otheruser/${publicKey}/open/posts>${postId}`
   );
   dispatch(subscribeUserProfile(publicKey));
 
@@ -68,7 +68,7 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
 
     newPosts.map(async id => {
       const { data: post } = await Http.get(
-        `/api/gun/otheruser/${publicKey}/load/posts>${id}`
+        `/api/gun/otheruser/${publicKey}/open/posts>${id}`
       );
 
       dispatch({
@@ -116,7 +116,7 @@ export const subscribeSharedUserPosts = publicKey => async (
 
     newPosts.map(async id => {
       const { data: post } = await Http.get(
-        `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
+        `/api/gun/otheruser/${publicKey}/open/sharedPosts>${id}`
       );
 
       dispatch({

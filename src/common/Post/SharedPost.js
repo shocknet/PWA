@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
 
@@ -24,7 +24,7 @@ const SharedPost = ({
     }
   }, [originalPost]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     Tooltip.rebuild();
     loadPostMedia();
   }, [loadPostMedia]);
@@ -47,9 +47,7 @@ const SharedPost = ({
       </div>
 
       <div className="shared-content">
-        {!originalPost ? (
-          <Loader text="Loading Post..." />
-        ) : originalPost && originalPostProfile ? (
+        {originalPost && originalPostProfile ? (
           <Post
             id={originalPost.id}
             timestamp={originalPost.date}
@@ -68,7 +66,9 @@ const SharedPost = ({
             }
             isOnlineNode={isOnlineNode}
           />
-        ) : null}
+        ) : (
+          <Loader text="Loading Post..." />
+        )}
       </div>
     </div>
   );
