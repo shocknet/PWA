@@ -146,12 +146,17 @@ export const subscribeSharedUserPosts = publicKey => async (
 };
 
 export const subscribeFollows = () => (dispatch, getState) => {
-  const { hostIP } = getState().node;
+  const { hostIP,publicKey } = getState().node;
   const subscription = rifle({
     host: hostIP,
     query: "$user::follows::map.on",
     reconnect: true
   });
+  console.log("subbing follows")
+  //-- Subscribe to self, posts and shared posts are merged
+  //dispatch(subscribeUserProfile(publicKey))
+  dispatch(subscribeUserPosts(publicKey))
+  dispatch(subscribeSharedUserPosts(publicKey))
 
   subscription.on("$shock", async (follow, key) => {
     if (typeof key !== "string") {
