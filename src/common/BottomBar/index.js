@@ -19,17 +19,17 @@ const BottomBar = () => (
     </NavLink>
     <NavLink
       className="bottom-nav-btn"
-      to="/feed"
-      activeClassName="active-nav-btn"
-    >
-      <i className="bottom-nav-btn-icon icon-thin-feed"></i>
-    </NavLink>
-    <NavLink
-      className="bottom-nav-btn"
       to="/profile"
       activeClassName="active-nav-btn"
     >
       <i className="bottom-nav-btn-icon icon-thin-profile"></i>
+    </NavLink>
+    <NavLink
+      className="bottom-nav-btn"
+      to="/feed"
+      activeClassName="active-nav-btn"
+    >
+      <i className="bottom-nav-btn-icon icon-thin-feed"></i>
     </NavLink>
   </div>
 );

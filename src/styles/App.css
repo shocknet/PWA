@@ -34,11 +34,11 @@
 }
 
 a.bottom-nav-btn {
-  color: var(--main-blue);
+  color: white;
 }
 
 a.bottom-nav-btn.active-nav-btn {
-  color: white;
+  color: var(--main-blue);
 }
 
 .page-container {
