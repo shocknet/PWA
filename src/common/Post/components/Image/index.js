@@ -31,6 +31,10 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
     [animationTimer, zoomLoaded]
   );
 
+  const contentURL = decodeURIComponent(
+    item.magnetURI.replace(/.*(ws=)/gi, "")
+  );
+
   return (
     <div className="media-container">
       <ControlledZoom
@@ -45,6 +49,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
           data-torrent={item.magnetURI}
           data-file-key={index}
           style={{ opacity: previewVisible ? 1 : 0 }}
+          src={contentURL}
         />
         <img
           className={`enlarged-img enlarged-img-${postId}-${id}`}
@@ -54,7 +59,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
             setZoomLoaded(true);
           }}
           style={{ opacity: zoomLoaded ? 1 : 0 }}
-          src={decodeURIComponent(item.magnetURI.split("ws=")[1])}
+          src={contentURL}
         />
         <TipRibbon
           tipCounter={tipCounter}
