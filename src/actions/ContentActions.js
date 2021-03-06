@@ -24,7 +24,7 @@ export const addPublishedContent = content => async dispatch => {
     toSet = JSON.stringify(content)
   }
   const {data} = await Http.post('/api/gun/set',{
-    path:'$user>publishedContentTEST',
+    path:'$user>publishedContent',
     value:{
       $$__ENCRYPT__FOR:'me',
       value:toSet
