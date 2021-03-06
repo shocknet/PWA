@@ -188,3 +188,37 @@ button {
 .unselectable {
   user-select: none;
 }
+
+.shock-form-button {
+  width: 40%;
+  text-align: center;
+  padding: 18px;
+  border-radius: 8px;
+  border: 2px solid var(--main-blue);
+  color: var(--main-blue);
+  font-weight: 600;
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+p.shock-form-button-text {
+  line-height: 1;
+  font-weight: 500;
+}
+
+.shock-form-button-confirm {
+  width: 40%;
+  text-align: center;
+  padding: 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: var(--main-blue);
+  color: white;
+  border: 1px solid white;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}

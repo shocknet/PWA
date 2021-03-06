@@ -6,7 +6,7 @@ import "./css/index.css";
 
 const IMAGE_TRANSITION_MS = 200;
 
-const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
+const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomLoaded, setZoomLoaded] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -34,6 +34,10 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
   );
+  const mainImageStyle = { opacity: previewVisible ? 1 : 0 }
+  if(width){
+    mainImageStyle.width = width
+  }
 
   return (
     <div className="media-container">
@@ -48,7 +52,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
           alt="Post Media"
           data-torrent={item.magnetURI}
           data-file-key={index}
-          style={{ opacity: previewVisible ? 1 : 0 }}
+          style={mainImageStyle}
           src={contentURL}
         />
         <img
@@ -61,11 +65,11 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter }) => {
           style={{ opacity: zoomLoaded ? 1 : 0 }}
           src={contentURL}
         />
-        <TipRibbon
+        {!hideRibbon && <TipRibbon
           tipCounter={tipCounter}
           tipValue={tipValue}
           zoomed={zoomed}
-        />
+        />}
       </ControlledZoom>
     </div>
   );

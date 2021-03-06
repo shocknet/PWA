@@ -1,20 +1,13 @@
-import React, { createElement, useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
-import QRCode from "qrcode.react";
-import { processDisplayName } from "../../utils/String";
-
-import BottomBar from "../../common/BottomBar";
-import AddBtn from "../../common/AddBtn";
-import Modal from "../../common/Modal";
-
-import ClipboardIcon from "../../images/clipboard.svg";
-import QRCodeIcon from "../../images/qrcode.svg";
 import "./css/index.css";
 
 import Loader from "../../common/Loader";
-import MainNav from "../../common/MainNav";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
+import Video from "../../common/Post/components/Video";
+import Image from "../../common/Post/components/Image";
+import { attachMedia } from "../../utils/Torrents";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   //@ts-expect-error
@@ -25,12 +18,19 @@ const PublishContentPage = () => {
   const [isPrivate,setIsPrivate] = useState(false)
   const [isPreview,setIsPreview] = useState(false)
   const [selectedContent,setSelectedContent] = useState('')
-  console.log(publishedContent)
+  const contentToDisplay = useMemo(() => {
+    attachMedia([{id:"content",contentItems:publishedContent}])
+  },[publishedContent])
   const onSubmit = useCallback(
     async e => {
+      e.preventDefault()
+      
+      console.log("submitting")
       if(selectedContent === '' && paragraph === ''){
+        setError("at least one paragraph or one media is required")
         return
       }
+      setLoading(true)
       let contentItems = []
       if(paragraph !== ''){
         contentItems.push({
@@ -51,16 +51,27 @@ const PublishContentPage = () => {
           })
         }
       }
-      const res = await Http.post(`/api/gun/wall`, {
-        tags: [],
-        title: 'Post',
-        contentItems,
-      })
-      if (res.status === 200) {
-        console.log('post created successfully')
+      try{
+        const res = await Http.post(`/api/gun/wall`, {
+          tags: [],
+          title: 'Post',
+          contentItems,
+        })
+        if (res.status === 200) {
+          console.log('post created successfully')
+          setLoading(false)
+          window.history.back();
+        } else {
+          setError('invalid response status')
+          setLoading(false)
+        }
+      }catch(err){
+        console.log(err)
+        setError(err?.errorMessage ?? err?.message)
+        setLoading(false)
       }
     },
-    []
+    [selectedContent,paragraph,publishedContent,isPreview,isPrivate,setLoading,setError]
   );
   const onDiscard = useCallback(
     async e => {
@@ -73,34 +84,88 @@ const PublishContentPage = () => {
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
     switch (name) {
-      case "": {
+      case "paragraph": {
+        setParagraph(value)
         return;
       }
       default:
         return;
     }
-  }, []);
+  }, [setParagraph]);
+
+  const updateSelection = useCallback(e => {
+    e.preventDefault()
+    setSelectedContent(e.target.getAttribute("propid"))
+  },[selectedContent,setSelectedContent])
+
+  const parseContent = ([key, item], index) => {
+    if (item.type === "image/embedded") {
+      return (
+        <div style={{width:100,margin:'1em'}}>
+        {/*@ts-expect-error*/}
+        <Image
+          id={key}
+          item={item}
+          index={index}
+          postId={"content"}
+          //tipCounter={tipCounter}
+          //tipValue={tipValue}
+          key={`${index}`}
+          hideRibbon={true}
+          width="100px"
+        />
+        {/*@ts-expect-error*/}
+        <button onClick={updateSelection} propid={key}>SELECT THIS</button>
+        </div>
+      );
+    }
+
+    if (item.type === "video/embedded") {
+      return (
+        <div style={{width:100}}>
+        {/*@ts-expect-error*/}
+        <Video
+          id={key}
+          item={item}
+          index={index}
+          postId={"content"}
+          //tipCounter={tipCounter}
+          //tipValue={tipValue}
+          key={`${index}`}
+          hideRibbon={true}
+          width="100px"
+        />
+        {/*@ts-expect-error*/}
+        <button onClick={updateSelection} propid={key}>SELECT THIS</button>
+        </div>
+      );
+    }
+
+    return null;
+  };
   return (<div className="publish-content-form-container">
     {loading ? (
       <Loader overlay fullScreen text="Unlocking Wallet..." />
     ) : null}
-    <DialogNav  drawerVisible={false} pageTitle="PUBLISH CONTENT" />
-    <h2>Say Something</h2>
+    <DialogNav  drawerVisible={false}  pageTitle="CREATE POST" />
     <form className="publish-content-form" onSubmit={onSubmit} onReset={onDiscard}>
-      <div>
-      <textarea value={paragraph} onChange={onInputChange} placeholder="What's up?" rows={4}>
+      <label htmlFor="paragraph">Say Something</label>
+      <textarea className="input-field" name={'paragraph'} value={paragraph} onChange={onInputChange} placeholder="What's up?" rows={4}>
       </textarea>
-      </div>
       <div>
         <select name="postType" id="postType">
           <option value="public">Public</option>
           <option value="private">Paywall</option>
         </select>
       </div>
+      <div style={{display:'flex',alignItems:'center', overflow: 'auto',whiteSpace: 'nowrap'}}>
+      {publishedContent && selectedContent === '' && Object.entries(publishedContent).map(parseContent)}
+      {selectedContent !== '' && parseContent([selectedContent,publishedContent[selectedContent]],0)}
+      </div>
       {error ? <p className="error-container">{error}</p> : null}
-      <div>
-      <input type="reset" value="reset" />
-      <input type="submit" value="submit" />
+      <div className='flex-center'>
+      <input type="reset" value="reset" className='shock-form-button m-1'/>
+      <input type="submit" value="submit" className='shock-form-button-confirm m-1' />
       </div>
     </form>
   </div>)

@@ -1,21 +1,10 @@
-import React, { createElement, useCallback, useMemo, useRef, useState } from "react";
+import React, {  useCallback,  useRef, useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
-import QRCode from "qrcode.react";
-import { processDisplayName } from "../../utils/String";
-
-import BottomBar from "../../common/BottomBar";
-import AddBtn from "../../common/AddBtn";
-import Modal from "../../common/Modal";
-
-import ClipboardIcon from "../../images/clipboard.svg";
-import QRCodeIcon from "../../images/qrcode.svg";
 import "./css/index.css";
 
 import Loader from "../../common/Loader";
-import MainNav from "../../common/MainNav";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
-import Video from "../../common/Post/components/Video";
 import {addPublishedContent} from '../../actions/ContentActions'
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -34,23 +23,26 @@ const PublishContentPage = () => {
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
+      
       console.log([title,description,selectedFiles])
       if(selectedFiles.length === 0){
         setError("no selected files")
         return
       }
-      Http.post('/api/lnd/unifiedTrx',{
-        type: 'torrentSeed',
-        amt: 100,
-        to:seedProviderPub,
-        memo:'',
-        feeLimit:500,
-        ackInfo:1
-      })
-      .then(res => {
-        const {data,status} = res
+      setLoading(true)
+      try{
+        const {data,status} = await Http.post('/api/lnd/unifiedTrx',{
+          type: 'torrentSeed',
+          amt: 100,
+          to:seedProviderPub,
+          memo:'',
+          feeLimit:500,
+          ackInfo:1
+        })
+  
         if(status !== 200){
           setError("seed token request failed")
+          setLoading(false)
         }
         console.log(data)
         const {orderAck} = data
@@ -61,23 +53,16 @@ const PublishContentPage = () => {
         Array.from(selectedFiles).forEach(file => formData.append('files', file))
         formData.append('info', 'extraInfo')
         formData.append('comment', 'comment')
-        return fetch(`${seedUrl}/api/put_file`, {
+        const res = await fetch(`${seedUrl}/api/put_file`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${tokens[0]}`,
-            "Access-Control-Allow-Origin": "*"
           },
           body: formData,
         })
-        //return Promise.resolve({data:{torrent:{magnet:"somerandomyo"}}})
-      })
-      .then(res => {
-        console.log(res)
-        return res.json()
-      })
-      .then(res =>{
-        console.log(res)
-        const {torrent} = res.data
+        const resJson = await res.json()
+        console.log(resJson)
+        const {torrent} = resJson.data
         const {magnet} = torrent
         const [firstFile] = mediaPreviews
         console.log(firstFile)
@@ -91,16 +76,16 @@ const PublishContentPage = () => {
           width:0,
           height:0
         }
-        return addPublishedContent(contentItem)(dispatch)
-      })
-      .then(response => {
+        const published = await addPublishedContent(contentItem)(dispatch)
         console.log("content publish complete")
-        console.log(response)
-      })
-      .catch(err => {
-        setError("seed token request failed")
+        console.log(published)
+        setLoading(false)
+        window.history.back();
+      }catch(err){
         console.log(err)
-      })
+        setError(err?.errorMessage ?? err?.message)
+        setLoading(false)
+      }
 
     },
     [title,description,selectedFiles,mediaPreviews, dispatch, setError]
@@ -228,8 +213,10 @@ const PublishContentPage = () => {
         className="input-field"
       />
       {error ? <p className="error-container">{error}</p> : null}
-      <input type="reset" value="reset" />
-      <input type="submit" value="submit" />
+      <div className='flex-center'>
+      <input type="reset" value="reset" className='shock-form-button m-1'/>
+      <input type="submit" value="submit" className='shock-form-button-confirm m-1' />
+      </div>
     </form>
   </div>)
 };
