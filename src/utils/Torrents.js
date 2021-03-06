@@ -37,7 +37,11 @@ const _getFileType = file => {
 
 export const webTorrentClient = new WebTorrent();
 
-export const attachMedia = (posts = [], torrentMode = true) => {
+export const attachMedia = (
+  posts = [],
+  torrentMode = true,
+  allowDuplicates = false
+) => {
   const torrentTasks = posts
     .map(post => {
       const { contentItems, id } = post;
@@ -47,7 +51,7 @@ export const attachMedia = (posts = [], torrentMode = true) => {
           new Promise(resolve => {
             const torrentExists = webTorrentClient.get(item.magnetURI);
 
-            if (torrentExists) {
+            if (torrentExists && !allowDuplicates) {
               resolve(true);
               return;
             }
@@ -130,7 +134,7 @@ export const attachMedia = (posts = [], torrentMode = true) => {
 
                     await saveFile(fileName, blob);
                     const element = document.querySelector(target);
-                    if (element?.dataset.played === "false") {
+                    if (element.dataset.played === "false") {
                       const cachedFile = await getCachedFile(fileName);
                       renderCachedFile(cachedFile, target);
                     }
