@@ -36,7 +36,7 @@
     "react-scripts": "4.0.1",
     "react-simple-pull-to-refresh": "^1.2.0",
     "react-swipe-component": "^3.0.0",
-    "react-textarea-autosize": "^8.3.0",
+    "react-textarea-autosize": "^8.3.2",
     "react-tooltip": "^4.2.11",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
