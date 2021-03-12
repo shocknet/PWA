@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 import Video from "./components/Video";
 import Image from "./components/Image";
+import Stream from "./components/Stream";
 import "./css/index.css";
 
 const Post = ({
@@ -62,6 +63,19 @@ const Post = ({
     if (item.type === "video/embedded") {
       return (
         <Video
+          id={key}
+          item={item}
+          index={index}
+          postId={id}
+          tipCounter={tipCounter}
+          tipValue={tipValue}
+          key={`${id}-${index}`}
+        />
+      );
+    }
+    if (item.type === "stream/embedded") {
+      return (
+        <Stream
           id={key}
           item={item}
           index={index}
