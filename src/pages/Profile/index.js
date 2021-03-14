@@ -95,6 +95,10 @@ const ProfilePage = () => {
           </div>
         </div>
         <div>
+          <Link to={"/goLive"} className="profile-choice-container">
+            <i className="profile-choice-icon fas fa-user"></i>
+            <p className="profile-choice-text">Go Live</p>
+          </Link>
           <button className="profile-choice-container">
             <i className="profile-choice-icon fas fa-user"></i>
             <p className="profile-choice-text">Offer a Product</p>
@@ -113,13 +117,13 @@ const ProfilePage = () => {
           </Link>
         </div>
         <div className="">
-        {myPosts.map(post => {
+        {myPosts.map((post,index) => {
           const profile = userProfiles[post.authorId];
           if (post.type === "shared") {
             const originalPublicKey = post.originalAuthor;
             const originalProfile = userProfiles[originalPublicKey];
             return (
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<Loader />} key={index}>
                 <SharedPost
                   originalPost={post.originalPost}
                   originalPostProfile={originalProfile}
@@ -135,7 +139,7 @@ const ProfilePage = () => {
           }
 
           return (
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={<Loader />}  key={index}>
               <Post
                 id={post.id}
                 timestamp={post.date}
