@@ -92,14 +92,14 @@ const FeedPage = () => {
         <p className="tab">Videos</p>
       </div>
       <div className="posts-holder">
-        {followedPosts.map(post => {
+        {followedPosts.map((post,index) => {
           const profile = userProfiles[post.authorId];
 
           if (post.type === "shared") {
             const originalPublicKey = post.originalAuthor;
             const originalProfile = userProfiles[originalPublicKey];
             return (
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<Loader />} key={index}>
                 <SharedPost
                   originalPost={post.originalPost}
                   originalPostProfile={originalProfile}
@@ -115,7 +115,7 @@ const FeedPage = () => {
           }
 
           return (
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={<Loader />} key={index}>
               <Post
                 id={post.id}
                 timestamp={post.date}
