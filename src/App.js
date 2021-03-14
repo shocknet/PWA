@@ -2,6 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import JWTDecode from "jwt-decode";
+import videojs from "video.js";
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
@@ -21,6 +22,7 @@ const MoonPayPage = React.lazy(() => import("./pages/MoonPay"));
 
 const PublishContentPage = React.lazy(() => import("./pages/Profile/publishContent"));
 const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
+const GoLivePage = React.lazy(() => import("./pages/Profile/goLive"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
@@ -33,6 +35,10 @@ const App = () => {
   const dispatch = useDispatch();
   const authToken = useSelector(({ node }) => node.authToken);
   const authenticated = useSelector(({ auth }) => auth.authenticated);
+
+  useEffect(()=>{
+    videojs.addLanguage('en', {"The media could not be loaded, either because the server or network failed or because the format is not supported.": "Stream Not Available"});
+  },[])
 
   useEffect(() => {
     if (!authToken) {
@@ -70,6 +76,7 @@ const App = () => {
             <PrivateRoute path="/feed" exact component={FeedPage} />
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <PrivateRoute path="/createPost" exact component={createPostPage} />
+            <PrivateRoute path="/goLive" exact component={GoLivePage} />
             <Redirect to="/overview" />
           </Switch>
         </Suspense>
