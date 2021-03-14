@@ -13157,22 +13157,15 @@ workbox-expiration@^5.1.3, workbox-expiration@^5.1.4:
   dependencies:
     workbox-core "^5.1.4"
 
-workbox-google-analytics@^5.1.3, workbox-google-analytics@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/workbox-google-analytics/-/workbox-google-analytics-5.1.4.tgz#b3376806b1ac7d7df8418304d379707195fa8517"
-  integrity sha512-0IFhKoEVrreHpKgcOoddV+oIaVXBFKXUzJVBI+nb0bxmcwYuZMdteBTp8AEDJacENtc9xbR0wa9RDCnYsCDLjA==
+workbox-google-analytics@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/workbox-google-analytics/-/workbox-google-analytics-6.1.1.tgz#c31876954779d65e1334c2dc3232e46d6a5f925a"
+  integrity sha512-79PyeE4TyabGXqlDcRG2LKejs8yZ8OoU0/El0BwP8RGrZgp5GMDGuJkat4xggpRTVaOk8rb0aoSbVAYBWpa0pg==
   dependencies:
-    workbox-background-sync "^5.1.4"
-    workbox-core "^5.1.4"
-    workbox-routing "^5.1.4"
-    workbox-strategies "^5.1.4"
-
-workbox-navigation-preload@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/workbox-navigation-preload/-/workbox-navigation-preload-5.1.4.tgz#30d1b720d26a05efc5fa11503e5cc1ed5a78902a"
-  integrity sha512-Wf03osvK0wTflAfKXba//QmWC5BIaIZARU03JIhAEO2wSB2BDROWI8Q/zmianf54kdV7e1eLaIEZhth4K4MyfQ==
-  dependencies:
-    workbox-core "^5.1.4"
+    workbox-background-sync "^6.1.1"
+    workbox-core "^6.1.1"
+    workbox-routing "^6.1.1"
+    workbox-strategies "^6.1.1"
 
 workbox-navigation-preload@^6.1.1:
   version "6.1.1"
@@ -13201,6 +13194,13 @@ workbox-routing@^5.1.3, workbox-routing@^5.1.4:
   integrity sha512-8ljknRfqE1vEQtnMtzfksL+UXO822jJlHTIR7+BtJuxQ17+WPZfsHqvk1ynR/v0EHik4x2+826Hkwpgh4GKDCw==
   dependencies:
     workbox-core "^5.1.4"
+
+workbox-routing@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/workbox-routing/-/workbox-routing-6.1.1.tgz#833ef6439905757241f9e4d56d8e282c20199c02"
+  integrity sha512-Az3Gt3cHNK+W0gTfSb4eKGfwEap9Slak16Krr5SiLhE1gXUY2C2O123HucVCedXgIoqTLOXMtNj71Cm6SwYDEg==
+  dependencies:
+    workbox-core "^6.1.1"
 
 workbox-strategies@^5.1.4:
   version "5.1.4"
