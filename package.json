@@ -49,7 +49,7 @@
     "use-onclickoutside": "^0.3.1",
     "uuid": "^8.3.2",
     "video.js": "^7.11.4",
-    "webtorrent": "^0.112.0",
+    "webtorrent": "^0.115.3",
     "workbox-background-sync": "^5.1.3",
     "workbox-broadcast-update": "^6.1.1",
     "web-vitals": "^1.1.1",
