@@ -84,6 +84,11 @@ export const disconnectRifleSocket = query => {
   }
 };
 
+export const rifleSocketExists = query => {
+  const cachedSocket = rifleSockets.get(query);
+  return !!cachedSocket
+}
+
 export const rifle = ({ host, query, publicKey, reconnect }) => {
   const opts = {
     query: {

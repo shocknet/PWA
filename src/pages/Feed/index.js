@@ -18,6 +18,7 @@ import Loader from "../../common/Loader";
 import { subscribeFollows } from "../../actions/FeedActions";
 
 import "./css/index.css";
+import UnlockModal from "./components/UnlockModal";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -28,6 +29,7 @@ const FeedPage = () => {
   const posts = useSelector(({ feed }) => feed.posts);
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
+  const [unlockModalData, setUnlockModalOpen] = useState(null);
 
   const followedPosts = useMemo(() => {
     if (posts) {
@@ -43,6 +45,7 @@ const FeedPage = () => {
 
   const toggleTipModal = useCallback(
     tipData => {
+      console.log(tipData)
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
       }
@@ -50,6 +53,17 @@ const FeedPage = () => {
       setTipModalOpen(tipData);
     },
     [tipModalData]
+  );
+  const toggleUnlockModal = useCallback(
+    unlockData => {
+      console.log(unlockData)
+      if (unlockModalData || !unlockData) {
+        setUnlockModalOpen(null);
+      }
+
+      setUnlockModalOpen(unlockData);
+    },
+    [unlockModalData]
   );
 
   useEffect(() => {
@@ -107,6 +121,7 @@ const FeedPage = () => {
                   sharerProfile={profile}
                   postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
+                  openUnlockModal={toggleUnlockModal}
                   // TODO: User online status handling
                   isOnlineNode
                 />
@@ -127,6 +142,7 @@ const FeedPage = () => {
                 )}
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
+                openUnlockModal={toggleUnlockModal}
                 // TODO: User online status handling
                 isOnlineNode
               />
@@ -135,6 +151,7 @@ const FeedPage = () => {
         })}
       </div>
       <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
+      <UnlockModal unlockData={unlockModalData} toggleOpen={toggleUnlockModal} />
       <BottomBar />
     </div>
   );

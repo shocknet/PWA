@@ -16,7 +16,8 @@ const SharedPost = ({
   sharedTimestamp,
   isOnlineNode,
   postPublicKey,
-  openTipModal
+  openTipModal,
+  openUnlockModal
 }) => {
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
@@ -60,6 +61,7 @@ const SharedPost = ({
             tipValue={originalPost.tipValue}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
+            openUnlockModal={openUnlockModal}
             contentItems={originalPost.contentItems ?? {}}
             username={
               originalPostProfile.displayName ?? originalPostProfile.alias

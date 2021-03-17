@@ -15,7 +15,7 @@ const PublishContentPage = () => {
   const [loading, setLoading] = useState(false);
   const [error,setError] = useState(null)
   const [paragraph,setParagraph] = useState('')
-  const [isPrivate,setIsPrivate] = useState(false)
+  const [postType,setPostType] = useState("public")
   const [isPreview,setIsPreview] = useState(false)
   const [selectedContent,setSelectedContent] = useState('')
   const contentToDisplay = useMemo(() => {
@@ -38,6 +38,7 @@ const PublishContentPage = () => {
           text: paragraph,
         })
       }
+      const isPrivate = postType === "private"
       if(selectedContent !== ''){
         const item = publishedContent[selectedContent]
         if(item){
@@ -71,7 +72,7 @@ const PublishContentPage = () => {
         setLoading(false)
       }
     },
-    [selectedContent,paragraph,publishedContent,isPreview,isPrivate,setLoading,setError]
+    [selectedContent,paragraph,publishedContent,isPreview,postType,setLoading,setError]
   );
   const onDiscard = useCallback(
     async e => {
@@ -87,6 +88,11 @@ const PublishContentPage = () => {
       case "paragraph": {
         setParagraph(value)
         return;
+      }
+      case "postType":{
+        console.log(value)
+        setPostType(value)
+        return
       }
       default:
         return;
@@ -153,8 +159,8 @@ const PublishContentPage = () => {
       <textarea className="input-field" name={'paragraph'} value={paragraph} onChange={onInputChange} placeholder="What's up?" rows={4}>
       </textarea>
       <div>
-        <select name="postType" id="postType">
-          <option value="public">Public</option>
+        <select name="postType" id="postType" onChange={onInputChange}>
+          <option value="public" >Public</option>
           <option value="private">Paywall</option>
         </select>
       </div>
