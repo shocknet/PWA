@@ -24,6 +24,10 @@ const PublishContentPage = React.lazy(() => import("./pages/Profile/publishConte
 const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
 const GoLivePage = React.lazy(() => import("./pages/Profile/goLive"));
 
+const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
+
+
+
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
   const authorizedComponent = authenticated ? component : AuthPage;
@@ -77,6 +81,7 @@ const App = () => {
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <PrivateRoute path="/createPost" exact component={createPostPage} />
             <PrivateRoute path="/goLive" exact component={GoLivePage} />
+            <PrivateRoute path="/otherUser/:publicKey" exact component={OtherUserPage} />
             <Redirect to="/overview" />
           </Switch>
         </Suspense>

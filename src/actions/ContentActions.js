@@ -2,7 +2,8 @@ import Http from '../utils/Http'
 
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB:'content/setSeedProviderPub',
-  ADD_PUBLISHED_CONTENT:'content/addPublishedContent'
+  ADD_PUBLISHED_CONTENT:'content/addPublishedContent',
+  ADD_UNLOCKED_CONTENT:'content/addUnlocked'
 };
   
 export const setSeedProviderPub = pub => async dispatch => {
@@ -36,3 +37,26 @@ export const addPublishedContent = content => async dispatch => {
   });
   return data
 };
+
+export const unlockContent = (amt,owner,postID) => async dispatch => {
+  const {data} = await Http.post('/api/lnd/unifiedTrx',{
+    type: 'contentReveal',
+    amt,
+    to: owner,
+    memo:'',
+    feeLimit:500,
+    ackInfo:postID
+  })
+  const revealRes = JSON.parse(data.orderAck.response)
+  if(revealRes && revealRes.unlockedContents){
+    for (const contentID in revealRes.unlockedContents) {
+      if (Object.hasOwnProperty.call(revealRes.unlockedContents, contentID)) {
+        const content = revealRes.unlockedContents[contentID];
+        dispatch({
+          type:ACTIONS.ADD_UNLOCKED_CONTENT,
+          data:{contentPath:`${owner}>posts>${postID}`,content}
+        })
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
 import { DateTime } from "luxon";
+import { useSelector,useDispatch } from "react-redux";
 import Video from "./components/Video";
 import Image from "./components/Image";
 import Stream from "./components/Stream";
@@ -17,10 +18,13 @@ const Post = ({
   tipValue,
   publicKey,
   openTipModal,
+  openUnlockModal,
   contentItems = {},
   username,
   isOnlineNode
 }) => {
+  const dispatch = useDispatch();
+  const unlockedContent = useSelector(({content}) => content.unlockedContent)
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
     align: "center"
@@ -28,6 +32,7 @@ const Post = ({
 
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const getMediaContent = () => {
     return Object.entries(contentItems).filter(
@@ -41,16 +46,35 @@ const Post = ({
     );
   };
 
+  useEffect(()=>{
+    getMediaContent().forEach(([k,e]) => {
+      const path = `${publicKey}>posts>${k}`
+      if (e.isPrivate && !unlockedContent[path]){
+        setIsPrivate(true)
+      }
+    })
+  },[contentItems,publicKey])
+
   const parseContent = ([key, item], index) => {
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
+    }
+    const finalItem = item
+    if (item.isPrivate) {
+      const path = `${publicKey}>posts>${id}`
+      const cached = unlockedContent[path]
+      if (cached){
+        finalItem.magnetURI = cached
+      } else {
+        return <div><i class="fas fa-lock fa-10x"></i></div>
+      }
     }
 
     if (item.type === "image/embedded") {
       return (
         <Image
           id={key}
-          item={item}
+          item={finalItem}
           index={index}
           postId={id}
           tipCounter={tipCounter}
@@ -64,7 +88,7 @@ const Post = ({
       return (
         <Video
           id={key}
-          item={item}
+          item={finalItem}
           index={index}
           postId={id}
           tipCounter={tipCounter}
@@ -77,7 +101,7 @@ const Post = ({
       return (
         <Stream
           id={key}
-          item={item}
+          item={finalItem}
           index={index}
           postId={id}
           tipCounter={tipCounter}
@@ -155,6 +179,18 @@ const Post = ({
     });
   }, [id, isOnlineNode, openTipModal, publicKey]);
 
+  const unlockPost = useCallback(() => {
+    if (!isOnlineNode) {
+      return;
+    }
+
+    openUnlockModal({
+      targetType: "unlock",
+      postID: id,
+      publicKey
+    });
+  }, [id, isOnlineNode, openUnlockModal, publicKey]);
+
   useEffect(() => {
     Tooltip.rebuild();
   }, []);
@@ -214,8 +250,8 @@ const Post = ({
       <div className="actions">
         <div
           className="icon-tip-btn"
-          data-tip="Tip this post"
-          onClick={tipPost}
+          data-tip={isPrivate ? "Unlock this post" : "Tip this post"}
+          onClick={isPrivate ? unlockPost : tipPost}
         >
           <div className="tip-icon icon-thin-feed"></div>
         </div>
