@@ -22,7 +22,7 @@ const content = (state = INITIAL_STATE, action) => {
     case ACTIONS.ADD_UNLOCKED_CONTENT:{
       const {data} = action
       const unlockedTmp = {...state.unlockedContent}
-      unlockedTmp[data.contentPath] = data.magnetURI
+      unlockedTmp[data.contentPath] = data.content
       return {...state,unlockedContent:unlockedTmp}
     }
     default:

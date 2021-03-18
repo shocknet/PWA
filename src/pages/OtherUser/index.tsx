@@ -62,14 +62,15 @@ const OtherUserPage = () => {
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
   
-      const proms = newPosts.map(id => {
-        return Http.get(
+      const proms = newPosts.map(async id => {
+        const { data: post } = await  Http.get(
           `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
         )
+        return {...post.data,id,authorId:userPublicKey}
       })
       const postsAlmostReady = await Promise.allSettled(proms)
       //@ts-expect-error
-      const postsReady = postsAlmostReady.filter(maybeok => maybeok.status === "fulfilled").map(res => res.value.data.data)
+      const postsReady = postsAlmostReady.filter(maybeok => maybeok.status === "fulfilled").map(res => res.value)
       console.log(postsReady)
       setUserPosts(postsReady)
       if (!socketExists) {
@@ -103,7 +104,7 @@ const OtherUserPage = () => {
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
         );
-        return {...shared.data,originalPost:post.data,authorId:userPublicKey,type: "shared"}
+        return {...shared.data,originalPost:{...post.data,id},authorId:userPublicKey,type: "shared"}
       })
       const postsAlmostReady = await Promise.allSettled(proms)
       console.log(postsAlmostReady)
@@ -186,7 +187,7 @@ const OtherUserPage = () => {
           <div className="profile-info">
             <p className="profile-name">{processedDisplayName}</p>
             <p className="profile-desc">
-              {userProfile.bio}
+              {userProfile?.bio || ""}
             </p>
           </div>
         </div>

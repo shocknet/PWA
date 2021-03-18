@@ -61,7 +61,7 @@ const Post = ({
     }
     const finalItem = item
     if (item.isPrivate) {
-      const path = `${publicKey}>posts>${key}`
+      const path = `${publicKey}>posts>${id}`
       const cached = unlockedContent[path]
       if (cached){
         finalItem.magnetURI = cached
@@ -185,7 +185,7 @@ const Post = ({
     }
 
     openUnlockModal({
-      targetType: "post",
+      targetType: "unlock",
       postID: id,
       publicKey
     });
