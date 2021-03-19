@@ -196,10 +196,3 @@ export const sendMessage = ({
     });
   }
 };
-
-export const setAuthStep = step => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTH_STEP,
-    data: step
-  });
-};

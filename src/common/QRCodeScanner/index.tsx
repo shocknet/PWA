@@ -7,6 +7,7 @@ interface Props {
   mode: ScannerMode;
   onScan: (result: string | null) => void;
   onError: (error: Error) => void;
+  onClose: () => void;
 }
 
 const modeContents = {
@@ -22,13 +23,18 @@ const modeContents = {
   }
 };
 
-const QRCodeScanner = ({ mode = "wizard", onScan, onError }: Props) => {
+const QRCodeScanner = ({
+  mode = "wizard",
+  onScan,
+  onError,
+  onClose
+}: Props) => {
   const content = modeContents[mode];
 
   return (
     <div className="qr-code-scanner-container">
       <div className="qr-scanner-top-section">
-        <i className="fas fa-times"></i>
+        <i className="fas fa-times" onClick={onClose}></i>
       </div>
       <QRScanner onScan={onScan} onError={onError} />
       <div className="qr-scanner-target"></div>
@@ -40,7 +46,9 @@ const QRCodeScanner = ({ mode = "wizard", onScan, onError }: Props) => {
           </span>
         </p>
         <p className="qr-scanner-bottom-description">{content.description}</p>
-        <div className="qr-scanner-btn">Cancel Scan</div>
+        <div className="qr-scanner-btn" onClick={onClose}>
+          Cancel Scan
+        </div>
       </div>
     </div>
   );

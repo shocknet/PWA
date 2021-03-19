@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { setAuthMethod } from "../../../../actions/AuthActions";
+import "./css/index.css";
 
 const ChoiceMethod = ({ icon, details, method }) => {
   const dispatch = useDispatch();

@@ -90,3 +90,10 @@ a.bottom-nav-btn.active-nav-btn {
   margin-bottom: 15px;
   background-color: var(--failure-red);
 }
+
+.inline-link {
+  text-align: center;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-top: 20px;
+}

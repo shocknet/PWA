@@ -5,6 +5,7 @@ import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
 import Http from "../../../../utils/Http";
 import Loader from "../../../../common/Loader";
+import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
 const HOSTING_SERVER = "pool.shock.network";
 
@@ -55,6 +56,11 @@ const InviteStep = () => {
     [dispatch, inviteCode]
   );
 
+  const chooseAnotherMethod = useCallback(() => {
+    dispatch(setAuthMethod(null));
+    dispatch(setAuthStep(null));
+  }, [dispatch]);
+
   return (
     <div className="auth-form-container">
       <p className="auth-form-container-title">Invitation Code</p>
@@ -75,6 +81,9 @@ const InviteStep = () => {
         <button className="submit-btn" type="submit">
           Connect
         </button>
+        <p className="inline-link" onClick={chooseAnotherMethod}>
+          Choose another method
+        </p>
       </form>
     </div>
   );

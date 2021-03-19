@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
+import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
 const HostStep = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,11 @@ const HostStep = () => {
     [hostIP, dispatch, setError]
   );
 
+  const chooseAnotherMethod = useCallback(() => {
+    dispatch(setAuthMethod(null));
+    dispatch(setAuthStep(null));
+  }, [dispatch]);
+
   return (
     <div className="auth-form-container">
       <p className="auth-form-container-title">Connect to Node</p>
@@ -57,6 +63,9 @@ const HostStep = () => {
         <button className="submit-btn" type="submit">
           Connect
         </button>
+        <p className="inline-link" onClick={chooseAnotherMethod}>
+          Choose another method
+        </p>
       </form>
     </div>
   );

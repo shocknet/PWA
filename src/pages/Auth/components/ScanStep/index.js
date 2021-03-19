@@ -5,6 +5,7 @@ import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
 import QRCodeScanner from "../../../../common/QRCodeScanner";
 import Loader from "../../../../common/Loader";
+import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
 const ScanStep = () => {
   const dispatch = useDispatch();
@@ -64,18 +65,26 @@ const ScanStep = () => {
     [connectHostIP]
   );
 
+  const onError = useCallback(error => {
+    console.error(error);
+    setError(
+      "Unable to detect a camera, please make sure that the Camera permission is allowed in order to be able to scan QR Codes"
+    );
+  }, []);
+
+  const closeScanner = useCallback(() => {
+    dispatch(setAuthMethod(null));
+    dispatch(setAuthStep(null));
+  }, [dispatch]);
+
   return (
     <div className="auth-form-container">
       {loading ? <Loader fullScreen overlay text="Loading Host..." /> : null}
       <QRCodeScanner
         mode="wizard"
         onScan={onScan}
-        onError={error => {
-          console.error(error);
-          setError(
-            "Unable to detect a camera, please make sure that the Camera permission is allowed in order to be able to scan QR Codes"
-          );
-        }}
+        onError={onError}
+        onClose={closeScanner}
       />
     </div>
   );

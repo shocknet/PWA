@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
+import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 import { unlockWallet } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
 
@@ -42,6 +43,11 @@ const CreateAliasStep = () => {
     [alias, password, dispatch, setError]
   );
 
+  const chooseAnotherMethod = useCallback(() => {
+    dispatch(setAuthMethod(null));
+    dispatch(setAuthStep(null));
+  }, [dispatch]);
+
   return (
     <div className="auth-form-container">
       {loading ? (
@@ -75,6 +81,9 @@ const CreateAliasStep = () => {
         />
         {error ? <p className="error-container">{error}</p> : null}
         <button className="submit-btn">Create</button>
+        <p className="inline-link" onClick={chooseAnotherMethod}>
+          Choose another method
+        </p>
       </form>
     </div>
   );

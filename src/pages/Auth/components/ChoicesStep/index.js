@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import ChoiceMethod from "./ChoiceMethod";
+import ChoiceMethod from "../ChoiceMethod";
 import { setAuthMethod } from "../../../../actions/AuthActions";
 import "./css/index.css";
 
@@ -33,7 +33,7 @@ const ChoicesStep = () => {
           details="I'd like a personal cloud node provided as a service"
           method="shockCloud"
         />
-        <p className="guest-invite" onClick={selectCloudChoice}>
+        <p className="inline-link" onClick={selectCloudChoice}>
           I have a guest invite
         </p>
       </div>
