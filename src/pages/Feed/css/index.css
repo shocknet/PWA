@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 12px 0;
-  background-color: var(--background-black);
+  background-color: var(--background);
 }
 
 .tab {
@@ -33,6 +33,6 @@
 
 .posts-holder {
   flex: 1;
-  background-color: var(--background-black);
+  background-color: var(--background);
   overflow: auto;
 }

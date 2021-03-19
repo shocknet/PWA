@@ -6,7 +6,8 @@ const INITIAL_STATE = {
   alias: null,
   authToken: null,
   publicKey: null,
-  authTokenExpirationDate: null
+  authTokenExpirationDate: null,
+  authMethod: null
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -25,7 +26,8 @@ const node = (state = INITIAL_STATE, action) => {
         authToken,
         alias,
         publicKey,
-        authTokenExpirationDate
+        authTokenExpirationDate,
+        authMethod
       } = action.data;
 
       Http.defaults.headers.common.Authorization = `Bearer ${authToken}`;
@@ -35,7 +37,8 @@ const node = (state = INITIAL_STATE, action) => {
         authToken,
         authTokenExpirationDate,
         alias,
-        publicKey
+        publicKey,
+        authMethod
       };
     }
     default:

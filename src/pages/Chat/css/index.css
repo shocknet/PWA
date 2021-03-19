@@ -8,7 +8,7 @@
 .chat-bottom-bar {
   padding: 24px;
   padding-top: 10px;
-  background-color: var(--main-black);
+  background-color: var(--main);
 }
 
 .chat-input-container {
@@ -26,7 +26,7 @@
   width: 45px;
   height: 45px;
   border-radius: 100px;
-  background-color: var(--main-black);
+  background-color: var(--main);
   margin-right: 10px;
   box-shadow: 0 0 10px rgba(var(--black), 0.25);
 }
@@ -76,7 +76,7 @@ p.chat-permission-bar-title {
 
 .chat-permission-bar {
   padding: 20px;
-  background-color: var(--secondary-black);
+  background-color: var(--secondary);
 }
 
 .chat-permission-bar-actions {

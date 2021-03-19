@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 21px 0;
-  background-color: var(--background-black);
+  background-color: var(--background);
   flex-shrink: 0;
 }
 
