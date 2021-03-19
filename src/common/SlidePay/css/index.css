@@ -13,7 +13,7 @@
   min-height: 60px;
   border-radius: 100px;
   padding-left: 45px;
-  background-color: var(--background-black);
+  background-color: var(--background);
   border: 2px solid var(--main-blue);
   pointer-events: none;
   transition: all 0.2s ease;

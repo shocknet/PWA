@@ -75,7 +75,7 @@
 :root {
   /* Color variables prefixed with "-rgb" are in rgb format, 
      this way we can control the transparency for each color using rgba. 
-     Example: `rgba(var(--main-blue), 0.8)` */
+     Example: `rgba(var(--main-blue-rgb), 0.8)` */
   --main-blue: #4285b9;
   --main-blue-rgb: 66, 133, 185;
   --loading-blue: #37536f;
@@ -112,12 +112,12 @@
   --dark-gray: #292929;
   --dark-gray-rgb: 41, 41, 41;
 
-  --main-black: #1a2028;
-  --main-black-rgb: 26, 32, 40;
-  --secondary-black: #18191d;
-  --secondary-black-rgb: 24, 25, 29;
-  --background-black: #16191c;
-  --background-black-rgb: 22, 25, 28;
+  --main: #1a2028;
+  --main-rgb: 26, 32, 40;
+  --secondary: #18191d;
+  --secondary-rgb: 24, 25, 29;
+  --background: #16191c;
+  --background-rgb: 22, 25, 28;
   --input-black: #202020;
   --input-black-rgb: 32, 32, 32;
   --body-background: #292e35;
@@ -147,7 +147,7 @@ body {
   font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--main-black);
+  background-color: var(--main);
   min-width: 100%;
   min-height: 100vh;
   color: white;
@@ -236,7 +236,6 @@ p.shock-form-button-text {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
 }
 
 .screen-max {

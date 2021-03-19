@@ -3,18 +3,23 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
+import Http from "../../../../utils/Http";
+import Loader from "../../../../common/Loader";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
-const HostStep = () => {
+const HOSTING_SERVER = "pool.shock.network";
+
+const InviteStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = useState();
-  const [hostIP, setHostIP] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
     switch (name) {
-      case "hostIP": {
-        setHostIP(value);
+      case "inviteCode": {
+        setInviteCode(value);
         return;
       }
       default:
@@ -27,16 +32,28 @@ const HostStep = () => {
       try {
         e.preventDefault();
         setError(null);
-        const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
+        setLoading(true);
+        const { data: response } = await Http.get(
+          `https://${HOSTING_SERVER}/mainnet`,
+          {
+            headers: {
+              Accept: "application/json",
+              Authorization: inviteCode
+            }
+          }
+        );
+        const nodeURL = response.data.address;
+        const noProtocolHostIP = nodeURL.replace(/^http(s)?:\/\//gi, "");
         const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
           dispatch
         );
         connectSocket(withProtocolHostIP);
       } catch (error) {
+        setLoading(false);
         setError("Unable to connect to host");
       }
     },
-    [hostIP, dispatch, setError]
+    [dispatch, inviteCode]
   );
 
   const chooseAnotherMethod = useCallback(() => {
@@ -46,13 +63,14 @@ const HostStep = () => {
 
   return (
     <div className="auth-form-container">
-      <p className="auth-form-container-title">Connect to Node</p>
+      <p className="auth-form-container-title">Invitation Code</p>
       <form className="auth-form" onSubmit={onSubmit}>
+        {loading ? <Loader fullScreen overlay /> : null}
         <input
           type="text"
-          name="hostIP"
-          placeholder="Host Address (in IP or DNS form)"
-          value={hostIP}
+          name="inviteCode"
+          placeholder="Enter your invitation code"
+          value={inviteCode}
           onChange={onInputChange}
           className={classNames({
             "input-field": true,
@@ -71,4 +89,4 @@ const HostStep = () => {
   );
 };
 
-export default HostStep;
+export default InviteStep;

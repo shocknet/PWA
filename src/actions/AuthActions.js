@@ -1,7 +1,8 @@
 export const ACTIONS = {
   RESET_AUTH_INFO: "auth/reset",
-  SET_AUTH_STEP: "auth/step",
-  SET_AUTHENTICATED: "auth/authenticated"
+  SET_AUTH_STEP: "auth/step/set",
+  SET_AUTHENTICATED: "auth/authenticated/set",
+  SET_AUTH_METHOD: "auth/method/set"
 };
 
 export const setAuthenticated = status => dispatch => {
@@ -15,5 +16,12 @@ export const setAuthStep = step => dispatch => {
   dispatch({
     type: ACTIONS.SET_AUTH_STEP,
     data: step
+  });
+};
+
+export const setAuthMethod = method => dispatch => {
+  dispatch({
+    type: ACTIONS.SET_AUTH_METHOD,
+    data: method
   });
 };

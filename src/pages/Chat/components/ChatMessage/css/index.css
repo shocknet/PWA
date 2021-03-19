@@ -34,12 +34,12 @@ p.chat-message-text::before {
 }
 
 .chat-message-received p.chat-message-text {
-  background-color: var(--main-black);
+  background-color: var(--main);
 }
 
 .chat-message-received p.chat-message-text::before {
   right: initial;
   left: 0;
   transform: rotate(55deg) translate(2%, 45%);
-  border-top-color: var(--main-black);
+  border-top-color: var(--main);
 }
