@@ -19,7 +19,7 @@
   margin-right: 5px;
   flex-shrink: 0;
   border-radius: 100px;
-  background-color: var(--secondary-black);
+  background-color: var(--secondary);
 }
 
 p.transaction-author-username {
@@ -61,5 +61,5 @@ p.transaction-value-usd {
 }
 
 .recent-activity-entries {
-  background-color: var(--background-black);
+  background-color: var(--background);
 }

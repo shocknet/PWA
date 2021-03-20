@@ -58,10 +58,10 @@ p.advanced-invoice-usd {
 
 .advanced-invoice-container {
   padding: 15px 25px;
-  background-color: var(--background-black);
+  background-color: var(--background);
   border-bottom: 1px solid white;
 }
 
 .page-container.advanced-page {
-  background-color: var(--background-black);
+  background-color: var(--background);
 }

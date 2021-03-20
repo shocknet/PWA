@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 21px 0;
-  background-color: var(--background-black);
+  background-color: var(--background);
   flex-shrink: 0;
 }
 
@@ -89,4 +89,11 @@ a.bottom-nav-btn.active-nav-btn {
   font-weight: bold;
   margin-bottom: 15px;
   background-color: var(--failure-red);
+}
+
+.inline-link {
+  text-align: center;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-top: 20px;
 }

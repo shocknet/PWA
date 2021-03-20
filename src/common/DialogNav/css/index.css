@@ -10,8 +10,8 @@
   min-height: 73px;
   background: linear-gradient(
     180deg,
-    var(--background-black) 0%,
-    rgba(var(--background-black-rgb), 0.2) 85%,
+    var(--background) 0%,
+    rgba(var(--background-rgb), 0.2) 85%,
     transparent
   );
   z-index: 10;
