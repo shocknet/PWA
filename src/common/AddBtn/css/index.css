@@ -41,6 +41,9 @@
 .add-btn-round {
   width: var(--btn-radius);
   height: var(--btn-radius);
+  position: fixed;
+  right: 1rem;
+  
 }
 
 .add-btn-extended {

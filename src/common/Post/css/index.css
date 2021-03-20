@@ -40,7 +40,9 @@
 }
 
 .post {
-  width: 100%;
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
   padding: 30px;
   background-color: #1b2129;
   border: 1px solid #4080b2;

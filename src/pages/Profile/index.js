@@ -96,25 +96,29 @@ const ProfilePage = () => {
         </div>
         <div>
           <Link to={"/goLive"} className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Go Live</p>
+            <div style={{backgroundColor:'red', color:'white',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'0.2em 0.5em',borderRadius:'0.7em',fontSize: "16px",fontweight: 600}}>
+              <i class="fas fa-video"></i>
+              <p>GO LIVE</p>
+            </div>
+          </Link>
+          <Link to={"/createPost"} className="profile-choice-container" >
+            <i className="profile-choice-icon fas fa-pen-square"></i>
+            <p className="profile-choice-text">Create Post</p>
+          </Link>
+          <Link to={"/publishContent"} className="profile-choice-container" >
+            <i className="profile-choice-icon fab fa-youtube"></i>
+            <p className="profile-choice-text">Publish Content</p>
           </Link>
           <button className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-user"></i>
+            <i className="profile-choice-icon fas fa-shopping-cart"></i>
             <p className="profile-choice-text">Offer a Product</p>
           </button>
           <div className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Offer a Product</p>
+            <i className="profile-choice-icon fas fa-running"></i>
+            <p className="profile-choice-text">Offer a Service</p>
           </div>
-          <Link to={"/publishContent"} className="profile-choice-container" >
-            <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Publish Content</p>
-          </Link>
-          <Link to={"/createPost"} className="profile-choice-container" >
-            <i className="profile-choice-icon fas fa-user"></i>
-            <p className="profile-choice-text">Create Post</p>
-          </Link>
+          
+          
         </div>
         <div className="">
         {myPosts.map((post,index) => {
