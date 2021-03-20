@@ -1,7 +1,6 @@
 .profile-container {
   position: relative;
   flex: 1;
-  display: flex;
   flex-direction: column;
   flex-shrink: 0;
   overflow: auto;
@@ -80,7 +79,10 @@
   background-color: var(--dark-blue);
   border: 2px solid var(--main-blue);
   margin-bottom: 7px;
-  width:100%;
+  width:98%;
+  text-decoration: none;
+  margin-left: 1%;
+  margin-right: 1%;
 }
 
 .profile-choice-icon {
@@ -150,4 +152,17 @@ p.profile-clipboard-text {
 
 .m-1 {
   margin:1em
+}
+
+.m-b-1 {
+  margin-bottom: 1em;
+}
+
+.line {
+  border: 1px solid var(--main-blue);
+  width: 67%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0.7em;
+  
 }

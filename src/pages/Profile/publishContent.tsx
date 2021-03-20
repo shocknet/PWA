@@ -15,6 +15,8 @@ const PublishContentPage = () => {
   const [mediaPreviews,setMediaPreviews] = useState([])
   const [title,setTitle] = useState("")
   const [description,setDescription] = useState("")
+  const [postType,setPostType] = useState("public")
+  const [createPost,setCreatePost] = useState(false)
   const imageFile = useRef(null)
   const videoFile = useRef(null)
 
@@ -102,6 +104,7 @@ const PublishContentPage = () => {
   );
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
+    e.preventDefault()
     switch (name) {
       case "title": {
         setTitle(value);
@@ -111,10 +114,18 @@ const PublishContentPage = () => {
         setDescription(value);
         return;
       }
+      case "postType":{
+        setPostType(value)
+        return
+      }
+      case "createPost":{
+        console.log("create post")
+        return
+      }
       default:
         return;
     }
-  }, [setTitle,setDescription]);
+  }, [setTitle,setDescription,setCreatePost]);
   const onSelectedFile = useCallback(e =>{
     e.preventDefault()
     
@@ -162,15 +173,29 @@ const PublishContentPage = () => {
     e.preventDefault()
     videoFile.current.click()
   },[videoFile])
-  return (<div className="publish-content-form-container">
+  return (<div className="publish-content-form-container m-1">
     {loading ? (
       <Loader overlay fullScreen text="" />
     ) : null}
     <DialogNav  drawerVisible={false} pageTitle="PUBLISH CONTENT" />
-  
+    
     <form className="publish-content-form" onSubmit={onSubmit} onReset={onDiscard}>
-      <div className="publish-content-title">
-        <label htmlFor="title" >Title</label>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+      <h2>Say Something<div className="line"></div></h2>
+      
+    </div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div className="publish-content-title">
+          <label htmlFor="title" ><strong>Title</strong></label>
+          
+        </div>
+        <div>
+          <strong >Audience: <i className={`fas ${postType === 'public' ? "fa-globe-europe" : "fa-credit-card"}`}></i></strong>
+          <select name="postType" id="postType" onChange={onInputChange} style={{appearance:'none',backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)', marginLeft:"0.3rem"}}>
+            <option value="public" style={{backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)'}}>Public</option>
+            <option value="private">Paywall</option>
+          </select>
+        </div>
       </div>
       <input
         type="text"
@@ -181,9 +206,9 @@ const PublishContentPage = () => {
         className="input-field"
       />
       <div className="publish-content-title">
-        <label htmlFor="contents">Contents</label>
+        <label htmlFor="contents"><strong>Contents</strong></label>
       </div>
-      <div>
+      <div className="m-b-1">
       <input type='file' id='file' ref={imageFile} style={{display: 'none'}} accept="image/*" multiple onChange={onSelectedFile}/>
       <input type='file' id='file' ref={videoFile} style={{display: 'none'}} accept="video/*" multiple onChange={onSelectedFile}/>
       <i className="fas fa-images publish-content-icon" onClick={onSelectImageFile}></i>
@@ -202,7 +227,7 @@ const PublishContentPage = () => {
       <i className="fas fa-paperclip publish-content-icon"></i>*/}
       </div>
       <div className="publish-content-title">
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description"><strong>Description</strong></label>
       </div>
       <textarea
         name="description"
@@ -212,6 +237,11 @@ const PublishContentPage = () => {
         onChange={onInputChange}
         className="input-field"
       />
+      <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
+        <label htmlFor="createPost">Create Post/Teaser?</label>
+      <input type="checkbox" name="createPost" style={{marginLeft:"0.2em"}}  />
+      </div>
+      
       {error ? <p className="error-container">{error}</p> : null}
       <div className='flex-center'>
       <input type="reset" value="reset" className='shock-form-button m-1'/>

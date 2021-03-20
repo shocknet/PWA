@@ -8,10 +8,14 @@ import Http from "../../utils/Http";
 import Video from "../../common/Post/components/Video";
 import Image from "../../common/Post/components/Image";
 import { attachMedia } from "../../utils/Torrents";
+import ImagePreview from "../../common/Post/components/ImagePreview";
+import VideoPreview from "../../common/Post/components/VideoPreview";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   //@ts-expect-error
   const publishedContent = useSelector(({content}) => content.publishedContent)
+  //@ts-expect-error
+  const avatar = useSelector(({ node }) => node.avatar);
   const [loading, setLoading] = useState(false);
   const [error,setError] = useState(null)
   const [paragraph,setParagraph] = useState('')
@@ -108,20 +112,16 @@ const PublishContentPage = () => {
     if (item.type === "image/embedded") {
       return (
         <div style={{width:100,margin:'1em'}}>
-        {/*@ts-expect-error*/}
-        <Image
+        <ImagePreview
           id={key}
           item={item}
           index={index}
           postId={"content"}
-          //tipCounter={tipCounter}
-          //tipValue={tipValue}
           key={`${index}`}
-          hideRibbon={true}
           width="100px"
+          selected={selectedContent}
+          updateSelection={setSelectedContent}
         />
-        {/*@ts-expect-error*/}
-        <button onClick={updateSelection} propid={key}>SELECT THIS</button>
         </div>
       );
     }
@@ -129,44 +129,51 @@ const PublishContentPage = () => {
     if (item.type === "video/embedded") {
       return (
         <div style={{width:100}}>
-        {/*@ts-expect-error*/}
-        <Video
+        <VideoPreview
           id={key}
           item={item}
           index={index}
           postId={"content"}
-          //tipCounter={tipCounter}
-          //tipValue={tipValue}
           key={`${index}`}
-          hideRibbon={true}
           width="100px"
+          selected={selectedContent}
+          updateSelection={setSelectedContent}
         />
-        {/*@ts-expect-error*/}
-        <button onClick={updateSelection} propid={key}>SELECT THIS</button>
         </div>
       );
     }
 
     return null;
   };
-  return (<div className="publish-content-form-container">
+  console.log(selectedContent)
+  return (<div className="publish-content-form-container m-1">
     {loading ? (
       <Loader overlay fullScreen text="Unlocking Wallet..." />
     ) : null}
     <DialogNav  drawerVisible={false}  pageTitle="CREATE POST" />
     <form className="publish-content-form" onSubmit={onSubmit} onReset={onDiscard}>
-      <label htmlFor="paragraph">Say Something</label>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:"1rem"}}>
+        <div
+          className="profile-avatar"
+          style={{ backgroundImage: `url(${avatar})` }}
+        />
+        <div>
+          <h2>Say Something</h2>
+          <div className="line"></div>
+        </div>
+        <div  style={{width:"122px"}}></div>
+      </div>
       <textarea className="input-field" name={'paragraph'} value={paragraph} onChange={onInputChange} placeholder="What's up?" rows={4}>
       </textarea>
-      <div>
-        <select name="postType" id="postType" onChange={onInputChange}>
-          <option value="public" >Public</option>
+      <div style={{marginLeft:'auto',display:"flex",alignItems:'center'}}>
+        <strong >Audience: <i className={`fas ${postType === 'public' ? "fa-globe-europe" : "fa-credit-card"}`}></i></strong>
+        <select name="postType" id="postType" onChange={onInputChange} style={{appearance:'none',backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)', marginLeft:"0.3rem"}}>
+          <option value="public" style={{backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)'}}>Public</option>
           <option value="private">Paywall</option>
         </select>
       </div>
       <div style={{display:'flex',alignItems:'center', overflow: 'auto',whiteSpace: 'nowrap'}}>
-      {publishedContent && selectedContent === '' && Object.entries(publishedContent).map(parseContent)}
-      {selectedContent !== '' && parseContent([selectedContent,publishedContent[selectedContent]],0)}
+      {Object.entries(publishedContent).map(parseContent)}
       </div>
       {error ? <p className="error-container">{error}</p> : null}
       <div className='flex-center'>
