@@ -1,0 +1,57 @@
+.container {
+  align-items: stretch;
+  background-color: black;
+}
+
+@value PAD: 24px;
+
+.info {
+  display: flex;
+  flex-direction: column;
+  padding-left: PAD;
+  font-family: "Montserrat-Regular";
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.lines-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+}
+
+.line {
+  height: 0.5vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+
+.line-selected {
+  composes: line;
+  background-color: white;
+}
+
+.half {
+  height: 100vh;
+  position: absolute;
+  width: 50%;
+}
+
+.half-left {
+  composes: half;
+  left: 0;
+}
+
+.half-right {
+  composes: half;
+  right: 0;
+}
+
+.picture {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
