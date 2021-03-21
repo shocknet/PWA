@@ -2,7 +2,8 @@ import React from "react";
 import classNames from "classnames";
 import moment from "moment";
 
-import Story, { Pic } from "../Story";
+import Story from "../Story";
+import { Pic } from "../../hooks";
 
 import styles from "./css/index.module.css";
 import { data1, data2, data3, data4, data5, data6 } from "./data";
@@ -63,7 +64,6 @@ const Stories = () => {
   return (
     <Story
       publicKey={stories[currI].publicKey}
-      displayName={stories[currI].displayName}
       onNext={() => {
         setCurrI(i => (i !== stories.length - 1 ? i + 1 : i));
       }}

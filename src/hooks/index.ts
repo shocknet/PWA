@@ -15,7 +15,10 @@ export const useStory = (publicKey: string) => {
   const { hostIP } = Store.useSelector(state => state.node);
 
   React.useEffect(() => {
-    const sub = rifle(hostIP, `${publicKey}::story::open`);
+    const sub = rifle({
+      host: hostIP,
+      query: `${publicKey}::story::open`
+    });
 
     sub.on("$shock", (pictures: unknown) => {
       if (typeof pictures !== "object" || pictures === null) {

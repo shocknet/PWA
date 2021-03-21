@@ -32,7 +32,7 @@ const OtherUserPage = () => {
   const follows = useSelector(({ feed }) => feed.follows);
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
-  const { publicKey: userPublicKey } = useParams();
+  const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
   const [userPosts,setUserPosts] = useState([])
   const [userSharedPosts,setUserSharedPosts] = useState([])
   const [finalPosts,setFInalPosts] = useState([])
