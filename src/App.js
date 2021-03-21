@@ -2,6 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import JWTDecode from "jwt-decode";
+
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
@@ -16,6 +17,8 @@ const ChatPage = React.lazy(() => import("./pages/Chat"));
 const SendPage = React.lazy(() => import("./pages/Send"));
 const RequestPage = React.lazy(() => import("./pages/Request"));
 const AuthPage = React.lazy(() => import("./pages/Auth"));
+const Story = React.lazy(() => import("./pages/Story"));
+const Stories = React.lazy(() => import("./pages/Stories"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = useSelector(({ auth }) => auth.authenticated);
@@ -61,6 +64,8 @@ const App = () => {
             <PrivateRoute path="/send" exact component={SendPage} />
             <PrivateRoute path="/request" exact component={RequestPage} />
             <PrivateRoute path="/profile" exact component={ProfilePage} />
+            <Route path="/story" exact component={Story} />
+            <Route path="/stories" exact component={Stories} />
             <Redirect to="/overview" />
           </Switch>
         </Suspense>
