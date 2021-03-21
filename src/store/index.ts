@@ -21,9 +21,11 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const initializeStore = () => {
+  // @ts-expect-error
   const store = window.__REDUX_DEVTOOLS_EXTENSION__
     ? createStore(
         persistedReducer,
+        // @ts-expect-error
         compose(applyMiddleware(thunk), window.__REDUX_DEVTOOLS_EXTENSION__())
       )
     : createStore(persistedReducer, applyMiddleware(thunk));
@@ -36,3 +38,5 @@ const initializedStore = initializeStore();
 export const store = initializedStore.store;
 
 export const persistor = initializedStore.persistor;
+
+export * from "./selectors";

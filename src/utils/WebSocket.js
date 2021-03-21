@@ -12,9 +12,7 @@ export let LNDSocket = null;
 
 export const connectSocket = url => {
   GunSocket = SocketIO.connect(`${url}/gun`, options);
-
   LNDSocket = SocketIO.connect(`${url}/lndstreaming`, options);
-
   return { GunSocket, LNDSocket };
 };
 
@@ -86,9 +84,32 @@ export const disconnectRifleSocket = query => {
 
 export const rifleSocketExists = query => {
   const cachedSocket = rifleSockets.get(query);
-  return !!cachedSocket
-}
+  return !!cachedSocket;
+};
 
+/**
+ * Returns a socket wired up to the given query. Use `.on('$shock')` for values.
+ * Please do not forget to listen to the NOT_AUTH event and react accordingly.
+ * Query example:
+ * ```js
+ * rifle(`$user::Profile>displayName::on`)
+ * // results in:
+ * gun.user().get('Profile').get('displayName').on(...)
+ *
+ * const pk = '....'
+ * rifle(`${pk}::Profile::map.once`)
+ * // results in:
+ * gun.user(pk).get('Profile').get('displayName').map()once(...)
+ *
+ * rifle(`$gun::handshakeNodes::on`)
+ * // results in:
+ * gun.get('handshakeNodes').on(...)
+ * ```
+ * @param {string} host
+ * @param {string} query
+ * @param {string=} publicKeyForDecryption
+ * @returns {ReturnType<typeof SocketIO>}
+ */
 export const rifle = ({ host, query, publicKey, reconnect }) => {
   const opts = {
     query: {
