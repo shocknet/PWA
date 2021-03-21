@@ -88,6 +88,15 @@ export const rifleSocketExists = query => {
 };
 
 /**
+ * @typedef {object} RifleParams
+ * @prop {string} host
+ * @prop {string} query
+ * @prop {string=} publicKeyForDecryption
+ * @prop {string=} publicKey Alias for publicKeyForDecryption
+ * @prop {boolean=} reconnect
+ */
+
+/**
  * Returns a socket wired up to the given query. Use `.on('$shock')` for values.
  * Please do not forget to listen to the NOT_AUTH event and react accordingly.
  * Query example:
@@ -105,9 +114,7 @@ export const rifleSocketExists = query => {
  * // results in:
  * gun.get('handshakeNodes').on(...)
  * ```
- * @param {string} host
- * @param {string} query
- * @param {string=} publicKeyForDecryption
+ * @param {RifleParams} args
  * @returns {ReturnType<typeof SocketIO>}
  */
 export const rifle = ({ host, query, publicKey, reconnect }) => {

@@ -1,12 +1,12 @@
 import React from "react";
 import classNames from "classnames";
 import moment from "moment";
-import { useParams } from "react-router-dom";
 
 import Pad from "../../common/Pad";
 import * as Utils from "../../utils";
 import { rifle } from "../../utils/WebSocket";
 import * as Store from "../../store";
+import { Pic } from "../../hooks";
 
 import styles from "./css/index.module.css";
 
@@ -30,7 +30,7 @@ const Story: React.FC<StoryProps> = ({
   const [currI, setCurrI] = React.useState<number>(0);
   const [pics, setPics] = React.useState<readonly Pic[]>([]);
   const currPic = pics[currI];
-  const { publicKey: paramPublicKey } = useParams<StoryParams>();
+  // const { publicKey: paramPublicKey } = useParams<StoryParams>();
   // @ts-ignore
   const publicKey = Store.useSelector(state => state.node.publicKey); //paramPublicKey || propsPublicKey;
   const { displayName } = Store.useSelector(state =>
@@ -39,7 +39,10 @@ const Story: React.FC<StoryProps> = ({
   const { hostIP } = Store.useSelector(state => state.node);
 
   React.useEffect(() => {
-    const sub = rifle(hostIP, `${publicKey}::story::open`);
+    const sub = rifle({
+      host: hostIP,
+      query: `${publicKey}::story::open`
+    });
 
     sub.on("$shock", (pictures: unknown) => {
       if (typeof pictures !== "object" || pictures === null) {
