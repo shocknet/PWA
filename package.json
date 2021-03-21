@@ -91,6 +91,9 @@
     ]
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.11",
+    "@types/react-router-dom": "5.x.x",
+    "@types/socket.io-client": "^1.4.35",
     "eslint-config-prettier": "^8.1.0",
     "prettier": "^2.2.1"
   }
