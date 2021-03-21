@@ -3,9 +3,11 @@ import Http from '../utils/Http'
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB:'content/setSeedProviderPub',
   ADD_PUBLISHED_CONTENT:'content/addPublishedContent',
-  ADD_UNLOCKED_CONTENT:'content/addUnlocked'
+  ADD_UNLOCKED_CONTENT:'content/addUnlocked',
+  ADD_STREAM:'content/addStream',
+  REMOVE_STREAM:'content/removeStream',
 };
-  
+
 export const setSeedProviderPub = pub => async dispatch => {
   await Http.post('/api/gun/put',{
     path:'$user>seedServiceProviderPubKey',
@@ -60,3 +62,14 @@ export const unlockContent = (amt,owner,postID) => async dispatch => {
     }
   }
 }
+export const addStream = (seedToken, liveToken) => dispatch => {
+  dispatch({
+    type: ACTIONS.ADD_STREAM,
+    data: {seedToken,liveToken}
+  });
+};
+export const removeStream = () => dispatch => {
+  dispatch({
+    type: ACTIONS.REMOVE_STREAM,
+  });
+};

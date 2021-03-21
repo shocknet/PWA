@@ -66,7 +66,7 @@ const Post = ({
       if (cached){
         finalItem.magnetURI = cached
       } else {
-        return <div><i class="fas fa-lock fa-10x"></i></div>
+        return <div><i className="fas fa-lock fa-10x"></i></div>
       }
     }
 

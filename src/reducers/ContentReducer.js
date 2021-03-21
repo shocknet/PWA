@@ -1,6 +1,8 @@
 import { ACTIONS } from "../actions/ContentActions";
 const INITIAL_STATE = {
   seedProviderPub:'test',
+  streamUserToken:'',
+  streamLiveToken:'',
   publishedContent:{},
   unlockedContent:{}
 };
@@ -24,6 +26,13 @@ const content = (state = INITIAL_STATE, action) => {
       const unlockedTmp = {...state.unlockedContent}
       unlockedTmp[data.contentPath] = data.content
       return {...state,unlockedContent:unlockedTmp}
+    }
+    case ACTIONS.ADD_STREAM:{
+      const {data} = action
+      return {...state, streamLiveToken:data.liveToken,streamUserToken:data.seedToken}
+    }
+    case ACTIONS.REMOVE_STREAM:{
+      return {...state, streamLiveToken:'',streamUserToken:''}
     }
     default:
       return state;
