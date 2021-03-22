@@ -1,14 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
-import { createAlias, createWallet } from "../../../../actions/NodeActions";
+import { createWallet } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
 
-const CreateAliasStep = () => {
+const CreateWalletStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onInputChange = useCallback(e => {
@@ -20,6 +21,10 @@ const CreateAliasStep = () => {
       }
       case "password": {
         setPassword(value);
+        return;
+      }
+      case "confirmPassword": {
+        setConfirmPassword(value);
         return;
       }
       default:
@@ -36,9 +41,19 @@ const CreateAliasStep = () => {
         return;
       }
 
+      if (password !== confirmPassword) {
+        setError("Password and Confirm password fields must match");
+        return;
+      }
+
+      if (password.length < 8 || password.length > 32) {
+        setError("Password length should be 8-32 characters long");
+        return;
+      }
+
       try {
         setLoading(true);
-        const wallet = await dispatch(createAlias({ alias, password }));
+        const wallet = await dispatch(createWallet({ alias, password }));
         console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
@@ -46,12 +61,8 @@ const CreateAliasStep = () => {
         setLoading(false);
       }
     },
-    [alias, password, dispatch]
+    [alias, password, confirmPassword, dispatch]
   );
-
-  const chooseUnlockWallet = useCallback(() => {
-    dispatch(setAuthStep("unlockWallet"));
-  }, [dispatch]);
 
   const chooseAnotherMethod = useCallback(() => {
     dispatch(setAuthMethod(null));
@@ -63,12 +74,12 @@ const CreateAliasStep = () => {
       {loading ? (
         <Loader overlay fullScreen text="Creating New Wallet..." />
       ) : null}
-      <p className="auth-form-container-title">Create New Alias</p>
+      <p className="auth-form-container-title">Create New Wallet</p>
       <form className="auth-form" onSubmit={onSubmit}>
         <input
           type="text"
           name="alias"
-          placeholder="New Alias"
+          placeholder="Wallet Alias"
           value={alias}
           onChange={onInputChange}
           className="input-field"
@@ -76,16 +87,21 @@ const CreateAliasStep = () => {
         <input
           type="password"
           name="password"
-          placeholder="LND Wallet Password"
+          placeholder="Wallet Password"
           value={password}
+          onChange={onInputChange}
+          className="input-field"
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Wallet Password"
+          value={confirmPassword}
           onChange={onInputChange}
           className="input-field"
         />
         {error ? <p className="error-container">{error}</p> : null}
         <button className="submit-btn">Create</button>
-        <p className="inline-link" onClick={chooseUnlockWallet}>
-          Use existing alias
-        </p>
         <p className="inline-link" onClick={chooseAnotherMethod}>
           Choose another method
         </p>
@@ -94,4 +110,4 @@ const CreateAliasStep = () => {
   );
 };
 
-export default CreateAliasStep;
+export default CreateWalletStep;

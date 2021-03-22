@@ -8,7 +8,7 @@ import { setAuthenticated, setAuthStep } from "../../actions/AuthActions";
 import DialogPageContainer from "../../common/DialogPageContainer";
 import HostStep from "./components/HostStep";
 import UnlockStep from "./components/UnlockStep";
-import CreateAliasStep from "./components/CreateAliasStep";
+import CreateWalletStep from "./components/CreateWalletStep";
 import LogoSection from "./components/LogoSection";
 import ChoicesStep from "./components/ChoicesStep";
 import InviteStep from "./components/InviteStep";
@@ -51,7 +51,7 @@ const AuthPage = () => {
     }
 
     if (authStep === "createWallet") {
-      return <CreateAliasStep />;
+      return <CreateWalletStep />;
     }
 
     return <ChoicesStep />;
@@ -71,6 +71,12 @@ const AuthPage = () => {
             0
         ) {
           const { data: authenticated } = await Http.get(`/api/gun/auth`);
+          if (!authenticated) {
+            const { data: walletStatus } = await Http.get(
+              `/api/lnd/wallet/status`
+            );
+            console.log(walletStatus);
+          }
           setAuthStep("unlockWallet");
           dispatch(setAuthenticated(authenticated.data));
           connectSocket(cachedHostIP);

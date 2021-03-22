@@ -1,6 +1,7 @@
 import jwtDecode from "jwt-decode";
 import Http from "axios";
 import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
+import { parseError } from "../utils/Error";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
@@ -36,6 +37,26 @@ export const fetchNodeHealth = hostIP => async dispatch => {
   }
 };
 
+export const fetchNodeUnlockStatus = () => async dispatch => {
+  const { data } = await Http.get("/api/lnd/wallet/status");
+  console.log("data:", data);
+  const { walletExists, walletStatus } = data;
+
+  if (walletExists) {
+    dispatch({
+      type: AUTH_ACTIONS.SET_AUTH_STEP,
+      data: walletStatus === "locked" ? "unlockWallet" : "gunAuth"
+    });
+    return walletStatus;
+  }
+
+  dispatch({
+    type: AUTH_ACTIONS.SET_AUTH_STEP,
+    data: "createWallet"
+  });
+  return "noWallet";
+};
+
 export const connectHost = (hostIP, resetData = true) => async dispatch => {
   if (resetData) {
     dispatch({
@@ -45,19 +66,15 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       type: AUTH_ACTIONS.RESET_AUTH_INFO
     });
   }
-  const done = (host, health) => {
-    const { walletStatus } = health.LNDStatus;
-
+  const done = async (host, health) => {
     Http.defaults.baseURL = `${host}`;
 
     dispatch({
       type: ACTIONS.SET_HOST_IP,
       data: host
     });
-    dispatch({
-      type: AUTH_ACTIONS.SET_AUTH_STEP,
-      data: walletStatus === "locked" ? "unlockWallet" : "gunAuth"
-    });
+
+    await fetchNodeUnlockStatus()(dispatch);
   };
 
   let nodeHealthHttps;
@@ -68,7 +85,7 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
     );
     if (nodeHealthHttps) {
       nodeHealthHttps.withProtocolHostIP = `https://${sanitizedHostIP}`;
-      done(`https://${sanitizedHostIP}`, nodeHealthHttps);
+      await done(`https://${sanitizedHostIP}`, nodeHealthHttps);
       return nodeHealthHttps;
     }
   } catch (e) {
@@ -80,7 +97,7 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
     dispatch
   );
   nodeHealth.withProtocolHostIP = `http://${sanitizedHostIP}`;
-  done(`http://${sanitizedHostIP}`, nodeHealth);
+  await done(`http://${sanitizedHostIP}`, nodeHealth);
   return nodeHealthHttps || nodeHealth;
 };
 
@@ -90,7 +107,6 @@ export const unlockWallet = ({ alias, password }) => async dispatch => {
       alias,
       password
     });
-    console.log(data);
 
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
@@ -106,6 +122,56 @@ export const unlockWallet = ({ alias, password }) => async dispatch => {
     return data;
   } catch (err) {
     dispatch(setAuthenticated(false));
-    throw err;
+    throw parseError(err);
+  }
+};
+
+export const createAlias = ({ alias, password }) => async dispatch => {
+  try {
+    const { data } = await Http.post("/api/lnd/wallet/existing", {
+      alias,
+      password
+    });
+
+    dispatch(setAuthenticated(true));
+    const decodedToken = jwtDecode(data.authorization);
+    dispatch({
+      type: ACTIONS.SET_AUTHENTICATED_USER,
+      data: {
+        alias: data.user.alias,
+        authToken: data.authorization,
+        publicKey: data.user.publicKey,
+        authTokenExpirationDate: decodedToken.exp
+      }
+    });
+    return data;
+  } catch (err) {
+    dispatch(setAuthenticated(false));
+    throw parseError(err);
+  }
+};
+
+export const createWallet = ({ alias, password }) => async dispatch => {
+  try {
+    const { data } = await Http.post("/api/lnd/wallet", {
+      alias,
+      password
+    });
+
+    dispatch(setAuthenticated(true));
+    const decodedToken = jwtDecode(data.authorization);
+    dispatch({
+      type: ACTIONS.SET_AUTHENTICATED_USER,
+      data: {
+        alias: data.user.alias,
+        authToken: data.authorization,
+        publicKey: data.user.publicKey,
+        authTokenExpirationDate: decodedToken.exp
+      }
+    });
+    return data;
+  } catch (err) {
+    dispatch(setAuthenticated(false));
+    throw parseError(err);
   }
 };
