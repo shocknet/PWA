@@ -74,6 +74,9 @@ const UnlockStep = () => {
         {error ? <p className="error-container">{error}</p> : null}
         <button className="submit-btn">Unlock</button>
         <p className="inline-link" onClick={chooseAnotherMethod}>
+          Create a new alias
+        </p>
+        <p className="inline-link" onClick={chooseAnotherMethod}>
           Choose another method
         </p>
       </form>
