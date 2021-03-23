@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Http from "axios";
 import "./styles/index.css";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
@@ -8,6 +9,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { store, persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
+
+Http.defaults.timeout = 10000;
 
 ReactDOM.render(
   <Provider store={store}>

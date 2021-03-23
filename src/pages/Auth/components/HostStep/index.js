@@ -9,6 +9,7 @@ const HostStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
   const [hostIP, setHostIP] = useState("");
+  const [connecting, setConnecting] = useState(false);
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -22,22 +23,24 @@ const HostStep = () => {
     }
   }, []);
 
-  const onSubmit = useCallback(
-    async e => {
-      try {
-        e.preventDefault();
-        setError(null);
-        const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
-        const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
-          dispatch
-        );
-        connectSocket(withProtocolHostIP);
-      } catch (error) {
-        setError("Unable to connect to host");
+  const onSubmit = async e => {
+    try {
+      e.preventDefault();
+      if (connecting) {
+        return;
       }
-    },
-    [hostIP, dispatch, setError]
-  );
+      setConnecting(true);
+      setError(null);
+      const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
+      const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
+        dispatch
+      );
+      connectSocket(withProtocolHostIP);
+    } catch (error) {
+      setConnecting(false);
+      setError("Unable to connect to host");
+    }
+  };
 
   const chooseAnotherMethod = useCallback(() => {
     dispatch(setAuthMethod(null));
@@ -46,26 +49,34 @@ const HostStep = () => {
 
   return (
     <div className="auth-form-container">
-      <p className="auth-form-container-title">Connect to Node</p>
+      {!connecting && (
+        <p className="auth-form-container-title">Connect to Node</p>
+      )}
       <form className="auth-form" onSubmit={onSubmit}>
-        <input
-          type="text"
-          name="hostIP"
-          placeholder="Host Address (in IP or DNS form)"
-          value={hostIP}
-          onChange={onInputChange}
-          className={classNames({
-            "input-field": true,
-            "input-field-error": !!error
-          })}
-        />
-        {error ? <p className="error-container">{error}</p> : null}
-        <button className="submit-btn" type="submit">
-          Connect
-        </button>
-        <p className="inline-link" onClick={chooseAnotherMethod}>
-          Choose another method
-        </p>
+        {connecting ? (
+          <p>Connecting...</p>
+        ) : (
+          <>
+            <input
+              type="text"
+              name="hostIP"
+              placeholder="Host Address (in IP or DNS form)"
+              value={hostIP}
+              onChange={onInputChange}
+              className={classNames({
+                "input-field": true,
+                "input-field-error": !!error
+              })}
+            />
+            {error ? <p className="error-container">{error}</p> : null}
+            <button className="submit-btn" type="submit">
+              Connect
+            </button>
+            <p className="inline-link" onClick={chooseAnotherMethod}>
+              Choose another method
+            </p>
+          </>
+        )}
       </form>
     </div>
   );
