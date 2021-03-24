@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
-import rootReducer from "../reducers";
+import rootReducer, { State } from "../reducers";
+import { useSelector as origUseSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import Migrations from "./Migrations";
@@ -38,5 +39,12 @@ const initializedStore = initializeStore();
 export const store = initializedStore.store;
 
 export const persistor = initializedStore.persistor;
+
+/**
+ * React-redux 's useSelector with our state type pre-specified.
+ */
+export const useSelector = <TSelected = unknown>(
+  selector: (state: State) => TSelected
+): TSelected => origUseSelector<State, TSelected>(selector);
 
 export * from "./selectors";
