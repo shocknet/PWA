@@ -33,8 +33,8 @@ const Story: React.FC<StoryProps> = ({
   // const { publicKey: paramPublicKey } = useParams<StoryParams>();
   // @ts-ignore
   const publicKey = Store.useSelector(state => state.node.publicKey); //paramPublicKey || propsPublicKey;
-  const { displayName } = Store.useSelector(state =>
-    Store.selectUser(state, publicKey)
+  const { displayName } = Store.useSelector(
+    ({ userProfiles }) => userProfiles[publicKey]
   );
   const { hostIP } = Store.useSelector(state => state.node);
 
