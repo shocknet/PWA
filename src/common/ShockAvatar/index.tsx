@@ -19,17 +19,17 @@ export interface ShockAvatarProps {
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
   height,
   publicKey,
-  disableOnlineRing,
+  // disableOnlineRing,
   nameAtBottom,
   onPress
 }) => {
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const isOwn = Store.useSelector(
-    state => Store.getMyPublicKey(state) === publicKey
-  );
-  const { avatar: image, displayName, lastSeenApp } = Store.useSelector(state =>
-    Store.selectUser(state, publicKey)
+  // const isOwn = Store.useSelector(
+  //   state => Store.getMyPublicKey(state) === publicKey
+  // );
+  const { avatar: image, displayName } = Store.useSelector(
+    ({ userProfiles }) => userProfiles[publicKey]
   );
   const story = Hooks.useStory(publicKey);
 
@@ -51,9 +51,9 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     borderColor: "#39B54A"
   };
 
-  if (!isOwn && Utils.isOnline(lastSeenApp)) {
-    avatarStyle.borderWidth = 2;
-  }
+  // if (!isOwn && Utils.isOnline(lastSeenApp)) {
+  //   avatarStyle.borderWidth = 2;
+  // }
 
   if (story.length) {
     avatarStyle.borderWidth = 2;
