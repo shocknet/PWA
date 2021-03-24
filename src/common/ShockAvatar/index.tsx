@@ -41,7 +41,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     return () => {
       clearInterval(intervalID);
     };
-  }, []);
+  }, [forceUpdate]);
 
   const avatarStyle: React.CSSProperties = {
     height: height + "px",
