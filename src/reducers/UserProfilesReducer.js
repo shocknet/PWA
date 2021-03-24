@@ -1,7 +1,26 @@
 import { ACTIONS } from "../actions/UserProfilesActions";
 
+/**
+ * @typedef {object} User
+ * @prop {string|null} avatar
+ * @prop {string|null} displayName
+ * @prop {string} user Public key.
+ */
+
+/**
+ * @typedef {Record<string, User>} UserProfilesState
+ */
+
+/**
+ * @type {UserProfilesState}
+ */
 const INITIAL_STATE = {};
 
+/**
+ * @param {UserProfilesState} state
+ * @param {import('redux').AnyAction} action
+ * @returns {UserProfilesState}
+ */
 const userProfiles = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.RESET_USER_PROFILES: {
