@@ -38,7 +38,7 @@ const InviteStep = () => {
           {
             headers: {
               Accept: "application/json",
-              Authorization: inviteCode
+              Authorization: `Bearer ${inviteCode}`
             }
           }
         );
