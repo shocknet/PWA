@@ -1,4 +1,5 @@
 import { ACTIONS } from "../actions/UserProfilesActions";
+import { ACTIONS as NODE_ACTIONS } from "../actions/NodeActions";
 
 /**
  * @typedef {object} User
@@ -23,6 +24,17 @@ const INITIAL_STATE = {};
  */
 const userProfiles = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case NODE_ACTIONS.SET_AUTHENTICATED_USER: {
+      const { publicKey } = action.data;
+      return {
+        ...state,
+        [publicKey]: {
+          avatar: null,
+          displayName: null,
+          user: publicKey
+        }
+      };
+    }
     case ACTIONS.RESET_USER_PROFILES: {
       return INITIAL_STATE;
     }
