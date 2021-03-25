@@ -117,7 +117,7 @@ const ProfilePage = () => {
                 fontweight: 600
               }}
             >
-              <i class="fas fa-video"></i>
+              <i className="fas fa-video"></i>
               <p>GO LIVE</p>
             </div>
           </Link>
