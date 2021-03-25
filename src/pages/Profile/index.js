@@ -1,3 +1,4 @@
+// @ts-check
 import React, { Suspense, useCallback, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
