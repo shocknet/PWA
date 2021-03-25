@@ -24,8 +24,6 @@
 }
 
 .profile-avatar {
-  height: 122px;
-  width: 122px;
   border-radius: 100px;
   background-color: var(--gray);
   box-shadow: 0 0 0px 7px var(--gray);
