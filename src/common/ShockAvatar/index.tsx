@@ -29,7 +29,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   //   state => Store.getMyPublicKey(state) === publicKey
   // );
   const { avatar: image, displayName } = Store.useSelector(
-    ({ userProfiles }) => userProfiles[publicKey]
+    Store.selectUser(publicKey)
   );
   const story = Hooks.useStory(publicKey);
 
