@@ -11,6 +11,7 @@ import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
 import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -29,7 +30,6 @@ const ProfilePage = () => {
   const seedProviderPub = useSelector(({ content }) => content.seedProviderPub);
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
-  const avatar = useSelector(({ node }) => node.avatar);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
       const myP = posts[publicKey].sort((a, b) => b.date - a.date);
@@ -73,6 +73,7 @@ const ProfilePage = () => {
     setLocalSeedPub(seedProviderPub);
   }, [seedProviderPub]);
   const somethingChanged = localSeedPub !== seedProviderPub;
+  const AVATAR_SIZE = 122;
   return (
     <div className="page-container profile-page">
       <div className="profile-container">
@@ -80,8 +81,14 @@ const ProfilePage = () => {
         <div className="profile-info-container">
           <div
             className="profile-avatar"
-            style={{ backgroundImage: `url(${avatar})` }}
-          />
+            style={{
+              height: `${AVATAR_SIZE}px`,
+              width: `${AVATAR_SIZE}px`
+            }}
+          >
+            <ShockAvatar height={AVATAR_SIZE} publicKey={publicKey} />
+          </div>
+
           <div className="profile-info">
             <p className="profile-name">{processedDisplayName}</p>
             <p className="profile-desc">
