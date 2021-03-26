@@ -279,6 +279,50 @@ const ProfilePage = () => {
           </select>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
+          {myPosts.map((post, index) => {
+            const profile = userProfiles[post.authorId];
+            if (post.type === "shared") {
+              const originalPublicKey = post.originalAuthor;
+              const originalProfile = userProfiles[originalPublicKey];
+              return (
+                <Suspense fallback={<Loader />} key={index}>
+                  <SharedPost
+                    originalPost={post.originalPost}
+                    originalPostProfile={originalProfile}
+                    sharedTimestamp={post.shareDate}
+                    sharerProfile={profile}
+                    postPublicKey={originalPublicKey}
+                    openTipModal={() => {}}
+                    // TODO: User online status handling
+                    isOnlineNode
+                    openUnlockModal={false}
+                  />
+                </Suspense>
+              );
+            }
+
+            return (
+              <Suspense fallback={<Loader />} key={index}>
+                <Post
+                  id={post.id}
+                  timestamp={post.date}
+                  contentItems={post.contentItems}
+                  avatar={`data:image/png;base64,${profile?.avatar}`}
+                  username={processDisplayName(
+                    profile?.publicKey,
+                    profile?.displayName
+                  )}
+                  publicKey={post.authorId}
+                  openTipModal={() => {}}
+                  // TODO: User online status handling
+                  isOnlineNode
+                  openUnlockModal={false}
+                  tipCounter={undefined}
+                  tipValue={undefined}
+                />
+              </Suspense>
+            );
+          })}
         </div>
         <Modal
           toggleModal={toggleModal}
