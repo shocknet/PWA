@@ -84,6 +84,7 @@ const OtherUserPage = () => {
       const postsAlmostReady = await Promise.allSettled(proms);
       const postsReady = postsAlmostReady
         .filter(maybeok => maybeok.status === "fulfilled")
+        // @ts-expect-error
         .map(res => res.value);
       console.log(postsReady);
       setUserPosts(postsReady);
@@ -127,9 +128,9 @@ const OtherUserPage = () => {
       });
       const postsAlmostReady = await Promise.allSettled(proms);
       console.log(postsAlmostReady);
-      //@ts-expect-error
       const postsReady = postsAlmostReady
         .filter(maybeok => maybeok.status === "fulfilled")
+        // @ts-expect-error
         .map(res => res.value);
       console.log(postsReady);
       setUserSharedPosts(postsReady);
@@ -293,6 +294,8 @@ const OtherUserPage = () => {
           large
           iconURL={QRCodeIcon}
           style={{ backgroundColor: "var(--yellow)" }}
+          icon={null}
+          label={null}
         />
       </div>
 
