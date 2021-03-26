@@ -222,7 +222,7 @@ const ProfilePage = () => {
               height: "100%"
             }}
           >
-            <label for="localPub">Seed Service Provider</label>
+            <label htmlFor="localPub">Seed Service Provider</label>
             <input
               type="text"
               className="input-field"
