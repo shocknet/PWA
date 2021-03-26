@@ -168,7 +168,7 @@ const ProfilePage = () => {
                   contentItems={post.contentItems}
                   avatar={`data:image/png;base64,${profile?.avatar}`}
                   username={processDisplayName(
-                    profile?.user,
+                    profile?.publicKey,
                     profile?.displayName
                   )}
                   publicKey={post.authorId}
