@@ -1,7 +1,7 @@
 // @ts-check
 import React, { Suspense, useEffect } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import { setAuthenticated } from "./actions/AuthActions";
@@ -9,6 +9,7 @@ import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
 import "./styles/App.css";
+import * as Store from "./store";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -33,7 +34,7 @@ const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
 
 const PrivateRoute = ({ component, ...options }) => {
-  const authenticated = useSelector(({ auth }) => auth.authenticated);
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const authorizedComponent = authenticated ? component : AuthPage;
 
   return <Route {...options} component={authorizedComponent} />;
@@ -41,8 +42,8 @@ const PrivateRoute = ({ component, ...options }) => {
 
 const App = () => {
   const dispatch = useDispatch();
-  const authToken = useSelector(({ node }) => node.authToken);
-  const authenticated = useSelector(({ auth }) => auth.authenticated);
+  const authToken = Store.useSelector(({ node }) => node.authToken);
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
 
   useEffect(() => {
     videojs.addLanguage("en", {
