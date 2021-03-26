@@ -36,7 +36,7 @@ const ProfilePage = () => {
       return myP;
     }
     return [];
-  }, [posts]);
+  }, [posts, publicKey]);
   console.log(posts);
   console.log(myPosts);
   const processedDisplayName = useMemo(
