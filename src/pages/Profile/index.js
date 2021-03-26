@@ -193,7 +193,7 @@ const ProfilePage = () => {
             <p className="profile-name" onClick={() => {}}>
               {processedDisplayName}
             </p>
-            <p className="profile-desc">{user.bio}</p>
+            <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
             <div className="config-btn" onClick={toggleConfigModal}>
               <i className="config-btn-icon icon-solid-spending-rule" />
               <p className="config-btn-text">Config</p>
