@@ -68,7 +68,7 @@ const ProfilePage = () => {
   };
   const onUpdatePub = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
-  }, [localSeedPub]);
+  }, [localSeedPub, dispatch]);
   const onCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
   }, [seedProviderPub]);
