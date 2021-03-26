@@ -15,6 +15,8 @@ import ShockAvatar from "../../common/ShockAvatar";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
+import * as Store from "../../store";
+
 import "./css/index.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -23,39 +25,43 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const posts = useSelector(({ feed }) => feed.posts);
-  const displayName = useSelector(({ node }) => node.displayName);
-  const publicKey = useSelector(({ node }) => node.publicKey);
-  const seedProviderPub = useSelector(({ content }) => content.seedProviderPub);
-  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
-  const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
+
+  const posts = Store.useSelector(({ feed }) => feed.posts);
+  const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const seedProviderPub = Store.useSelector(
+    ({ content }) => content.seedProviderPub
+  );
+  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const user = useSelector(Store.selectSelfUser);
+
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
       const myP = posts[publicKey].sort((a, b) => b.date - a.date);
       return myP;
     }
     return [];
-  }, [posts]);
+  }, [posts, publicKey]);
   console.log(posts);
   console.log(myPosts);
   const processedDisplayName = useMemo(
-    () => processDisplayName(publicKey, displayName),
-    [publicKey, displayName]
+    () => processDisplayName(publicKey, user.displayName),
+    [publicKey, user.displayName]
   );
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
-  const toggleConfigModal = useCallback(() => {
-    setProfileConfigModalOpen(!profileConfigModalOpen);
-  }, [profileConfigModalOpen]);
 
-  const copyClipboard = useCallback(() => {
-    navigator.clipboard.writeText(publicKey);
-  }, [publicKey]);
+  // ------------------------------------------------------------------------ //
+  // CONFIG MODAL
 
-  const onInputChange = useCallback(e => {
+  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
+
+  const [newBio, setNewBio] = useState(user.bio);
+
+  const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
+
+  const onInputChange = e => {
     const { value, name } = e.target;
     switch (name) {
       case "localPub": {
@@ -65,14 +71,31 @@ const ProfilePage = () => {
       default:
         return;
     }
-  });
-  const onUpdatePub = useCallback(() => {
-    setSeedProviderPub(localSeedPub)(dispatch);
-  }, [localSeedPub]);
-  const onCancel = useCallback(() => {
+  };
+
+  const somethingInsideConfigModalChanged =
+    localSeedPub !== seedProviderPub ||
+    newDisplayName !== user.displayName ||
+    newBio !== user.bio;
+
+  const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
   }, [seedProviderPub]);
-  const somethingChanged = localSeedPub !== seedProviderPub;
+
+  const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
+  const toggleConfigModal = useCallback(() => {
+    setProfileConfigModalOpen(!profileConfigModalOpen);
+  }, [profileConfigModalOpen]);
+  const onConfigSubmit = useCallback(() => {
+    setSeedProviderPub(localSeedPub)(dispatch);
+  }, [localSeedPub, dispatch]);
+
+  // ------------------------------------------------------------------------ //
+
+  const copyClipboard = useCallback(() => {
+    navigator.clipboard.writeText(publicKey);
+  }, [publicKey]);
+
   const AVATAR_SIZE = 122;
   return (
     <div className="page-container profile-page">
@@ -90,11 +113,10 @@ const ProfilePage = () => {
           </div>
 
           <div className="profile-info">
-            <p className="profile-name">{processedDisplayName}</p>
-            <p className="profile-desc">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam,
-              blanditiis
+            <p className="profile-name" onClick={() => {}}>
+              {processedDisplayName}
             </p>
+            <p className="profile-desc">{user.bio}</p>
             <div className="config-btn" onClick={toggleConfigModal}>
               <i className="config-btn-icon icon-solid-spending-rule" />
               <p className="config-btn-text">Config</p>
@@ -114,7 +136,7 @@ const ProfilePage = () => {
                 padding: "0.2em 0.5em",
                 borderRadius: "0.7em",
                 fontSize: "16px",
-                fontweight: 600
+                fontWeight: 600
               }}
             >
               <i className="fas fa-video"></i>
@@ -155,6 +177,7 @@ const ProfilePage = () => {
                     openTipModal={() => {}}
                     // TODO: User online status handling
                     isOnlineNode
+                    openUnlockModal={false}
                   />
                 </Suspense>
               );
@@ -168,7 +191,7 @@ const ProfilePage = () => {
                   contentItems={post.contentItems}
                   avatar={`data:image/png;base64,${profile?.avatar}`}
                   username={processDisplayName(
-                    profile?.user,
+                    profile?.publicKey,
                     profile?.displayName
                   )}
                   publicKey={post.authorId}
@@ -206,6 +229,7 @@ const ProfilePage = () => {
             <p className="profile-clipboard-text">Tap to copy to clipboard</p>
           </div>
         </Modal>
+
         <Modal
           toggleModal={toggleConfigModal}
           modalOpen={profileConfigModalOpen}
@@ -222,7 +246,7 @@ const ProfilePage = () => {
               height: "100%"
             }}
           >
-            <label for="localPub">Seed Service Provider</label>
+            <label htmlFor="localPub">Seed Service Provider</label>
             <input
               type="text"
               className="input-field"
@@ -230,13 +254,16 @@ const ProfilePage = () => {
               name="localPub"
               onChange={onInputChange}
             />
-            {somethingChanged && (
+            {somethingInsideConfigModalChanged && (
               <div className="flex-center" style={{ marginTop: "auto" }}>
-                <button onClick={onCancel} className="shock-form-button m-1">
+                <button
+                  onClick={onConfigCancel}
+                  className="shock-form-button m-1"
+                >
                   CANCEL
                 </button>
                 <button
-                  onClick={onUpdatePub}
+                  onClick={onConfigSubmit}
                   className="shock-form-button-confirm m-1"
                 >
                   SUBMIT
@@ -245,11 +272,14 @@ const ProfilePage = () => {
             )}
           </div>
         </Modal>
+
         <AddBtn
           onClick={toggleModal}
           large
           iconURL={QRCodeIcon}
           style={{ backgroundColor: "var(--yellow)" }}
+          icon={null}
+          label={null}
         />
       </div>
 

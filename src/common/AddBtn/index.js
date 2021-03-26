@@ -11,7 +11,7 @@ const AddBtn = ({
   large = false,
   small = false,
   index = 0,
-  children,
+  children = null,
   style = {}
 }) => {
   const [optionsOpen, setOptionsOpen] = useState(false);
