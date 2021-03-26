@@ -10,6 +10,7 @@
     "luxon",
     "persistor",
     "qrcode",
+    "videojs",
     "youtube"
   ]
 }
