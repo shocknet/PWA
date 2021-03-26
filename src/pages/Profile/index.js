@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
-import Http from "../../utils/Http";
+import Http from "axios";
 
 import { setSeedProviderPub } from "../../actions/ContentActions";
 import {
@@ -64,7 +64,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     return subscribeMyServices(hostIP)(dispatch);
-  }, []);
+  }, [hostIP, dispatch]);
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
@@ -103,7 +103,15 @@ const ProfilePage = () => {
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
-  }, [setProfileConfigModalOpen]);
+    setNewDisplayName(user.displayName);
+    setNewBio(user.bio);
+  }, [
+    setProfileConfigModalOpen,
+    setNewDisplayName,
+    user.displayName,
+    setNewBio,
+    user.bio
+  ]);
 
   const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
@@ -120,8 +128,26 @@ const ProfilePage = () => {
   ]);
   const onConfigSubmit = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
+    if (newDisplayName !== user.displayName) {
+      Http.put(`/api/gun/me`, {
+        displayName: newDisplayName
+      });
+    }
+    if (newBio !== user.bio) {
+      Http.put("/api/gun/me", {
+        bio: newBio
+      });
+    }
     toggleConfigModal();
-  }, [localSeedPub, dispatch, toggleConfigModal]);
+  }, [
+    localSeedPub,
+    dispatch,
+    newDisplayName,
+    user.displayName,
+    newBio,
+    user.bio,
+    toggleConfigModal
+  ]);
 
   // ------------------------------------------------------------------------ //
 
@@ -375,6 +401,17 @@ const ProfilePage = () => {
               name="newDisplayName"
               onChange={({ target: { value } }) => {
                 setNewDisplayName(value);
+              }}
+            />
+
+            <label htmlFor="newBio">New Bio</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new bio"}
+              name="newBio"
+              onChange={({ target: { value } }) => {
+                setNewBio(value);
               }}
             />
 
