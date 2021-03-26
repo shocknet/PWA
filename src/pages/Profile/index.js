@@ -114,7 +114,7 @@ const ProfilePage = () => {
                 padding: "0.2em 0.5em",
                 borderRadius: "0.7em",
                 fontSize: "16px",
-                fontweight: 600
+                fontWeight: 600
               }}
             >
               <i className="fas fa-video"></i>
