@@ -58,6 +58,7 @@ const App = () => {
     }
 
     const decodedToken = JWTDecode(authToken);
+    // @ts-expect-error
     const tokenExpired = decodedToken.exp * 1000 < Date.now();
     setAuthenticated(tokenExpired);
   }, [authToken, dispatch]);
