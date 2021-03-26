@@ -250,6 +250,8 @@ const ProfilePage = () => {
           large
           iconURL={QRCodeIcon}
           style={{ backgroundColor: "var(--yellow)" }}
+          icon={null}
+          label={null}
         />
       </div>
 
