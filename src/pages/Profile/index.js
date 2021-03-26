@@ -55,7 +55,7 @@ const ProfilePage = () => {
     navigator.clipboard.writeText(publicKey);
   }, [publicKey]);
 
-  const onInputChange = useCallback(e => {
+  const onInputChange = e => {
     const { value, name } = e.target;
     switch (name) {
       case "localPub": {
@@ -65,7 +65,7 @@ const ProfilePage = () => {
       default:
         return;
     }
-  });
+  };
   const onUpdatePub = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
   }, [localSeedPub]);
