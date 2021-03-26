@@ -1,3 +1,4 @@
+// @ts-check
 import React, { Suspense, useEffect } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
