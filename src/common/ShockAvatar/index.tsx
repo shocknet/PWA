@@ -61,41 +61,43 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   }
 
   return (
-    <div className={globalStyles.centerAlign}>
-      <img
-        alt={`Avatar for ${displayName || "an user"}`}
-        src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
-        style={avatarStyle}
-        onClick={() => {
-          if (onPress) {
-            onPress();
-          } else {
-            if (story.length) {
-              history.push(`/story/${publicKey}`);
+    <>
+      <div className={globalStyles.centerAlign}>
+        <img
+          alt={`Avatar for ${displayName || "an user"}`}
+          src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
+          style={avatarStyle}
+          onClick={() => {
+            if (onPress) {
+              onPress();
             } else {
-              // go to user overview
+              if (story.length) {
+                history.push(`/story/${publicKey}`);
+              } else {
+                // go to user overview
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      {nameAtBottom && (
-        <>
-          <Pad amt={12} />
+        {nameAtBottom && (
+          <>
+            <Pad amt={12} />
 
-          <span
-            style={{
-              color: "#F3EFEF",
-              fontFamily: "Montserrat-600",
-              fontSize: 12,
-              textAlign: "center"
-            }}
-          >
-            {displayName}
-          </span>
-        </>
-      )}
-    </div>
+            <span
+              style={{
+                color: "#F3EFEF",
+                fontFamily: "Montserrat-600",
+                fontSize: 12,
+                textAlign: "center"
+              }}
+            >
+              {displayName}
+            </span>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
