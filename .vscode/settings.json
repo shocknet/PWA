@@ -6,7 +6,9 @@
     "Embla",
     "SHOCKWALLET",
     "Unmount",
+    "autocorrect",
     "persistor",
+    "qrcode",
     "youtube"
   ]
 }

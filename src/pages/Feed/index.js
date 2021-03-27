@@ -45,7 +45,7 @@ const FeedPage = () => {
 
   const toggleTipModal = useCallback(
     tipData => {
-      console.log(tipData)
+      console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
       }
@@ -56,7 +56,7 @@ const FeedPage = () => {
   );
   const toggleUnlockModal = useCallback(
     unlockData => {
-      console.log(unlockData)
+      console.log(unlockData);
       if (unlockModalData || !unlockData) {
         setUnlockModalOpen(null);
       }
@@ -106,7 +106,7 @@ const FeedPage = () => {
         <p className="tab">Videos</p>
       </div>
       <div className="posts-holder">
-        {followedPosts.map((post,index) => {
+        {followedPosts.map((post, index) => {
           const profile = userProfiles[post.authorId];
 
           if (post.type === "shared") {
@@ -137,7 +137,7 @@ const FeedPage = () => {
                 contentItems={post.contentItems}
                 avatar={`data:image/png;base64,${profile?.avatar}`}
                 username={processDisplayName(
-                  profile?.user,
+                  profile?.publicKey,
                   profile?.displayName
                 )}
                 publicKey={post.authorId}
@@ -151,7 +151,10 @@ const FeedPage = () => {
         })}
       </div>
       <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
-      <UnlockModal unlockData={unlockModalData} toggleOpen={toggleUnlockModal} />
+      <UnlockModal
+        unlockData={unlockModalData}
+        toggleOpen={toggleUnlockModal}
+      />
       <BottomBar />
     </div>
   );

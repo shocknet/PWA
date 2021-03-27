@@ -1,13 +1,26 @@
-import React, { Suspense,useCallback, useEffect, useMemo, useState } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
+import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { Link,useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { GUN_PROPS } from "../../utils/Gun";
 import Http from "../../utils/Http";
 import { processDisplayName } from "../../utils/String";
 
-import {subscribeUserProfile,unsubscribeUserProfile} from '../../actions/UserProfilesActions'
-import {rifle,rifleSocketExists,disconnectRifleSocket} from '../../utils/WebSocket'
+import {
+  subscribeUserProfile,
+  unsubscribeUserProfile
+} from "../../actions/UserProfilesActions";
+import {
+  rifle,
+  rifleSocketExists,
+  disconnectRifleSocket
+} from "../../utils/WebSocket";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -25,7 +38,7 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const OtherUserPage = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const hostIP = useSelector(({ node }) => node.hostIP);
@@ -43,31 +56,31 @@ const OtherUserPage = () => {
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [selectedView,setSelectedView] = useState("posts")
   //effect for user profile
-  useEffect(()=>{
-    dispatch(subscribeUserProfile(userPublicKey))
+  useEffect(() => {
+    dispatch(subscribeUserProfile(userPublicKey));
     return () => {
-      dispatch(unsubscribeUserProfile(userPublicKey))
-    }
-  },[userPublicKey])
+      dispatch(unsubscribeUserProfile(userPublicKey));
+    };
+  }, [userPublicKey]);
   //effect for user posts
-  useEffect(()=>{
-    const query = `${userPublicKey}::posts::on`
-    const socketExists = rifleSocketExists(query)
+  useEffect(() => {
+    const query = `${userPublicKey}::posts::on`;
+    const socketExists = rifleSocketExists(query);
     const subscription = rifle({
       host: hostIP,
       query,
-      publicKey:"",
-      reconnect:false
+      publicKey: "",
+      reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts)
+      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
-  
+
       const proms = newPosts.map(async id => {
-        const { data: post } = await  Http.get(
+        const { data: post } = await Http.get(
           `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
         )
         return {...post.data,id,authorId:userPublicKey}
@@ -85,44 +98,51 @@ const OtherUserPage = () => {
     }
   },[userPublicKey])
   //effect for shared posts
-  useEffect(()=>{
-    const query = `${userPublicKey}::sharedPosts::on`
-    const socketExists = rifleSocketExists(query)
+  useEffect(() => {
+    const query = `${userPublicKey}::sharedPosts::on`;
+    const socketExists = rifleSocketExists(query);
     const subscription = rifle({
       host: hostIP,
       query,
-      publicKey:"",
-      reconnect:false
+      publicKey: "",
+      reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts)
+      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
-  
+
       const proms = newPosts.map(async id => {
         const { data: shared } = await Http.get(
           `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
-        )
+        );
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
         );
-        return {...shared.data,originalPost:{...post.data,id},authorId:userPublicKey,type: "shared"}
-      })
-      const postsAlmostReady = await Promise.allSettled(proms)
-      console.log(postsAlmostReady)
-      //@ts-expect-error
-      const postsReady = postsAlmostReady.filter(maybeok => maybeok.status === "fulfilled").map(res => res.value)
-      console.log(postsReady)
-      setUserSharedPosts(postsReady)
+        return {
+          ...shared.data,
+          originalPost: { ...post.data, id },
+          authorId: userPublicKey,
+          type: "shared"
+        };
+      });
+      const postsAlmostReady = await Promise.allSettled(proms);
+      console.log(postsAlmostReady);
+      const postsReady = postsAlmostReady
+        .filter(maybeok => maybeok.status === "fulfilled")
+        // @ts-expect-error
+        .map(res => res.value);
+      console.log(postsReady);
+      setUserSharedPosts(postsReady);
       if (!socketExists) {
         return () => {
-          disconnectRifleSocket(query)
-        }
+          disconnectRifleSocket(query);
+        };
       }
     });
-  },[userPublicKey])
+  }, [userPublicKey]);
   //effect for merge posts and shared posts
   useEffect(()=>{
     const final = [...userPosts,...userSharedPosts].sort((a, b) => b.date - a.date);
@@ -163,7 +183,7 @@ const OtherUserPage = () => {
 
   const toggleTipModal = useCallback(
     tipData => {
-      console.log(tipData)
+      console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
       }
@@ -185,7 +205,7 @@ const OtherUserPage = () => {
   );
   const toggleUnlockModal = useCallback(
     unlockData => {
-      console.log(unlockData)
+      console.log(unlockData);
       if (unlockModalData || !unlockData) {
         setUnlockModalOpen(null);
       }
@@ -194,7 +214,6 @@ const OtherUserPage = () => {
     },
     [unlockModalData]
   );
-
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
@@ -290,9 +309,7 @@ const OtherUserPage = () => {
           />
           <div className="profile-info">
             <p className="profile-name">{processedDisplayName}</p>
-            <p className="profile-desc">
-              {userProfile?.bio || ""}
-            </p>
+            <p className="profile-desc">{userProfile?.bio || ""}</p>
           </div>
         </div>
         <div className="">
@@ -317,9 +334,7 @@ const OtherUserPage = () => {
             size={180}
             className="profile-qrcode"
           />
-          <p className="profile-qrcode-desc">
-            Scan this code to contact me
-          </p>
+          <p className="profile-qrcode-desc">Scan this code to contact me</p>
           <div className="profile-clipboard-container" onClick={copyClipboard}>
             <img
               src={ClipboardIcon}
@@ -332,12 +347,14 @@ const OtherUserPage = () => {
         <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
         <UnlockModal unlockData={unlockModalData} toggleOpen={toggleUnlockModal} />
         <BuyServiceModal service={buyServiceModalData} toggleOpen={toggleBuyServiceModal}/>
-        {/*@ts-expect-error*/}
+        
         <AddBtn
           onClick={toggleModal}
           large
           iconURL={QRCodeIcon}
           style={{ backgroundColor: "var(--yellow)" }}
+          icon={null}
+          label={null}
         />
       </div>
 

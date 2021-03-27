@@ -1,15 +1,10 @@
+import * as Common from "shock-common";
+
 import { ACTIONS } from "../actions/UserProfilesActions";
 import { ACTIONS as NODE_ACTIONS } from "../actions/NodeActions";
 
 /**
- * @typedef {object} User
- * @prop {string|null} avatar
- * @prop {string|null} displayName
- * @prop {string} user Public key.
- */
-
-/**
- * @typedef {Record<string, User>} UserProfilesState
+ * @typedef {Record<string, Common.User>} UserProfilesState
  */
 
 /**
@@ -29,9 +24,8 @@ const userProfiles = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         [publicKey]: {
-          avatar: null,
-          displayName: null,
-          user: publicKey
+          ...Common.createEmptyUser(publicKey),
+          ...state[publicKey]
         }
       };
     }
@@ -47,7 +41,11 @@ const userProfiles = (state = INITIAL_STATE, action) => {
 
       return {
         ...state,
-        [publicKey]: profile
+        [publicKey]: {
+          ...Common.createEmptyUser(publicKey),
+          ...state[publicKey],
+          ...profile
+        }
       };
     }
     case ACTIONS.REMOVE_USER_PROFILE: {
@@ -69,6 +67,7 @@ const userProfiles = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         [publicKey]: {
+          ...Common.createEmptyUser(publicKey),
           ...oldProfile,
           ...newProfile
         }
