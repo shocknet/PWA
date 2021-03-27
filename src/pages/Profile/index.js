@@ -1,10 +1,12 @@
-import React, { Suspense,useCallback, useMemo, useState } from "react";
+import React, { Suspense,useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
+import Http from "../../utils/Http";
 
 import {setSeedProviderPub} from '../../actions/ContentActions'
+import {deleteService, subscribeMyServices} from '../../actions/OrdersActions'
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -27,7 +29,9 @@ const ProfilePage = () => {
   const publicKey = useSelector(({ node }) => node.publicKey);
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
+  const myServices = useSelector(({ orders }) => orders.myServices);
   const [localSeedPub,setLocalSeedPub] = useState(seedProviderPub)
+  const [selectedView,setSelectedView] = useState("posts")
   const avatar = useSelector(({ node }) => node.avatar);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
@@ -42,7 +46,9 @@ const ProfilePage = () => {
     () => processDisplayName(publicKey, displayName),
     [publicKey, displayName]
   );
-
+  useEffect(() =>{
+    return dispatch(subscribeMyServices())
+  },[])
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
@@ -62,10 +68,15 @@ const ProfilePage = () => {
         setLocalSeedPub(value);
         return;
       }
+      case 'selectedView':{
+        setSelectedView(value)
+      }
       default:
         return;
     }
   })
+
+  
   const onUpdatePub = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch)
   },[localSeedPub])
@@ -73,6 +84,66 @@ const ProfilePage = () => {
     setLocalSeedPub(seedProviderPub)
   },[seedProviderPub])
   const somethingChanged = (localSeedPub !== seedProviderPub)
+  const renderPosts = () =>{
+    return myPosts.map((post,index) => {
+      const profile = userProfiles[post.authorId];
+      if (post.type === "shared") {
+        const originalPublicKey = post.originalAuthor;
+        const originalProfile = userProfiles[originalPublicKey];
+        return (
+          <Suspense fallback={<Loader />} key={index}>
+            <SharedPost
+              originalPost={post.originalPost}
+              originalPostProfile={originalProfile}
+              sharedTimestamp={post.shareDate}
+              sharerProfile={profile}
+              postPublicKey={originalPublicKey}
+              openTipModal={()=>{}}
+              // TODO: User online status handling
+              isOnlineNode
+            />
+          </Suspense>
+        );
+      }
+
+      return (
+        <Suspense fallback={<Loader />}  key={index}>
+          <Post
+            id={post.id}
+            timestamp={post.date}
+            contentItems={post.contentItems}
+            avatar={`data:image/png;base64,${profile?.avatar}`}
+            username={processDisplayName(
+              profile?.user,
+              profile?.displayName
+            )}
+            publicKey={post.authorId}
+            openTipModal={()=>{}}
+            // TODO: User online status handling
+            isOnlineNode
+          />
+        </Suspense>
+      );
+    })
+  }
+  const renderServices = ()=>{
+    console.log(myServices)
+    return Object.entries(myServices).filter(([id,service]) => !!service).map(([id,service]) => {
+      const deleteCB = () => {
+        console.log("Deleteig wtf")
+        deleteService(id)(dispatch)
+      }
+      return <div className="post" key={id}>
+        <strong>Service ID</strong><p>{id}</p>
+        <strong>Service Tpe</strong><p>{service.serviceType || ""}</p>
+        <strong>Service Title</strong><p>{service.serviceTitle || ""}</p>
+        <strong>Service Description</strong><p>{service.serviceDescription || ""}</p>
+        <strong>Service Condition</strong><p>{service.serviceCondition || ""}</p>
+        <strong>Service Price</strong><p>{service.servicePrice || ""}</p>
+        <button onClick={deleteCB}>DELETE SERVICE</button>
+      </div>
+    })
+  }
   return (
     <div className="page-container profile-page">
       <div className="profile-container">
@@ -113,54 +184,20 @@ const ProfilePage = () => {
             <i className="profile-choice-icon fas fa-shopping-cart"></i>
             <p className="profile-choice-text">Offer a Product</p>
           </button>
-          <div className="profile-choice-container">
+          <Link to={"/offerService"} className="profile-choice-container">
             <i className="profile-choice-icon fas fa-running"></i>
             <p className="profile-choice-text">Offer a Service</p>
-          </div>
+          </Link>
           
           
         </div>
         <div className="">
-        {myPosts.map((post,index) => {
-          const profile = userProfiles[post.authorId];
-          if (post.type === "shared") {
-            const originalPublicKey = post.originalAuthor;
-            const originalProfile = userProfiles[originalPublicKey];
-            return (
-              <Suspense fallback={<Loader />} key={index}>
-                <SharedPost
-                  originalPost={post.originalPost}
-                  originalPostProfile={originalProfile}
-                  sharedTimestamp={post.shareDate}
-                  sharerProfile={profile}
-                  postPublicKey={originalPublicKey}
-                  openTipModal={()=>{}}
-                  // TODO: User online status handling
-                  isOnlineNode
-                />
-              </Suspense>
-            );
-          }
-
-          return (
-            <Suspense fallback={<Loader />}  key={index}>
-              <Post
-                id={post.id}
-                timestamp={post.date}
-                contentItems={post.contentItems}
-                avatar={`data:image/png;base64,${profile?.avatar}`}
-                username={processDisplayName(
-                  profile?.user,
-                  profile?.displayName
-                )}
-                publicKey={post.authorId}
-                openTipModal={()=>{}}
-                // TODO: User online status handling
-                isOnlineNode
-              />
-            </Suspense>
-          );
-        })}
+          <select value={selectedView} name="selectedView" onChange={onInputChange}>
+            <option value="posts" >POSTS</option>
+            <option value="services" >SERVICES</option>
+          </select>
+        {selectedView === "posts" && renderPosts()}
+        {selectedView === "services" && renderServices()}
       </div>
         <Modal
           toggleModal={toggleModal}
