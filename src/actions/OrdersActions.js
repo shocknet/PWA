@@ -48,10 +48,7 @@ export const deleteService = id => async dispatch => {
   })
 };
 
-export const subscribeMyServices = () => (dispatch,getState) => {
-  const {hostIP} = getState().node
-  console.log("YO")
-  console.log(hostIP)
+export const subscribeMyServices = (hostIP) => (dispatch) => {
   const query = `$user::offeredServices::on`
   const socketExists = rifleSocketExists(query)
   const subscription = rifle({

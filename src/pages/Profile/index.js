@@ -1,5 +1,5 @@
 // @ts-check
-import React, { Suspense, useCallback, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useMemo, useState,useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
@@ -27,19 +27,18 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
+  
   const posts = Store.useSelector(({ feed }) => feed.posts);
-  const displayName = useSelector(({ node }) => node.displayName);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const hostIP = Store.useSelector(({ node }) => node.hostIP);
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
-  const myServices = useSelector(({ orders }) => orders.myServices);
-  const [localSeedPub,setLocalSeedPub] = useState(seedProviderPub)
+
+  const myServices = Store.useSelector(({ orders }) => orders.myServices)
   const [selectedView,setSelectedView] = useState("posts")
   const user = useSelector(Store.selectSelfUser);
-  const avatar = useSelector(({ node }) => node.avatar);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
       const myP = posts[publicKey].sort((a, b) => b.date - a.date);
@@ -53,8 +52,9 @@ const ProfilePage = () => {
     () => processDisplayName(publicKey, user.displayName),
     [publicKey, user.displayName]
   );
+
   useEffect(() =>{
-    return dispatch(subscribeMyServices())
+    return subscribeMyServices(hostIP)(dispatch)
   },[])
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -62,6 +62,8 @@ const ProfilePage = () => {
 
   // ------------------------------------------------------------------------ //
   // CONFIG MODAL
+
+  const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
 
   const [newDisplayName, setNewDisplayName] = useState(user.displayName);
 
@@ -123,6 +125,7 @@ const ProfilePage = () => {
               sharerProfile={profile}
               postPublicKey={originalPublicKey}
               openTipModal={()=>{}}
+              openUnlockModal={()=>{}}
               // TODO: User online status handling
               isOnlineNode
             />
@@ -138,11 +141,14 @@ const ProfilePage = () => {
             contentItems={post.contentItems}
             avatar={`data:image/png;base64,${profile?.avatar}`}
             username={processDisplayName(
-              profile?.user,
+              profile?.publicKey,
               profile?.displayName
             )}
             publicKey={post.authorId}
             openTipModal={()=>{}}
+            openUnlockModal={()=>{}}
+            tipCounter={0}
+            tipValue={0}
             // TODO: User online status handling
             isOnlineNode
           />
