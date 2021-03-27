@@ -73,11 +73,8 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-
   const [newDisplayName, setNewDisplayName] = useState(user.displayName);
-
   const [newBio, setNewBio] = useState(user.bio);
-
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
 
   const onInputChange = e => {
