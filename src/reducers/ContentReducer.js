@@ -4,7 +4,8 @@ const INITIAL_STATE = {
   streamUserToken:'',
   streamLiveToken:'',
   publishedContent:{},
-  unlockedContent:{}
+  unlockedContent:{},
+  seedInfo:"{}"
 };
 
 const content = (state = INITIAL_STATE, action) => {
@@ -33,6 +34,10 @@ const content = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.REMOVE_STREAM:{
       return {...state, streamLiveToken:'',streamUserToken:''}
+    }
+    case ACTIONS.SET_SEED_INFO:{
+      const {data} = action
+      return {...state, seedInfo:data}
     }
     default:
       return state;

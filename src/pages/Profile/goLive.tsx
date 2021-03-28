@@ -16,6 +16,8 @@ const GoLive = () => {
   //@ts-ignore
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
   //@ts-ignore
+  const seedInfo = useSelector(({content}) => content.seedInfo)
+  //@ts-ignore
   const streamLiveToken = useSelector(({content}) => content.streamLiveToken)
   //@ts-ignore
   const streamUserToken = useSelector(({content}) => content.streamUserToken)
@@ -27,24 +29,38 @@ const GoLive = () => {
   const [isLive,setIsLive] = useState(true)
   const [error, setError] = useState<string|null>(null);
   const enroll = useCallback(async () =>{
+    let seedInfoOBJ = null
+    try {
+      const tmp  =JSON.parse(seedInfo)
+      if(tmp && tmp.seedUrl && tmp.tokens && tmp.tokens.length){
+        seedInfoOBJ = tmp
+      }
+    }catch(e){}
     try {
       setLoading(true)
-      const {data:seedData,status} = await Http.post('/api/lnd/unifiedTrx',{
-        type: 'torrentSeed',//TODO change to 'liveSeed'
-        amt: 100,
-        to:seedProviderPub, 
-        memo:'',
-        feeLimit:500,
-        ackInfo:1
-      })
-
-      if(status !== 200){
-        setError("seed token request failed")
-        setLoading(false)
+      let orderData = null
+      if(!seedInfoOBJ){
+        console.log("NOT using seed info OBJ")
+        const {data:seedData,status} = await Http.post('/api/lnd/unifiedTrx',{
+          type: 'torrentSeed',//TODO change to 'liveSeed'
+          amt: 100,
+          to:seedProviderPub, 
+          memo:'',
+          feeLimit:500,
+          ackInfo:1
+        })
+  
+        if(status !== 200){
+          setError("seed token request failed")
+          setLoading(false)
+        }
+        console.log(seedData)
+        const {orderAck} = seedData
+        orderData = JSON.parse(orderAck.response)
+      } else {
+        console.log("Using seed info OBJ")
+        orderData = seedInfoOBJ
       }
-      console.log(seedData)
-      const {orderAck} = seedData
-      const orderData = JSON.parse(orderAck.response)
       const {tokens} = orderData
       const [seedToken] = tokens
       setSeedToken(seedToken)

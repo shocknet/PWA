@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
 import Http from "../../utils/Http";
 
-import {setSeedProviderPub} from '../../actions/ContentActions'
+import {setSeedInfo, setSeedProviderPub} from '../../actions/ContentActions'
 import {deleteService, subscribeMyServices} from '../../actions/OrdersActions'
 
 import BottomBar from "../../common/BottomBar";
@@ -33,6 +33,9 @@ const ProfilePage = () => {
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
+  );
+  const seedInfo = Store.useSelector(
+    ({ content }) => content.seedInfo
   );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
@@ -70,6 +73,7 @@ const ProfilePage = () => {
   const [newBio, setNewBio] = useState(user.bio);
 
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
+  const [localSeedInfo, setLocalSeedInfo] = useState(seedInfo);
 
   const onInputChange = e => {
     const { value, name } = e.target;
@@ -82,6 +86,10 @@ const ProfilePage = () => {
         setSelectedView(value)
         return
       }
+      case 'localInfo':{
+        setLocalSeedInfo(value)
+        return
+      }
       default:
         return;
     }
@@ -90,17 +98,19 @@ const ProfilePage = () => {
   const somethingInsideConfigModalChanged =
     localSeedPub !== seedProviderPub ||
     newDisplayName !== user.displayName ||
-    newBio !== user.bio;
+    newBio !== user.bio || localSeedInfo !== seedInfo;
 
   const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
+    setLocalSeedInfo(seedInfo);
   }, [seedProviderPub]);
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(!profileConfigModalOpen);
   }, [profileConfigModalOpen]);
   const onConfigSubmit = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
-  }, [localSeedPub, dispatch]);
+    setSeedInfo(localSeedInfo)(dispatch)
+  }, [localSeedPub,localSeedInfo,setSeedInfo,setSeedProviderPub, dispatch]);
 
   // ------------------------------------------------------------------------ //
 
@@ -296,6 +306,14 @@ const ProfilePage = () => {
               className="input-field"
               placeholder={localSeedPub}
               name="localPub"
+              onChange={onInputChange}
+            />
+            <label htmlFor="localPub">Seed Token Info</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={localSeedInfo}
+              name="localInfo"
               onChange={onInputChange}
             />
             {somethingInsideConfigModalChanged && (

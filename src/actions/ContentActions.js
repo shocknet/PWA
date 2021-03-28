@@ -2,6 +2,7 @@ import Http from '../utils/Http'
 
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB:'content/setSeedProviderPub',
+  SET_SEED_INFO:'content/setSeedInfo',
   ADD_PUBLISHED_CONTENT:'content/addPublishedContent',
   ADD_UNLOCKED_CONTENT:'content/addUnlocked',
   ADD_STREAM:'content/addStream',
@@ -19,6 +20,20 @@ export const setSeedProviderPub = pub => async dispatch => {
   dispatch({
     type: ACTIONS.SET_SEED_PROVIDER_PUB,
     data: pub
+  });
+};
+export const setSeedInfo = info => async dispatch => {
+  const infoS = JSON.stringify(info)
+  await Http.post('/api/gun/put',{
+    path:'$user>seedServiceSeedData',
+    value:{
+      $$__ENCRYPT__FOR:'me',
+      value:infoS
+    }
+  })
+  dispatch({
+    type: ACTIONS.SET_SEED_INFO,
+    data: info
   });
 };
 export const addPublishedContent = content => async dispatch => {
