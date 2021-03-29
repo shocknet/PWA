@@ -3,7 +3,9 @@ import React, {
   useCallback,
   useMemo,
   useState,
-  useEffect
+  useEffect,
+  useRef,
+  InputHTMLAttributes
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
@@ -11,6 +13,7 @@ import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
 import Http from "axios";
 
+import * as Utils from "../../utils";
 import { setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
@@ -146,6 +149,67 @@ const ProfilePage = () => {
   ]);
 
   // ------------------------------------------------------------------------ //
+  // HEADER IMAGE SET ------------------------------------------------------- //
+  const headerImageFileInput = useRef<HTMLInputElement>(null);
+  const [settingHeader, setSettingHeader] = useState<boolean>(false);
+
+  const onSelectedHeaderFile: InputHTMLAttributes<{}>["onChange"] = async e => {
+    try {
+      e.preventDefault();
+      if (settingHeader) {
+        return;
+      }
+
+      setSettingHeader(true);
+
+      const { files } = (e.target as unknown) as {
+        files: readonly Utils.File[];
+      };
+
+      if (files.length === 0) {
+        return;
+      }
+
+      if (files.length !== 1) {
+        Utils.logger.error(`Profile -> files.length !== 1`);
+        alert(
+          `An error occurred while trying to set a header. This has been logged.`
+        );
+        return;
+      }
+
+      const [file] = files;
+
+      const imageObtained = await Utils.processImageFile(file, 320, 0.7);
+
+      const DATA_URL_TYPE_PREFIX = "data:image/jpeg;base64,";
+      const base64 = imageObtained.slice(DATA_URL_TYPE_PREFIX.length);
+
+      await Utils.Http.post(`/api/gun/put`, {
+        path: "$user>profileBinary>header",
+        value: base64
+      });
+    } catch (e) {
+      Utils.logger.error(`Error while trying to load new header.`);
+      Utils.logger.error(e);
+      alert(
+        "There was an error loading the new header, this has error has been logged."
+      );
+    } finally {
+      setSettingHeader(false);
+    }
+  };
+
+  const onPressHeader = useCallback(e => {
+    e.preventDefault();
+    const { current } = headerImageFileInput;
+    if (!current) {
+      Utils.logger.error("File input element for avatar is falsy.");
+      alert("There was an error and it was logged.");
+    }
+    current.click();
+  }, []);
+  // ------------------------------------------------------------------------ //
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(publicKey);
@@ -229,232 +293,253 @@ const ProfilePage = () => {
       });
   };
   return (
-    <div className="page-container profile-page">
-      <div className="profile-container">
-        <div className="profile-cover" />
-        <div className="profile-info-container">
-          <div
-            className="profile-avatar"
-            style={{
-              height: `${AVATAR_SIZE}px`,
-              width: `${AVATAR_SIZE}px`
-            }}
-          >
-            <ShockAvatar
-              height={AVATAR_SIZE}
-              publicKey={publicKey}
-              setsAvatar
-            />
+    <>
+      <div className="page-container profile-page">
+        <div className="profile-container">
+          <div className="profile-cover" onClick={onPressHeader}>
+            {user.header && (
+              <img
+                alt="User set profile header."
+                src={`data:image/jpeg;base64,${user.header}`}
+              />
+            )}
           </div>
-
-          <div className="profile-info">
-            <p className="profile-name" onClick={() => {}}>
-              {processedDisplayName}
-            </p>
-            <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
-            <div className="config-btn" onClick={toggleConfigModal}>
-              <i className="config-btn-icon icon-solid-spending-rule" />
-              <p className="config-btn-text">Config</p>
-            </div>
-          </div>
-        </div>
-        <div>
-          <Link to={"/goLive"} className="profile-choice-container">
+          <div className="profile-info-container">
             <div
+              className="profile-avatar"
               style={{
-                backgroundColor: "red",
-                color: "white",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "0.2em 0.5em",
-                borderRadius: "0.7em",
-                fontSize: "16px",
-                fontWeight: 600
+                height: `${AVATAR_SIZE}px`,
+                width: `${AVATAR_SIZE}px`
               }}
             >
-              <i className="fas fa-video"></i>
-              <p>GO LIVE</p>
+              <ShockAvatar
+                height={AVATAR_SIZE}
+                publicKey={publicKey}
+                setsAvatar
+              />
             </div>
-          </Link>
-          <Link to={"/createPost"} className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-pen-square"></i>
-            <p className="profile-choice-text">Create Post</p>
-          </Link>
-          <Link to={"/publishContent"} className="profile-choice-container">
-            <i className="profile-choice-icon fab fa-youtube"></i>
-            <p className="profile-choice-text">Publish Content</p>
-          </Link>
-          <button className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-shopping-cart"></i>
-            <p className="profile-choice-text">Offer a Product</p>
-          </button>
-          <Link to={"/offerService"} className="profile-choice-container">
-            <i className="profile-choice-icon fas fa-running"></i>
-            <p className="profile-choice-text">Offer a Service</p>
-          </Link>
-        </div>
-        <div className="">
-          <select
-            value={selectedView}
-            name="selectedView"
-            onChange={onInputChange}
-          >
-            <option value="posts">POSTS</option>
-            <option value="services">SERVICES</option>
-          </select>
-          {selectedView === "posts" && renderPosts()}
-          {selectedView === "services" && renderServices()}
-          {myPosts.map((post, index) => {
-            const profile = userProfiles[post.authorId];
-            if (post.type === "shared") {
-              const originalPublicKey = post.originalAuthor;
-              const originalProfile = userProfiles[originalPublicKey];
+
+            <div className="profile-info">
+              <p className="profile-name" onClick={() => {}}>
+                {processedDisplayName}
+              </p>
+              <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
+              <div className="config-btn" onClick={toggleConfigModal}>
+                <i className="config-btn-icon icon-solid-spending-rule" />
+                <p className="config-btn-text">Config</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <Link to={"/goLive"} className="profile-choice-container">
+              <div
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "0.2em 0.5em",
+                  borderRadius: "0.7em",
+                  fontSize: "16px",
+                  fontWeight: 600
+                }}
+              >
+                <i className="fas fa-video"></i>
+                <p>GO LIVE</p>
+              </div>
+            </Link>
+            <Link to={"/createPost"} className="profile-choice-container">
+              <i className="profile-choice-icon fas fa-pen-square"></i>
+              <p className="profile-choice-text">Create Post</p>
+            </Link>
+            <Link to={"/publishContent"} className="profile-choice-container">
+              <i className="profile-choice-icon fab fa-youtube"></i>
+              <p className="profile-choice-text">Publish Content</p>
+            </Link>
+            <button className="profile-choice-container">
+              <i className="profile-choice-icon fas fa-shopping-cart"></i>
+              <p className="profile-choice-text">Offer a Product</p>
+            </button>
+            <Link to={"/offerService"} className="profile-choice-container">
+              <i className="profile-choice-icon fas fa-running"></i>
+              <p className="profile-choice-text">Offer a Service</p>
+            </Link>
+          </div>
+          <div className="">
+            <select
+              value={selectedView}
+              name="selectedView"
+              onChange={onInputChange}
+            >
+              <option value="posts">POSTS</option>
+              <option value="services">SERVICES</option>
+            </select>
+            {selectedView === "posts" && renderPosts()}
+            {selectedView === "services" && renderServices()}
+            {myPosts.map((post, index) => {
+              const profile = userProfiles[post.authorId];
+              if (post.type === "shared") {
+                const originalPublicKey = post.originalAuthor;
+                const originalProfile = userProfiles[originalPublicKey];
+                return (
+                  <Suspense fallback={<Loader />} key={index}>
+                    <SharedPost
+                      originalPost={post.originalPost}
+                      originalPostProfile={originalProfile}
+                      sharedTimestamp={post.shareDate}
+                      sharerProfile={profile}
+                      postPublicKey={originalPublicKey}
+                      openTipModal={() => {}}
+                      // TODO: User online status handling
+                      isOnlineNode
+                      openUnlockModal={false}
+                    />
+                  </Suspense>
+                );
+              }
+
               return (
                 <Suspense fallback={<Loader />} key={index}>
-                  <SharedPost
-                    originalPost={post.originalPost}
-                    originalPostProfile={originalProfile}
-                    sharedTimestamp={post.shareDate}
-                    sharerProfile={profile}
-                    postPublicKey={originalPublicKey}
+                  <Post
+                    id={post.id}
+                    timestamp={post.date}
+                    contentItems={post.contentItems}
+                    avatar={`data:image/png;base64,${profile?.avatar}`}
+                    username={processDisplayName(
+                      profile?.publicKey,
+                      profile?.displayName
+                    )}
+                    publicKey={post.authorId}
                     openTipModal={() => {}}
                     // TODO: User online status handling
                     isOnlineNode
                     openUnlockModal={false}
+                    tipCounter={undefined}
+                    tipValue={undefined}
                   />
                 </Suspense>
               );
-            }
-
-            return (
-              <Suspense fallback={<Loader />} key={index}>
-                <Post
-                  id={post.id}
-                  timestamp={post.date}
-                  contentItems={post.contentItems}
-                  avatar={`data:image/png;base64,${profile?.avatar}`}
-                  username={processDisplayName(
-                    profile?.publicKey,
-                    profile?.displayName
-                  )}
-                  publicKey={post.authorId}
-                  openTipModal={() => {}}
-                  // TODO: User online status handling
-                  isOnlineNode
-                  openUnlockModal={false}
-                  tipCounter={undefined}
-                  tipValue={undefined}
-                />
-              </Suspense>
-            );
-          })}
-        </div>
-        <Modal
-          toggleModal={toggleModal}
-          modalOpen={profileModalOpen}
-          contentStyle={{
-            padding: "40px 30px"
-          }}
-        >
-          <QRCode
-            bgColor="#23282d"
-            fgColor="#4285b9"
-            value={publicKey}
-            size={180}
-            className="profile-qrcode"
-          />
-          <p className="profile-qrcode-desc">
-            Other users can scan this code to contact you
-          </p>
-          <div className="profile-clipboard-container" onClick={copyClipboard}>
-            <img
-              src={ClipboardIcon}
-              className="profile-clipboard-icon"
-              alt=""
-            />
-            <p className="profile-clipboard-text">Tap to copy to clipboard</p>
+            })}
           </div>
-        </Modal>
+          <Modal
+            toggleModal={toggleModal}
+            modalOpen={profileModalOpen}
+            contentStyle={{
+              padding: "40px 30px"
+            }}
+          >
+            <QRCode
+              bgColor="#23282d"
+              fgColor="#4285b9"
+              value={publicKey}
+              size={180}
+              className="profile-qrcode"
+            />
+            <p className="profile-qrcode-desc">
+              Other users can scan this code to contact you
+            </p>
+            <div
+              className="profile-clipboard-container"
+              onClick={copyClipboard}
+            >
+              <img
+                src={ClipboardIcon}
+                className="profile-clipboard-icon"
+                alt=""
+              />
+              <p className="profile-clipboard-text">Tap to copy to clipboard</p>
+            </div>
+          </Modal>
 
-        <Modal
-          toggleModal={toggleConfigModal}
-          modalOpen={profileConfigModalOpen}
-          contentStyle={{
-            padding: "2em 2em",
-            height: "100%"
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
+          <Modal
+            toggleModal={toggleConfigModal}
+            modalOpen={profileConfigModalOpen}
+            contentStyle={{
+              padding: "2em 2em",
               height: "100%"
             }}
           >
-            <label htmlFor="newDisplayName">Display Name</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new display name"}
-              name="newDisplayName"
-              onChange={({ target: { value } }) => {
-                setNewDisplayName(value);
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                height: "100%"
               }}
-            />
+            >
+              <label htmlFor="newDisplayName">Display Name</label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder={user.displayName || "new display name"}
+                name="newDisplayName"
+                onChange={({ target: { value } }) => {
+                  setNewDisplayName(value);
+                }}
+              />
 
-            <label htmlFor="newBio">New Bio</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new bio"}
-              name="newBio"
-              onChange={({ target: { value } }) => {
-                setNewBio(value);
-              }}
-            />
+              <label htmlFor="newBio">New Bio</label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder={user.displayName || "new bio"}
+                name="newBio"
+                onChange={({ target: { value } }) => {
+                  setNewBio(value);
+                }}
+              />
 
-            <label htmlFor="localPub">Seed Service Provider</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={localSeedPub}
-              name="localPub"
-              onChange={onInputChange}
-            />
-            {somethingInsideConfigModalChanged && (
-              <div className="flex-center" style={{ marginTop: "auto" }}>
-                <button
-                  onClick={onConfigCancel}
-                  className="shock-form-button m-1"
-                >
-                  CANCEL
-                </button>
-                <button
-                  onClick={onConfigSubmit}
-                  className="shock-form-button-confirm m-1"
-                >
-                  SUBMIT
-                </button>
-              </div>
-            )}
-          </div>
-        </Modal>
+              <label htmlFor="localPub">Seed Service Provider</label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder={localSeedPub}
+                name="localPub"
+                onChange={onInputChange}
+              />
+              {somethingInsideConfigModalChanged && (
+                <div className="flex-center" style={{ marginTop: "auto" }}>
+                  <button
+                    onClick={onConfigCancel}
+                    className="shock-form-button m-1"
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    onClick={onConfigSubmit}
+                    className="shock-form-button-confirm m-1"
+                  >
+                    SUBMIT
+                  </button>
+                </div>
+              )}
+            </div>
+          </Modal>
 
-        <AddBtn
-          onClick={toggleModal}
-          large
-          iconURL={QRCodeIcon}
-          style={{ backgroundColor: "var(--yellow)" }}
-          icon={null}
-          label={null}
-        />
+          <AddBtn
+            onClick={toggleModal}
+            large
+            iconURL={QRCodeIcon}
+            style={{ backgroundColor: "var(--yellow)" }}
+            icon={null}
+            label={null}
+          />
+        </div>
+
+        <BottomBar />
       </div>
 
-      <BottomBar />
-    </div>
+      <input
+        type="file"
+        id="avatar-file"
+        ref={headerImageFileInput}
+        hidden
+        accept="image/*"
+        onChange={onSelectedHeaderFile}
+      />
+    </>
   );
 };
 

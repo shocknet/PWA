@@ -93,7 +93,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
       }
 
       if (files.length !== 1) {
-        Utils.logger.error(`ShockAvatar -> files.length !== 0`);
+        Utils.logger.error(`ShockAvatar -> files.length !== 1`);
         alert(
           `An error occurred while trying to set an avatar. This has been logged.`
         );
