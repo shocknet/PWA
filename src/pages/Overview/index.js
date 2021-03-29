@@ -18,9 +18,7 @@ import "./css/index.css";
 
 const OverviewPage = () => {
   const dispatch = useDispatch();
-  const confirmedBalance = useSelector(
-    ({ wallet }) => wallet.confirmedBalance ?? "0"
-  );
+  const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const recentTransactions = useSelector(
     ({ wallet }) => wallet.recentTransactions
@@ -33,13 +31,13 @@ const OverviewPage = () => {
     fetchUnifiedTransactions()(dispatch);
   }, [dispatch]);
 
-  const confirmedBalanceUSD = useMemo(
-    () => formatNumber(convertSatsToUSD(confirmedBalance, USDRate).toFixed(2)),
-    [USDRate, confirmedBalance]
+  const totalBalanceUSD = useMemo(
+    () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
+    [USDRate, totalBalance]
   );
 
-  const formattedBalance = useMemo(() => formatNumber(confirmedBalance), [
-    confirmedBalance
+  const formattedBalance = useMemo(() => formatNumber(totalBalance), [
+    totalBalance
   ]);
 
   return (
@@ -51,7 +49,7 @@ const OverviewPage = () => {
             {formattedBalance}{" "}
             <span className="overview-balance-unit">Sats</span>
           </p>
-          <p className="overview-balance-usd">{confirmedBalanceUSD} USD</p>
+          <p className="overview-balance-usd">{totalBalanceUSD} USD</p>
         </div>
         <div className="overview-actions">
           <Link to="/send" className="overview-action overview-action-send">
