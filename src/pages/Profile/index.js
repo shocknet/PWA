@@ -240,7 +240,11 @@ const ProfilePage = () => {
               width: `${AVATAR_SIZE}px`
             }}
           >
-            <ShockAvatar height={AVATAR_SIZE} publicKey={publicKey} />
+            <ShockAvatar
+              height={AVATAR_SIZE}
+              publicKey={publicKey}
+              setsAvatar
+            />
           </div>
 
           <div className="profile-info">
