@@ -52,7 +52,7 @@
     "uuid": "^8.3.2",
     "video.js": "^7.11.4",
     "web-vitals": "^1.1.1",
-    "webtorrent": "^0.115.4",
+    "webtorrent": "^0.116.0",
     "workbox-background-sync": "^6.1.1",
     "workbox-broadcast-update": "^6.1.1",
     "workbox-cacheable-response": "^6.1.2",
