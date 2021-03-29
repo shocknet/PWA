@@ -1,4 +1,3 @@
-// @ts-check
 import React, {
   Suspense,
   useCallback,
@@ -204,7 +203,8 @@ const ProfilePage = () => {
     console.log(myServices);
     return Object.entries(myServices)
       .filter(([id, service]) => !!service)
-      .map(([id, service]) => {
+      .map(([id, serv]) => {
+        const service = serv as Record<string, string>;
         const deleteCB = () => {
           console.log("delete wtf");
           deleteService(id)(dispatch);
