@@ -2,10 +2,10 @@ import { Schema } from "shock-common";
 
 import { State } from "../../reducers";
 
-import { getMyPublicKey } from "./auth";
+import { selectSelfPublicKey } from "./auth";
 
 export const selectSelfUser = (state: State) => {
-  const selfPublicKey = getMyPublicKey(state);
+  const selfPublicKey = selectSelfPublicKey(state);
   const maybeUser = state.userProfiles[selfPublicKey];
   if (maybeUser) {
     return maybeUser;
@@ -32,6 +32,6 @@ export const selectAllPublicKeys = (state: State): string[] => {
 };
 
 export const selectAllOtherPublicKeys = (state: State): string[] => {
-  const selfPublicKey = getMyPublicKey(state);
+  const selfPublicKey = selectSelfPublicKey(state);
   return selectAllPublicKeys(state).filter(key => key !== selfPublicKey);
 };

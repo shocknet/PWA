@@ -1,13 +1,22 @@
 // @ts-check
-import React, { Suspense, useCallback, useMemo, useState,useEffect } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect
+} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
-import Http from "../../utils/Http";
+import Http from "axios";
 
-import {setSeedProviderPub} from '../../actions/ContentActions'
-import {deleteService, subscribeMyServices} from '../../actions/OrdersActions'
+import { setSeedProviderPub } from "../../actions/ContentActions";
+import {
+  deleteService,
+  subscribeMyServices
+} from "../../actions/OrdersActions";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -27,7 +36,7 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  
+
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
@@ -36,8 +45,8 @@ const ProfilePage = () => {
   );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
-  const myServices = Store.useSelector(({ orders }) => orders.myServices)
-  const [selectedView,setSelectedView] = useState("posts")
+  const myServices = Store.useSelector(({ orders }) => orders.myServices);
+  const [selectedView, setSelectedView] = useState("posts");
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
@@ -53,9 +62,9 @@ const ProfilePage = () => {
     [publicKey, user.displayName]
   );
 
-  useEffect(() =>{
-    return subscribeMyServices(hostIP)(dispatch)
-  },[])
+  useEffect(() => {
+    return subscribeMyServices(hostIP)(dispatch);
+  }, [hostIP, dispatch]);
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
@@ -64,11 +73,8 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-
   const [newDisplayName, setNewDisplayName] = useState(user.displayName);
-
   const [newBio, setNewBio] = useState(user.bio);
-
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
 
   const onInputChange = e => {
@@ -78,9 +84,9 @@ const ProfilePage = () => {
         setLocalSeedPub(value);
         return;
       }
-      case 'selectedView':{
-        setSelectedView(value)
-        return
+      case "selectedView": {
+        setSelectedView(value);
+        return;
       }
       default:
         return;
@@ -92,15 +98,53 @@ const ProfilePage = () => {
     newDisplayName !== user.displayName ||
     newBio !== user.bio;
 
+  const toggleConfigModal = useCallback(() => {
+    setProfileConfigModalOpen(open => !open);
+    setNewDisplayName(user.displayName);
+    setNewBio(user.bio);
+  }, [
+    setProfileConfigModalOpen,
+    setNewDisplayName,
+    user.displayName,
+    setNewBio,
+    user.bio
+  ]);
+
   const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
-  }, [seedProviderPub]);
-  const toggleConfigModal = useCallback(() => {
-    setProfileConfigModalOpen(!profileConfigModalOpen);
-  }, [profileConfigModalOpen]);
+    setNewDisplayName(user.displayName);
+    setNewBio(user.bio);
+    toggleConfigModal();
+  }, [
+    seedProviderPub,
+    setNewDisplayName,
+    user.displayName,
+    setNewBio,
+    user.bio,
+    toggleConfigModal
+  ]);
   const onConfigSubmit = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
-  }, [localSeedPub, dispatch]);
+    if (newDisplayName !== user.displayName) {
+      Http.put(`/api/gun/me`, {
+        displayName: newDisplayName
+      });
+    }
+    if (newBio !== user.bio) {
+      Http.put("/api/gun/me", {
+        bio: newBio
+      });
+    }
+    toggleConfigModal();
+  }, [
+    localSeedPub,
+    dispatch,
+    newDisplayName,
+    user.displayName,
+    newBio,
+    user.bio,
+    toggleConfigModal
+  ]);
 
   // ------------------------------------------------------------------------ //
 
@@ -110,8 +154,8 @@ const ProfilePage = () => {
 
   const AVATAR_SIZE = 122;
 
-  const renderPosts = () =>{
-    return myPosts.map((post,index) => {
+  const renderPosts = () => {
+    return myPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
         const originalPublicKey = post.originalAuthor;
@@ -124,8 +168,8 @@ const ProfilePage = () => {
               sharedTimestamp={post.shareDate}
               sharerProfile={profile}
               postPublicKey={originalPublicKey}
-              openTipModal={()=>{}}
-              openUnlockModal={()=>{}}
+              openTipModal={() => {}}
+              openUnlockModal={() => {}}
               // TODO: User online status handling
               isOnlineNode
             />
@@ -134,7 +178,7 @@ const ProfilePage = () => {
       }
 
       return (
-        <Suspense fallback={<Loader />}  key={index}>
+        <Suspense fallback={<Loader />} key={index}>
           <Post
             id={post.id}
             timestamp={post.date}
@@ -145,8 +189,8 @@ const ProfilePage = () => {
               profile?.displayName
             )}
             publicKey={post.authorId}
-            openTipModal={()=>{}}
-            openUnlockModal={()=>{}}
+            openTipModal={() => {}}
+            openUnlockModal={() => {}}
             tipCounter={0}
             tipValue={0}
             // TODO: User online status handling
@@ -154,26 +198,36 @@ const ProfilePage = () => {
           />
         </Suspense>
       );
-    })
-  }
-  const renderServices = ()=>{
-    console.log(myServices)
-    return Object.entries(myServices).filter(([id,service]) => !!service).map(([id,service]) => {
-      const deleteCB = () => {
-        console.log("Deleteig wtf")
-        deleteService(id)(dispatch)
-      }
-      return <div className="post" key={id}>
-        <strong>Service ID</strong><p>{id}</p>
-        <strong>Service Tpe</strong><p>{service.serviceType || ""}</p>
-        <strong>Service Title</strong><p>{service.serviceTitle || ""}</p>
-        <strong>Service Description</strong><p>{service.serviceDescription || ""}</p>
-        <strong>Service Condition</strong><p>{service.serviceCondition || ""}</p>
-        <strong>Service Price</strong><p>{service.servicePrice || ""}</p>
-        <button onClick={deleteCB}>DELETE SERVICE</button>
-      </div>
-    })
-  }
+    });
+  };
+  const renderServices = () => {
+    console.log(myServices);
+    return Object.entries(myServices)
+      .filter(([id, service]) => !!service)
+      .map(([id, service]) => {
+        const deleteCB = () => {
+          console.log("delete wtf");
+          deleteService(id)(dispatch);
+        };
+        return (
+          <div className="post" key={id}>
+            <strong>Service ID</strong>
+            <p>{id}</p>
+            <strong>Service Tpe</strong>
+            <p>{service.serviceType || ""}</p>
+            <strong>Service Title</strong>
+            <p>{service.serviceTitle || ""}</p>
+            <strong>Service Description</strong>
+            <p>{service.serviceDescription || ""}</p>
+            <strong>Service Condition</strong>
+            <p>{service.serviceCondition || ""}</p>
+            <strong>Service Price</strong>
+            <p>{service.servicePrice || ""}</p>
+            <button onClick={deleteCB}>DELETE SERVICE</button>
+          </div>
+        );
+      });
+  };
   return (
     <div className="page-container profile-page">
       <div className="profile-container">
@@ -186,14 +240,18 @@ const ProfilePage = () => {
               width: `${AVATAR_SIZE}px`
             }}
           >
-            <ShockAvatar height={AVATAR_SIZE} publicKey={publicKey} />
+            <ShockAvatar
+              height={AVATAR_SIZE}
+              publicKey={publicKey}
+              setsAvatar
+            />
           </div>
 
           <div className="profile-info">
             <p className="profile-name" onClick={() => {}}>
               {processedDisplayName}
             </p>
-            <p className="profile-desc">{user.bio}</p>
+            <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
             <div className="config-btn" onClick={toggleConfigModal}>
               <i className="config-btn-icon icon-solid-spending-rule" />
               <p className="config-btn-text">Config</p>
@@ -236,17 +294,63 @@ const ProfilePage = () => {
             <i className="profile-choice-icon fas fa-running"></i>
             <p className="profile-choice-text">Offer a Service</p>
           </Link>
-          
-          
         </div>
         <div className="">
-          <select value={selectedView} name="selectedView" onChange={onInputChange}>
-            <option value="posts" >POSTS</option>
-            <option value="services" >SERVICES</option>
+          <select
+            value={selectedView}
+            name="selectedView"
+            onChange={onInputChange}
+          >
+            <option value="posts">POSTS</option>
+            <option value="services">SERVICES</option>
           </select>
-        {selectedView === "posts" && renderPosts()}
-        {selectedView === "services" && renderServices()}
-      </div>
+          {selectedView === "posts" && renderPosts()}
+          {selectedView === "services" && renderServices()}
+          {myPosts.map((post, index) => {
+            const profile = userProfiles[post.authorId];
+            if (post.type === "shared") {
+              const originalPublicKey = post.originalAuthor;
+              const originalProfile = userProfiles[originalPublicKey];
+              return (
+                <Suspense fallback={<Loader />} key={index}>
+                  <SharedPost
+                    originalPost={post.originalPost}
+                    originalPostProfile={originalProfile}
+                    sharedTimestamp={post.shareDate}
+                    sharerProfile={profile}
+                    postPublicKey={originalPublicKey}
+                    openTipModal={() => {}}
+                    // TODO: User online status handling
+                    isOnlineNode
+                    openUnlockModal={false}
+                  />
+                </Suspense>
+              );
+            }
+
+            return (
+              <Suspense fallback={<Loader />} key={index}>
+                <Post
+                  id={post.id}
+                  timestamp={post.date}
+                  contentItems={post.contentItems}
+                  avatar={`data:image/png;base64,${profile?.avatar}`}
+                  username={processDisplayName(
+                    profile?.publicKey,
+                    profile?.displayName
+                  )}
+                  publicKey={post.authorId}
+                  openTipModal={() => {}}
+                  // TODO: User online status handling
+                  isOnlineNode
+                  openUnlockModal={false}
+                  tipCounter={undefined}
+                  tipValue={undefined}
+                />
+              </Suspense>
+            );
+          })}
+        </div>
         <Modal
           toggleModal={toggleModal}
           modalOpen={profileModalOpen}
@@ -290,6 +394,28 @@ const ProfilePage = () => {
               height: "100%"
             }}
           >
+            <label htmlFor="newDisplayName">Display Name</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new display name"}
+              name="newDisplayName"
+              onChange={({ target: { value } }) => {
+                setNewDisplayName(value);
+              }}
+            />
+
+            <label htmlFor="newBio">New Bio</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new bio"}
+              name="newBio"
+              onChange={({ target: { value } }) => {
+                setNewBio(value);
+              }}
+            />
+
             <label htmlFor="localPub">Seed Service Provider</label>
             <input
               type="text"

@@ -1,3 +1,4 @@
+// @ts-check
 import jwtDecode from "jwt-decode";
 import Http from "axios";
 import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";

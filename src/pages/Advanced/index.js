@@ -81,7 +81,7 @@ const AdvancedPage = () => {
   return (
     <div className="page-container advanced-page">
       <div className="advanced-header">
-        <MainNav absolute pageTitle="ADVANCED" />
+        <MainNav absolute pageTitle="ADVANCED" enableBackButton={false} />
         <div className="advanced-balance-container">
           <div className="advanced-balance-icon-container">
             <i className="advanced-balance-icon fas fa-link"></i>
