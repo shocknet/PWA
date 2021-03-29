@@ -206,7 +206,7 @@ const ProfilePage = () => {
       .filter(([id, service]) => !!service)
       .map(([id, service]) => {
         const deleteCB = () => {
-          console.log("Deleteig wtf");
+          console.log("delete wtf");
           deleteService(id)(dispatch);
         };
         return (
