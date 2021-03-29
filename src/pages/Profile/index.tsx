@@ -3,7 +3,9 @@ import React, {
   useCallback,
   useMemo,
   useState,
-  useEffect
+  useEffect,
+  useRef,
+  InputHTMLAttributes
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
@@ -11,6 +13,7 @@ import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
 import Http from "axios";
 
+import * as Utils from "../../utils";
 import { setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
@@ -146,6 +149,67 @@ const ProfilePage = () => {
   ]);
 
   // ------------------------------------------------------------------------ //
+  // HEADER IMAGE SET ------------------------------------------------------- //
+  const headerImageFileInput = useRef<HTMLInputElement>(null);
+  const [settingHeader, setSettingHeader] = useState<boolean>(false);
+
+  const onSelectedHeaderFile: InputHTMLAttributes<{}>["onChange"] = async e => {
+    try {
+      e.preventDefault();
+      if (settingHeader) {
+        return;
+      }
+
+      setSettingHeader(true);
+
+      const { files } = (e.target as unknown) as {
+        files: readonly Utils.File[];
+      };
+
+      if (files.length === 0) {
+        return;
+      }
+
+      if (files.length !== 1) {
+        Utils.logger.error(`Profile -> files.length !== 1`);
+        alert(
+          `An error occurred while trying to set a header. This has been logged.`
+        );
+        return;
+      }
+
+      const [file] = files;
+
+      const imageObtained = await Utils.processImageFile(file, 320, 0.7);
+
+      const DATA_URL_TYPE_PREFIX = "data:image/jpeg;base64,";
+      const base64 = imageObtained.slice(DATA_URL_TYPE_PREFIX.length);
+
+      await Utils.Http.post(`/api/gun/put`, {
+        path: "$user>profileBinary>header",
+        value: base64
+      });
+    } catch (e) {
+      Utils.logger.error(`Error while trying to load new header.`);
+      Utils.logger.error(e);
+      alert(
+        "There was an error loading the new header, this has error has been logged."
+      );
+    } finally {
+      setSettingHeader(false);
+    }
+  };
+
+  const onPressHeader = useCallback(e => {
+    e.preventDefault();
+    const { current } = headerImageFileInput;
+    if (!current) {
+      Utils.logger.error("File input element for avatar is falsy.");
+      alert("There was an error and it was logged.");
+    }
+    current.click();
+  }, []);
+  // ------------------------------------------------------------------------ //
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(publicKey);
@@ -232,7 +296,14 @@ const ProfilePage = () => {
     <>
       <div className="page-container profile-page">
         <div className="profile-container">
-          <div className="profile-cover" />
+          <div className="profile-cover" onClick={onPressHeader}>
+            {user.header && (
+              <img
+                alt="User set profile header."
+                src={`data:image/jpeg;base64,${user.header}`}
+              />
+            )}
+          </div>
           <div className="profile-info-container">
             <div
               className="profile-avatar"
@@ -459,6 +530,15 @@ const ProfilePage = () => {
 
         <BottomBar />
       </div>
+
+      <input
+        type="file"
+        id="avatar-file"
+        ref={headerImageFileInput}
+        hidden
+        accept="image/*"
+        onChange={onSelectedHeaderFile}
+      />
     </>
   );
 };
