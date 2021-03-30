@@ -58,7 +58,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const avatarStyle: React.CSSProperties = {
     height: height + "px",
-    width: height,
+    width: height + "px",
     borderRadius: "50%",
     display: "inline-block",
     borderColor: "#39B54A"
