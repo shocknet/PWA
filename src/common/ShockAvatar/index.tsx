@@ -24,6 +24,11 @@ export interface ShockAvatarProps {
    * ring.
    */
   setsAvatar?: boolean;
+  /**
+   * If true, avatar will have a thin grey border around it. Will override
+   * status/online rings.
+   */
+  greyBorder?: boolean;
 }
 
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
@@ -32,7 +37,8 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   // disableOnlineRing,
   nameAtBottom,
   onPress: onPressProp,
-  setsAvatar
+  setsAvatar,
+  greyBorder
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
@@ -60,8 +66,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     height: height + "px",
     width: height + "px",
     borderRadius: "50%",
-    display: "inline-block",
-    borderColor: "#39B54A"
+    display: "inline-block"
   };
 
   // if (!isOwn && Utils.isOnline(lastSeenApp)) {
@@ -73,7 +78,14 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   // if (showStoryRing) {
   //   avatarStyle.borderWidth = 2;
   //   avatarStyle.borderStyle = "dotted";
+  //   avatarStyle.borderColor = "#39B54A"
   // }
+
+  if (greyBorder) {
+    avatarStyle.borderWidth = "2px";
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "grey";
+  }
 
   const onSelectedAvatarFile: InputHTMLAttributes<{}>["onChange"] = async e => {
     try {
