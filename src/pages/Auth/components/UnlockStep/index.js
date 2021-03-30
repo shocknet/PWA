@@ -1,3 +1,4 @@
+// @ts-check
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
@@ -62,6 +63,8 @@ const UnlockStep = () => {
           value={alias}
           onChange={onInputChange}
           className="input-field"
+          autoCorrect="off"
+          autoCapitalize="none"
         />
         <input
           type="password"

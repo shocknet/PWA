@@ -1,3 +1,4 @@
+// @ts-check
 import jwtDecode from "jwt-decode";
 import Http from "axios";
 import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
@@ -26,9 +27,36 @@ export const setHostId = hostId => dispatch => {
   });
 };
 
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const retryOperation = (operation, delay, retries) =>
+  new Promise((resolve, reject) => {
+    return operation()
+      .then(resolve)
+      .catch(reason => {
+        if (retries > 0) {
+          return wait(delay)
+            .then(retryOperation.bind(null, operation, delay, retries - 1))
+            .then(resolve)
+            .catch(reject);
+        }
+        return reject(reason);
+      });
+  });
+
 export const fetchNodeHealth = hostIP => async dispatch => {
   try {
-    const { data } = await Http.get(`${hostIP}/healthz`);
+    const { data } = await retryOperation(
+      async () => {
+        const { data } = await Http.get(`${hostIP}/healthz`);
+        if (!data) {
+          throw new Error();
+        }
+        return { data };
+      },
+      1000,
+      4
+    );
 
     if (data.APIStatus?.message) {
       dispatch({

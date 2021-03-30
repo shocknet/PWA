@@ -20,6 +20,9 @@ const PublishContentPage = () => {
   const imageFile = useRef(null)
   const videoFile = useRef(null)
 
+  const [useDefault,setUseDefault] = useState(false)
+  const [pastedTokenInfo,setPastedTokenInfo] = useState(null) 
+
   const [selectedFiles,setSelectedFiles] = useState([]) 
 
   const onSubmit = useCallback(
@@ -33,22 +36,32 @@ const PublishContentPage = () => {
       }
       setLoading(true)
       try{
-        const {data,status} = await Http.post('/api/lnd/unifiedTrx',{
-          type: 'torrentSeed',
-          amt: 100,
-          to:seedProviderPub,
-          memo:'',
-          feeLimit:500,
-          ackInfo:1
-        })
-  
-        if(status !== 200){
-          setError("seed token request failed")
+        let tokenInfo = null
+        if(useDefault){
+          const {data,status} = await Http.post('/api/lnd/unifiedTrx',{
+            type: 'torrentSeed',
+            amt: 100,
+            to:seedProviderPub,
+            memo:'',
+            feeLimit:500,
+            ackInfo:1
+          })
+    
+          if(status !== 200){
+            setError("seed token request failed")
+            setLoading(false)
+          }
+          console.log(data)
+          const {orderAck} = data
+          tokenInfo = orderAck.response
+        } else if(pastedTokenInfo) {
+          tokenInfo = pastedTokenInfo
+        } else {
+          setError("provide the token data or use default seed provider")
           setLoading(false)
+        return
         }
-        console.log(data)
-        const {orderAck} = data
-        const orderData = JSON.parse(orderAck.response)
+        const orderData = JSON.parse(tokenInfo)
         const {seedUrl,tokens} = orderData
         const formData = new FormData()
         //TODO support public/private content by requesting two tokens and doing this req twice
@@ -103,8 +116,8 @@ const PublishContentPage = () => {
     [setDescription, setTitle, setError]
   );
   const onInputChange = useCallback(e => {
-    const { value, name } = e.target;
-    e.preventDefault()
+    const { value, name,checked } = e.target;
+    //e.preventDefault()
     switch (name) {
       case "title": {
         setTitle(value);
@@ -120,6 +133,15 @@ const PublishContentPage = () => {
       }
       case "createPost":{
         console.log("create post")
+        return
+      }
+      case "pastedTokenInfo":{
+        setPastedTokenInfo(value)
+        return
+      }
+      case "useDefault":{
+        setUseDefault(checked)
+        console.log(checked)
         return
       }
       default:
@@ -237,6 +259,23 @@ const PublishContentPage = () => {
         onChange={onInputChange}
         className="input-field"
       />
+      {!useDefault && <div>
+        <div className="publish-content-title">
+          <label htmlFor="description"><strong>Token Info</strong></label>
+        </div>
+        <textarea
+          name="pastedTokenInfo"
+          placeholder="Paste here the Token info you got from the service"
+          rows={3}
+          value={pastedTokenInfo}
+          onChange={onInputChange}
+          className="input-field"
+        />
+      </div>}
+      <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
+        <label htmlFor="useDefault">Use default seed provider</label>
+        <input type="checkbox" name="useDefault" checked={useDefault} onChange={onInputChange} style={{marginLeft:"0.2em"}}  />
+      </div>
       <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
         <label htmlFor="createPost">Create Post/Teaser?</label>
       <input type="checkbox" name="createPost" style={{marginLeft:"0.2em"}}  />

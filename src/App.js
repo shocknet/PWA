@@ -1,6 +1,7 @@
+// @ts-check
 import React, { Suspense, useEffect } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import { setAuthenticated } from "./actions/AuthActions";
@@ -8,6 +9,8 @@ import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
 import "./styles/App.css";
+import { subscribeUserProfile } from "./actions/UserProfilesActions";
+import * as Store from "./store";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -22,6 +25,9 @@ const MoonPayPage = React.lazy(() => import("./pages/MoonPay"));
 const PublishContentPage = React.lazy(() =>
   import("./pages/Profile/publishContent")
 );
+const offerServicePage = React.lazy(() =>
+  import("./pages/Profile/offerService")
+);
 const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
 const GoLivePage = React.lazy(() => import("./pages/Profile/goLive"));
 const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
@@ -29,7 +35,7 @@ const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
 
 const PrivateRoute = ({ component, ...options }) => {
-  const authenticated = useSelector(({ auth }) => auth.authenticated);
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const authorizedComponent = authenticated ? component : AuthPage;
 
   return <Route {...options} component={authorizedComponent} />;
@@ -37,8 +43,9 @@ const PrivateRoute = ({ component, ...options }) => {
 
 const App = () => {
   const dispatch = useDispatch();
-  const authToken = useSelector(({ node }) => node.authToken);
-  const authenticated = useSelector(({ auth }) => auth.authenticated);
+  const authToken = Store.useSelector(({ node }) => node.authToken);
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
+  const publicKey = Store.useSelector(Store.selectSelfPublicKey);
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -54,6 +61,7 @@ const App = () => {
     }
 
     const decodedToken = JWTDecode(authToken);
+    // @ts-expect-error
     const tokenExpired = decodedToken.exp * 1000 < Date.now();
     setAuthenticated(tokenExpired);
   }, [authToken, dispatch]);
@@ -62,8 +70,9 @@ const App = () => {
     if (authenticated && dispatch) {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
+      dispatch(subscribeUserProfile(publicKey));
     }
-  }, [authenticated, dispatch]);
+  }, [authenticated, dispatch, publicKey]);
 
   return (
     <>
@@ -88,6 +97,7 @@ const App = () => {
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <PrivateRoute path="/createPost" exact component={createPostPage} />
             <PrivateRoute path="/goLive" exact component={GoLivePage} />
+            <PrivateRoute path="/offerService" exact component={offerServicePage} />
             <PrivateRoute
               path="/otherUser/:publicKey"
               exact
