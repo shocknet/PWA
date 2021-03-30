@@ -108,7 +108,7 @@ export const subscribeChatMessages = (
     return null;
   }
 
-  const incomingMessages = rifle({
+  const incomingMessages = await rifle({
     host: hostIP,
     query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
     publicKey: recipientPublicKey

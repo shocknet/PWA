@@ -9,6 +9,7 @@
     "autocorrect",
     "luxon",
     "persistor",
+    "uuidv",
     "qrcode",
     "serv",
     "videojs",

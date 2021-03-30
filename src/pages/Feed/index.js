@@ -70,12 +70,19 @@ const FeedPage = () => {
     [unlockModalData]
   );
 
-  useEffect(() => {
-    const subscription = dispatch(subscribeFollows());
+  const startFollowsSubscription = useCallback(async () => {
+    const subscription = await dispatch(subscribeFollows());
 
-    return () => {
-      subscription.off("*");
-      subscription.close();
+    return subscription;
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscription = startFollowsSubscription();
+
+    return async () => {
+      const resolvedSubscription = await subscription;
+      resolvedSubscription.off("*");
+      resolvedSubscription.close();
     };
   }, [dispatch]);
 

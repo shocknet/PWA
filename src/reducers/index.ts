@@ -9,12 +9,14 @@ import DrawerReducer from "./DrawerReducer";
 import ContentReducer from "./ContentReducer";
 import FeesReducer from "./FeesReducer";
 import FeedReducer from "./FeedReducer";
+import EncryptionReducer from "./EncryptionReducer";
 import UserProfilesReducer from "./UserProfilesReducer";
 import OrdersReducer from "./OrdersReducer"
 
 const reducers = combineReducers({
   node: NodeReducer,
   auth: AuthReducer,
+  encryption: EncryptionReducer,
   wallet: WalletReducer,
   chat: ChatReducer,
   drawer: DrawerReducer,

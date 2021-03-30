@@ -3,10 +3,12 @@ import jwtDecode from "jwt-decode";
 import Http from "axios";
 import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
 import { parseError } from "../utils/Error";
+import { throttledExchangeKeyPair } from "./EncryptionActions";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
   SET_HOST_IP: "node/hostIP",
+  SET_HOST_ID: "node/hostId",
   SET_AUTHENTICATED_USER: "node/authenticatedUser",
   SET_CONNECTION_STATUS: "node/connectionStatus",
   SET_NODE_HEALTH: "node/health"
@@ -15,6 +17,13 @@ export const ACTIONS = {
 export const resetNodeInfo = () => dispatch => {
   dispatch({
     type: ACTIONS.RESET_NODE_INFO
+  });
+};
+
+export const setHostId = hostId => dispatch => {
+  dispatch({
+    type: ACTIONS.SET_HOST_ID,
+    data: hostId
   });
 };
 
@@ -67,7 +76,6 @@ export const fetchNodeHealth = hostIP => async dispatch => {
 
 export const fetchNodeUnlockStatus = () => async dispatch => {
   const { data } = await Http.get("/api/lnd/wallet/status");
-  console.log("data:", data);
   const { walletExists, walletStatus } = data;
 
   if (walletExists) {
@@ -82,7 +90,8 @@ export const fetchNodeUnlockStatus = () => async dispatch => {
     type: AUTH_ACTIONS.SET_AUTH_STEP,
     data: "createWallet"
   });
-  return "noWallet";
+
+  return "createWallet";
 };
 
 export const connectHost = (hostIP, resetData = true) => async dispatch => {
@@ -102,7 +111,10 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
       data: host
     });
 
-    await fetchNodeUnlockStatus()(dispatch);
+    await Promise.all([
+      dispatch(fetchNodeUnlockStatus()),
+      dispatch(throttledExchangeKeyPair())
+    ]);
   };
 
   let nodeHealthHttps;

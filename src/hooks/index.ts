@@ -14,8 +14,8 @@ export const useStory = (publicKey: string) => {
   const [pics, setPics] = React.useState<readonly Pic[]>([]);
   const { hostIP } = Store.useSelector(state => state.node);
 
-  React.useEffect(() => {
-    const sub = rifle({
+  const subscribeStory = React.useCallback(async () => {
+    const sub = await rifle({
       host: hostIP,
       query: `${publicKey}::story::open`
     });
@@ -44,6 +44,10 @@ export const useStory = (publicKey: string) => {
       sub.close();
     };
   }, [hostIP, publicKey]);
+
+  React.useEffect(() => {
+    subscribeStory();
+  }, [subscribeStory]);
 
   return pics;
 };
