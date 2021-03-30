@@ -9,7 +9,7 @@ export const ACTIONS = {
 
 export const subscribeUserProfile = publicKey => async (dispatch, getState) => {
   const { hostIP } = getState().node;
-  const subscription = rifle({
+  const subscription = await rifle({
     host: hostIP,
     query: `${publicKey}::Profile::on`,
     reconnect: true

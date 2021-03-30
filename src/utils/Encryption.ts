@@ -33,6 +33,14 @@ interface DecryptMessageArgs {
   encryptedMessage: EncryptedMessage;
 }
 
+const nonEncryptedEvents = [
+  "ping",
+  "disconnect",
+  "IS_GUN_AUTH",
+  "SET_LAST_SEEN_APP",
+  "NOT_AUTH"
+];
+
 export const convertUTF8ToBase64 = (value: string) => {
   return Buffer.from(value, "utf-8").toString("base64");
 };
@@ -126,6 +134,9 @@ export const convertToEncryptedMessage = (
 
 export const isEncryptedMessage = (message: any) =>
   message?.ciphertext && message?.iv && message?.mac && message?.ephemPublicKey;
+
+export const isNonEncrypted = (eventName: string) =>
+  nonEncryptedEvents.includes(eventName);
 
 export const generateKeyPair = () => {
   const privateKey: Uint8Array = ECCrypto.generatePrivate();

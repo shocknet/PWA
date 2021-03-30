@@ -37,9 +37,8 @@ const Story: React.FC<StoryProps> = ({
     ({ userProfiles }) => userProfiles[publicKey]
   );
   const { hostIP } = Store.useSelector(state => state.node);
-
-  React.useEffect(() => {
-    const sub = rifle({
+  const subscribeStory = React.useCallback(async () => {
+    const sub = await rifle({
       host: hostIP,
       query: `${publicKey}::story::open`
     });
@@ -67,7 +66,11 @@ const Story: React.FC<StoryProps> = ({
       sub.off("$shock");
       sub.close();
     };
-  }, [hostIP, publicKey]);
+  }, [hostIP, publicKey])
+
+  React.useEffect(() => {
+    subscribeStory()
+  }, [subscribeStory]);
 
   React.useEffect(() => {
     if (currI !== 0 && position !== "first") {

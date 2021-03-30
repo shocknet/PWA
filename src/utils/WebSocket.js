@@ -1,4 +1,5 @@
 import SocketIO from "socket.io-client";
+import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
 import FieldError from "./FieldError";
 
@@ -21,51 +22,172 @@ export const disconnectSocket = socket => {
   socket.close();
 };
 
+const decryptEventCallback = async ({ err, data, callback, privateKey }) => {
+  if (
+    (err && !Encryption.isEncryptedMessage(err)) ||
+    (data && !Encryption.isEncryptedMessage(data))
+  ) {
+    callback(err, data);
+    return;
+  }
+
+  if (err) {
+    const decryptedMessage = await Encryption.decryptMessage({
+      privateKey,
+      encryptedMessage: err
+    });
+
+    callback(decryptedMessage, data);
+    return;
+  }
+
+  if (data) {
+    const decryptedMessage = await Encryption.decryptMessage({
+      privateKey,
+      encryptedMessage: data
+    });
+
+    callback(err, decryptedMessage);
+    return;
+  }
+};
+
+const encryptedEmit = socket => async (eventName, message, callback) => {
+  const { store } = await import("../store");
+  const { hostKeys, userKeys } = store.getState().encryption;
+  const { hostId } = store.getState().node;
+
+  if (!Encryption.isNonEncrypted(eventName)) {
+    socket.on(eventName, callback);
+    return;
+  }
+
+  const remotePublicKey = hostKeys[hostId];
+  const localPrivateKey = userKeys[hostId]?.privateKey;
+
+  if (!remotePublicKey || !localPrivateKey) {
+    console.error("[WS] Unable to retrieve key for specified Host ID:", hostId);
+
+    return;
+  }
+
+  const encryptedData = await (message
+    ? Encryption.encryptMessage({
+        publicKey: remotePublicKey,
+        message
+      })
+    : null);
+
+  socket.emit(eventName, encryptedData, (err, data) => {
+    decryptEventCallback({
+      err,
+      data,
+      callback,
+      privateKey: localPrivateKey
+    });
+  });
+};
+
+const encryptedOn = socket => async (eventName, callback) => {
+  const { store } = await import("../store");
+  const { userKeys } = store.getState().encryption;
+  const { hostId } = store.getState().node;
+
+  if (Encryption.isNonEncrypted(eventName)) {
+    socket.on(eventName, callback);
+    return;
+  }
+
+  const localPrivateKey = userKeys[hostId]?.privateKey;
+
+  if (!localPrivateKey) {
+    console.error("[WS] Unable to retrieve key for specified Host ID:", hostId);
+
+    return;
+  }
+
+  socket.on(eventName, async (err, data) => {
+    if (
+      (err && !Encryption.isEncryptedMessage(err)) ||
+      (data && !Encryption.isEncryptedMessage(data))
+    ) {
+      console.warn("Non-encrypted socket message", err, data);
+      callback(err, data);
+      return;
+    }
+
+    if (err) {
+      const decryptedMessage = await Encryption.decryptMessage({
+        privateKey: localPrivateKey,
+        encryptedMessage: err
+      });
+
+      callback(decryptedMessage, data);
+      return;
+    }
+
+    if (data) {
+      const decryptedMessage = await Encryption.decryptMessage({
+        privateKey: localPrivateKey,
+        encryptedMessage: data
+      });
+
+      callback(err, decryptedMessage);
+      return;
+    }
+  });
+};
+
 const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
   new Promise((resolve, reject) => {
     try {
-      console.log("DataSocket Executed", `${hostIP}/${namespace}`);
-      const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
-        ...options,
-        query: {
-          token: authToken
-        }
-      });
-      DataSocket.on("$shock", data => {
-        if (callback) {
-          callback(null, data);
-          return;
-        }
-        resolve(data);
-      });
+      import("../store").then(({ store }) => {
+        const { encryption } = store.getState();
+        const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
+          ...options,
+          query: {
+            token: authToken,
+            encryptionId: encryption.deviceId
+          }
+        });
+        const on = encryptedOn(DataSocket);
 
-      DataSocket.on("$error", error => {
-        if (callback) {
-          callback(error);
-          return;
-        }
-        disconnectSocket(DataSocket);
-        reject(
-          new FieldError({
-            field: "socket",
-            message: error
-          })
-        );
-      });
+        on("$shock", async data => {
+          if (callback) {
+            callback(null, data);
+            return;
+          }
+          resolve(data);
+        });
 
-      DataSocket.on("error", error => {
-        console.error(error);
-        if (callback) {
-          callback(error);
-          return;
-        }
-        disconnectSocket(DataSocket);
-        reject(
-          new FieldError({
-            field: "socket",
-            message: error
-          })
-        );
+        on("$error", async error => {
+          if (callback) {
+            callback(error);
+            return;
+          }
+          disconnectSocket(DataSocket);
+          reject(
+            new FieldError({
+              field: "socket",
+              message: error
+            })
+          );
+        });
+
+        on("error", error => {
+          console.error(error);
+          if (callback) {
+            callback(error);
+            return;
+          }
+          disconnectSocket(DataSocket);
+          reject(
+            new FieldError({
+              field: "socket",
+              message: error
+            })
+          );
+        });
       });
     } catch (err) {
       console.error(err);
@@ -115,11 +237,13 @@ export const rifleSocketExists = query => {
  * gun.get('handshakeNodes').on(...)
  * ```
  * @param {RifleParams} args
- * @returns {ReturnType<typeof SocketIO>}
+ * @returns {Promise<SocketIOClient.Socket>}
  */
-export const rifle = ({ host, query, publicKey, reconnect }) => {
+export const rifle = async ({ host, query, publicKey, reconnect }) => {
+  const { store } = await import("../store");
   const opts = {
     query: {
+      encryptionId: store.getState().encryption.deviceId,
       $shock: query,
       publicKeyForDecryption: publicKey ?? ""
     }
@@ -134,14 +258,21 @@ export const rifle = ({ host, query, publicKey, reconnect }) => {
   if (!cachedSocket || reconnect) {
     const socket = SocketIO(`${host}/gun`, opts);
     rifleSockets.set(query, socket);
+    const on = encryptedOn(socket);
+    const emit = encryptedEmit(socket);
 
-    socket.on("$error", err => {
+    on("$error", err => {
       console.error(`Gun rifle error (${query})`);
 
       console.error(err);
     });
 
-    return socket;
+    return {
+      on,
+      emit,
+      off: () => socket.off(),
+      close: () => socket.close()
+    };
   }
 
   return cachedSocket;

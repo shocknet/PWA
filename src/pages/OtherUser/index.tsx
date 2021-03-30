@@ -38,18 +38,10 @@ const OtherUserPage = () => {
   const [finalPosts,setFInalPosts] = useState([])
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
-  //effect for user profile
-  useEffect(()=>{
-    dispatch(subscribeUserProfile(userPublicKey))
-    return () => {
-      dispatch(unsubscribeUserProfile(userPublicKey))
-    }
-  },[userPublicKey])
-  //effect for user posts
-  useEffect(()=>{
+  const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`
     const socketExists = rifleSocketExists(query)
-    const subscription = rifle({
+    const subscription = await rifle({
       host: hostIP,
       query,
       publicKey:"",
@@ -79,12 +71,12 @@ const OtherUserPage = () => {
         }
       }
     });
-  },[userPublicKey])
-  //effect for shared posts
-  useEffect(()=>{
+  }, [userPublicKey])
+
+  const subscribeSharedPosts = useCallback(async () => {
     const query = `${userPublicKey}::sharedPosts::on`
     const socketExists = rifleSocketExists(query)
-    const subscription = rifle({
+    const subscription = await rifle({
       host: hostIP,
       query,
       publicKey:"",
@@ -118,7 +110,23 @@ const OtherUserPage = () => {
         }
       }
     });
+  }, [userPublicKey])
+  
+  //effect for user profile
+  useEffect(()=>{
+    dispatch(subscribeUserProfile(userPublicKey))
+    return () => {
+      dispatch(unsubscribeUserProfile(userPublicKey))
+    }
   },[userPublicKey])
+  //effect for user posts
+  useEffect(()=>{
+    subscribeUserPosts()
+  },[subscribeUserPosts])
+  //effect for shared posts
+  useEffect(()=>{
+    subscribeSharedPosts()
+  },[subscribeSharedPosts])
   //effect for merge posts and shared posts
   useEffect(()=>{
     const final = [...userPosts,...userSharedPosts].sort((a, b) => b.date - a.date);
