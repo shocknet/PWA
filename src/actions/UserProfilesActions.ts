@@ -34,17 +34,18 @@ export const subscribeUserProfile = (publicKey: string) => async (
   }
 ) => {
   const { hostIP } = getState().node;
-  const subscription = rifle({
-    host: hostIP,
-    query: `${publicKey}::Profile::on`,
-    reconnect: true
-  });
-
-  const binarySub = rifle({
-    host: hostIP,
-    query: `${publicKey}::profileBinary::map.on`,
-    reconnect: true
-  });
+  const [subscription, binarySub] = await Promise.all([
+    rifle({
+      host: hostIP,
+      query: `${publicKey}::Profile::on`,
+      reconnect: true
+    }),
+    rifle({
+      host: hostIP,
+      query: `${publicKey}::profileBinary::map.on`,
+      reconnect: true
+    })
+  ]);
 
   binarySub.on("$shock", (data, key) => {
     if (key === "avatar") {
