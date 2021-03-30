@@ -12,6 +12,7 @@
     "persistor",
     "uuidv",
     "qrcode",
+    "reduxjs",
     "serv",
     "videojs",
     "youtube"
