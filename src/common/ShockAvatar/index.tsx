@@ -66,7 +66,8 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     height: height + "px",
     width: height + "px",
     borderRadius: "50%",
-    display: "inline-block"
+    display: "inline-block",
+    objectFit: "cover"
   };
 
   // if (!isOwn && Utils.isOnline(lastSeenApp)) {

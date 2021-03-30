@@ -35,10 +35,6 @@
   margin-bottom: 11px;
 }
 
-.profile-avatar img {
-  object-fit: cover;
-}
-
 .profile-name {
   font-size: 18px;
   font-weight: bold;
