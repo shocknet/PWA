@@ -64,8 +64,16 @@ const ProfilePage = () => {
     [publicKey, user.displayName]
   );
 
+  const subscribeServices = useCallback(async () => {
+    return subscribeMyServices(hostIP)(dispatch)
+  }, [hostIP, dispatch]);
+
   useEffect(() => {
-    return subscribeMyServices(hostIP)(dispatch);
+    const subscription = subscribeMyServices(hostIP)(dispatch);
+
+    return () => {
+      subscription.then(cancel => cancel());
+    }
   }, [hostIP, dispatch]);
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
