@@ -316,6 +316,7 @@ const ProfilePage = () => {
                 height={AVATAR_SIZE}
                 publicKey={publicKey}
                 setsAvatar
+                greyBorder
               />
             </div>
 
