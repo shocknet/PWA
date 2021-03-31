@@ -11,10 +11,11 @@
     "immer",
     "luxon",
     "persistor",
-    "uuidv",
     "qrcode",
     "reduxjs",
     "serv",
+    "shockping",
+    "uuidv",
     "videojs",
     "youtube"
   ]
