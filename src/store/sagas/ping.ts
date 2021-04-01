@@ -3,8 +3,6 @@ import SocketIO from "socket.io-client";
 import { Constants } from "shock-common";
 
 import * as Utils from "../../utils";
-import * as Selectors from "../selectors";
-import * as NodeActions from "../../actions/NodeActions";
 
 import { getStore } from "./_store";
 
@@ -14,7 +12,7 @@ function* ping() {
   try {
     const {
       node: { authToken: token, hostIP: host }
-    } = Selectors.selectStateRoot(yield select());
+    } = yield select();
 
     if ((!token || !host) && socket) {
       Utils.logger.log(
@@ -37,11 +35,18 @@ function* ping() {
       });
 
       socket.on("shockping", () => {
-        getStore().dispatch(NodeActions.ping(Date.now()));
+        getStore().dispatch({
+          type: "node/ping",
+          payload: {
+            timestamp: Utils.normalizeTimestampToMs(Date.now())
+          }
+        });
       });
 
       socket.on(Constants.ErrorCode.NOT_AUTH, () => {
-        getStore().dispatch(NodeActions.tokenDidInvalidate());
+        getStore().dispatch({
+          type: "node/tokenDidInvalidate"
+        });
       });
 
       socket.on("$error", (e: string) => {
@@ -104,7 +109,12 @@ function* ping() {
       socket.on("pong", () => {
         Utils.logger.log(`ping socket ponged by api (socket.io internal)`);
 
-        getStore().dispatch(NodeActions.ping(Date.now()));
+        getStore().dispatch({
+          type: "ping",
+          payload: {
+            timestamp: Utils.normalizeTimestampToMs(Date.now())
+          }
+        });
       });
     }
   } catch (err) {

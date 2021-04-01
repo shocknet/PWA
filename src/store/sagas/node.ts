@@ -1,7 +1,6 @@
 import { all, takeEvery } from "redux-saga/effects";
 
 import * as Utils from "../../utils";
-import { tokenDidInvalidate } from "../../actions/NodeActions";
 
 // eslint-disable-next-line require-yield
 function* handleTokenInvalidation() {
@@ -23,7 +22,10 @@ function* auth() {
 }
 
 function* nodeSaga() {
-  yield all([auth, takeEvery(tokenDidInvalidate, handleTokenInvalidation)]);
+  yield all([
+    auth,
+    takeEvery("node/tokenDidInvalidate", handleTokenInvalidation)
+  ]);
 }
 
 export default nodeSaga;
