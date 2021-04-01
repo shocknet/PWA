@@ -136,10 +136,13 @@ export const retryOperation = <T>(
       .then(resolve)
       .catch(reason => {
         if (retries > 0) {
-          return wait(delay)
-            .then(retryOperation.bind(null, operation, delay, retries - 1))
-            .then(resolve)
-            .catch(reject);
+          return (
+            wait(delay)
+              .then(retryOperation.bind(null, operation, delay, retries - 1))
+              // @ts-expect-error
+              .then(resolve)
+              .catch(reject)
+          );
         }
         return reject(reason);
       });
