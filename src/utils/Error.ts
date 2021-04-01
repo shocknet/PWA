@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import FieldError, { FieldErrorType } from "./FieldError";
 
-type MixedError = Error | AxiosError | FieldErrorType;
+export type MixedError = Error | AxiosError | FieldErrorType;
 
 export const parseError = (error: MixedError) => {
   if ("response" in error) {
