@@ -2,6 +2,7 @@ import * as Common from "shock-common";
 
 export * from "./Date";
 export { default as Http } from "./Http";
+export * from "./Error";
 
 export const logger = {
   log: (...args: any[]) => console.log(...args),
