@@ -163,6 +163,7 @@ export const unlockWallet = ({ alias, password }) => async dispatch => {
         alias: data.user.alias,
         authToken: data.authorization,
         publicKey: data.user.publicKey,
+        // @ts-expect-error
         authTokenExpirationDate: decodedToken.exp
       }
     });
@@ -188,6 +189,7 @@ export const createAlias = ({ alias, password }) => async dispatch => {
         alias: data.user.alias,
         authToken: data.authorization,
         publicKey: data.user.publicKey,
+        // @ts-expect-error
         authTokenExpirationDate: decodedToken.exp
       }
     });
@@ -220,6 +222,7 @@ export const createWallet = ({ alias, password }) => async dispatch => {
         alias: data.user.alias,
         authToken: data.authorization,
         publicKey: data.user.publicKey,
+        // @ts-expect-error
         authTokenExpirationDate: decodedToken.exp
       }
     });
