@@ -55,18 +55,10 @@ const OtherUserPage = () => {
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [selectedView,setSelectedView] = useState("posts")
-  //effect for user profile
-  useEffect(() => {
-    dispatch(subscribeUserProfile(userPublicKey));
-    return () => {
-      dispatch(unsubscribeUserProfile(userPublicKey));
-    };
-  }, [userPublicKey]);
-  //effect for user posts
-  useEffect(() => {
-    const query = `${userPublicKey}::posts::on`;
-    const socketExists = rifleSocketExists(query);
-    const subscription = rifle({
+  const subscribeUserPosts = useCallback(async () => {
+    const query = `${userPublicKey}::posts::on`
+    const socketExists = rifleSocketExists(query)
+    const subscription = await rifle({
       host: hostIP,
       query,
       publicKey: "",
@@ -91,17 +83,12 @@ const OtherUserPage = () => {
       console.log(postsReady)
       setUserPosts(postsReady)
     });
-    if (!socketExists) {
-      return () => {
-        disconnectRifleSocket(query)
-      }
-    }
-  },[userPublicKey])
-  //effect for shared posts
-  useEffect(() => {
-    const query = `${userPublicKey}::sharedPosts::on`;
-    const socketExists = rifleSocketExists(query);
-    const subscription = rifle({
+  }, [userPublicKey])
+
+  const subscribeSharedPosts = useCallback(async () => {
+    const query = `${userPublicKey}::sharedPosts::on`
+    const socketExists = rifleSocketExists(query)
+    const subscription = await rifle({
       host: hostIP,
       query,
       publicKey: "",
@@ -143,6 +130,22 @@ const OtherUserPage = () => {
       };
     }
   }, [userPublicKey]);
+  
+  //effect for user profile
+  useEffect(()=>{
+    dispatch(subscribeUserProfile(userPublicKey))
+    return () => {
+      dispatch(unsubscribeUserProfile(userPublicKey))
+    }
+  },[userPublicKey])
+  //effect for user posts
+  useEffect(()=>{
+    subscribeUserPosts()
+  },[subscribeUserPosts])
+  //effect for shared posts
+  useEffect(()=>{
+    subscribeSharedPosts()
+  },[subscribeSharedPosts])
   //effect for merge posts and shared posts
   useEffect(()=>{
     const final = [...userPosts,...userSharedPosts].sort((a, b) => b.date - a.date);

@@ -1,4 +1,9 @@
-import React from "react";
+import React, {
+  useRef,
+  useState,
+  InputHTMLAttributes,
+  useCallback
+} from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
 
@@ -14,6 +19,16 @@ export interface ShockAvatarProps {
   onPress?(): void;
   disableOnlineRing?: boolean;
   nameAtBottom?: boolean;
+  /**
+   * If true, will have the user select the avatar on press. Will disable status
+   * ring.
+   */
+  setsAvatar?: boolean;
+  /**
+   * If true, avatar will have a thin grey border around it. Will override
+   * status/online rings.
+   */
+  greyBorder?: boolean;
 }
 
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
@@ -21,13 +36,17 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   publicKey,
   // disableOnlineRing,
   nameAtBottom,
-  onPress
+  onPress: onPressProp,
+  setsAvatar,
+  greyBorder
 }) => {
+  const avatarImageFileInput = useRef<HTMLInputElement>(null);
+  const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const isSelf = publicKey === selfPublicKey;
+
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  // const isOwn = Store.useSelector(
-  //   state => Store.getMyPublicKey(state) === publicKey
-  // );
   const { avatar: image, displayName } = Store.useSelector(
     Store.selectUser(publicKey)
   );
@@ -45,57 +64,142 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const avatarStyle: React.CSSProperties = {
     height: height + "px",
-    width: height,
+    width: height + "px",
     borderRadius: "50%",
     display: "inline-block",
-    borderColor: "#39B54A"
+    objectFit: "cover"
   };
 
   // if (!isOwn && Utils.isOnline(lastSeenApp)) {
   //   avatarStyle.borderWidth = 2;
   // }
 
-  if (story.length) {
-    avatarStyle.borderWidth = 2;
-    avatarStyle.borderStyle = "dotted";
+  // const showStoryRing = story.length && !onPressProp && !setsAvatar;
+
+  // if (showStoryRing) {
+  //   avatarStyle.borderWidth = 2;
+  //   avatarStyle.borderStyle = "dotted";
+  //   avatarStyle.borderColor = "#39B54A"
+  // }
+
+  if (greyBorder) {
+    avatarStyle.borderWidth = "2px";
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "grey";
   }
 
-  return (
-    <div className={globalStyles.centerAlign}>
-      <img
-        alt={`Avatar for ${displayName || "an user"}`}
-        src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
-        style={avatarStyle}
-        onClick={() => {
-          if (onPress) {
-            onPress();
+  const onSelectedAvatarFile: InputHTMLAttributes<{}>["onChange"] = async e => {
+    try {
+      e.preventDefault();
+      if (settingAvatar) {
+        return;
+      }
+
+      setSettingAvatar(true);
+
+      const { files } = (e.target as unknown) as {
+        files: readonly Utils.File[];
+      };
+
+      if (files.length === 0) {
+        return;
+      }
+
+      if (files.length !== 1) {
+        Utils.logger.error(`ShockAvatar -> files.length !== 1`);
+        alert(
+          `An error occurred while trying to set an avatar. This has been logged.`
+        );
+        return;
+      }
+
+      const [file] = files;
+
+      const imageObtained = await Utils.processImageFile(file, 320, 0.7);
+
+      const DATA_URL_TYPE_PREFIX = "data:image/jpeg;base64,";
+      const base64 = imageObtained.slice(DATA_URL_TYPE_PREFIX.length);
+
+      await Utils.Http.post(`/api/gun/put`, {
+        path: "$user>profileBinary>avatar",
+        value: base64
+      });
+    } catch (e) {
+      Utils.logger.error(`Error while trying to load new avatar`);
+      Utils.logger.error(e);
+      alert(
+        "There was an error loading the new avatar, this has error has been logged."
+      );
+    } finally {
+      setSettingAvatar(false);
+    }
+  };
+
+  const onPress = useCallback(
+    e => {
+      e.preventDefault();
+      if (onPressProp) {
+        onPressProp();
+        return;
+      } else if (setsAvatar) {
+        const { current } = avatarImageFileInput;
+        if (!current) {
+          Utils.logger.error("File input element for avatar is falsy.");
+        }
+
+        current.click();
+      } else {
+        if (story.length) {
+          history.push(`/story/${publicKey}`);
+        } else {
+          if (isSelf) {
+            history.push("/profile");
           } else {
-            if (story.length) {
-              history.push(`/story/${publicKey}`);
-            } else {
-              // go to user overview
-            }
+            history.push(`/otherUser/${publicKey}`);
           }
-        }}
+        }
+      }
+    },
+    [history, isSelf, onPressProp, publicKey, setsAvatar, story.length]
+  );
+
+  return (
+    <>
+      <div className={globalStyles.centerAlign}>
+        <img
+          alt={`Avatar for ${displayName || "an user"}`}
+          src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
+          style={avatarStyle}
+          onClick={onPress}
+        />
+
+        {nameAtBottom && (
+          <>
+            <Pad amt={12} />
+
+            <span
+              style={{
+                color: "#F3EFEF",
+                fontFamily: "Montserrat-600",
+                fontSize: 12,
+                textAlign: "center"
+              }}
+            >
+              {displayName}
+            </span>
+          </>
+        )}
+      </div>
+
+      <input
+        type="file"
+        id="avatar-file"
+        ref={avatarImageFileInput}
+        hidden
+        accept="image/*"
+        onChange={onSelectedAvatarFile}
       />
-
-      {nameAtBottom && (
-        <>
-          <Pad amt={12} />
-
-          <span
-            style={{
-              color: "#F3EFEF",
-              fontFamily: "Montserrat-600",
-              fontSize: 12,
-              textAlign: "center"
-            }}
-          >
-            {displayName}
-          </span>
-        </>
-      )}
-    </div>
+    </>
   );
 };
 

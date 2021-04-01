@@ -48,10 +48,10 @@ export const deleteService = id => async dispatch => {
   })
 };
 
-export const subscribeMyServices = (hostIP) => (dispatch) => {
+export const subscribeMyServices = (hostIP) => async (dispatch) => {
   const query = `$user::offeredServices::on`
   const socketExists = rifleSocketExists(query)
-  const subscription = rifle({
+  const subscription = await rifle({
     host: hostIP,
     query,
     publicKey:"",

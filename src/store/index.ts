@@ -12,7 +12,7 @@ const persistConfig = {
   key: "root",
   storage,
   blacklist: ["auth"],
-  version: 3,
+  version: 1,
   stateReconciler: autoMergeLevel2,
   migrate: createMigrate(Migrations, {
     debug: process.env.NODE_ENV === "development"

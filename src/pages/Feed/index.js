@@ -1,3 +1,4 @@
+// @ts-check
 import React, {
   Suspense,
   useCallback,
@@ -7,13 +8,15 @@ import React, {
   useState
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
-
+import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
 import UserIcon from "./components/UserIcon";
 import SendTipModal from "./components/SendTipModal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
 
 import { subscribeFollows } from "../../actions/FeedActions";
 
@@ -30,6 +33,7 @@ const FeedPage = () => {
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
+  const { avatar } = Store.useSelector(Store.selectSelfUser);
 
   const followedPosts = useMemo(() => {
     if (posts) {
@@ -66,12 +70,19 @@ const FeedPage = () => {
     [unlockModalData]
   );
 
-  useEffect(() => {
-    const subscription = dispatch(subscribeFollows());
+  const startFollowsSubscription = useCallback(async () => {
+    const subscription = await dispatch(subscribeFollows());
 
-    return () => {
-      subscription.off("*");
-      subscription.close();
+    return subscription;
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscription = startFollowsSubscription();
+
+    return async () => {
+      const resolvedSubscription = await subscription;
+      resolvedSubscription.off("*");
+      resolvedSubscription.close();
     };
   }, [dispatch]);
 
@@ -85,7 +96,13 @@ const FeedPage = () => {
   return (
     <div className="page-container feed-page">
       <div className="following-bar-container">
-        <UserIcon addButton large main />
+        <UserIcon
+          addButton
+          large
+          main
+          avatar={avatar ? `data:image/png;base64,${avatar}` : null}
+          username={null}
+        />
         <div className="following-bar-list">
           {follows?.map(follow => {
             const publicKey = follow.user;

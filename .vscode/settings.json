@@ -7,8 +7,12 @@
     "SHOCKWALLET",
     "Unmount",
     "autocorrect",
+    "luxon",
     "persistor",
+    "uuidv",
     "qrcode",
+    "serv",
+    "videojs",
     "youtube"
   ]
 }
