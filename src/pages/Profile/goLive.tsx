@@ -7,49 +7,59 @@ import Http from "../../utils/Http";
 import DialogNav from "../../common/DialogNav";
 import obsLogo from "../../images/obs-2.svg"
 import Stream from "../../common/Post/components/Stream";
+import {EnrollToken} from '../../utils/seed'
 
-const REACT_APP_SL_SEED_URI = "https://webtorrent.shock.network"
-const REACT_APP_SL_RTMP_API_URI = "https://sandbox.shock.network/cdn/streams"
-const REACT_APP_SL_RTMP_URI = "rtmp://webtorrent.shock.network/live"
 const GoLive = () => {
   const dispatch = useDispatch();
   //@ts-ignore
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
   //@ts-ignore
-  const seedInfo = useSelector(({content}) => content.seedInfo)
+  const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
   //@ts-ignore
   const streamLiveToken = useSelector(({content}) => content.streamLiveToken)
   //@ts-ignore
   const streamUserToken = useSelector(({content}) => content.streamUserToken)
+  //@ts-ignore
+  const availableStreamTokens = useSelector(({content}) => content.availableStreamTokens)
   const [selectedSource, setSelectedSource] = useState('obs');
   const [loading, setLoading] = useState(false);
   const [streamToken,setStreamToken] = useState(streamLiveToken)
-  const [seedToken,setSeedToken] = useState(streamUserToken)
+  const [userToken,setUserToken] = useState(streamUserToken)
   const [paragraph,setParagraph] = useState("Look I'm streaming!")
   const [isLive,setIsLive] = useState(true)
   const [error, setError] = useState<string|null>(null);
+  const [rtmpUri,setRtmpUri] = useState("")
+  const [rtmpApiUri,setRtmpApiUri] = useState("")
+  const [useDefault,setUseDefault] = useState(false)
   const enroll = useCallback(async () =>{
-    let seedInfoOBJ = null
-    try {
-      const tmp  =JSON.parse(seedInfo)
-      if(tmp && tmp.seedUrl && tmp.tokens && tmp.tokens.length){
-        seedInfoOBJ = tmp
-      }
-    }catch(e){}
     try {
       setLoading(true)
       let orderData = null
-      if(!seedInfoOBJ){
-        console.log("NOT using seed info OBJ")
+      let deleteToken = false
+        let availableToken = null
+        for (const key in availableStreamTokens) {
+          if (Object.prototype.hasOwnProperty.call(availableStreamTokens, key)) {
+            const element = availableStreamTokens[key];
+            if(element[0]){
+              availableToken = {seedUrl:key,tokens:element}
+              break
+            }
+          }
+        }
+      if(seedUrl && seedToken){
+        console.log("USING SELF SEED TOKEN")
+        const token = await EnrollToken(seedUrl,seedToken)
+        orderData = {seedUrl, tokens:[token]}
+      }else if(useDefault){
+        console.log("USING DEFAULT TOKEN PROVIDER")
         const {data:seedData,status} = await Http.post('/api/lnd/unifiedTrx',{
-          type: 'torrentSeed',//TODO change to 'liveSeed'
+          type: 'streamSeed',
           amt: 100,
           to:seedProviderPub, 
           memo:'',
           feeLimit:500,
           ackInfo:1
         })
-  
         if(status !== 200){
           setError("seed token request failed")
           setLoading(false)
@@ -57,22 +67,26 @@ const GoLive = () => {
         console.log(seedData)
         const {orderAck} = seedData
         orderData = JSON.parse(orderAck.response)
-      } else {
-        console.log("Using seed info OBJ")
-        orderData = seedInfoOBJ
+      } else if(availableToken) {
+        console.log("USING AVAILABLE TOKEN")
+        orderData = availableToken
+        deleteToken = true
       }
-      const {tokens} = orderData
-      const [seedToken] = tokens
-      setSeedToken(seedToken)
+      const {tokens,seedUrl:finalSeedUrl} = orderData
+      const [latestUserToken] = tokens
+      setUserToken(latestUserToken)
       const {data:streamData} = await Http.post(
-        `${REACT_APP_SL_SEED_URI}/api/stream/auth`,
-        { token: seedToken }
+        `${finalSeedUrl}/api/stream/auth`,
+        { token: latestUserToken }
       );
       const {token:obsToken} = streamData.data;
       console.log(obsToken)
-      const liveToken = `${seedToken}?key=${obsToken}`
-      setStreamToken(`${seedToken}?key=${obsToken}`)
-      addStream(seedToken,liveToken)(dispatch)
+      const liveToken = `${latestUserToken}?key=${obsToken}`
+      setStreamToken(`${latestUserToken}?key=${obsToken}`)
+      const rtmp = finalSeedUrl.replace('https','rtmp')
+      setRtmpUri(`${rtmp}/live`)
+      setRtmpApiUri(`${finalSeedUrl}/rtmpapi`)
+      addStream(latestUserToken,liveToken)(dispatch)
       let contentItems = []
       if(paragraph !== ''){
         contentItems.push({
@@ -84,9 +98,10 @@ const GoLive = () => {
         type:'stream/embedded',
         width:0,
         height:0,
-        magnetURI:`${REACT_APP_SL_RTMP_API_URI}/live/${seedToken}/index.m3u8`,
+        magnetURI:`${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`,
         isPreview:false,
-        isPrivate:false
+        isPrivate:false,
+        userToken:latestUserToken
       })
       const res = await Http.post(`/api/gun/wall`, {
         tags: [],
@@ -106,15 +121,15 @@ const GoLive = () => {
       setError(err?.errorMessage ?? err?.message)
       setLoading(false)
     }
-  },[paragraph,seedProviderPub,setLoading,setStreamToken,setError,setSeedToken])
+  },[paragraph,seedProviderPub,availableStreamTokens,seedUrl,seedToken,useDefault,setLoading,setStreamToken,setError,setUserToken,setRtmpUri,setRtmpApiUri,addStream])
   const copyToken = useCallback(() => {
     navigator.clipboard.writeText(streamToken);
   }, [streamToken]);
   const copyUri = useCallback(() => {
-    navigator.clipboard.writeText(REACT_APP_SL_RTMP_URI);
+    navigator.clipboard.writeText(rtmpUri);
   }, []);
   const onInputChange = useCallback(e => {
-    const { value, name } = e.target;
+    const { value, name,checked } = e.target;
     switch (name) {
       case "paragraph": {
         setParagraph(value)
@@ -123,6 +138,10 @@ const GoLive = () => {
       case "source": {
         setSelectedSource(value)
         return;
+      }
+      case "useDefault":{
+        setUseDefault(checked)
+        return
       }
       default:
         return;
@@ -141,7 +160,7 @@ const GoLive = () => {
     {/*@ts-expect-error */}
     {isLive && <div ><Stream
       hideRibbon={true}
-      item={{magnetURI:`${REACT_APP_SL_RTMP_API_URI}/live/${seedToken}/index.m3u8`}}
+      item={{magnetURI:`${rtmpApiUri}/live/${userToken}/index.m3u8`}}
     /></div>}
     <select value={selectedSource} onChange={onInputChange} name="source" id="source" style={{backgroundColor:"rgba(0,0,0,0)",color:'white',width:'100%',border:'0',marginBottom:'1em'}}>
       <option value="camera" style={{backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)'}}>Camera</option>
@@ -155,7 +174,7 @@ const GoLive = () => {
         {selectedSource === 'obs' && <p className="m-b-1">You are ready to go! setup the stream with OBS and watch it from your profile</p>}
         <p>Broadcaster:</p>
         <div style={{border:"1px solid var(--main-blue)",padding:"0.5rem",display:"flex",justifyContent:"space-between",marginBottom:"1rem"}}>
-          <p >{REACT_APP_SL_RTMP_URI.substring(0,20)+ (REACT_APP_SL_RTMP_URI.length >21 ? "..." : "") }</p>
+          <p >{rtmpUri.substring(0,20)+ (rtmpUri.length >21 ? "..." : "") }</p>
           <i className="far fa-copy" onClick={copyUri}></i>
         </div>
         <p>Stream Key:</p>
@@ -168,6 +187,10 @@ const GoLive = () => {
         </div>
       </div>
       : <div className="vertical-flex-center">
+        <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
+        <label htmlFor="useDefault">Use default seed provider</label>
+        <input type="checkbox" name="useDefault" checked={useDefault} onChange={onInputChange} style={{marginLeft:"0.2em"}}  />
+      </div>
         <input className="input-field" type="text" name="paragraph" id="paragraph" value={paragraph} onChange={onInputChange}/>
         <button onClick={enroll} className ="shock-form-button-confirm">START NOW</button>
       </div>}

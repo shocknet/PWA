@@ -7,6 +7,10 @@ export const ACTIONS = {
   ADD_UNLOCKED_CONTENT:'content/addUnlocked',
   ADD_STREAM:'content/addStream',
   REMOVE_STREAM:'content/removeStream',
+  ADD_AVAILABLE_TOKEN:'content/addToken',
+  REMOVE_USED_TOKEN:'content/removeToken',
+  ADD_STREAM_TOKEN:'content/addStreamToken',
+  REMOVE_STREAM_TOKEN:'content/removeStreamToken',
 };
 
 export const setSeedProviderPub = pub => async dispatch => {
@@ -22,8 +26,8 @@ export const setSeedProviderPub = pub => async dispatch => {
     data: pub
   });
 };
-export const setSeedInfo = info => async dispatch => {
-  const infoS = JSON.stringify(info)
+export const setSeedInfo = (seedUrl,seedToken) => async dispatch => {
+  const infoS = JSON.stringify({seedUrl,seedToken})
   await Http.post('/api/gun/put',{
     path:'$user>seedServiceSeedData',
     value:{
@@ -33,7 +37,7 @@ export const setSeedInfo = info => async dispatch => {
   })
   dispatch({
     type: ACTIONS.SET_SEED_INFO,
-    data: info
+    data: {seedUrl,seedToken}
   });
 };
 export const addPublishedContent = content => async dispatch => {
@@ -86,5 +90,29 @@ export const addStream = (seedToken, liveToken) => dispatch => {
 export const removeStream = () => dispatch => {
   dispatch({
     type: ACTIONS.REMOVE_STREAM,
+  });
+};
+export const addAvailableToken = (seedUrl, userToken) => dispatch => {
+  dispatch({
+    type: ACTIONS.ADD_AVAILABLE_TOKEN,
+    data: {seedUrl,userToken}
+  });
+};
+export const removeUnavailableToken = (seedUrl,userToken) => dispatch => {
+  dispatch({
+    type: ACTIONS.REMOVE_USED_TOKEN,
+    data: {seedUrl,userToken}
+  });
+};
+export const addStreamToken = (seedUrl, userToken) => dispatch => {
+  dispatch({
+    type: ACTIONS.ADD_STREAM_TOKEN,
+    data: {seedUrl,userToken}
+  });
+};
+export const removeStreamToken = (seedUrl,userToken) => dispatch => {
+  dispatch({
+    type: ACTIONS.REMOVE_STREAM_TOKEN,
+    data: {seedUrl,userToken}
   });
 };

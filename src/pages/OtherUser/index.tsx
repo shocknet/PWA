@@ -136,12 +136,12 @@ const OtherUserPage = () => {
         .map(res => res.value);
       console.log(postsReady);
       setUserSharedPosts(postsReady);
-      if (!socketExists) {
-        return () => {
-          disconnectRifleSocket(query);
-        };
-      }
     });
+    if (!socketExists) {
+      return () => {
+        disconnectRifleSocket(query);
+      };
+    }
   }, [userPublicKey]);
   //effect for merge posts and shared posts
   useEffect(()=>{

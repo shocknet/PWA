@@ -5,7 +5,9 @@ const INITIAL_STATE = {
   streamLiveToken:'',
   publishedContent:{},
   unlockedContent:{},
-  seedInfo:"{}"
+  seedInfo:{},
+  availableTokens:{},
+  availableStreamTokens:{}
 };
 
 const content = (state = INITIAL_STATE, action) => {
@@ -38,6 +40,54 @@ const content = (state = INITIAL_STATE, action) => {
     case ACTIONS.SET_SEED_INFO:{
       const {data} = action
       return {...state, seedInfo:data}
+    }
+    case ACTIONS.ADD_AVAILABLE_TOKEN:{
+      const {data} = action
+      const {seedUrl,userToken} = data
+      const availableTmp = {...state.availableTokens}
+      if(!availableTmp[seedUrl]){
+        availableTmp[seedUrl] = []
+      }
+      availableTmp[seedUrl].push(userToken)
+      return {...state,availableTokens:availableTmp}
+    }
+    case ACTIONS.REMOVE_USED_TOKEN:{
+      const {data} = action
+      const {seedUrl,userToken} = data
+      const availableTmp = {...state.availableTokens}
+      if(!availableTmp[seedUrl]){
+        return state
+      }
+      const index = availableTmp[seedUrl].indexOf(userToken);
+      if (index > -1) {
+        availableTmp[seedUrl].splice(index, 1);
+        return {...state,availableTokens:availableTmp}
+      }
+      return state
+    }
+    case ACTIONS.ADD_STREAM_TOKEN:{
+      const {data} = action
+      const {seedUrl,userToken} = data
+      const availableTmp = {...state.availableStreamTokens}
+      if(!availableTmp[seedUrl]){
+        availableTmp[seedUrl] = []
+      }
+      availableTmp[seedUrl].push(userToken)
+      return {...state,availableStreamTokens:availableTmp}
+    }
+    case ACTIONS.REMOVE_STREAM_TOKEN:{
+      const {data} = action
+      const {seedUrl,userToken} = data
+      const availableTmp = {...state.availableStreamTokens}
+      if(!availableTmp[seedUrl]){
+        return state
+      }
+      const index = availableTmp[seedUrl].indexOf(userToken);
+      if (index > -1) {
+        availableTmp[seedUrl].splice(index, 1);
+        return {...state,availableStreamTokens:availableTmp}
+      }
+      return state
     }
     default:
       return state;

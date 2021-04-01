@@ -34,12 +34,14 @@ const ProfilePage = () => {
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
-  const seedInfo = Store.useSelector(
+  const {seedUrl,seedToken} = Store.useSelector(
     ({ content }) => content.seedInfo
   );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices)
+  const availableTokens = Store.useSelector(({ content }) => content.availableTokens)
+  const availableStreamTokens = Store.useSelector(({ content }) => content.availableStreamTokens)
   const [selectedView,setSelectedView] = useState("posts")
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
@@ -73,7 +75,8 @@ const ProfilePage = () => {
   const [newBio, setNewBio] = useState(user.bio);
 
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
-  const [localSeedInfo, setLocalSeedInfo] = useState(seedInfo);
+  const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
+  const [localSeedToken, setLocalSeedToken] = useState(seedToken);
 
   const onInputChange = e => {
     const { value, name } = e.target;
@@ -86,8 +89,12 @@ const ProfilePage = () => {
         setSelectedView(value)
         return
       }
-      case 'localInfo':{
-        setLocalSeedInfo(value)
+      case 'selfSeedUrl':{
+        setLocalSeedUrl(value)
+        return
+      }
+      case 'selfSeedToken':{
+        setLocalSeedToken(value)
         return
       }
       default:
@@ -98,19 +105,23 @@ const ProfilePage = () => {
   const somethingInsideConfigModalChanged =
     localSeedPub !== seedProviderPub ||
     newDisplayName !== user.displayName ||
-    newBio !== user.bio || localSeedInfo !== seedInfo;
+    newBio !== user.bio || localSeedUrl !== seedUrl || localSeedToken !== seedToken;
 
   const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
-    setLocalSeedInfo(seedInfo);
+    setLocalSeedUrl(seedUrl)
+    setLocalSeedToken(seedToken)
   }, [seedProviderPub]);
+
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(!profileConfigModalOpen);
+    
   }, [profileConfigModalOpen]);
+
   const onConfigSubmit = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
-    setSeedInfo(localSeedInfo)(dispatch)
-  }, [localSeedPub,localSeedInfo,setSeedInfo,setSeedProviderPub, dispatch]);
+    setSeedInfo(localSeedUrl,localSeedToken)(dispatch)
+  }, [localSeedPub,localSeedUrl,localSeedToken,setSeedInfo,setSeedProviderPub, dispatch]);
 
   // ------------------------------------------------------------------------ //
 
@@ -184,6 +195,30 @@ const ProfilePage = () => {
       </div>
     })
   }
+  const tokensView = useMemo(()=>{
+    return Object.entries(availableTokens).map(([seedUrl,tokens]) => {
+      return <div key={`${seedUrl}`}>
+        URL: {seedUrl}
+        {tokens.map((token,index) => {
+          return <div key={`${index}-${seedUrl}`} style={{paddingLeft:"1rem"}}>
+            <p>{token}</p>
+          </div>
+        })}
+      </div>
+    })
+  },[availableTokens])
+  const streamTokensView = useMemo(()=>{
+    return Object.entries(availableStreamTokens).map(([seedUrl,tokens]) => {
+      return <div key={`${seedUrl}`}>
+        URL: {seedUrl}
+        {tokens.map((token,index) => {
+          return <div key={`${index}-${seedUrl}`} style={{paddingLeft:"1rem"}}>
+            <p>{token}</p>
+          </div>
+        })}
+      </div>
+    })
+  },[availableStreamTokens])
   return (
     <div className="page-container profile-page">
       <div className="profile-container">
@@ -308,14 +343,29 @@ const ProfilePage = () => {
               name="localPub"
               onChange={onInputChange}
             />
-            <label htmlFor="localPub">Seed Token Info</label>
+            <label htmlFor="selfSeedUrl">Self Token Provider</label>
             <input
               type="text"
               className="input-field"
-              placeholder={localSeedInfo}
-              name="localInfo"
+              placeholder={"Seed Url"}
+              name="selfSeedUrl"
+              value={localSeedUrl}
               onChange={onInputChange}
             />
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Token"}
+              name="selfSeedToken"
+              value={localSeedToken}
+              onChange={onInputChange}
+            />
+            <h2>Available Content Tokens</h2>
+            {tokensView.length === 0 && <p>You don't have any content token available</p>}
+            {tokensView}
+            <h2>Available Stream Tokens</h2>
+            {streamTokensView.length === 0 && <p>You don't have any stream token available</p>}
+            {streamTokensView}
             {somethingInsideConfigModalChanged && (
               <div className="flex-center" style={{ marginTop: "auto" }}>
                 <button

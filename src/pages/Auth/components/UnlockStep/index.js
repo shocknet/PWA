@@ -62,8 +62,8 @@ const UnlockStep = () => {
           value={alias}
           onChange={onInputChange}
           className="input-field"
-          autocorrect="off"
-          autocapitalize="none"
+          autoCorrect="off"
+          autoCapitalize="none"
         />
         <input
           type="password"
