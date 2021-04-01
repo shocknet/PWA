@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import { buyService } from "../../../../actions/OrdersActions";
+import { addAvailableToken,addStreamToken } from "../../../../actions/ContentActions";
 import Loader from "../../../../common/Loader";
 import "./css/index.css";
 
@@ -18,7 +19,7 @@ const BuyServiceModal = ({ service, toggleOpen }) => {
     async e => {
       e.preventDefault();
       try {
-        const {servicePrice,owner,serviceID} = service
+        const {servicePrice,owner,serviceID,serviceType} = service
         if(!owner || !serviceID || typeof Number(servicePrice) !== 'number'){
           console.error("invalid service provided")
           console.error(service)
@@ -28,6 +29,12 @@ const BuyServiceModal = ({ service, toggleOpen }) => {
         const revealRes = await buyService(owner,serviceID,servicePrice)(dispatch)
         console.log(revealRes)
         setBuySuccess(revealRes);
+        if(serviceType === 'torrentSeed'){
+          addAvailableToken(revealRes.seedUrl,revealRes.tokens[0])(dispatch)
+        }
+        if(serviceType === 'streamSeed'){
+          addStreamToken(revealRes.seedUrl,revealRes.tokens[0])(dispatch)
+        }
       } catch (err) {
         console.error(err);
         if (service) {

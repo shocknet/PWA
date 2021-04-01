@@ -5,11 +5,16 @@ import "./css/index.css";
 import Loader from "../../common/Loader";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
-import {addPublishedContent} from '../../actions/ContentActions'
+import {addPublishedContent,removeUnavailableToken} from '../../actions/ContentActions'
+import { EnrollToken } from "../../utils/seed";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   //@ts-ignore
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
+  //@ts-ignore
+  const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
+  //@ts-ignore
+  const availableTokens = useSelector(({content}) => content.availableTokens)
   const [error, setError] = useState<string|null>(null);
   const [loading, setLoading] = useState(false);
   const [mediaPreviews,setMediaPreviews] = useState([])
@@ -21,7 +26,6 @@ const PublishContentPage = () => {
   const videoFile = useRef(null)
 
   const [useDefault,setUseDefault] = useState(false)
-  const [pastedTokenInfo,setPastedTokenInfo] = useState(null) 
 
   const [selectedFiles,setSelectedFiles] = useState([]) 
 
@@ -37,7 +41,27 @@ const PublishContentPage = () => {
       setLoading(true)
       try{
         let tokenInfo = null
-        if(useDefault){
+        let deleteToken = false
+        let availableToken = null
+        console.log("useDefault")
+        console.log(useDefault)
+        for (const key in availableTokens) {
+          if (Object.prototype.hasOwnProperty.call(availableTokens, key)) {
+            const element = availableTokens[key];
+            if(element[0]){
+              availableToken = {seedUrl:key,tokens:element}
+              break
+            }
+          }
+        }
+        if(seedUrl && seedToken){
+          console.log("USING SELF SEED TOKEN")
+          const token = await EnrollToken(seedUrl,seedToken)
+          console.log("token")
+          console.log(token)
+          tokenInfo = {seedUrl, tokens:[token]}
+        } else if(useDefault){
+          console.log("USING DEFAULT TOKEN PROVIDER")
           const {data,status} = await Http.post('/api/lnd/unifiedTrx',{
             type: 'torrentSeed',
             amt: 100,
@@ -46,29 +70,30 @@ const PublishContentPage = () => {
             feeLimit:500,
             ackInfo:1
           })
-    
           if(status !== 200){
             setError("seed token request failed")
             setLoading(false)
           }
           console.log(data)
           const {orderAck} = data
-          tokenInfo = orderAck.response
-        } else if(pastedTokenInfo) {
-          tokenInfo = pastedTokenInfo
+          tokenInfo = JSON.parse(orderAck.response)
+        } else if(availableToken) {
+          console.log("USING AVAILABLE TOKEN")
+          tokenInfo = availableToken
+          deleteToken = true
         } else {
           setError("provide the token data or use default seed provider")
           setLoading(false)
         return
         }
-        const orderData = JSON.parse(tokenInfo)
-        const {seedUrl,tokens} = orderData
+        const orderData = tokenInfo
+        const {seedUrl:finalSeedUrl,tokens} = orderData
         const formData = new FormData()
         //TODO support public/private content by requesting two tokens and doing this req twice
         Array.from(selectedFiles).forEach(file => formData.append('files', file))
         formData.append('info', 'extraInfo')
         formData.append('comment', 'comment')
-        const res = await fetch(`${seedUrl}/api/put_file`, {
+        const res = await fetch(`${finalSeedUrl}/api/put_file`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${tokens[0]}`,
@@ -77,6 +102,18 @@ const PublishContentPage = () => {
         })
         const resJson = await res.json()
         console.log(resJson)
+        if(resJson.error && resJson.error.message){
+          const err = resJson.error.message
+          if(err === "The provided token has already been used"){
+            setError("An error occurred, please try again")
+            removeUnavailableToken(finalSeedUrl,tokens[0])(dispatch)
+            
+          } else {
+            setError(err)
+          }
+          setLoading(false)
+          return
+        }
         const {torrent} = resJson.data
         const {magnet} = torrent
         const [firstFile] = mediaPreviews
@@ -95,6 +132,9 @@ const PublishContentPage = () => {
         console.log("content publish complete")
         console.log(published)
         setLoading(false)
+        if(deleteToken){
+          removeUnavailableToken(finalSeedUrl,tokens[0])(dispatch)
+        }
         window.history.back();
       }catch(err){
         console.log(err)
@@ -103,7 +143,7 @@ const PublishContentPage = () => {
       }
 
     },
-    [title,description,selectedFiles,mediaPreviews, dispatch, setError]
+    [title,description,selectedFiles,mediaPreviews,availableTokens,seedUrl, seedToken,useDefault, dispatch, setError]
   );
   const onDiscard = useCallback(
     async e => {
@@ -135,10 +175,6 @@ const PublishContentPage = () => {
         console.log("create post")
         return
       }
-      case "pastedTokenInfo":{
-        setPastedTokenInfo(value)
-        return
-      }
       case "useDefault":{
         setUseDefault(checked)
         console.log(checked)
@@ -147,7 +183,7 @@ const PublishContentPage = () => {
       default:
         return;
     }
-  }, [setTitle,setDescription,setCreatePost]);
+  }, [setTitle,setDescription,setCreatePost,setUseDefault]);
   const onSelectedFile = useCallback(e =>{
     e.preventDefault()
     
@@ -259,19 +295,6 @@ const PublishContentPage = () => {
         onChange={onInputChange}
         className="input-field"
       />
-      {!useDefault && <div>
-        <div className="publish-content-title">
-          <label htmlFor="description"><strong>Token Info</strong></label>
-        </div>
-        <textarea
-          name="pastedTokenInfo"
-          placeholder="Paste here the Token info you got from the service"
-          rows={3}
-          value={pastedTokenInfo}
-          onChange={onInputChange}
-          className="input-field"
-        />
-      </div>}
       <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
         <label htmlFor="useDefault">Use default seed provider</label>
         <input type="checkbox" name="useDefault" checked={useDefault} onChange={onInputChange} style={{marginLeft:"0.2em"}}  />

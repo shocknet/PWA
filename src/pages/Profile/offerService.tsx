@@ -18,9 +18,6 @@ const OfferService = () => {
   //optional fields 
   const [serviceSeedUrl,setServiceSeedUrl] = useState("")
   const [serviceSeedToken,setServiceSeedToken] = useState("")
-  //optional fields streamSeed only
-  const [serviceRtmpApiUri,setServiceRtmpApiUri] = useState("")
-  const [serviceRtmpUri,setServiceRtmpUri] = useState("")
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -54,32 +51,20 @@ const OfferService = () => {
         setServiceSeedToken(value)
         return
       }
-      case "rtmpApiUri": {
-        setServiceRtmpApiUri(value)
-        return
-      }
-      case "rtmpUri": {
-        setServiceRtmpUri(value)
-        return
-      }
       default:
         return;
     }
-  }, [setServiceType,setServiceTitle,setServiceDescription,setServiceCondition,setServicePrice,setServiceSeedUrl,setServiceSeedToken,setServiceRtmpApiUri,setServiceRtmpUri]);
+  }, [setServiceType,setServiceTitle,setServiceDescription,setServiceCondition,setServicePrice,setServiceSeedUrl,setServiceSeedToken]);
   const onSubmit = useCallback(
     async e => {
       e.preventDefault()
-      console.log(serviceType)
-      console.log(serviceTitle)
-      console.log(serviceDescription)
-      console.log(serviceCondition)
-      console.log(servicePrice)
       const clear = {serviceType,serviceTitle,serviceDescription,serviceCondition,servicePrice}
-      const encrypt = {serviceSeedUrl,serviceSeedToken,serviceRtmpApiUri,serviceRtmpUri}
+      const encrypt = {serviceSeedUrl,serviceSeedToken}
       const res = await createService(clear,encrypt)(dispatch)
       console.log(res)
+      window.history.back();
     },
-    [serviceType,serviceTitle,serviceDescription,serviceCondition,servicePrice,serviceSeedUrl,serviceSeedToken,serviceRtmpApiUri,serviceRtmpUri]
+    [serviceType,serviceTitle,serviceDescription,serviceCondition,servicePrice,serviceSeedUrl,serviceSeedToken]
   );
   const onDiscard = useCallback(
     async e => {
@@ -92,11 +77,9 @@ const OfferService = () => {
       setServicePrice(0)
       setServiceSeedUrl("")
       setServiceSeedToken("")
-      setServiceRtmpApiUri("")
-      setServiceRtmpUri("")
 
     },
-    [setError,setServiceType,setServiceTitle,setServiceDescription,setServiceCondition,setServicePrice,setServiceSeedUrl,setServiceSeedToken,setServiceRtmpApiUri,setServiceRtmpUri]
+    [setError,setServiceType,setServiceTitle,setServiceDescription,setServiceCondition,setServicePrice,setServiceSeedUrl,setServiceSeedToken]
   );
   
   return (<div className="publish-content-form-container m-1" style={{overflow:'auto'}}>
@@ -178,28 +161,6 @@ const OfferService = () => {
           disabled={false} 
           inputAction={null}
         />
-        {serviceType === 'streamSeed' && <div>
-        <InputGroup  
-          label="RTMP api URI" 
-          name="rtmpApiUri" 
-          type="text" 
-          actionIcon={null} 
-          value={serviceRtmpApiUri}
-          onChange={onInputChange} 
-          disabled={false} 
-          inputAction={null}
-        />
-        <InputGroup  
-          label="RTMP URI" 
-          name="rtmpUri" 
-          type="text" 
-          actionIcon={null} 
-          value={serviceRtmpUri}
-          onChange={onInputChange} 
-          disabled={false} 
-          inputAction={null}
-        />
-        </div>}
       </div>}
       
     </div>

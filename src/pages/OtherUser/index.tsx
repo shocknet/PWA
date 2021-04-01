@@ -123,13 +123,13 @@ const OtherUserPage = () => {
         .map(res => res.value);
       console.log(postsReady);
       setUserSharedPosts(postsReady);
-      if (!socketExists) {
-        return () => {
-          disconnectRifleSocket(query);
-        };
-      }
     });
-  }, [userPublicKey])
+    if (!socketExists) {
+      return () => {
+        disconnectRifleSocket(query);
+      };
+    }
+  }, [userPublicKey]);
   
   //effect for user profile
   useEffect(()=>{
