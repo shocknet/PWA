@@ -29,14 +29,15 @@ const persistedReducer = persistReducer<State, AnyAction>(
 
 const initializeStore = () => {
   const sagaMiddleware = createSagaMiddleware();
+  const appliedMiddleware = applyMiddleware(thunk, sagaMiddleware);
   // @ts-expect-error
   const store = window.__REDUX_DEVTOOLS_EXTENSION__
     ? createStore(
         persistedReducer,
         // @ts-expect-error
-        compose(applyMiddleware(thunk), window.__REDUX_DEVTOOLS_EXTENSION__())
+        compose(appliedMiddleware, window.__REDUX_DEVTOOLS_EXTENSION__())
       )
-    : createStore(persistedReducer, applyMiddleware(thunk, sagaMiddleware));
+    : createStore(persistedReducer, appliedMiddleware);
   let persistor = persistStore(store);
   setSagaStore(store);
   sagaMiddleware.run(rootSaga);
