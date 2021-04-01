@@ -7,7 +7,8 @@ import React, {
   useMemo,
   useState
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import * as Common from "shock-common";
 
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
@@ -16,7 +17,6 @@ import BottomBar from "../../common/BottomBar";
 import UserIcon from "./components/UserIcon";
 import SendTipModal from "./components/SendTipModal";
 import Loader from "../../common/Loader";
-import ShockAvatar from "../../common/ShockAvatar";
 
 import { subscribeFollows } from "../../actions/FeedActions";
 
@@ -28,9 +28,9 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
   const dispatch = useDispatch();
-  const follows = useSelector(({ feed }) => feed.follows);
-  const posts = useSelector(({ feed }) => feed.posts);
-  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
+  const follows = Store.useSelector(({ feed }) => feed.follows);
+  const posts = Store.useSelector(({ feed }) => feed.posts);
+  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const { avatar } = Store.useSelector(Store.selectSelfUser);
@@ -77,14 +77,8 @@ const FeedPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const subscription = startFollowsSubscription();
-
-    return async () => {
-      const resolvedSubscription = await subscription;
-      resolvedSubscription.off("*");
-      resolvedSubscription.close();
-    };
-  }, [dispatch]);
+    startFollowsSubscription();
+  }, [dispatch, startFollowsSubscription]);
 
   useLayoutEffect(() => {
     attachMedia(
@@ -106,11 +100,15 @@ const FeedPage = () => {
         <div className="following-bar-list">
           {follows?.map(follow => {
             const publicKey = follow.user;
-            const profile = userProfiles[publicKey] ?? {};
+            const profile =
+              userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
             return (
               <UserIcon
                 username={processDisplayName(publicKey, profile.displayName)}
                 avatar={`data:image/png;base64,${profile.avatar}`}
+                addButton={undefined}
+                large={undefined}
+                main={undefined}
               />
             );
           })}
@@ -162,6 +160,8 @@ const FeedPage = () => {
                 openUnlockModal={toggleUnlockModal}
                 // TODO: User online status handling
                 isOnlineNode
+                tipCounter={undefined}
+                tipValue={undefined}
               />
             </Suspense>
           );
