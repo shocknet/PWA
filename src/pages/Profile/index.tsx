@@ -14,7 +14,7 @@ import { processDisplayName } from "../../utils/String";
 import Http from "axios";
 
 import * as Utils from "../../utils";
-import { setSeedProviderPub } from "../../actions/ContentActions";
+import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
   subscribeMyServices
@@ -46,8 +46,17 @@ const ProfilePage = () => {
     ({ content }) => content.seedProviderPub
   );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const { seedUrl, seedToken } = Store.useSelector(
+    ({ content }) => content.seedInfo
+  );
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
+  const availableTokens = Store.useSelector(
+    ({ content }) => content.availableTokens
+  );
+  const availableStreamTokens = Store.useSelector(
+    ({ content }) => content.availableStreamTokens
+  );
   const [selectedView, setSelectedView] = useState("posts");
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
@@ -64,16 +73,12 @@ const ProfilePage = () => {
     [publicKey, user.displayName]
   );
 
-  const subscribeServices = useCallback(async () => {
-    return subscribeMyServices(hostIP)(dispatch)
-  }, [hostIP, dispatch]);
-
   useEffect(() => {
     const subscription = subscribeMyServices(hostIP)(dispatch);
 
     return () => {
       subscription.then(cancel => cancel());
-    }
+    };
   }, [hostIP, dispatch]);
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -86,6 +91,8 @@ const ProfilePage = () => {
   const [newDisplayName, setNewDisplayName] = useState(user.displayName);
   const [newBio, setNewBio] = useState(user.bio);
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
+  const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
+  const [localSeedToken, setLocalSeedToken] = useState(seedToken);
 
   const onInputChange = e => {
     const { value, name } = e.target;
@@ -98,6 +105,14 @@ const ProfilePage = () => {
         setSelectedView(value);
         return;
       }
+      case "selfSeedUrl": {
+        setLocalSeedUrl(value);
+        return;
+      }
+      case "selfSeedToken": {
+        setLocalSeedToken(value);
+        return;
+      }
       default:
         return;
     }
@@ -106,7 +121,9 @@ const ProfilePage = () => {
   const somethingInsideConfigModalChanged =
     localSeedPub !== seedProviderPub ||
     newDisplayName !== user.displayName ||
-    newBio !== user.bio;
+    newBio !== user.bio ||
+    localSeedUrl !== seedUrl ||
+    localSeedToken !== seedToken;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
@@ -122,19 +139,23 @@ const ProfilePage = () => {
 
   const onConfigCancel = useCallback(() => {
     setLocalSeedPub(seedProviderPub);
+    setLocalSeedUrl(seedUrl);
+    setLocalSeedToken(seedToken);
     setNewDisplayName(user.displayName);
     setNewBio(user.bio);
     toggleConfigModal();
   }, [
     seedProviderPub,
-    setNewDisplayName,
+    seedUrl,
+    seedToken,
     user.displayName,
-    setNewBio,
     user.bio,
     toggleConfigModal
   ]);
+
   const onConfigSubmit = useCallback(() => {
     setSeedProviderPub(localSeedPub)(dispatch);
+    setSeedInfo(localSeedUrl, localSeedToken)(dispatch);
     if (newDisplayName !== user.displayName) {
       Http.put(`/api/gun/me`, {
         displayName: newDisplayName
@@ -149,10 +170,12 @@ const ProfilePage = () => {
   }, [
     localSeedPub,
     dispatch,
+    localSeedUrl,
+    localSeedToken,
     newDisplayName,
     user.displayName,
-    newBio,
     user.bio,
+    newBio,
     toggleConfigModal
   ]);
 
@@ -300,6 +323,51 @@ const ProfilePage = () => {
         );
       });
   };
+  const tokensView = useMemo(() => {
+    return Object.entries(availableTokens).map(([seedUrl, tokens]) => {
+      return (
+        <div key={`${seedUrl}`}>
+          URL: {seedUrl}
+          {
+            // @ts-expect-error
+            tokens.map((token, index) => {
+              return (
+                <div
+                  key={`${index}-${seedUrl}`}
+                  style={{ paddingLeft: "1rem" }}
+                >
+                  <p>{token}</p>
+                </div>
+              );
+            })
+          }
+        </div>
+      );
+    });
+  }, [availableTokens]);
+
+  const streamTokensView = useMemo(() => {
+    return Object.entries(availableStreamTokens).map(([seedUrl, tokens]) => {
+      return (
+        <div key={`${seedUrl}`}>
+          URL: {seedUrl}
+          {
+            // @ts-expect-error
+            tokens.map((token, index) => {
+              return (
+                <div
+                  key={`${index}-${seedUrl}`}
+                  style={{ paddingLeft: "1rem" }}
+                >
+                  <p>{token}</p>
+                </div>
+              );
+            })
+          }
+        </div>
+      );
+    });
+  }, [availableStreamTokens]);
   return (
     <>
       <div className="page-container profile-page">
@@ -508,6 +576,36 @@ const ProfilePage = () => {
                 name="localPub"
                 onChange={onInputChange}
               />
+
+              <label htmlFor="selfSeedUrl">Self Token Provider</label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder={"Seed Url"}
+                name="selfSeedUrl"
+                value={localSeedUrl}
+                onChange={onInputChange}
+              />
+
+              <input
+                type="text"
+                className="input-field"
+                placeholder={"Seed Token"}
+                name="selfSeedToken"
+                value={localSeedToken}
+                onChange={onInputChange}
+              />
+              <h2>Available Content Tokens</h2>
+              {tokensView.length === 0 && (
+                <p>You don't have any content token available</p>
+              )}
+              {tokensView}
+              <h2>Available Stream Tokens</h2>
+              {streamTokensView.length === 0 && (
+                <p>You don't have any stream token available</p>
+              )}
+              {streamTokensView}
+
               {somethingInsideConfigModalChanged && (
                 <div className="flex-center" style={{ marginTop: "auto" }}>
                   <button
