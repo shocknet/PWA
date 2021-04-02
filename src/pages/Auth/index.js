@@ -18,7 +18,7 @@ import "./css/index.css";
 const AuthPage = () => {
   const dispatch = useDispatch();
   const cachedHostIP = useSelector(({ node }) => node.hostIP);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!cachedHostIP);
   const [error, setError] = useState(null);
   const authTokenExpirationDate = useSelector(
     ({ node }) => node.authTokenExpirationDate
