@@ -70,6 +70,8 @@ export const fetchNodeHealth = (hostIP, retries) => async dispatch => {
 
     return data;
   } catch (err) {
+    console.log(`NodeActions->fetchNodeHealth()->Error encountered:`);
+    console.log(err);
     dispatch({
       type: ACTIONS.SET_CONNECTION_STATUS,
       data: false
