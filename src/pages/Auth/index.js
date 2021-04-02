@@ -17,12 +17,12 @@ import "./css/index.css";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
-  const [, setLoading] = useState(true);
-  const [, setError] = useState(null);
+  const cachedHostIP = useSelector(({ node }) => node.hostIP);
+  const [loading, setLoading] = useState(!!cachedHostIP);
+  const [error, setError] = useState(null);
   const authTokenExpirationDate = useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
-  const cachedHostIP = useSelector(({ node }) => node.hostIP);
   const authToken = useSelector(({ node }) => node.authToken);
   const authStep = useSelector(({ auth }) => auth.authStep);
   const authMethod = useSelector(({ auth }) => auth.authMethod);
@@ -60,16 +60,20 @@ const AuthPage = () => {
   const loadCachedNode = useCallback(async () => {
     try {
       if (cachedHostIP) {
-        setLoading(true);
         console.log("Loading cached node IP");
 
-        await connectHost(cachedHostIP, false)(dispatch);
+        const connected = !!(await connectHost(cachedHostIP, false)(dispatch));
+
+        if (connected) {
+          setLoading(false);
+        }
 
         if (
           authToken &&
           DateTime.fromSeconds(authTokenExpirationDate).diffNow().milliseconds >
             0
         ) {
+          setLoading(true);
           const { data: authenticated } = await Http.get(`/api/gun/auth`);
           if (!authenticated) {
             const { data: walletStatus } = await Http.get(
@@ -80,10 +84,12 @@ const AuthPage = () => {
           setAuthStep("unlockWallet");
           dispatch(setAuthenticated(authenticated.data));
           connectSocket(cachedHostIP);
+          setLoading(false);
           return;
         }
 
         if (authToken) {
+          setLoading(true);
           setAuthStep("unlockWallet");
           setLoading(false);
         }
@@ -103,7 +109,11 @@ const AuthPage = () => {
   return (
     <DialogPageContainer disableNav contentClassName="auth-page-content">
       <LogoSection />
-      {currentStep}
+      {loading && <span>Loading...</span>}
+
+      {error && <span>There was an error: {error}</span>}
+
+      {!loading && !error && currentStep}
     </DialogPageContainer>
   );
 };
