@@ -60,16 +60,20 @@ const AuthPage = () => {
   const loadCachedNode = useCallback(async () => {
     try {
       if (cachedHostIP) {
-        setLoading(true);
         console.log("Loading cached node IP");
 
-        await connectHost(cachedHostIP, false)(dispatch);
+        const connected = !!(await connectHost(cachedHostIP, false)(dispatch));
+
+        if (connected) {
+          setLoading(false);
+        }
 
         if (
           authToken &&
           DateTime.fromSeconds(authTokenExpirationDate).diffNow().milliseconds >
             0
         ) {
+          setLoading(true);
           const { data: authenticated } = await Http.get(`/api/gun/auth`);
           if (!authenticated) {
             const { data: walletStatus } = await Http.get(
@@ -80,10 +84,12 @@ const AuthPage = () => {
           setAuthStep("unlockWallet");
           dispatch(setAuthenticated(authenticated.data));
           connectSocket(cachedHostIP);
+          setLoading(false);
           return;
         }
 
         if (authToken) {
+          setLoading(true);
           setAuthStep("unlockWallet");
           setLoading(false);
         }
