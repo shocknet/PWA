@@ -1,6 +1,6 @@
 import { takeEvery, select, put } from "redux-saga/effects";
 import SocketIO from "socket.io-client";
-import { Constants } from "shock-common";
+import { Constants, normalizeTimestampToMs } from "shock-common";
 
 import * as Utils from "../../utils";
 
@@ -38,7 +38,7 @@ function* ping() {
         getStore().dispatch({
           type: "node/ping",
           payload: {
-            timestamp: Utils.normalizeTimestampToMs(Date.now())
+            timestamp: normalizeTimestampToMs(Date.now())
           }
         });
       });
@@ -112,7 +112,7 @@ function* ping() {
         getStore().dispatch({
           type: "ping",
           payload: {
-            timestamp: Utils.normalizeTimestampToMs(Date.now())
+            timestamp: normalizeTimestampToMs(Date.now())
           }
         });
       });

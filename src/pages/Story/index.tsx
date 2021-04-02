@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import moment from "moment";
+import * as Common from "shock-common";
 
 import Pad from "../../common/Pad";
 import * as Utils from "../../utils";
@@ -66,10 +67,10 @@ const Story: React.FC<StoryProps> = ({
       sub.off("$shock");
       sub.close();
     };
-  }, [hostIP, publicKey])
+  }, [hostIP, publicKey]);
 
   React.useEffect(() => {
-    subscribeStory()
+    subscribeStory();
   }, [subscribeStory]);
 
   React.useEffect(() => {
@@ -135,7 +136,7 @@ const Story: React.FC<StoryProps> = ({
         <Pad amt={12} />
 
         <span>
-          {moment(Utils.normalizeTimestampToMs(currPic.timestamp)).fromNow()}
+          {moment(Common.normalizeTimestampToMs(currPic.timestamp)).fromNow()}
         </span>
       </div>
 
