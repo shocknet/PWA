@@ -102,7 +102,7 @@ p.advanced-accordion-title {
   position: relative;
   display: flex;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .advanced-accordion-container.accordion-open .advanced-accordion-header {

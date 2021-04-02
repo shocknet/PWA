@@ -6,6 +6,11 @@
   right: 25px;
 }
 
+.add-btn-container.add-btn-round-container {
+  width: var(--btn-radius);
+  height: var(--btn-radius);
+}
+
 .add-btn {
   position: relative;
   display: flex;
@@ -43,7 +48,10 @@
   height: var(--btn-radius);
   position: fixed;
   right: 1rem;
-  
+}
+
+.add-btn-relative {
+  position: relative;
 }
 
 .add-btn-extended {
@@ -89,7 +97,7 @@
   overflow: hidden;
   z-index: 10;
   padding: 10px;
-  padding-right: calc(var(--btn-radius) / 2);
+  padding-right: calc((var(--btn-radius) / 2) + 1rem);
   border-radius: 100px;
 }
 
