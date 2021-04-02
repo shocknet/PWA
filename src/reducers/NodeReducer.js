@@ -8,7 +8,8 @@ const INITIAL_STATE = {
   authToken: null,
   publicKey: null,
   authTokenExpirationDate: null,
-  authMethod: null
+  authMethod: null,
+  hostingAttemptsDone:false
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -49,6 +50,9 @@ const node = (state = INITIAL_STATE, action) => {
         publicKey,
         authMethod
       };
+    }
+    case ACTIONS.SET_ATTEMPTS_DONE :{
+      return {...state, hostingAttemptsDone:true}
     }
     default:
       return state;
