@@ -108,35 +108,26 @@ const encryptedOn = socket => async (eventName, callback) => {
     return;
   }
 
-  socket.on(eventName, async (err, data) => {
-    if (
-      (err && !Encryption.isEncryptedMessage(err)) ||
-      (data && !Encryption.isEncryptedMessage(data))
-    ) {
-      console.warn("Non-encrypted socket message", err, data);
-      callback(err, data);
-      return;
-    }
+  socket.on(eventName, async (...responses) => {
+    const decryptedResponses = await Promise.all(
+      responses.map(async response => {
+        if (!response) {
+          return response;
+        }
 
-    if (err) {
-      const decryptedMessage = await Encryption.decryptMessage({
-        privateKey: localPrivateKey,
-        encryptedMessage: err
-      });
+        if (response && !Encryption.isEncryptedMessage(response)) {
+          console.warn("Non-encrypted socket message", response);
+          return response;
+        }
 
-      callback(decryptedMessage, data);
-      return;
-    }
+        return Encryption.decryptMessage({
+          privateKey: localPrivateKey,
+          encryptedMessage: response
+        });
+      })
+    );
 
-    if (data) {
-      const decryptedMessage = await Encryption.decryptMessage({
-        privateKey: localPrivateKey,
-        encryptedMessage: data
-      });
-
-      callback(err, decryptedMessage);
-      return;
-    }
+    callback(...decryptedResponses);
   });
 };
 

@@ -75,16 +75,16 @@ const AuthPage = () => {
         ) {
           setLoading(true);
           const { data: authenticated } = await Http.get(`/api/gun/auth`);
-          if (!authenticated) {
+          if (!authenticated.data) {
             const { data: walletStatus } = await Http.get(
               `/api/lnd/wallet/status`
             );
             console.log(walletStatus);
           }
           setAuthStep("unlockWallet");
-          dispatch(setAuthenticated(authenticated.data));
           connectSocket(cachedHostIP);
           setLoading(false);
+          dispatch(setAuthenticated(authenticated.data));
           return;
         }
 
