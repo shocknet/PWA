@@ -18,8 +18,8 @@ import "./css/index.css";
 const AuthPage = () => {
   const dispatch = useDispatch();
   const cachedHostIP = useSelector(({ node }) => node.hostIP);
-  const [, setLoading] = useState(true);
-  const [, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const authTokenExpirationDate = useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
@@ -103,7 +103,11 @@ const AuthPage = () => {
   return (
     <DialogPageContainer disableNav contentClassName="auth-page-content">
       <LogoSection />
-      {currentStep}
+      {loading && <span>Loading...</span>}
+
+      {error && <span>There was an error: {error}</span>}
+
+      {!loading && !error && currentStep}
     </DialogPageContainer>
   );
 };
