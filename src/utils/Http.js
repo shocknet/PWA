@@ -44,6 +44,10 @@ const encryptRequest = async config => {
 };
 
 const decryptResponse = async response => {
+  if (!response) {
+    return response;
+  }
+
   const { store } = await import("../store");
   const { userKeys } = store.getState().encryption;
   const { hostId } = store.getState().node;
