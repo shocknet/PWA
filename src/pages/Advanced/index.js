@@ -267,7 +267,7 @@ const AdvancedPage = () => {
                   pendingStatus={channel.pendingStatus}
                 />
               ))}
-              <AddBtn nestedMode>
+              <AddBtn nestedMode relative>
                 <AddBtn
                   label="ADD CHANNEL"
                   small
