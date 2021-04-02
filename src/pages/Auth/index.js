@@ -17,12 +17,12 @@ import "./css/index.css";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
+  const cachedHostIP = useSelector(({ node }) => node.hostIP);
   const [, setLoading] = useState(true);
   const [, setError] = useState(null);
   const authTokenExpirationDate = useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
-  const cachedHostIP = useSelector(({ node }) => node.hostIP);
   const authToken = useSelector(({ node }) => node.authToken);
   const authStep = useSelector(({ auth }) => auth.authStep);
   const authMethod = useSelector(({ auth }) => auth.authMethod);
