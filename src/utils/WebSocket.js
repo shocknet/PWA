@@ -53,6 +53,7 @@ const decryptEventCallback = async ({ err, data, callback, privateKey }) => {
 };
 
 const encryptedEmit = socket => async (eventName, message, callback) => {
+  // TODO: remove circular dep
   const { store } = await import("../store");
   const { hostKeys, userKeys } = store.getState().encryption;
   const { hostId } = store.getState().node;
@@ -89,6 +90,7 @@ const encryptedEmit = socket => async (eventName, message, callback) => {
 };
 
 const encryptedOn = socket => async (eventName, callback) => {
+  // TODO: remove circular dep
   const { store } = await import("../store");
   const { userKeys } = store.getState().encryption;
   const { hostId } = store.getState().node;
@@ -240,6 +242,7 @@ export const rifleSocketExists = query => {
  * @returns {Promise<SocketIOClient.Socket>}
  */
 export const rifle = async ({ host, query, publicKey, reconnect }) => {
+  // TODO: remove circular dep
   const { store } = await import("../store");
   const opts = {
     query: {
