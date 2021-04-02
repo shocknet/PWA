@@ -36,9 +36,9 @@ export const fetchWalletBalance = () => async dispatch => {
 
 export const fetchUSDRate = () => async dispatch => {
   const { data } = await Http.get(
-    "https://api.coindesk.com/v1/bpi/currentprice.json"
+    "https://api.coinbase.com/v2/prices/spot?currency=USD"
   );
-  const exchangeRate = data.bpi.USD.rate.replace(/,/g, "");
+  const exchangeRate = data.data.amount.replace(/,/g, "");
 
   dispatch({
     type: ACTIONS.LOAD_USD_RATE,

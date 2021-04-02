@@ -16,7 +16,7 @@ import Channel from "./components/Channel";
 import Peer from "./components/Peer";
 import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
-import Http from '../../utils/Http'
+import Http from "../../utils/Http";
 import "./css/index.css";
 
 const AdvancedPage = () => {
@@ -25,7 +25,7 @@ const AdvancedPage = () => {
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
 
-  const [pendingChannels,setPendingChannels] = useState([])
+  const [pendingChannels, setPendingChannels] = useState([]);
 
   const dispatch = useDispatch();
   const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
@@ -45,36 +45,34 @@ const AdvancedPage = () => {
   }, [page, dispatch]);
 
   //effect to load pending channels, no need to keep them in redux
-  useEffect(() =>{
-    Http.get("/api/lnd/pendingchannels")
-    .then(({data}) => {
-
-      console.log("pendigs")
-      console.log(data)
-      const makeChanObj = (ch,pendingStatus) => ({
-        remote_pubkey:ch.remote_node_pub,
-        remote_balance:ch.remote_balance,
-        local_balance:ch.local_balance,
-        ip:"",
-        active:false,
+  useEffect(() => {
+    Http.get("/api/lnd/pendingchannels").then(({ data }) => {
+      console.log("pendigs");
+      console.log(data);
+      const makeChanObj = (ch, pendingStatus) => ({
+        remote_pubkey: ch.remote_node_pub,
+        remote_balance: ch.remote_balance,
+        local_balance: ch.local_balance,
+        ip: "",
+        active: false,
         pendingStatus
-      })
-      const pending = []
+      });
+      const pending = [];
       data.pending_open_channels.forEach(chan => {
-        const {channel} = chan
-        pending.push(makeChanObj(channel,"Pending Open"))
-      })
+        const { channel } = chan;
+        pending.push(makeChanObj(channel, "Pending Open"));
+      });
       data.waiting_close_channels.forEach(chan => {
-        const {channel} = chan
-        pending.push(makeChanObj(channel,"Pending Close"))
-      })
+        const { channel } = chan;
+        pending.push(makeChanObj(channel, "Pending Close"));
+      });
       data.pending_force_closing_channels.forEach(chan => {
-        const {channel} = chan
-        pending.push(makeChanObj(channel,"Pending Force Close"))
-      })
-      setPendingChannels(pending)
-    })
-  },[])
+        const { channel } = chan;
+        pending.push(makeChanObj(channel, "Pending Force Close"));
+      });
+      setPendingChannels(pending);
+    });
+  }, []);
 
   const confirmedBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(confirmedBalance, USDRate).toFixed(2)),
@@ -190,13 +188,13 @@ const AdvancedPage = () => {
                   publicKey={peer.pub_key}
                   sent={peer.sat_sent}
                   received={peer.sat_recv}
+                  key={peer.address + peer.pub_key}
                 />
               ))}
             </div>
-            <AddBtn nestedMode>
+            <AddBtn nestedMode relative>
               <AddBtn
                 label="ADD PEER"
-                small
                 onClick={toggleAddPeerOpen}
                 icon="link"
               />

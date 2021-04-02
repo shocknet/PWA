@@ -106,9 +106,7 @@ const FeedPage = () => {
               <UserIcon
                 username={processDisplayName(publicKey, profile.displayName)}
                 avatar={`data:image/png;base64,${profile.avatar}`}
-                addButton={undefined}
-                large={undefined}
-                main={undefined}
+                key={publicKey}
               />
             );
           })}

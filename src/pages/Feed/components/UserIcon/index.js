@@ -2,7 +2,13 @@ import React from "react";
 import classNames from "classnames";
 import "./css/index.css";
 
-const UserIcon = ({ addButton, username, avatar, large, main }) => (
+const UserIcon = ({
+  username,
+  avatar,
+  addButton = false,
+  large = false,
+  main = false
+}) => (
   <div
     className={classNames({
       "followed-user": true,
