@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { formatNumber } from "../../../../utils/Number";
 import "./css/index.css";
 
-const Channel = ({ address, ip, name, sendable, receivable, active }) => {
+const Channel = ({ address, ip, name, sendable, receivable, active, pendingStatus }) => {
   const formattedSendable = useMemo(() => formatNumber(sendable), [sendable]);
   const formattedReceivable = useMemo(() => formatNumber(receivable), [
     receivable
@@ -19,6 +19,7 @@ const Channel = ({ address, ip, name, sendable, receivable, active }) => {
             "advanced-channel-status-offline": !active
           })}
         ></div>
+        <p style={{marginLeft:"0.5rem"}}>{pendingStatus}</p>
       </div>
       <p className="advanced-channel-address">Address: {address}</p>
       <div className="advanced-channel-capacity-container">

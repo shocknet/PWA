@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
+import {  useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
 import "./css/index.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
+import {sendMessage} from '../../../../actions/ChatActions'
 
 const InvoiceStep = ({
   amount = 0,
@@ -14,6 +16,7 @@ const InvoiceStep = ({
   unit = "",
   prevStep
 }) => {
+  const dispatch = useDispatch();
   const [paymentRequest, setPaymentRequest] = useState("");
   const [address, setAddress] = useState("");
   const [QRLoading, setQRLoading] = useState(false);
@@ -88,17 +91,15 @@ const InvoiceStep = ({
     if (contact) {
       try {
         setLoading(true);
-        await Http.post(`/api/gun/requests`, {
-          publicKey: contact.pk,
-          initialMsg: "$$__SHOCKWALLET__INVOICE__" + paymentRequest
-        });
+        await sendMessage({publicKey:contact.pk,message:"$$__SHOCKWALLET__INVOICE__" + paymentRequest})(dispatch)
+        setLoading(false);
+        window.history.back()
       } catch (err) {
         setError(
           err?.response?.data.errorMessage ??
             err?.message ??
             "An unknown error has occurred"
         );
-      } finally {
         setLoading(false);
       }
     }
@@ -117,7 +118,7 @@ const InvoiceStep = ({
         ) : (
           <ContactsSearch
             selectContact={selectContact}
-            features={["contacts"]}
+            features={["contact"]}
           />
         )
       ) : null}
@@ -171,7 +172,7 @@ const InvoiceStep = ({
           <p className="invoice-detail-value">{description}</p>
         </div>
       </div>
-      {lightningMode ? (
+      {(lightningMode && contact) ? (
         <SlidePay
           wrapperStyle={{
             padding: 0,
@@ -179,7 +180,6 @@ const InvoiceStep = ({
           }}
           slideText="SLIDE TO SEND"
           onSuccess={sendInvoice}
-          disabled={!contact}
         />
       ) : null}
     </div>

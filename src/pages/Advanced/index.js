@@ -16,6 +16,7 @@ import Channel from "./components/Channel";
 import Peer from "./components/Peer";
 import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
+import Http from '../../utils/Http'
 import "./css/index.css";
 
 const AdvancedPage = () => {
@@ -23,6 +24,8 @@ const AdvancedPage = () => {
   const [page, setPage] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
+
+  const [pendingChannels,setPendingChannels] = useState([])
 
   const dispatch = useDispatch();
   const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
@@ -40,6 +43,38 @@ const AdvancedPage = () => {
     dispatch(fetchChannels());
     dispatch(fetchPeers());
   }, [page, dispatch]);
+
+  //effect to load pending channels, no need to keep them in redux
+  useEffect(() =>{
+    Http.get("/api/lnd/pendingchannels")
+    .then(({data}) => {
+
+      console.log("pendigs")
+      console.log(data)
+      const makeChanObj = (ch,pendingStatus) => ({
+        remote_pubkey:ch.remote_node_pub,
+        remote_balance:ch.remote_balance,
+        local_balance:ch.local_balance,
+        ip:"",
+        active:false,
+        pendingStatus
+      })
+      const pending = []
+      data.pending_open_channels.forEach(chan => {
+        const {channel} = chan
+        pending.push(makeChanObj(channel,"Pending Open"))
+      })
+      data.waiting_close_channels.forEach(chan => {
+        const {channel} = chan
+        pending.push(makeChanObj(channel,"Pending Close"))
+      })
+      data.pending_force_closing_channels.forEach(chan => {
+        const {channel} = chan
+        pending.push(makeChanObj(channel,"Pending Force Close"))
+      })
+      setPendingChannels(pending)
+    })
+  },[])
 
   const confirmedBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(confirmedBalance, USDRate).toFixed(2)),
@@ -129,6 +164,7 @@ const AdvancedPage = () => {
                   hash={transaction.tx_hash}
                   value={formatNumber(transaction.amount)}
                   key={transaction.tx_hash}
+                  unconfirmed={transaction.num_confirmations === 0}
                 />
               ))}
             </div>
@@ -218,6 +254,17 @@ const AdvancedPage = () => {
                   ip={channel.ip}
                   active={channel.active}
                   key={channel.chan_id}
+                />
+              ))}
+              {pendingChannels.map(channel => (
+                <Channel
+                  address={channel.remote_pubkey}
+                  receivable={channel.remote_balance}
+                  sendable={channel.local_balance}
+                  ip={channel.ip}
+                  active={channel.active}
+                  key={channel.chan_id}
+                  pendingStatus={channel.pendingStatus}
                 />
               ))}
               <AddBtn nestedMode>

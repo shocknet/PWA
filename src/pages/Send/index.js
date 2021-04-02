@@ -102,12 +102,13 @@ const SendPage = () => {
       if (contact?.type === "contact") {
         await sendGunPayment();
       }
+      window.history.back();
+      setPaymentLoading(false);
     } catch (err) {
       console.error(err);
       setError(err.response?.data.errorMessage ?? err.message);
-      throw err;
-    } finally {
       setPaymentLoading(false);
+      throw err;
     }
   }, [contact, sendBTCPayment, sendGunPayment, sendLightningPayment]);
 
