@@ -100,13 +100,13 @@ const MessagesPage = () => {
             <p className="messages-section-title">Sent Requests</p>
           ) : null}
           {sentRequests.map(request => (
-            <Request publicKey={request.pk} sent />
+            <Request publicKey={request.pk} sent key={request.pk} />
           ))}
           {receivedRequests.length > 0 ? (
             <p className="messages-section-title">Received Requests</p>
           ) : null}
           {receivedRequests.map(request => (
-            <Request publicKey={request.pk} />
+            <Request publicKey={request.pk} key={request.pk} />
           ))}
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>
@@ -120,6 +120,7 @@ const MessagesPage = () => {
 
             return (
               <Message
+                key={contact.pk}
                 publicKey={contact.pk}
                 name={contact.displayName}
                 subtitle={lastMessage.body}

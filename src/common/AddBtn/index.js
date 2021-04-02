@@ -10,6 +10,7 @@ const AddBtn = ({
   nestedMode = false,
   large = false,
   small = false,
+  relative = false,
   index = 0,
   children = null,
   style = {}
@@ -41,6 +42,7 @@ const AddBtn = ({
     <div
       className={classNames({
         "add-btn-container": true,
+        "add-btn-round-container": !label,
         "add-btn-large": large,
         "add-btn-small": small
       })}
@@ -50,6 +52,7 @@ const AddBtn = ({
           "add-btn": true,
           "add-btn-round": !label,
           "add-btn-extended": !!label,
+          "add-btn-relative": relative,
           "add-btn-open": optionsOpen,
           "add-btn-nested": nestedMode
         })}
