@@ -75,7 +75,7 @@ const Drawer = () => {
             }}
           >
             <div className="drawer-item-icon">
-              <i className="icon-solid-exit"></i>
+              <i className="icon-thin-back"></i>
             </div>
             <p className="drawer-item-title unselectable">Logout</p>
           </div>
