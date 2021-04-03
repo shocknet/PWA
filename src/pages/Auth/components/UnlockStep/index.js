@@ -4,11 +4,14 @@ import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import { unlockWallet } from "../../../../actions/NodeActions";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
+import * as Store from "../../../../store";
 
 const UnlockStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
   const [alias, setAlias] = useState("");
+  const cachedAlias = Store.useSelector(({ node }) => node.alias);
+  const [cachedAliasDismissed, setCachedAliasDismissed] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,16 +58,47 @@ const UnlockStep = () => {
       ) : null}
       <p className="auth-form-container-title">Unlock Wallet</p>
       <form className="auth-form" onSubmit={onSubmit}>
-        <input
-          type="text"
-          name="alias"
-          placeholder="Wallet Alias"
-          value={alias}
-          onChange={onInputChange}
-          className="input-field"
-          autoCorrect="off"
-          autoCapitalize="none"
-        />
+        {cachedAlias && !cachedAliasDismissed ? (
+          <>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                flexDirection: "row",
+                width: "100%"
+              }}
+            >
+              <span>Alias: {cachedAlias}</span>
+
+              <span
+                className="inline-link"
+                style={{
+                  // TODO: why would a link class have marginTop? Unset it:
+                  marginTop: "0px"
+                }}
+                onClick={() => {
+                  setCachedAliasDismissed(true);
+                }}
+              >
+                change
+              </span>
+            </div>
+
+            <div style={{ height: 24 }} />
+          </>
+        ) : (
+          <input
+            type="text"
+            name="alias"
+            placeholder="Wallet Alias"
+            value={alias}
+            onChange={onInputChange}
+            className="input-field"
+            autoCorrect="off"
+            autoCapitalize="none"
+          />
+        )}
         <input
           type="password"
           name="password"
