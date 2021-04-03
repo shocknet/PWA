@@ -9,7 +9,6 @@ import { useSelector } from "../../store";
 
 const MainNav = ({
   pageTitle,
-  avatar,
   absolute = false,
   solid = false,
   enableBackButton = false
