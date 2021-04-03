@@ -1,6 +1,6 @@
 // @ts-check
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import {
   fetchChannels,
@@ -19,6 +19,7 @@ import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
 import Http from "../../utils/Http";
 import "./css/index.css";
+import * as Store from "../../store";
 
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
@@ -29,13 +30,17 @@ const AdvancedPage = () => {
   const [pendingChannels, setPendingChannels] = useState([]);
 
   const dispatch = useDispatch();
-  const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
-  const channelBalance = useSelector(({ wallet }) => wallet.channelBalance);
-  const transactions = useSelector(({ wallet }) => wallet.transactions);
-  const invoices = useSelector(({ wallet }) => wallet.invoices);
-  const channels = useSelector(({ wallet }) => wallet.channels);
-  const peers = useSelector(({ wallet }) => wallet.peers);
-  const USDRate = useSelector(({ wallet }) => wallet.USDRate);
+  const confirmedBalance = Store.useSelector(
+    ({ wallet }) => wallet.confirmedBalance
+  );
+  const channelBalance = Store.useSelector(
+    ({ wallet }) => wallet.channelBalance
+  );
+  const transactions = Store.useSelector(({ wallet }) => wallet.transactions);
+  const invoices = Store.useSelector(({ wallet }) => wallet.invoices);
+  const channels = Store.useSelector(({ wallet }) => wallet.channels);
+  const peers = Store.useSelector(({ wallet }) => wallet.peers);
+  const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate);
 
   useEffect(() => {
     const reset = page === 1;
