@@ -1,5 +1,6 @@
 import Http from "axios";
 import { ACTIONS } from "../actions/NodeActions";
+import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 
 const INITIAL_STATE = {
   hostId: null,
@@ -9,7 +10,7 @@ const INITIAL_STATE = {
   publicKey: null,
   authTokenExpirationDate: null,
   authMethod: null,
-  hostingAttemptsDone:false
+  hostingAttemptsDone: false
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -51,8 +52,19 @@ const node = (state = INITIAL_STATE, action) => {
         authMethod
       };
     }
-    case ACTIONS.SET_ATTEMPTS_DONE :{
-      return {...state, hostingAttemptsDone:true}
+    case ACTIONS.SET_ATTEMPTS_DONE: {
+      return { ...state, hostingAttemptsDone: true };
+    }
+
+    case AUTH_ACTIONS.LOGOUT: {
+      return {
+        ...state,
+        authToken: null,
+        publicKey: null,
+        authTokenExpirationDate: null,
+        authMethod: null,
+        hostingAttemptsDone: false
+      };
     }
     default:
       return state;
