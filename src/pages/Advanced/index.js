@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 import {
