@@ -11,7 +11,6 @@ const AddBtn = ({
   large = false,
   small = false,
   relative = false,
-  index = 0,
   children = null,
   style = {}
 }) => {
