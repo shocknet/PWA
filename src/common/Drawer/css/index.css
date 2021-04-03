@@ -42,6 +42,7 @@
 .drawer-bottom-section {
   padding: 10px 0;
   border-top: 1px solid white;
+  border-bottom: 1px solid white;
 }
 
 .drawer-item {
@@ -64,4 +65,11 @@ p.drawer-item-title {
   line-height: 1;
   /* opacity: 0.8; */
   color: var(--light-gray);
+}
+
+.drawer-logout-and-scan {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
 }
