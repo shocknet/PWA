@@ -36,14 +36,19 @@ const UnlockStep = () => {
       e.preventDefault();
       setLoading(true);
       try {
-        const wallet = await dispatch(unlockWallet({ alias, password }));
+        const wallet = await dispatch(
+          unlockWallet({
+            alias: cachedAliasDismissed ? alias : cachedAlias,
+            password
+          })
+        );
         console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
         setLoading(false);
       }
     },
-    [alias, password, dispatch, setError]
+    [alias, cachedAliasDismissed, cachedAlias, password, dispatch, setError]
   );
 
   const chooseAnotherMethod = useCallback(() => {
