@@ -45,7 +45,7 @@ const SharedPost = ({
             <p>
               {sharedTimestamp
                 ? DateTime.fromMillis(sharedTimestamp).toRelative()
-                : "unknown"}
+                : "Loading..."}
             </p>
           </div>
         </div>
