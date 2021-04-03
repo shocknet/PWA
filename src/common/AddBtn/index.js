@@ -3,10 +3,10 @@ import classNames from "classnames";
 import "./css/index.css";
 
 const AddBtn = ({
-  label,
-  icon,
-  iconURL,
-  onClick,
+  label = null,
+  icon = null,
+  iconURL = null,
+  onClick = undefined,
   nestedMode = false,
   large = false,
   small = false,
