@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import classNames from "classnames";
 import { formatNumber } from "../../../../utils/Number";
 import "./css/index.css";
