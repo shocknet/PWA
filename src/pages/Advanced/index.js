@@ -23,7 +23,7 @@ import * as Store from "../../store";
 
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
 
