@@ -7,7 +7,6 @@ import "./css/index.css";
 const Channel = ({
   address,
   ip,
-  name,
   sendable,
   receivable,
   active,
