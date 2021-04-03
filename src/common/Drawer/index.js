@@ -3,6 +3,7 @@ import classNames from "classnames";
 import "./css/index.css";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../actions/AuthActions";
 import { closeDrawer } from "../../actions/DrawerActions";
 
 const Drawer = () => {
@@ -65,6 +66,18 @@ const Drawer = () => {
               <i className="icon-solid-help"></i>
             </div>
             <p className="drawer-item-title unselectable">Help</p>
+          </div>
+
+          <div
+            className="drawer-item"
+            onClick={() => {
+              dispatch(logout());
+            }}
+          >
+            <div className="drawer-item-icon">
+              <i className="icon-solid-exit"></i>
+            </div>
+            <p className="drawer-item-title unselectable">Logout</p>
           </div>
         </div>
       </div>
