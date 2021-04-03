@@ -208,7 +208,11 @@ const Post = ({
           />
           <div className="details">
             <Link to={`/${publicKey}`}>{username}</Link>
-            <p>{DateTime.fromMillis(timestamp).toRelative()}</p>
+            <p>
+              {timestamp && typeof timestamp === "number" 
+                ? DateTime.fromMillis(timestamp).toRelative() 
+                : "Loading..."}
+            </p>
           </div>
         </div>
       </div>

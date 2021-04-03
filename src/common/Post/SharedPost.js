@@ -43,7 +43,7 @@ const SharedPost = ({
           <div className="details">
             <p>{sharerProfile?.displayName}</p>
             <p>
-              {sharedTimestamp
+              {sharedTimestamp && typeof sharedTimestamp === "number"
                 ? DateTime.fromMillis(sharedTimestamp).toRelative()
                 : "Loading..."}
             </p>
