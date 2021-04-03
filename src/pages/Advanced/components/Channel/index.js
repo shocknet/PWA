@@ -10,7 +10,7 @@ const Channel = ({
   sendable,
   receivable,
   active,
-  pendingStatus
+  pendingStatus = ""
 }) => {
   const formattedSendable = useMemo(() => formatNumber(sendable), [sendable]);
   const formattedReceivable = useMemo(() => formatNumber(receivable), [
