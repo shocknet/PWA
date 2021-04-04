@@ -74,7 +74,7 @@ const Stream = ({ id, item, index, postId, tipValue, tipCounter, hideRibbon,widt
           width:"100%"
         }}
       >
-        {!isLive && <p>This stream is not available at the moment</p>}
+        {!isLive && <p>The streamer has disconnected.</p>}
         <div style={isLive ? {width:"100%"} : {display:'none',width:"100%"}}>
         <video
           className="video-js vjs-default-skin"
