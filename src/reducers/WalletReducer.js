@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('shock-common').Channel} Channel
+ */
+
 import Big from "big.js";
 import { ACTIONS } from "../actions/WalletActions";
 
@@ -12,6 +16,9 @@ const INITIAL_STATE = {
 
   transactions: { content: [], page: -1, totalPages: 0, totalItems: 0 },
   payments: { content: [], page: -1, totalPages: 0, totalItems: 0 },
+  /**
+   * @type {readonly Channel[]}
+   */
   channels: [],
   invoices: { content: [], page: -1, totalPages: 0, totalItems: 0 },
   peers: [],
