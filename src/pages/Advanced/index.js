@@ -118,9 +118,9 @@ const AdvancedPage = () => {
     openAccordion("peers");
   }, [openAccordion]);
 
-  const openInvoicesAccordion = useCallback(() => {
-    openAccordion("invoices");
-  }, [openAccordion]);
+  // const openInvoicesAccordion = useCallback(() => {
+  //   openAccordion("invoices");
+  // }, [openAccordion]);
 
   const openChannelsAccordion = useCallback(() => {
     openAccordion("channels");
@@ -216,7 +216,7 @@ const AdvancedPage = () => {
             </AddBtn>
           </div>
         </div>
-        <div
+        {/* <div
           className={classNames({
             "advanced-accordion-container": true,
             "accordion-open": selectedAccordion === "invoices"
@@ -228,7 +228,7 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Invoices</p>
           </div>
-          {/* <div className="advanced-accordion-content-container">
+          <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
               {invoices.content
                 .slice()
@@ -243,8 +243,8 @@ const AdvancedPage = () => {
                   />
                 ))}
             </div>
-          </div> */}
-        </div>
+          </div>
+        </div> */}
         <div
           className={classNames({
             "advanced-accordion-container": true,
