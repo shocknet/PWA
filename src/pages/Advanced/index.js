@@ -14,7 +14,7 @@ import {
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import MainNav from "../../common/MainNav";
 import AddBtn from "../../common/AddBtn";
-import Invoice from "./components/Invoice";
+// import Invoice from "./components/Invoice";
 import Transaction from "./components/Transaction";
 import Channel from "./components/Channel";
 import Peer from "./components/Peer";
@@ -46,7 +46,7 @@ const AdvancedPage = () => {
     ({ wallet }) => wallet.channelBalance
   );
   const transactions = Store.useSelector(({ wallet }) => wallet.transactions);
-  const invoices = Store.useSelector(({ wallet }) => wallet.invoices);
+  // const invoices = Store.useSelector(({ wallet }) => wallet.invoices);
   const channels = Store.useSelector(({ wallet }) => wallet.channels);
   const peers = Store.useSelector(({ wallet }) => wallet.peers);
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate);
@@ -228,7 +228,7 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Invoices</p>
           </div>
-          <div className="advanced-accordion-content-container">
+          {/* <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
               {invoices.content
                 .slice()
@@ -243,7 +243,7 @@ const AdvancedPage = () => {
                   />
                 ))}
             </div>
-          </div>
+          </div> */}
         </div>
         <div
           className={classNames({
