@@ -84,17 +84,6 @@ const wallet = (state = INITIAL_STATE, action) => {
         channels: data
       };
     }
-    case ACTIONS.LOAD_MORE_CHANNELS: {
-      const { data } = action;
-
-      return {
-        ...state,
-        channels: {
-          ...data,
-          content: [...state.channels.content, ...data.content]
-        }
-      };
-    }
     case ACTIONS.LOAD_TRANSACTIONS: {
       const { data } = action;
 
