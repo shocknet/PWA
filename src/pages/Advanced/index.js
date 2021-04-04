@@ -264,7 +264,6 @@ const AdvancedPage = () => {
                   address={channel.remote_pubkey}
                   receivable={channel.remote_balance}
                   sendable={channel.local_balance}
-                  ip={channel.ip}
                   active={channel.active}
                   key={channel.chan_id}
                 />
@@ -274,7 +273,6 @@ const AdvancedPage = () => {
                   address={channel.remote_pubkey}
                   receivable={channel.remote_balance}
                   sendable={channel.local_balance}
-                  ip={channel.ip}
                   active={channel.active}
                   key={channel.chan_id}
                   pendingStatus={channel.pendingStatus}

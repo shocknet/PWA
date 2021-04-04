@@ -6,7 +6,7 @@ import "./css/index.css";
 
 const Channel = ({
   address,
-  ip,
+  // ip = null,
   sendable,
   receivable,
   active,
@@ -20,7 +20,7 @@ const Channel = ({
     <div className="advanced-channel-container">
       {/* <div className="advanced-channel-ip"></div> */}
       <div className="advanced-channel-name-container">
-        <p className="advanced-channel-name">IP: {ip ?? "N/A"}</p>
+        {/* <p className="advanced-channel-name">IP: {ip ?? "N/A"}</p> */}
         <div
           className={classNames({
             "advanced-channel-status": true,
