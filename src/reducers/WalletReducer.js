@@ -30,6 +30,9 @@ const INITIAL_STATE = {
 const _getUnifiedTransactionDate = item =>
   parseInt(item.creation_date || item.settle_date || item.time_stamp, 10);
 
+/**
+ * @returns {typeof INITIAL_STATE}
+ */
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOAD_BALANCE: {
