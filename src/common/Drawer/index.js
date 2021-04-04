@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.css";
 import { NavLink } from "react-router-dom";
