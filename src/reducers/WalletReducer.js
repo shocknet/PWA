@@ -1,3 +1,4 @@
+// @ts-check
 import Big from "big.js";
 import { ACTIONS } from "../actions/WalletActions";
 
