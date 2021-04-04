@@ -1,11 +1,11 @@
 // @ts-check
 import { DateTime } from "luxon";
-import { useSelector } from "react-redux";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
+import * as Store from "../../../../store";
 import "./css/index.css";
 
 const Invoice = ({ value, date, paymentRequest, message }) => {
-  const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
+  const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const sanitizedValue = value.replace(/,/g, "");
   const USDValue = formatNumber(
     convertSatsToUSD(sanitizedValue, USDRate).toFixed(2)
