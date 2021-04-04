@@ -154,18 +154,14 @@ const MessagesPage = () => {
               <i className="send-request-card-icon fas fa-qrcode" />
               <p className="send-request-card-title">SCAN QR</p>
               <p className="send-request-card-desc">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
-                exercitationem eveniet a soluta vel. Non voluptatem,
-                reprehenderit error
+                Scan another users QR to send a message request.
               </p>
             </div>
             <div className="send-request-card" onClick={sendRequestClipboard}>
               <i className="send-request-card-icon fas fa-clipboard" />
               <p className="send-request-card-title">PASTE CLIPBOARD</p>
               <p className="send-request-card-desc">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum
-                exercitationem eveniet a soluta vel. Non voluptatem,
-                reprehenderit error
+                Paste another users Public Key to send a message request.
               </p>
             </div>
           </div>
