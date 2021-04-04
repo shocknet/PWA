@@ -1,6 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// @ts-check
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import classNames from "classnames";
+/**
+ * @typedef {import('shock-common').Channel} Channel
+ */
 import {
   fetchChannels,
   fetchInvoices,
@@ -10,7 +14,7 @@ import {
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import MainNav from "../../common/MainNav";
 import AddBtn from "../../common/AddBtn";
-import Invoice from "./components/Invoice";
+// import Invoice from "./components/Invoice";
 import Transaction from "./components/Transaction";
 import Channel from "./components/Channel";
 import Peer from "./components/Peer";
@@ -18,23 +22,34 @@ import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
 import Http from "../../utils/Http";
 import "./css/index.css";
+import * as Store from "../../store";
+
+/**
+ * @typedef {Channel & { pendingStatus: string , ip: string }} PendingChannel
+ */
 
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
 
-  const [pendingChannels, setPendingChannels] = useState([]);
+  const [pendingChannels, setPendingChannels] = useState(
+    /** @type {readonly PendingChannel[]} */ ([])
+  );
 
   const dispatch = useDispatch();
-  const confirmedBalance = useSelector(({ wallet }) => wallet.confirmedBalance);
-  const channelBalance = useSelector(({ wallet }) => wallet.channelBalance);
-  const transactions = useSelector(({ wallet }) => wallet.transactions);
-  const invoices = useSelector(({ wallet }) => wallet.invoices);
-  const channels = useSelector(({ wallet }) => wallet.channels);
-  const peers = useSelector(({ wallet }) => wallet.peers);
-  const USDRate = useSelector(({ wallet }) => wallet.USDRate);
+  const confirmedBalance = Store.useSelector(
+    ({ wallet }) => wallet.confirmedBalance
+  );
+  const channelBalance = Store.useSelector(
+    ({ wallet }) => wallet.channelBalance
+  );
+  const transactions = Store.useSelector(({ wallet }) => wallet.transactions);
+  // const invoices = Store.useSelector(({ wallet }) => wallet.invoices);
+  const channels = Store.useSelector(({ wallet }) => wallet.channels);
+  const peers = Store.useSelector(({ wallet }) => wallet.peers);
+  const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate);
 
   useEffect(() => {
     const reset = page === 1;
@@ -47,7 +62,7 @@ const AdvancedPage = () => {
   //effect to load pending channels, no need to keep them in redux
   useEffect(() => {
     Http.get("/api/lnd/pendingchannels").then(({ data }) => {
-      console.log("pendigs");
+      console.log("pending channels:");
       console.log(data);
       const makeChanObj = (ch, pendingStatus) => ({
         remote_pubkey: ch.remote_node_pub,
@@ -213,7 +228,7 @@ const AdvancedPage = () => {
           >
             <p className="advanced-accordion-title">Invoices</p>
           </div>
-          <div className="advanced-accordion-content-container">
+          {/* <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
               {invoices.content
                 .slice()
@@ -228,7 +243,7 @@ const AdvancedPage = () => {
                   />
                 ))}
             </div>
-          </div>
+          </div> */}
         </div>
         <div
           className={classNames({
@@ -249,7 +264,6 @@ const AdvancedPage = () => {
                   address={channel.remote_pubkey}
                   receivable={channel.remote_balance}
                   sendable={channel.local_balance}
-                  ip={channel.ip}
                   active={channel.active}
                   key={channel.chan_id}
                 />
@@ -259,7 +273,6 @@ const AdvancedPage = () => {
                   address={channel.remote_pubkey}
                   receivable={channel.remote_balance}
                   sendable={channel.local_balance}
-                  ip={channel.ip}
                   active={channel.active}
                   key={channel.chan_id}
                   pendingStatus={channel.pendingStatus}

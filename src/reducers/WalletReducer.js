@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('shock-common').Channel} Channel
+ */
+
 import Big from "big.js";
 import { ACTIONS } from "../actions/WalletActions";
 
@@ -11,6 +16,9 @@ const INITIAL_STATE = {
 
   transactions: { content: [], page: -1, totalPages: 0, totalItems: 0 },
   payments: { content: [], page: -1, totalPages: 0, totalItems: 0 },
+  /**
+   * @type {readonly Channel[]}
+   */
   channels: [],
   invoices: { content: [], page: -1, totalPages: 0, totalItems: 0 },
   peers: [],
@@ -22,6 +30,9 @@ const INITIAL_STATE = {
 const _getUnifiedTransactionDate = item =>
   parseInt(item.creation_date || item.settle_date || item.time_stamp, 10);
 
+/**
+ * @returns {typeof INITIAL_STATE}
+ */
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOAD_BALANCE: {
@@ -81,17 +92,6 @@ const wallet = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         channels: data
-      };
-    }
-    case ACTIONS.LOAD_MORE_CHANNELS: {
-      const { data } = action;
-
-      return {
-        ...state,
-        channels: {
-          ...data,
-          content: [...state.channels.content, ...data.content]
-        }
       };
     }
     case ACTIONS.LOAD_TRANSACTIONS: {

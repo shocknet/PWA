@@ -1,5 +1,4 @@
 import Http from "axios";
-import FieldError from "../utils/FieldError";
 
 export const ACTIONS = {
   LOAD_BALANCE: "wallet/balance/load",
@@ -7,7 +6,6 @@ export const ACTIONS = {
   LOAD_TRANSACTIONS: "wallet/transactions/load",
   LOAD_MORE_TRANSACTIONS: "wallet/transactions/loadMore",
   LOAD_CHANNELS: "wallet/channels/load",
-  LOAD_MORE_CHANNELS: "wallet/channels/loadMore",
   LOAD_INVOICES: "wallet/invoices/load",
   LOAD_MORE_INVOICES: "wallet/invoices/loadMore",
   LOAD_PAYMENTS: "wallet/payments/load",
