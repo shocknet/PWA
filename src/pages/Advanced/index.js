@@ -2,6 +2,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
+/**
+ * @typedef {import('shock-common').Channel} Channel
+ */
 import {
   fetchChannels,
   fetchInvoices,
@@ -21,13 +24,19 @@ import Http from "../../utils/Http";
 import "./css/index.css";
 import * as Store from "../../store";
 
+/**
+ * @typedef {Channel & { pendingStatus: string , ip: string }} PendingChannel
+ */
+
 const AdvancedPage = () => {
   const [selectedAccordion, setSelectedAccordion] = useState("transactions");
   const [page] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
 
-  const [pendingChannels, setPendingChannels] = useState([]);
+  const [pendingChannels, setPendingChannels] = useState(
+    /** @type {readonly PendingChannel[]} */ ([])
+  );
 
   const dispatch = useDispatch();
   const confirmedBalance = Store.useSelector(
