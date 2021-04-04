@@ -62,7 +62,7 @@ const AdvancedPage = () => {
   //effect to load pending channels, no need to keep them in redux
   useEffect(() => {
     Http.get("/api/lnd/pendingchannels").then(({ data }) => {
-      console.log("pendigs");
+      console.log("pending channels:");
       console.log(data);
       const makeChanObj = (ch, pendingStatus) => ({
         remote_pubkey: ch.remote_node_pub,
