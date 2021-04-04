@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.css";
 import { NavLink } from "react-router-dom";
@@ -37,12 +37,12 @@ const Drawer = () => {
         })}
       >
         <div className="drawer-top-section">
-          <div className="drawer-item">
+          {/* <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-wallet"></i>
             </div>
             <p className="drawer-item-title unselectable">Spending Rules</p>
-          </div>
+          </div> */}
           {/* <div className="drawer-item">
         <div className="drawer-item-icon">
           <i className="icon-solid-spending-rule"></i>
