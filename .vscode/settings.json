@@ -12,6 +12,7 @@
     "healthz",
     "immer",
     "luxon",
+    "pendingchannels",
     "persistor",
     "pubkey",
     "qrcode",
