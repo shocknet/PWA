@@ -1,5 +1,4 @@
 import Http from "axios";
-import FieldError from "../utils/FieldError";
 
 export const ACTIONS = {
   LOAD_BALANCE: "wallet/balance/load",
