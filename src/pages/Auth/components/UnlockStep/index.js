@@ -38,7 +38,8 @@ const UnlockStep = () => {
       try {
         const wallet = await dispatch(
           unlockWallet({
-            alias: alias ?? cachedAlias,
+            // Do not replace "||" with "??"
+            alias: alias || cachedAlias,
             password
           })
         );
