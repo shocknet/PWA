@@ -37,12 +37,12 @@ const Drawer = () => {
         })}
       >
         <div className="drawer-top-section">
-          <div className="drawer-item">
+          {/* <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-wallet"></i>
             </div>
             <p className="drawer-item-title unselectable">Spending Rules</p>
-          </div>
+          </div> */}
           {/* <div className="drawer-item">
         <div className="drawer-item-icon">
           <i className="icon-solid-spending-rule"></i>
