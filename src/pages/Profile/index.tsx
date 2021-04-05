@@ -7,6 +7,7 @@ import React, {
   useRef,
   InputHTMLAttributes
 } from "react";
+import * as Common from "shock-common";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
@@ -29,6 +30,7 @@ import ShockAvatar from "../../common/ShockAvatar";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
+import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
 
 import "./css/index.css";
 
@@ -93,6 +95,39 @@ const ProfilePage = () => {
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
   const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
   const [localSeedToken, setLocalSeedToken] = useState(seedToken);
+  const [, setWebClientPrefix] = useState<Common.WebClientPrefix>(
+    AVAILABLE_WEB_CLIENT_PREFIXES[0]
+  );
+
+  useEffect(() => {
+    const query = `$user::Profile>webClientPrefix::on`;
+
+    (async () => {
+      const socket = await rifle({
+        host: hostIP,
+        query
+      });
+
+      socket.on("$shock", (newWebClientPrefix: unknown) => {
+        if (typeof newWebClientPrefix === "string") {
+          setWebClientPrefix(newWebClientPrefix as Common.WebClientPrefix);
+        } else {
+          Http.post(`api/gun/put`, {
+            path: "$user>Profile>webClientPrefix",
+            value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
+          });
+        }
+      });
+
+      socket.on("$error", (errorMessage: string) => {
+        alert(`There was an error fetching web client prefix: ${errorMessage}`);
+      });
+    })();
+
+    return () => {
+      disconnectRifleSocket(query);
+    };
+  }, [hostIP, publicKey /* handles alias switch */]);
 
   const onInputChange = e => {
     const { value, name } = e.target;
@@ -628,5 +663,12 @@ const ProfilePage = () => {
     </>
   );
 };
+
+const AVAILABLE_WEB_CLIENT_PREFIXES: readonly Common.WebClientPrefix[] = [
+  "https://shock.pub",
+  "https://shock.pub",
+  "https://lightning.page",
+  "https://satoshi.watch"
+];
 
 export default ProfilePage;
