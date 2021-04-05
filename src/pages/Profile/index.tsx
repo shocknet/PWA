@@ -243,7 +243,21 @@ const ProfilePage = () => {
   // ------------------------------------------------------------------------ //
 
   const copyClipboard = useCallback(() => {
-    navigator.clipboard.writeText(publicKey);
+    try {
+      // some browsers/platforms don't support navigator.clipboard
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(publicKey);
+      } else {
+        const placeholderEl = document.querySelector(
+          "#public-key-holder"
+        ) as HTMLInputElement;
+        placeholderEl.select();
+        document.execCommand("copy");
+        setProfileModalOpen(false);
+      }
+    } catch (e) {
+      alert(`Could not copy to clipboard: ${e.message}`);
+    }
   }, [publicKey]);
 
   const AVATAR_SIZE = 122;
@@ -473,6 +487,15 @@ const ProfilePage = () => {
             <p className="profile-qrcode-desc">
               Other users can scan this code to contact you
             </p>
+
+            {!navigator.clipboard && (
+              <input
+                className="input-field"
+                id="public-key-holder"
+                type="text"
+                value={publicKey}
+              ></input>
+            )}
             <div
               className="profile-clipboard-container"
               onClick={copyClipboard}
