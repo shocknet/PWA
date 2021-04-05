@@ -7,7 +7,6 @@ import React, {
   useRef,
   InputHTMLAttributes
 } from "react";
-import * as Common from "shock-common";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
@@ -36,6 +35,12 @@ import "./css/index.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
+
+export type WebClientPrefix =
+  | "https://shock.page"
+  | "https://shock.pub"
+  | "https://lightning.page"
+  | "https://satoshi.watch";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -95,7 +100,10 @@ const ProfilePage = () => {
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
   const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
   const [localSeedToken, setLocalSeedToken] = useState(seedToken);
-  const [, setWebClientPrefix] = useState<Common.WebClientPrefix>(
+  const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
+    AVAILABLE_WEB_CLIENT_PREFIXES[0]
+  );
+  const [newWebClientPrefix, setNewWebClientPrefix] = useState<WebClientPrefix>(
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
 
@@ -110,7 +118,7 @@ const ProfilePage = () => {
 
       socket.on("$shock", (newWebClientPrefix: unknown) => {
         if (typeof newWebClientPrefix === "string") {
-          setWebClientPrefix(newWebClientPrefix as Common.WebClientPrefix);
+          setWebClientPrefix(newWebClientPrefix as WebClientPrefix);
         } else {
           Http.post(`api/gun/put`, {
             path: "$user>Profile>webClientPrefix",
@@ -164,12 +172,14 @@ const ProfilePage = () => {
     setProfileConfigModalOpen(open => !open);
     setNewDisplayName(user.displayName);
     setNewBio(user.bio);
+    setNewWebClientPrefix(currWebClientPrefix);
   }, [
     setProfileConfigModalOpen,
     setNewDisplayName,
     user.displayName,
     setNewBio,
-    user.bio
+    user.bio,
+    currWebClientPrefix
   ]);
 
   const onConfigCancel = useCallback(() => {
@@ -582,6 +592,44 @@ const ProfilePage = () => {
                 }}
               />
 
+              <label htmlFor="new-web-client-prefix">Web Client</label>
+
+              <div
+                style={{
+                  textOverflow: "ellipsis",
+                  width: "100%"
+                }}
+              >
+                <select
+                  onChange={e => {
+                    setNewWebClientPrefix(e.target.value as WebClientPrefix);
+                  }}
+                  name="new-web-client-prefix"
+                  id="new-web-client-prefix"
+                  value={newWebClientPrefix}
+                >
+                  {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
+                    <option key={prefix} value={prefix}>
+                      {prefix}
+                    </option>
+                  ))}
+                </select>
+
+                <span>/</span>
+
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                  }}
+                >
+                  Public Key
+                </span>
+              </div>
+
+              <br></br>
+
               <label htmlFor="localPub">Seed Service Provider</label>
               <input
                 type="text"
@@ -664,9 +712,9 @@ const ProfilePage = () => {
   );
 };
 
-const AVAILABLE_WEB_CLIENT_PREFIXES: readonly Common.WebClientPrefix[] = [
+const AVAILABLE_WEB_CLIENT_PREFIXES: readonly WebClientPrefix[] = [
   "https://shock.pub",
-  "https://shock.pub",
+  "https://shock.page",
   "https://lightning.page",
   "https://satoshi.watch"
 ];
