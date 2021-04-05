@@ -53,7 +53,12 @@ const Drawer = () => {
             <p className="drawer-item-title unselectable">Seed Backup</p>
           </div>
         </div>
-        <div className="drawer-bottom-section">
+        <div className="drawer-bottom-section" >
+          <NavLink className="drawer-item" to="/QRScanner" onClick={close}>
+              <div className="drawer-item-icon">
+              <i className="fas fa-qrcode"></i>
+              </div>
+          </NavLink>
           <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>

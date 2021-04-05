@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
+import { useHistory } from "react-router";
 import {
   fetchWalletBalance,
   fetchUSDRate,
@@ -17,6 +18,7 @@ import Transaction from "./components/Transaction";
 import "./css/index.css";
 
 const OverviewPage = () => {
+  const history = useHistory()
   const dispatch = useDispatch();
   const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
@@ -51,6 +53,7 @@ const OverviewPage = () => {
           </p>
           <p className="overview-balance-usd">{totalBalanceUSD} USD</p>
         </div>
+        <button onClick={e => {history.push("/QRScanner",{Swag:"lol"})}}>YOYO</button>
         <div className="overview-actions">
           <Link to="/send" className="overview-action overview-action-send">
             <p className="overview-action-text">Send</p>
