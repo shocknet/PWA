@@ -83,6 +83,8 @@ const CreateWalletStep = () => {
           value={alias}
           onChange={onInputChange}
           className="input-field"
+          autoCorrect="off"
+          autoCapitalize="none"
         />
         <input
           type="password"
