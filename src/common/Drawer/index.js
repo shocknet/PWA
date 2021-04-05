@@ -15,8 +15,10 @@ const Drawer = () => {
     dispatch(closeDrawer());
   }, [dispatch]);
   const onClickLogout = useCallback(() => {
-    dispatch(logout());
-    dispatch(closeDrawer());
+    if (window.confirm("Are you sure you wish to log out?")) {
+      dispatch(logout());
+      dispatch(closeDrawer());
+    }
   }, [dispatch]);
 
   const onClickScan = useCallback(() => {}, []);
