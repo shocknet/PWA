@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState,useEffect } from "react";
+import {  useLocation } from "react-router";
 import Http from "../../utils/Http";
 import SlidePay from "../../common/SlidePay";
 import InputGroup from "../../common/InputGroup";
@@ -9,6 +10,8 @@ import Loader from "../../common/Loader";
 import "./css/index.css";
 
 const SendPage = () => {
+  const location = useLocation()
+  
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [unit, setUnit] = useState("sats");
@@ -51,7 +54,43 @@ const SendPage = () => {
 
     setLoading(false);
   }, []);
-
+  //effect for incoming redirects with data
+  useEffect(()=>{
+    const {state:routerState} = location
+    
+    if(routerState && routerState.data && routerState.data.type){
+      const {data} = routerState
+      switch (data.type) {
+        case 'btc':{
+          selectContact({
+            type:"btc",
+            address:data.address
+          })
+          if(data.amount){
+            setAmount(data.amount)
+          }
+          break
+        }
+        case 'ln':{
+          selectContact({
+            type:"invoice",
+            paymentRequest:data.request
+          })
+          break
+        }
+        case 'keysend':{
+          selectContact({
+            type:"keysend",
+            dest:data.address
+          })
+          break
+        }
+        default:
+          break;
+      }
+      location.state = {}
+    }
+  },[location,selectContact,setAmount])
   const sendBTCPayment = useCallback(async () => {
     if (contact) {
       const { data: payment } = await Http.post("/api/lnd/sendcoins", {

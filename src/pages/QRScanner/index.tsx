@@ -11,11 +11,13 @@ import DialogNav from "../../common/DialogNav";
 import Loader from "../../common/Loader";
 import QRCodeScanner from "../../common/QRCodeScanner";
 import ExtractInfo from "../../utils/validators"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Http } from "../../utils";
+import { connectPeer, fetchPeers } from "../../actions/WalletActions";
 
 const QRScanner = () => {
   const history = useHistory()
+  const dispatch = useDispatch()
   //@ts-ignore
   const publicKey = useSelector(({node}) => node.publicKey)
   const [loading,setLoading] = useState(false)
@@ -163,8 +165,39 @@ const QRScanner = () => {
     }catch(e){
       setError(e.message || e)
     }
-  },[LNURLdata,withdrawAmount,memo,setDone,setError])
-  const confirmChannelReq = useCallback(()=>{},[])
+  },[history,LNURLdata,withdrawAmount,memo,setDone,setError])
+  const confirmChannelReq = useCallback(async ()=>{
+    try{
+      const { uri, callback, k1 } = LNURLdata
+      let newK1 = k1
+      if (k1 === 'gun' && LNURLdata.shockPubKey) {
+        newK1 = `$$__SHOCKWALLET__USER__${LNURLdata.shockPubKey}`
+      }
+      const samePeer = e => {
+        const localUri = `${e.pub_key}@${e.address}`
+        return localUri === uri
+      }
+      const {peers} = await fetchPeers()(dispatch)
+      if(!peers.find(samePeer)){
+        const [publicKey, host] = uri.plit("@")
+        await connectPeer({publicKey, host})
+      }
+
+      const {data:node} = await Http.get("/healthz")
+      const nodeId = node.identity_pubkey
+      const priv = privateChannel ? 1 : 0
+      const completeUrl = `${callback}?k1=${newK1}&remoteid=${nodeId}&private=${priv}`
+      const res = await fetch(completeUrl)
+      const json = await res.json()
+      if(json.status === 'OK'){
+        setDone('Channel request sent correctly')
+      }else {
+        setError(json.reason)
+      }
+    }catch(e){
+        setError(e.message || e)
+      }
+  },[history,LNURLdata,setError])
   const confirmPayReq = useCallback(async ()=>{
     try{
       const { callback } = LNURLdata
@@ -176,9 +209,13 @@ const QRScanner = () => {
         setError(json.reason)
         return
       }
-      
+      history.push("/send",{
+        data: { type: 'ln', request: json.pr },
+      })
+    }catch(e){
+      setError(e.message || e)
     }
-  },[])
+  },[history,LNURLdata,payAmount,setError])
 
   const toRender = useMemo(() => {
     if (LNURLdata === null) {
