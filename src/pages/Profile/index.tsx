@@ -513,16 +513,13 @@ const ProfilePage = () => {
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
             contentStyle={{
-              padding: "2em 2em",
-              height: "100%"
+              padding: "2em 2em"
             }}
           >
             <div
               style={{
                 display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                height: "100%"
+                flexDirection: "column"
               }}
             >
               <label htmlFor="newDisplayName">Display Name</label>
