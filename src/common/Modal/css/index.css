@@ -45,6 +45,7 @@
   opacity: 0;
   z-index: 1;
   transition: transform 0.3s ease, opacity 0.2s ease;
+  overflow: scroll;
 }
 
 .modal-form {

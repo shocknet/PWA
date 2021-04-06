@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
-import Http from "axios";
 
 import * as Utils from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
@@ -29,11 +28,18 @@ import ShockAvatar from "../../common/ShockAvatar";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
+import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
 
 import "./css/index.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
+
+export type WebClientPrefix =
+  | "https://shock.page"
+  | "https://shock.pub"
+  | "https://lightning.page"
+  | "https://satoshi.watch";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -93,8 +99,60 @@ const ProfilePage = () => {
   const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
   const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
   const [localSeedToken, setLocalSeedToken] = useState(seedToken);
+  const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
+    AVAILABLE_WEB_CLIENT_PREFIXES[0]
+  );
+  const [newWebClientPrefix, setNewWebClientPrefix] = useState<WebClientPrefix>(
+    AVAILABLE_WEB_CLIENT_PREFIXES[0]
+  );
 
-  const onInputChange = e => {
+  const copyWebClientUrlToClipboard = useCallback(() => {
+    // some browsers/platforms don't support navigator.clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(newWebClientPrefix + "/" + publicKey);
+    } else {
+      const placeholderEl = document.querySelector(
+        "#web-client-url-holder"
+      ) as HTMLInputElement;
+      placeholderEl.select();
+      document.execCommand("copy");
+      placeholderEl.blur();
+    }
+  }, [newWebClientPrefix, publicKey]);
+
+  useEffect(() => {
+    const query = `$user::Profile>webClientPrefix::on`;
+
+    (async () => {
+      const socket = await rifle({
+        host: hostIP,
+        query
+      });
+
+      socket.on("$shock", (webClientPrefixReceived: unknown) => {
+        if (typeof webClientPrefixReceived === "string") {
+          setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
+        } else {
+          Utils.Http.post(`/api/gun/put`, {
+            path: "$user>Profile>webClientPrefix",
+            value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
+          }).catch(e => {
+            alert(`Error setting default web client prefix: ${e.message}`);
+          });
+        }
+      });
+
+      socket.on("$error", (errorMessage: string) => {
+        alert(`There was an error fetching web client prefix: ${errorMessage}`);
+      });
+    })();
+
+    return () => {
+      disconnectRifleSocket(query);
+    };
+  }, [hostIP, publicKey /* handles alias switch */]);
+
+  const onInputChange = (e: { target: { name: string; value: any } }) => {
     const { value, name } = e.target;
     switch (name) {
       case "localPub": {
@@ -123,18 +181,21 @@ const ProfilePage = () => {
     newDisplayName !== user.displayName ||
     newBio !== user.bio ||
     localSeedUrl !== seedUrl ||
-    localSeedToken !== seedToken;
+    localSeedToken !== seedToken ||
+    newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
     setNewDisplayName(user.displayName);
     setNewBio(user.bio);
+    setNewWebClientPrefix(currWebClientPrefix);
   }, [
     setProfileConfigModalOpen,
     setNewDisplayName,
     user.displayName,
     setNewBio,
-    user.bio
+    user.bio,
+    currWebClientPrefix
   ]);
 
   const onConfigCancel = useCallback(() => {
@@ -157,13 +218,27 @@ const ProfilePage = () => {
     setSeedProviderPub(localSeedPub)(dispatch);
     setSeedInfo(localSeedUrl, localSeedToken)(dispatch);
     if (newDisplayName !== user.displayName) {
-      Http.put(`/api/gun/me`, {
+      Utils.Http.put(`/api/gun/me`, {
         displayName: newDisplayName
+      }).catch(e => {
+        alert(`There was an error setting a new display name: ${e.message}`);
       });
     }
     if (newBio !== user.bio) {
-      Http.put("/api/gun/me", {
+      Utils.Http.put("/api/gun/me", {
         bio: newBio
+      }).catch(e => {
+        alert(`There was an error setting a new bio: ${e.message}`);
+      });
+    }
+    if (newWebClientPrefix !== currWebClientPrefix) {
+      Utils.Http.post(`/api/gun/put`, {
+        path: "$user>Profile>webClientPrefix",
+        value: newWebClientPrefix
+      }).catch(e => {
+        alert(
+          `There was an error setting your web client prefix: ${e.message}`
+        );
       });
     }
     toggleConfigModal();
@@ -176,7 +251,9 @@ const ProfilePage = () => {
     user.displayName,
     user.bio,
     newBio,
-    toggleConfigModal
+    toggleConfigModal,
+    newWebClientPrefix,
+    currWebClientPrefix
   ]);
 
   // ------------------------------------------------------------------------ //
@@ -253,6 +330,7 @@ const ProfilePage = () => {
         ) as HTMLInputElement;
         placeholderEl.select();
         document.execCommand("copy");
+        placeholderEl.blur();
         setProfileModalOpen(false);
       }
     } catch (e) {
@@ -492,6 +570,7 @@ const ProfilePage = () => {
               <input
                 className="input-field"
                 id="public-key-holder"
+                readOnly
                 type="text"
                 value={publicKey}
               ></input>
@@ -513,95 +592,128 @@ const ProfilePage = () => {
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
             contentStyle={{
-              padding: "2em 2em",
-              height: "100%"
+              padding: "2em 2em"
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                height: "100%"
+            <label htmlFor="newDisplayName">Display Name</label>
+            <input
+              autoCapitalize="none"
+              autoCorrect="off"
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new display name"}
+              name="newDisplayName"
+              onChange={({ target: { value } }) => {
+                setNewDisplayName(value);
               }}
-            >
-              <label htmlFor="newDisplayName">Display Name</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new display name"}
-                name="newDisplayName"
-                onChange={({ target: { value } }) => {
-                  setNewDisplayName(value);
+            />
+
+            <label htmlFor="newBio">New Bio</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new bio"}
+              name="newBio"
+              onChange={({ target: { value } }) => {
+                setNewBio(value);
+              }}
+            />
+
+            <label htmlFor="new-web-client-prefix">Web Client</label>
+
+            <div className="web-client-prefix-picker">
+              <i
+                className="far fa-copy"
+                onClick={copyWebClientUrlToClipboard}
+                style={{ fontSize: 24 }}
+              />
+
+              <select
+                onChange={e => {
+                  setNewWebClientPrefix(e.target.value as WebClientPrefix);
                 }}
-              />
+                name="new-web-client-prefix"
+                id="new-web-client-prefix"
+                value={newWebClientPrefix}
+              >
+                {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
+                  <option key={prefix} value={prefix}>
+                    {prefix}
+                  </option>
+                ))}
+              </select>
 
-              <label htmlFor="newBio">New Bio</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new bio"}
-                name="newBio"
-                onChange={({ target: { value } }) => {
-                  setNewBio(value);
-                }}
-              />
+              <span>/</span>
 
-              <label htmlFor="localPub">Seed Service Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={localSeedPub}
-                name="localPub"
-                onChange={onInputChange}
-              />
-
-              <label htmlFor="selfSeedUrl">Self Token Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Url"}
-                name="selfSeedUrl"
-                value={localSeedUrl}
-                onChange={onInputChange}
-              />
-
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Token"}
-                name="selfSeedToken"
-                value={localSeedToken}
-                onChange={onInputChange}
-              />
-              <h2>Available Content Tokens</h2>
-              {tokensView.length === 0 && (
-                <p>You don't have any content token available</p>
-              )}
-              {tokensView}
-              <h2>Available Stream Tokens</h2>
-              {streamTokensView.length === 0 && (
-                <p>You don't have any stream token available</p>
-              )}
-              {streamTokensView}
-
-              {somethingInsideConfigModalChanged && (
-                <div className="flex-center" style={{ marginTop: "auto" }}>
-                  <button
-                    onClick={onConfigCancel}
-                    className="shock-form-button m-1"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    onClick={onConfigSubmit}
-                    className="shock-form-button-confirm m-1"
-                  >
-                    SUBMIT
-                  </button>
-                </div>
-              )}
+              <span style={{ fontSize: 12 }}>{publicKey}</span>
             </div>
+
+            {!navigator.clipboard && (
+              <input
+                className="input-field"
+                id="web-client-url-holder"
+                readOnly
+                type="text"
+                value={newWebClientPrefix + "/" + publicKey}
+              ></input>
+            )}
+
+            <br></br>
+
+            <label htmlFor="localPub">Seed Service Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={localSeedPub}
+              name="localPub"
+              onChange={onInputChange}
+            />
+
+            <label htmlFor="selfSeedUrl">Self Token Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Url"}
+              name="selfSeedUrl"
+              value={localSeedUrl}
+              onChange={onInputChange}
+            />
+
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Token"}
+              name="selfSeedToken"
+              value={localSeedToken}
+              onChange={onInputChange}
+            />
+            <h2>Available Content Tokens</h2>
+            {tokensView.length === 0 && (
+              <p>You don't have any content token available</p>
+            )}
+            {tokensView}
+            <h2>Available Stream Tokens</h2>
+            {streamTokensView.length === 0 && (
+              <p>You don't have any stream token available</p>
+            )}
+            {streamTokensView}
+
+            {somethingInsideConfigModalChanged && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={onConfigCancel}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={onConfigSubmit}
+                  className="shock-form-button-confirm m-1"
+                >
+                  SUBMIT
+                </button>
+              </div>
+            )}
           </Modal>
 
           <AddBtn
@@ -628,5 +740,12 @@ const ProfilePage = () => {
     </>
   );
 };
+
+const AVAILABLE_WEB_CLIENT_PREFIXES: readonly WebClientPrefix[] = [
+  "https://shock.pub",
+  "https://shock.page",
+  "https://lightning.page",
+  "https://satoshi.watch"
+];
 
 export default ProfilePage;

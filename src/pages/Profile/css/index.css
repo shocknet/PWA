@@ -167,3 +167,26 @@ p.profile-clipboard-text {
   margin-right: auto;
   margin-top: 0.7em;
 }
+
+.web-client-prefix-picker {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.web-client-prefix-picker > *:first-child {
+  margin-right: 8px;
+}
+
+.web-client-prefix-picker > *:last-child {
+  margin-left: 8px;
+}
+
+.web-client-prefix-picker > *:not(:first-child):not(:last-child) {
+  margin-left: 8px;
+  margin-right: 8px;
+}

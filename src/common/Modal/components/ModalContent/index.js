@@ -1,4 +1,4 @@
-import React from "react";
+// @ts-check
 import "./css/index.css";
 
 const ModalContent = ({ children, style }) => (
