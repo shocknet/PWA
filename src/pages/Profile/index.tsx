@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
-import Http from "axios";
 
 import * as Utils from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
@@ -134,7 +133,7 @@ const ProfilePage = () => {
         if (typeof webClientPrefixReceived === "string") {
           setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
         } else {
-          Http.post(`api/gun/put`, {
+          Utils.Http.post(`api/gun/put`, {
             path: "$user>Profile>webClientPrefix",
             value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
           });
@@ -217,12 +216,12 @@ const ProfilePage = () => {
     setSeedProviderPub(localSeedPub)(dispatch);
     setSeedInfo(localSeedUrl, localSeedToken)(dispatch);
     if (newDisplayName !== user.displayName) {
-      Http.put(`/api/gun/me`, {
+      Utils.Http.put(`/api/gun/me`, {
         displayName: newDisplayName
       });
     }
     if (newBio !== user.bio) {
-      Http.put("/api/gun/me", {
+      Utils.Http.put("/api/gun/me", {
         bio: newBio
       });
     }
