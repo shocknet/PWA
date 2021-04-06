@@ -137,7 +137,7 @@ const ProfilePage = () => {
     };
   }, [hostIP, publicKey /* handles alias switch */]);
 
-  const onInputChange = e => {
+  const onInputChange = (e: { target: { name: string; value: any } }) => {
     const { value, name } = e.target;
     switch (name) {
       case "localPub": {
