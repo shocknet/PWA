@@ -1,3 +1,4 @@
+// @ts-check
 import "./css/index.css";
 
 const ModalContent = ({ children, style }) => (
