@@ -595,12 +595,7 @@ const ProfilePage = () => {
 
               <label htmlFor="new-web-client-prefix">Web Client</label>
 
-              <div
-                style={{
-                  textOverflow: "ellipsis",
-                  width: "100%"
-                }}
-              >
+              <div className="web-client-prefix-picker">
                 <select
                   onChange={e => {
                     setNewWebClientPrefix(e.target.value as WebClientPrefix);
@@ -618,15 +613,7 @@ const ProfilePage = () => {
 
                 <span>/</span>
 
-                <span
-                  style={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                  }}
-                >
-                  Public Key
-                </span>
+                <span style={{ fontSize: 12 }}>{publicKey}</span>
               </div>
 
               <br></br>
