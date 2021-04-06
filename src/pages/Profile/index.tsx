@@ -130,9 +130,9 @@ const ProfilePage = () => {
         query
       });
 
-      socket.on("$shock", (newWebClientPrefix: unknown) => {
-        if (typeof newWebClientPrefix === "string") {
-          setWebClientPrefix(newWebClientPrefix as WebClientPrefix);
+      socket.on("$shock", (webClientPrefixReceived: unknown) => {
+        if (typeof webClientPrefixReceived === "string") {
+          setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
         } else {
           Http.post(`api/gun/put`, {
             path: "$user>Profile>webClientPrefix",
