@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback } from "react";
 import classNames from "classnames";
 import ModalContent from "./components/ModalContent/index.js";
