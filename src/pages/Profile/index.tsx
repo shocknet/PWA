@@ -107,6 +107,20 @@ const ProfilePage = () => {
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
 
+  const copyWebClientUrlToClipboard = useCallback(() => {
+    // some browsers/platforms don't support navigator.clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(newWebClientPrefix + "/" + publicKey);
+    } else {
+      const placeholderEl = document.querySelector(
+        "#web-client-url-holder"
+      ) as HTMLInputElement;
+      placeholderEl.select();
+      document.execCommand("copy");
+      placeholderEl.blur();
+    }
+  }, [newWebClientPrefix, publicKey]);
+
   useEffect(() => {
     const query = `$user::Profile>webClientPrefix::on`;
 
@@ -596,6 +610,12 @@ const ProfilePage = () => {
               <label htmlFor="new-web-client-prefix">Web Client</label>
 
               <div className="web-client-prefix-picker">
+                <i
+                  className="far fa-copy"
+                  onClick={copyWebClientUrlToClipboard}
+                  style={{ fontSize: 24 }}
+                />
+
                 <select
                   onChange={e => {
                     setNewWebClientPrefix(e.target.value as WebClientPrefix);
@@ -615,6 +635,15 @@ const ProfilePage = () => {
 
                 <span style={{ fontSize: 12 }}>{publicKey}</span>
               </div>
+
+              {!navigator.clipboard && (
+                <input
+                  className="input-field"
+                  id="web-client-url-holder"
+                  type="text"
+                  value={currWebClientPrefix + "/" + publicKey}
+                ></input>
+              )}
 
               <br></br>
 
