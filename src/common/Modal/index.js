@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+// @ts-check
+import { useCallback } from "react";
 import classNames from "classnames";
-import ModalContent from "./components/ModalContent/index.js";
+import ModalContent from "./components/ModalContent";
 import ModalTitle from "./components/ModalTitle";
 import "./css/index.css";
 

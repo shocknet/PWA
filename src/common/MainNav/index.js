@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.css";
 import { useDispatch } from "react-redux";
@@ -9,7 +9,6 @@ import { useSelector } from "../../store";
 
 const MainNav = ({
   pageTitle,
-  avatar,
   absolute = false,
   solid = false,
   enableBackButton = false

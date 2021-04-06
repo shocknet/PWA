@@ -14,8 +14,7 @@ const ChoicesStep = () => {
     <div className="choices-step-container">
       <p className="choices-title">Node Up</p>
       <p className="choices-desc">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus
-        eligendi enim ipsa veritatis repudiandae, qui illo ut voluptatibus illum
+        In a decentralized network, a node is like a personal server that works even as your mobile sleeps.
       </p>
       <div className="choices-container">
         <ChoiceMethod

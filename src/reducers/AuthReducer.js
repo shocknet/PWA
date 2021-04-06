@@ -33,6 +33,9 @@ const auth = (state = INITIAL_STATE, action) => {
         authStep: defaultSteps[method]
       };
     }
+    case ACTIONS.LOGOUT: {
+      return INITIAL_STATE;
+    }
     default:
       return state;
   }

@@ -47,7 +47,7 @@ export const subscribeUserProfile = (publicKey: string) => async (
     })
   ]);
 
-  binarySub.on("$shock", (data, key) => {
+  binarySub.on("$shock", (data, key: string) => {
     if (key === "avatar") {
       if (typeof data !== "string" && data !== null) {
         Utils.logger.error(
