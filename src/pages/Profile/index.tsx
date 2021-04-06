@@ -552,6 +552,7 @@ const ProfilePage = () => {
               <input
                 className="input-field"
                 id="public-key-holder"
+                readOnly
                 type="text"
                 value={publicKey}
               ></input>
@@ -640,6 +641,7 @@ const ProfilePage = () => {
                 <input
                   className="input-field"
                   id="web-client-url-holder"
+                  readOnly
                   type="text"
                   value={newWebClientPrefix + "/" + publicKey}
                 ></input>
