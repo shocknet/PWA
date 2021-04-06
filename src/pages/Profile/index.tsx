@@ -136,6 +136,8 @@ const ProfilePage = () => {
           Utils.Http.post(`/api/gun/put`, {
             path: "$user>Profile>webClientPrefix",
             value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
+          }).catch(e => {
+            alert(`Error setting default web client prefix: ${e.message}`);
           });
         }
       });
@@ -218,11 +220,15 @@ const ProfilePage = () => {
     if (newDisplayName !== user.displayName) {
       Utils.Http.put(`/api/gun/me`, {
         displayName: newDisplayName
+      }).catch(e => {
+        alert(`There was an error setting a new display name: ${e.message}`);
       });
     }
     if (newBio !== user.bio) {
       Utils.Http.put("/api/gun/me", {
         bio: newBio
+      }).catch(e => {
+        alert(`There was an error setting a new bio: ${e.message}`);
       });
     }
     if (newWebClientPrefix !== currWebClientPrefix) {
