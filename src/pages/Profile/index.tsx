@@ -592,136 +592,126 @@ const ProfilePage = () => {
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
             contentStyle={{
-              padding: "2em 2em",
-              height: "100%"
+              padding: "2em 2em"
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                height: "100%"
+            <label htmlFor="newDisplayName">Display Name</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new display name"}
+              name="newDisplayName"
+              onChange={({ target: { value } }) => {
+                setNewDisplayName(value);
               }}
-            >
-              <label htmlFor="newDisplayName">Display Name</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new display name"}
-                name="newDisplayName"
-                onChange={({ target: { value } }) => {
-                  setNewDisplayName(value);
+            />
+
+            <label htmlFor="newBio">New Bio</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new bio"}
+              name="newBio"
+              onChange={({ target: { value } }) => {
+                setNewBio(value);
+              }}
+            />
+
+            <label htmlFor="new-web-client-prefix">Web Client</label>
+
+            <div className="web-client-prefix-picker">
+              <i
+                className="far fa-copy"
+                onClick={copyWebClientUrlToClipboard}
+                style={{ fontSize: 24 }}
+              />
+
+              <select
+                onChange={e => {
+                  setNewWebClientPrefix(e.target.value as WebClientPrefix);
                 }}
-              />
+                name="new-web-client-prefix"
+                id="new-web-client-prefix"
+                value={newWebClientPrefix}
+              >
+                {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
+                  <option key={prefix} value={prefix}>
+                    {prefix}
+                  </option>
+                ))}
+              </select>
 
-              <label htmlFor="newBio">New Bio</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new bio"}
-                name="newBio"
-                onChange={({ target: { value } }) => {
-                  setNewBio(value);
-                }}
-              />
+              <span>/</span>
 
-              <label htmlFor="new-web-client-prefix">Web Client</label>
-
-              <div className="web-client-prefix-picker">
-                <i
-                  className="far fa-copy"
-                  onClick={copyWebClientUrlToClipboard}
-                  style={{ fontSize: 24 }}
-                />
-
-                <select
-                  onChange={e => {
-                    setNewWebClientPrefix(e.target.value as WebClientPrefix);
-                  }}
-                  name="new-web-client-prefix"
-                  id="new-web-client-prefix"
-                  value={newWebClientPrefix}
-                >
-                  {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
-                    <option key={prefix} value={prefix}>
-                      {prefix}
-                    </option>
-                  ))}
-                </select>
-
-                <span>/</span>
-
-                <span style={{ fontSize: 12 }}>{publicKey}</span>
-              </div>
-
-              {!navigator.clipboard && (
-                <input
-                  className="input-field"
-                  id="web-client-url-holder"
-                  readOnly
-                  type="text"
-                  value={newWebClientPrefix + "/" + publicKey}
-                ></input>
-              )}
-
-              <br></br>
-
-              <label htmlFor="localPub">Seed Service Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={localSeedPub}
-                name="localPub"
-                onChange={onInputChange}
-              />
-
-              <label htmlFor="selfSeedUrl">Self Token Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Url"}
-                name="selfSeedUrl"
-                value={localSeedUrl}
-                onChange={onInputChange}
-              />
-
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Token"}
-                name="selfSeedToken"
-                value={localSeedToken}
-                onChange={onInputChange}
-              />
-              <h2>Available Content Tokens</h2>
-              {tokensView.length === 0 && (
-                <p>You don't have any content token available</p>
-              )}
-              {tokensView}
-              <h2>Available Stream Tokens</h2>
-              {streamTokensView.length === 0 && (
-                <p>You don't have any stream token available</p>
-              )}
-              {streamTokensView}
-
-              {somethingInsideConfigModalChanged && (
-                <div className="flex-center" style={{ marginTop: "auto" }}>
-                  <button
-                    onClick={onConfigCancel}
-                    className="shock-form-button m-1"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    onClick={onConfigSubmit}
-                    className="shock-form-button-confirm m-1"
-                  >
-                    SUBMIT
-                  </button>
-                </div>
-              )}
+              <span style={{ fontSize: 12 }}>{publicKey}</span>
             </div>
+
+            {!navigator.clipboard && (
+              <input
+                className="input-field"
+                id="web-client-url-holder"
+                readOnly
+                type="text"
+                value={newWebClientPrefix + "/" + publicKey}
+              ></input>
+            )}
+
+            <br></br>
+
+            <label htmlFor="localPub">Seed Service Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={localSeedPub}
+              name="localPub"
+              onChange={onInputChange}
+            />
+
+            <label htmlFor="selfSeedUrl">Self Token Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Url"}
+              name="selfSeedUrl"
+              value={localSeedUrl}
+              onChange={onInputChange}
+            />
+
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Token"}
+              name="selfSeedToken"
+              value={localSeedToken}
+              onChange={onInputChange}
+            />
+            <h2>Available Content Tokens</h2>
+            {tokensView.length === 0 && (
+              <p>You don't have any content token available</p>
+            )}
+            {tokensView}
+            <h2>Available Stream Tokens</h2>
+            {streamTokensView.length === 0 && (
+              <p>You don't have any stream token available</p>
+            )}
+            {streamTokensView}
+
+            {somethingInsideConfigModalChanged && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={onConfigCancel}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={onConfigSubmit}
+                  className="shock-form-button-confirm m-1"
+                >
+                  SUBMIT
+                </button>
+              </div>
+            )}
           </Modal>
 
           <AddBtn

@@ -1,5 +1,5 @@
 import React, {  useCallback,   useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import DialogNav from "../../common/DialogNav";
 import Loader from "../../common/Loader";
 import InputGroup from "../../common/InputGroup"
@@ -8,6 +8,8 @@ import {createService} from "../../actions/OrdersActions"
 
 const OfferService = () => {
   const dispatch = useDispatch()
+  //@ts-expect-error
+  const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
   const [loading, setLoading] = useState(false);
   const [error,setError] = useState(null)
   const [serviceType,setServiceType] = useState("torrentSeed")
@@ -16,8 +18,8 @@ const OfferService = () => {
   const [serviceCondition,setServiceCondition] = useState("")
   const [servicePrice,setServicePrice] = useState(0)
   //optional fields 
-  const [serviceSeedUrl,setServiceSeedUrl] = useState("")
-  const [serviceSeedToken,setServiceSeedToken] = useState("")
+  const [serviceSeedUrl,setServiceSeedUrl] = useState(seedUrl || "")
+  const [serviceSeedToken,setServiceSeedToken] = useState(seedToken || "")
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
