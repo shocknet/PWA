@@ -55,12 +55,13 @@ const Story: React.FC<StoryProps> = ({
     });
 
     sub.on("error", err => {
-      alert("error");
-      alert(err);
+      console.log(`Error inside story sub:`);
+      console.log(err);
     });
 
     sub.on("NOT_AUTH", () => {
-      alert("NOT_AUTH");
+      console.warn(`NOT_AUTH inside story sub.`);
+      // TODO: dispatch token invalidation
     });
 
     return () => {
