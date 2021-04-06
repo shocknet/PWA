@@ -298,6 +298,7 @@ const ProfilePage = () => {
         ) as HTMLInputElement;
         placeholderEl.select();
         document.execCommand("copy");
+        placeholderEl.blur();
         setProfileModalOpen(false);
       }
     } catch (e) {
