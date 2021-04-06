@@ -516,89 +516,82 @@ const ProfilePage = () => {
               padding: "2em 2em"
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column"
+            <label htmlFor="newDisplayName">Display Name</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new display name"}
+              name="newDisplayName"
+              onChange={({ target: { value } }) => {
+                setNewDisplayName(value);
               }}
-            >
-              <label htmlFor="newDisplayName">Display Name</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new display name"}
-                name="newDisplayName"
-                onChange={({ target: { value } }) => {
-                  setNewDisplayName(value);
-                }}
-              />
+            />
 
-              <label htmlFor="newBio">New Bio</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={user.displayName || "new bio"}
-                name="newBio"
-                onChange={({ target: { value } }) => {
-                  setNewBio(value);
-                }}
-              />
+            <label htmlFor="newBio">New Bio</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={user.displayName || "new bio"}
+              name="newBio"
+              onChange={({ target: { value } }) => {
+                setNewBio(value);
+              }}
+            />
 
-              <label htmlFor="localPub">Seed Service Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={localSeedPub}
-                name="localPub"
-                onChange={onInputChange}
-              />
+            <label htmlFor="localPub">Seed Service Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={localSeedPub}
+              name="localPub"
+              onChange={onInputChange}
+            />
 
-              <label htmlFor="selfSeedUrl">Self Token Provider</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Url"}
-                name="selfSeedUrl"
-                value={localSeedUrl}
-                onChange={onInputChange}
-              />
+            <label htmlFor="selfSeedUrl">Self Token Provider</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Url"}
+              name="selfSeedUrl"
+              value={localSeedUrl}
+              onChange={onInputChange}
+            />
 
-              <input
-                type="text"
-                className="input-field"
-                placeholder={"Seed Token"}
-                name="selfSeedToken"
-                value={localSeedToken}
-                onChange={onInputChange}
-              />
-              <h2>Available Content Tokens</h2>
-              {tokensView.length === 0 && (
-                <p>You don't have any content token available</p>
-              )}
-              {tokensView}
-              <h2>Available Stream Tokens</h2>
-              {streamTokensView.length === 0 && (
-                <p>You don't have any stream token available</p>
-              )}
-              {streamTokensView}
+            <input
+              type="text"
+              className="input-field"
+              placeholder={"Seed Token"}
+              name="selfSeedToken"
+              value={localSeedToken}
+              onChange={onInputChange}
+            />
+            <h2>Available Content Tokens</h2>
+            {tokensView.length === 0 && (
+              <p>You don't have any content token available</p>
+            )}
+            {tokensView}
+            <h2>Available Stream Tokens</h2>
+            {streamTokensView.length === 0 && (
+              <p>You don't have any stream token available</p>
+            )}
+            {streamTokensView}
 
-              {somethingInsideConfigModalChanged && (
-                <div className="flex-center" style={{ marginTop: "auto" }}>
-                  <button
-                    onClick={onConfigCancel}
-                    className="shock-form-button m-1"
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    onClick={onConfigSubmit}
-                    className="shock-form-button-confirm m-1"
-                  >
-                    SUBMIT
-                  </button>
-                </div>
-              )}
-            </div>
+            {somethingInsideConfigModalChanged && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={onConfigCancel}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={onConfigSubmit}
+                  className="shock-form-button-confirm m-1"
+                >
+                  SUBMIT
+                </button>
+              </div>
+            )}
           </Modal>
 
           <AddBtn
