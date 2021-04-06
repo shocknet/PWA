@@ -33,6 +33,7 @@ const GoLivePage = React.lazy(() => import("./pages/Profile/goLive"));
 const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
 const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
+const QRScannerPage = React.lazy(() => import("./pages/QRScanner"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
@@ -97,11 +98,8 @@ const App = () => {
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <PrivateRoute path="/createPost" exact component={createPostPage} />
             <PrivateRoute path="/goLive" exact component={GoLivePage} />
-            <PrivateRoute
-              path="/offerService"
-              exact
-              component={offerServicePage}
-            />
+            <PrivateRoute path="/offerService" exact component={offerServicePage} />
+            <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
             <PrivateRoute
               path="/otherUser/:publicKey"
               exact

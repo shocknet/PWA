@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
+
 import {
   fetchWalletBalance,
   fetchUSDRate,
@@ -17,6 +18,7 @@ import Transaction from "./components/Transaction";
 import "./css/index.css";
 
 const OverviewPage = () => {
+
   const dispatch = useDispatch();
   const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
