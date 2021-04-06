@@ -133,7 +133,7 @@ const ProfilePage = () => {
         if (typeof webClientPrefixReceived === "string") {
           setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
         } else {
-          Utils.Http.post(`api/gun/put`, {
+          Utils.Http.post(`/api/gun/put`, {
             path: "$user>Profile>webClientPrefix",
             value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
           });
