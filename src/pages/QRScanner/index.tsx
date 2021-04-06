@@ -120,7 +120,7 @@ const QRScanner = () => {
         return
       }
       case 'pk': {
-        setError("pk not implemented yet")
+        history.push(`/otherUser/${info.pk}`)
         return
       }
       case 'lnurl': {
