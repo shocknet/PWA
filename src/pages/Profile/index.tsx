@@ -597,6 +597,8 @@ const ProfilePage = () => {
           >
             <label htmlFor="newDisplayName">Display Name</label>
             <input
+              autoCapitalize="none"
+              autoCorrect="off"
               type="text"
               className="input-field"
               placeholder={user.displayName || "new display name"}
