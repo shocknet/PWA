@@ -641,7 +641,7 @@ const ProfilePage = () => {
                   className="input-field"
                   id="web-client-url-holder"
                   type="text"
-                  value={currWebClientPrefix + "/" + publicKey}
+                  value={newWebClientPrefix + "/" + publicKey}
                 ></input>
               )}
 
