@@ -31,12 +31,13 @@ export const useStory = (publicKey: string) => {
     });
 
     sub.on("error", (err: unknown) => {
-      alert("error");
-      alert(err);
+      console.log(`Error inside story sub:`);
+      console.log(err);
     });
 
     sub.on("NOT_AUTH", () => {
-      alert("NOT_AUTH");
+      console.warn(`NOT_AUTH inside story sub.`);
+      // TODO: dispatch token invalidation
     });
 
     return () => {
