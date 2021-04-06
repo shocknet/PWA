@@ -180,7 +180,8 @@ const ProfilePage = () => {
     newDisplayName !== user.displayName ||
     newBio !== user.bio ||
     localSeedUrl !== seedUrl ||
-    localSeedToken !== seedToken;
+    localSeedToken !== seedToken ||
+    newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
