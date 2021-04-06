@@ -1,4 +1,3 @@
-import React from "react";
 import "./css/index.css";
 
 const ModalContent = ({ children, style }) => (
