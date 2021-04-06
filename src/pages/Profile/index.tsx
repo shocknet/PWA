@@ -225,6 +225,16 @@ const ProfilePage = () => {
         bio: newBio
       });
     }
+    if (newWebClientPrefix !== currWebClientPrefix) {
+      Utils.Http.post(`/api/gun/put`, {
+        path: "$user>Profile>webClientPrefix",
+        value: newWebClientPrefix
+      }).catch(e => {
+        alert(
+          `There was an error setting your web client prefix: ${e.message}`
+        );
+      });
+    }
     toggleConfigModal();
   }, [
     localSeedPub,
@@ -235,7 +245,9 @@ const ProfilePage = () => {
     user.displayName,
     user.bio,
     newBio,
-    toggleConfigModal
+    toggleConfigModal,
+    newWebClientPrefix,
+    currWebClientPrefix
   ]);
 
   // ------------------------------------------------------------------------ //
