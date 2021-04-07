@@ -82,6 +82,8 @@ export const bgWhite = styles["bg-white"];
 
 export const cornersRounded = styles["corners-rounded"];
 
+export const childrenSpaced16 = styles["children-spaced-16"];
+
 export const childrenSpaced24 = styles["children-spaced-24"];
 
 /* -------------------------------------------------------------------------- */
