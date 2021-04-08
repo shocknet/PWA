@@ -99,3 +99,9 @@ export const padding16 = styles["padding-16"];
 export const padding24 = styles["padding-24"];
 
 /* -------------------------------------------------------------------------- */
+
+export const flatBtn = styles["flat-btn"];
+
+export const flatBtnFullWidth = styles["flat-btn-full-width"];
+
+/* -------------------------------------------------------------------------- */

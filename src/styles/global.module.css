@@ -210,3 +210,27 @@
 }
 
 /* -------------------------------------------------------------------------- */
+
+.flat-btn {
+  /* brought over from .input-field */
+  background-color: var(--input-black);
+  color: rgba(var(--white-rgb), 0.77);
+  border: 2px solid var(--btn-blue);
+  font-family: "Poppins";
+
+  -webkit-appearance: none;
+  border-top-left-radius: 0%; /* safari */
+  border-bottom-left-radius: 0%; /* safari */
+  border-left-width: 0px !important;
+
+  padding: 17px 25px;
+
+  font-size: 14px;
+}
+
+.flat-btn-full-width {
+  composes: flat-btn;
+  composes: width100;
+}
+
+/* -------------------------------------------------------------------------- */
