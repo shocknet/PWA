@@ -1,5 +1,5 @@
 import React, { useCallback, useState,useEffect } from "react";
-import {  useLocation } from "react-router";
+import {  useHistory, useLocation } from "react-router";
 import Http from "../../utils/Http";
 import SlidePay from "../../common/SlidePay";
 import InputGroup from "../../common/InputGroup";
@@ -11,6 +11,7 @@ import "./css/index.css";
 
 const SendPage = () => {
   const location = useLocation()
+  const history = useHistory()
   
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
@@ -141,7 +142,7 @@ const SendPage = () => {
       if (contact?.type === "contact") {
         await sendGunPayment();
       }
-      window.history.back();
+      history.push("/overview")
       setPaymentLoading(false);
     } catch (err) {
       console.error(err);
@@ -149,7 +150,7 @@ const SendPage = () => {
       setPaymentLoading(false);
       throw err;
     }
-  }, [contact, sendBTCPayment, sendGunPayment, sendLightningPayment]);
+  }, [contact,history, sendBTCPayment, sendGunPayment, sendLightningPayment]);
 
   return (
     <DialogPageContainer containerClassName="send-page" title="SEND">

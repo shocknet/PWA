@@ -4,10 +4,12 @@ import DialogNav from "../../common/DialogNav";
 import Loader from "../../common/Loader";
 import InputGroup from "../../common/InputGroup"
 import {createService} from "../../actions/OrdersActions"
+import { useHistory } from "react-router";
 
 
 const OfferService = () => {
   const dispatch = useDispatch()
+  const history = useHistory()
   //@ts-expect-error
   const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
   const [loading, setLoading] = useState(false);
@@ -64,9 +66,9 @@ const OfferService = () => {
       const encrypt = {serviceSeedUrl,serviceSeedToken}
       const res = await createService(clear,encrypt)(dispatch)
       console.log(res)
-      window.history.back();
+      history.push("/profile")
     },
-    [serviceType,serviceTitle,serviceDescription,serviceCondition,servicePrice,serviceSeedUrl,serviceSeedToken]
+    [serviceType,serviceTitle,serviceDescription,serviceCondition,servicePrice,serviceSeedUrl,serviceSeedToken,history]
   );
   const onDiscard = useCallback(
     async e => {

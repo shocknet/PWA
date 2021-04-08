@@ -7,8 +7,10 @@ import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
 import {addPublishedContent,removeUnavailableToken} from '../../actions/ContentActions'
 import { EnrollToken } from "../../utils/seed";
+import { useHistory } from "react-router";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
+  const history = useHistory()
   //@ts-ignore
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
   //@ts-ignore
@@ -135,7 +137,7 @@ const PublishContentPage = () => {
         if(deleteToken){
           removeUnavailableToken(finalSeedUrl,tokens[0])(dispatch)
         }
-        window.history.back();
+        history.push("/profile")
       }catch(err){
         console.log(err)
         setError(err?.errorMessage ?? err?.message)
@@ -143,7 +145,7 @@ const PublishContentPage = () => {
       }
 
     },
-    [title,description,selectedFiles,mediaPreviews,availableTokens,seedUrl, seedToken,useDefault, dispatch, setError]
+    [title,description,selectedFiles,mediaPreviews,availableTokens,seedUrl, seedToken,useDefault,history, dispatch, setError]
   );
   const onDiscard = useCallback(
     async e => {

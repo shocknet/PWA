@@ -9,6 +9,7 @@ import "./css/index.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
 import {sendMessage} from '../../../../actions/ChatActions'
+import { useHistory } from "react-router";
 
 const InvoiceStep = ({
   amount = 0,
@@ -17,6 +18,7 @@ const InvoiceStep = ({
   prevStep
 }) => {
   const dispatch = useDispatch();
+  const history = useHistory()
   const [paymentRequest, setPaymentRequest] = useState("");
   const [address, setAddress] = useState("");
   const [QRLoading, setQRLoading] = useState(false);
@@ -93,7 +95,7 @@ const InvoiceStep = ({
         setLoading(true);
         await sendMessage({publicKey:contact.pk,message:"$$__SHOCKWALLET__INVOICE__" + paymentRequest})(dispatch)
         setLoading(false);
-        window.history.back()
+        history.push("/overview")
       } catch (err) {
         setError(
           err?.response?.data.errorMessage ??
@@ -103,7 +105,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest]);
+  }, [contact, paymentRequest,history]);
 
   return (
     <div className="request-form-container">
