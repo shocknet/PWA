@@ -153,6 +153,45 @@
   border-radius: 24;
 }
 
+.children-spaced-4 > *:not(:first-child):not(:last-child) {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.children-spaced-4 > *:first-child {
+  margin-right: 2px;
+}
+
+.children-spaced-4 > *:last-child {
+  margin-left: 2px;
+}
+
+.children-spaced-8 > *:not(:first-child):not(:last-child) {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.children-spaced-8 > *:first-child {
+  margin-right: 4px;
+}
+
+.children-spaced-8 > *:last-child {
+  margin-left: 4px;
+}
+
+.children-spaced-12 > *:not(:first-child):not(:last-child) {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.children-spaced-12 > *:first-child {
+  margin-right: 6px;
+}
+
+.children-spaced-12 > *:last-child {
+  margin-left: 6px;
+}
+
 .children-spaced-16 {
 }
 
