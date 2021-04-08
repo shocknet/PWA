@@ -10,8 +10,10 @@ import Image from "../../common/Post/components/Image";
 import { attachMedia } from "../../utils/Torrents";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
+import { useHistory } from "react-router";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
+  const history = useHistory()
   //@ts-expect-error
   const publishedContent = useSelector(({content}) => content.publishedContent)
   //@ts-expect-error
@@ -65,7 +67,7 @@ const PublishContentPage = () => {
         if (res.status === 200) {
           console.log('post created successfully')
           setLoading(false)
-          window.history.back();
+          history.push("/profile")
         } else {
           setError('invalid response status')
           setLoading(false)
@@ -76,7 +78,7 @@ const PublishContentPage = () => {
         setLoading(false)
       }
     },
-    [selectedContent,paragraph,publishedContent,isPreview,postType,setLoading,setError]
+    [selectedContent,paragraph,publishedContent,isPreview,postType,history,setLoading,setError]
   );
   const onDiscard = useCallback(
     async e => {

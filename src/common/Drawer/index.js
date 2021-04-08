@@ -65,11 +65,6 @@ const Drawer = () => {
           </div>
         </div>
         <div className="drawer-bottom-section" >
-          <NavLink className="drawer-item" to="/QRScanner" onClick={close}>
-              <div className="drawer-item-icon">
-              <i className="fas fa-qrcode"></i>
-              </div>
-          </NavLink>
           <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>
@@ -85,12 +80,13 @@ const Drawer = () => {
         </div>
 
         <div className="drawer-logout-and-scan">
+        <NavLink  to="/QRScanner" onClick={close}>
           <i
             onClick={onClickScan}
             className="icon-solid-scan"
             style={{ color: "var(--main-blue)" }}
           ></i>
-
+        </NavLink>
           <i
             onClick={onClickLogout}
             className="fas fa-power-off"

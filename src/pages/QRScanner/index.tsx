@@ -30,7 +30,7 @@ const QRScanner = () => {
   const[scanQR,setScanQR]= useState(true)
   const[done,setDone]= useState(null)
   const[error,setError]= useState(null)
-  const goBack = useCallback(()=>{window.history.back()},[])
+  const goBack = useCallback(()=>{history.push("/overview")},[history])
   const onInputChange = useCallback(e => {
     const { value, name,checked } = e.target;
     //e.preventDefault()
@@ -134,6 +134,7 @@ const QRScanner = () => {
   },[history,setError,decodeLNURL])
   const closeQR = useCallback(()=>{
     setScanQR(false)
+    history.push("/overview")
   },[setScanQR])
   const scanDone = useCallback((content)=> {
     console.log(content)

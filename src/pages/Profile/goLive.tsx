@@ -8,9 +8,11 @@ import DialogNav from "../../common/DialogNav";
 import obsLogo from "../../images/obs-2.svg"
 import Stream from "../../common/Post/components/Stream";
 import {EnrollToken} from '../../utils/seed'
+import { useHistory } from "react-router";
 
 const GoLive = () => {
   const dispatch = useDispatch();
+  const history = useHistory()
   //@ts-ignore
   const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
   //@ts-ignore
@@ -149,8 +151,8 @@ const GoLive = () => {
   }, [setParagraph,setSelectedSource]);
   const stopStream = useCallback(()=>{
     removeStream()(dispatch)
-    window.history.back();
-  },[])
+    history.push("/profile")
+  },[history])
   return <div className="h-100 m-1">
     {loading ? (
       <Loader overlay fullScreen text="" />
