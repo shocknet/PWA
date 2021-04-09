@@ -141,6 +141,7 @@ const ContentHostInputView = ({
               setPublicKeyOrServerURIData(
                 produce((data: PublicKeyOrServerURIData) => {
                   data.publicKeyOrServerURI = e.target.value;
+                  data.URIHostAwaitingForToken = "";
                 })
               );
             }}
