@@ -184,13 +184,15 @@ const Host = ({
           }
 
           if (isBeingAddedOrDeleted) {
-            <i
-              className={classNames(
-                "fas fa-hourglass-half",
-                styles.icon,
-                styles.yellow
-              )}
-            />;
+            return (
+              <i
+                className={classNames(
+                  "fas fa-hourglass-half",
+                  styles.icon,
+                  styles.yellow
+                )}
+              />
+            );
           }
 
           if (isDefault) {
