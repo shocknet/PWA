@@ -94,6 +94,8 @@ export const childrenSpaced16 = styles["children-spaced-16"];
 
 export const childrenSpaced24 = styles["children-spaced-24"];
 
+export const padding0 = styles["padding-0"];
+
 export const padding2 = styles["padding-2"];
 
 export const padding4 = styles["padding-4"];
