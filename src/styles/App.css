@@ -1,11 +1,14 @@
 @import "video.js/dist/video-js.css";
 
 #root {
+  position: fixed;
+  top: 0;
+  bottom: 0;
   height: 100%;
   max-width: 100vw;
   width: 100vw;
   margin: auto;
-  background-color: var(--body-background);
+  background-color: var(--background);
 }
 
 .ShockWallet {
@@ -93,4 +96,19 @@ a.bottom-nav-btn.active-nav-btn {
   font-weight: 600;
   text-decoration: underline;
   margin-top: 20px;
+}
+
+@media (display-mode: standalone) {
+  #root {
+    height: 100% !important;
+  }
+
+  .ShockWallet {
+    flex: 1;
+    height: 100% !important;
+  }
+  
+  .page-container {
+    flex: 1;
+  }
 }

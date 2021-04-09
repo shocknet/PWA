@@ -1,6 +1,6 @@
 .main-nav-container {
   padding: 16px 25px;
-  padding-top: calc(constant(safe-area-inset-top) + 16px);
+  padding-top: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -52,4 +52,10 @@
   height: 2px;
   background-color: white;
   border-radius: 100px;
+}
+
+@media (display-mode: standalone) {
+  .main-nav-container {
+    padding-top: calc(env(--safe-area-inset-top, 10px) + 16px);
+  }
 }
