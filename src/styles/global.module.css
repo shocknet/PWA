@@ -260,9 +260,7 @@
   font-family: "Poppins";
 
   -webkit-appearance: none;
-  border-top-left-radius: 0%; /* safari */
-  border-bottom-left-radius: 0%; /* safari */
-  border-left-width: 0px !important;
+  border-radius: 0%; /* safari */
 
   padding: 17px 25px;
 
