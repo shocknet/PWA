@@ -20,7 +20,8 @@ const ContentHostInput = () => {
       isDefault: true,
       price: 1000,
       publicKey:
-        "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg"
+        "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+      token: ""
     }
   ]);
 
@@ -45,7 +46,7 @@ const ContentHostInput = () => {
   return (
     <ContentHostInputView
       hosts={hosts}
-      onAddHost={publicKeyOrURI => {
+      onAddHost={(publicKeyOrURI, token) => {
         setHosts(
           produce(existingHosts => {
             const isURI = publicKeyOrURI.toLowerCase().startsWith("http");
@@ -56,7 +57,8 @@ const ContentHostInput = () => {
               isBeingAddedOrDeleted: true,
               isDefault: false,
               price: Math.round(Math.random() * 1000),
-              publicKey: isURI ? "" : publicKeyOrURI
+              publicKey: isURI ? "" : publicKeyOrURI,
+              token: token || ""
             });
           })
         );

@@ -41,6 +41,10 @@ export interface IHost {
    * Can be empty if URI is provided.
    */
   publicKey: string | null;
+  /**
+   * Token for the service.
+   */
+  token: string;
 }
 
 export interface HostProps extends IHost {

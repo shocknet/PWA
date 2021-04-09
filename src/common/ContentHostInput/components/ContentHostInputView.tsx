@@ -12,7 +12,11 @@ export type IHost = _IHost;
 
 export interface ContentHostInputViewProps {
   hosts: IHost[];
-  onAddHost(publicKeyOrServerURI: string): void;
+  /**
+   * A token will be provided if the content host being added is a URI, the
+   * token will be required from the user before calling this callback.
+   */
+  onAddHost(publicKeyOrServerURI: string, token?: string): void;
   onRemoveHost(publicKeyOrServerURI: string): void;
   /**
    * If a host has an error set, the user will be offered to retry adding it.
@@ -31,7 +35,7 @@ const ContentHostInputView = ({
     URIHostAwaitingForToken: string;
   };
   const [
-    { publicKeyOrServerURI },
+    { publicKeyOrServerURI, URIHostAwaitingForToken },
     setPublicKeyOrServerURIData
   ] = useState<PublicKeyOrServerURIData>({
     publicKeyOrServerURI: "",
@@ -41,6 +45,9 @@ const ContentHostInputView = ({
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const [isPasting, setIsPasting] = useState(false);
+  const [token, setToken] = useState("");
+  const tokenInput = useRef<HTMLInputElement>(null);
+  const [isPastingToken, setIsPastingToken] = useState(false);
 
   const sortedHosts = useMemo(
     () =>
@@ -101,11 +108,70 @@ const ContentHostInputView = ({
   const onClickAdd = useCallback(() => {
     setPublicKeyOrServerURIData(
       produce((data: PublicKeyOrServerURIData) => {
-        data.publicKeyOrServerURI = "";
+        if (data.publicKeyOrServerURI.startsWith("www.")) {
+          data.publicKeyOrServerURI = "https://" + data.publicKeyOrServerURI;
+        }
+
+        // https://stackoverflow.com/a/43467144
+        const isURL = (() => {
+          let url: URL;
+
+          try {
+            url = new URL(data.publicKeyOrServerURI);
+          } catch (_) {
+            return false;
+          }
+
+          return url.protocol === "http:" || url.protocol === "https:";
+        })();
+
+        if (isURL) {
+          data.URIHostAwaitingForToken = data.publicKeyOrServerURI;
+        } else {
+          data.publicKeyOrServerURI = "";
+        }
       })
     );
     onAddHost(publicKeyOrServerURI);
   }, [setPublicKeyOrServerURIData, publicKeyOrServerURI, onAddHost]);
+
+  const handleTokenPaste = useCallback(() => {
+    if (isPastingToken) {
+      return;
+    }
+
+    if (navigator.clipboard) {
+      setIsPastingToken(true);
+      navigator.clipboard
+        .readText()
+        .then(txt => {
+          setToken(txt);
+        })
+        .catch(e => {
+          alert(`Could not paste: ${e.message}`);
+        })
+        .finally(() => {
+          setIsPastingToken(false);
+        });
+    } else {
+      if (tokenInput.current) {
+        tokenInput.current.focus();
+        document.execCommand("paste");
+        tokenInput.current.blur();
+      }
+    }
+  }, [isPastingToken, setIsPastingToken, setToken]);
+
+  const handleTokenAdd = useCallback(() => {
+    setPublicKeyOrServerURIData(
+      produce((data: PublicKeyOrServerURIData) => {
+        data.publicKeyOrServerURI = "";
+        data.URIHostAwaitingForToken = "";
+      })
+    );
+
+    onAddHost(publicKeyOrServerURI, token);
+  }, [setPublicKeyOrServerURIData, onAddHost, publicKeyOrServerURI, token]);
 
   const handleHostRemoval = useCallback(
     (publicKeyOrURI: string) => {
@@ -144,6 +210,8 @@ const ContentHostInputView = ({
                   data.URIHostAwaitingForToken = "";
                 })
               );
+
+              setToken("");
             }}
             type="text"
             value={publicKeyOrServerURI}
@@ -154,7 +222,7 @@ const ContentHostInputView = ({
             }}
             autoCapitalize="off"
             autoCorrect="none"
-            placeholder="Provider Pubkey or Server URI"
+            placeholder="Provider Pubkey or Server URI (include https or http)"
             ref={input}
             onFocus={handleFocus}
           />
@@ -172,19 +240,72 @@ const ContentHostInputView = ({
             </button>
           )}
 
-          {publicKeyOrServerURI.length > 0 && (
-            <button
-              className={classNames(
-                gStyles.flatBtn,
-                styles["plus-or-paste-btn"]
-              )}
-              disabled={publicKeyOrServerURI.length === 0}
-              onClick={onClickAdd}
-            >
-              +
-            </button>
-          )}
+          {publicKeyOrServerURI.length > 0 &&
+            publicKeyOrServerURI !== URIHostAwaitingForToken && (
+              <button
+                className={classNames(
+                  gStyles.flatBtn,
+                  styles["plus-or-paste-btn"]
+                )}
+                disabled={publicKeyOrServerURI.length === 0}
+                onClick={onClickAdd}
+              >
+                +
+              </button>
+            )}
         </div>
+
+        {publicKeyOrServerURI.length > 0 &&
+          publicKeyOrServerURI === URIHostAwaitingForToken && (
+            <div className={(gStyles.row, gStyles.centerJustify)}>
+              <input
+                className={classNames(
+                  "input-field",
+                  styles["uri-or-token-input"]
+                )}
+                onChange={e => {
+                  setToken(e.target.value);
+                }}
+                type="text"
+                value={token}
+                onKeyUp={e => {
+                  if (e.key === "Enter" || e.keyCode === 13) {
+                    handleTokenAdd();
+                  }
+                }}
+                autoCapitalize="off"
+                autoCorrect="none"
+                placeholder="Token (required)"
+                ref={tokenInput}
+              />
+
+              {token.length === 0 && (
+                <button
+                  className={classNames(
+                    gStyles.flatBtn,
+                    styles["plus-or-paste-btn"]
+                  )}
+                  disabled={isPastingToken}
+                  onClick={handleTokenPaste}
+                >
+                  <i className="fas fa-paste"></i>
+                </button>
+              )}
+
+              {token.length > 0 && (
+                <button
+                  className={classNames(
+                    gStyles.flatBtn,
+                    styles["plus-or-paste-btn"]
+                  )}
+                  disabled={token.length === 0}
+                  onClick={handleTokenAdd}
+                >
+                  +
+                </button>
+              )}
+            </div>
+          )}
 
         <div className={classNames(gStyles.col)}>
           {(open ? hosts : defaultHosts).map(host => (
@@ -199,6 +320,7 @@ const ContentHostInputView = ({
               onClickWarning={setHostForErrorDialog}
               price={host.price}
               publicKey={host.publicKey}
+              token={host.token}
             />
           ))}
         </div>
