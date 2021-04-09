@@ -63,6 +63,10 @@
   min-height: -webkit-fill-available;
 }
 
+.width-auto {
+  width: auto;
+}
+
 .width-100 {
   width: 100%;
 }
