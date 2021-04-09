@@ -149,7 +149,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--main);
   min-width: 100%;
-  min-height: 100vh;
   color: white;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
