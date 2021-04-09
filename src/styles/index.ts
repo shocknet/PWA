@@ -114,4 +114,6 @@ export const flatBtn = styles["flat-btn"];
 
 export const flatBtnFullWidth = styles["flat-btn-full-width"];
 
+export const flatBtnNoBorder = styles["flat-btn-no-border"];
+
 /* -------------------------------------------------------------------------- */

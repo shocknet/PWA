@@ -271,6 +271,10 @@
   composes: flat-btn;
   composes: width-100;
 }
+
+.flat-btn-no-border {
+  composes: flat-btn;
+  border: none;
 }
 
 /* -------------------------------------------------------------------------- */
