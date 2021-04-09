@@ -6,6 +6,7 @@
   border-radius: 15px 15px 0 0;
   border-bottom: 1px solid rgba(var(--white-rgb), 0.15);
   background-color: var(--modal-head-bg);
+  flex-shrink: 0;
 }
 
 .modal-head-close {
