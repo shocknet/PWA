@@ -176,6 +176,7 @@ p.profile-clipboard-text {
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .web-client-prefix-picker > *:first-child {
