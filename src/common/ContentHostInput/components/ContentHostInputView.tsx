@@ -136,7 +136,7 @@ const ContentHostInputView = ({
         <div className={(gStyles.row, gStyles.centerJustify)}>
           {/* https://stackoverflow.com/a/15314433 */}
           <input
-            className={classNames("input-field", styles["uri-input"])}
+            className={classNames("input-field", styles["uri-or-token-input"])}
             onChange={e => {
               setPublicKeyOrServerURIData(
                 produce((data: PublicKeyOrServerURIData) => {
