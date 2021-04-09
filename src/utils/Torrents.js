@@ -109,8 +109,9 @@ export const attachMedia = (
                       .toLowerCase()
                       .endsWith(`.${format.toLowerCase()}`)
                   );
+                  const elementSrc = torrentElement.getAttribute("src");
 
-                  if (torrentMode || !compatibleURL) {
+                  if ((torrentMode || !compatibleURL) && !elementSrc) {
                     file.renderTo(torrentElement, fileType.options);
                     return;
                   }
@@ -134,7 +135,7 @@ export const attachMedia = (
 
                     await saveFile(fileName, blob);
                     const element = document.querySelector(target);
-                    if (element?.dataset.played === "false") {
+                    if (element?.dataset.played === "false" && !element?.getAttribute("src")) {
                       const cachedFile = await getCachedFile(fileName);
                       renderCachedFile(cachedFile, target);
                     }
