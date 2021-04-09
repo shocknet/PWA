@@ -63,7 +63,7 @@
   min-height: -webkit-fill-available;
 }
 
-.width100 {
+.width-100 {
   width: 100%;
 }
 
@@ -263,7 +263,8 @@
 
 .flat-btn-full-width {
   composes: flat-btn;
-  composes: width100;
+  composes: width-100;
+}
 }
 
 /* -------------------------------------------------------------------------- */

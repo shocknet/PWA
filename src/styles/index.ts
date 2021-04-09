@@ -24,7 +24,7 @@ export const flexGrow1 = styles["flex-grow-1"];
 
 export const heightFull = styles["height-full"];
 
-export const width100 = styles["width100"];
+export const width100 = styles["width-100"];
 
 /* -------------------------------------------------------------------------- */
 
