@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
+import produce from "immer";
 
 import * as gStyles from "../../../styles";
 import Modal from "../../Modal";
@@ -25,7 +26,17 @@ const ContentHostInputView = ({
   onRemoveHost,
   onRetryHost
 }: ContentHostInputViewProps) => {
-  const [publicKeyOrServerURI, setPublicKeyOrServerURI] = useState("");
+  type PublicKeyOrServerURIData = {
+    publicKeyOrServerURI: string;
+    URIHostAwaitingForToken: string;
+  };
+  const [
+    { publicKeyOrServerURI },
+    setPublicKeyOrServerURIData
+  ] = useState<PublicKeyOrServerURIData>({
+    publicKeyOrServerURI: "",
+    URIHostAwaitingForToken: ""
+  });
   const [hostForErrorDialog, setHostForErrorDialog] = useState("");
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -66,7 +77,11 @@ const ContentHostInputView = ({
       navigator.clipboard
         .readText()
         .then(txt => {
-          setPublicKeyOrServerURI(txt);
+          setPublicKeyOrServerURIData(
+            produce((data: PublicKeyOrServerURIData) => {
+              data.publicKeyOrServerURI = txt;
+            })
+          );
         })
         .catch(e => {
           alert(`Could not paste: ${e.message}`);
@@ -84,9 +99,13 @@ const ContentHostInputView = ({
   }, [isPasting, setIsPasting]);
 
   const onClickAdd = useCallback(() => {
-    setPublicKeyOrServerURI("");
+    setPublicKeyOrServerURIData(
+      produce((data: PublicKeyOrServerURIData) => {
+        data.publicKeyOrServerURI = "";
+      })
+    );
     onAddHost(publicKeyOrServerURI);
-  }, [setPublicKeyOrServerURI, publicKeyOrServerURI, onAddHost]);
+  }, [setPublicKeyOrServerURIData, publicKeyOrServerURI, onAddHost]);
 
   const handleHostRemoval = useCallback(
     (publicKeyOrURI: string) => {
@@ -118,7 +137,13 @@ const ContentHostInputView = ({
           {/* https://stackoverflow.com/a/15314433 */}
           <input
             className={classNames("input-field", styles["uri-input"])}
-            onChange={e => setPublicKeyOrServerURI(e.target.value)}
+            onChange={e => {
+              setPublicKeyOrServerURIData(
+                produce((data: PublicKeyOrServerURIData) => {
+                  data.publicKeyOrServerURI = e.target.value;
+                })
+              );
+            }}
             type="text"
             value={publicKeyOrServerURI}
             onKeyUp={e => {
