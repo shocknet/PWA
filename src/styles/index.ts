@@ -117,3 +117,19 @@ export const flatBtnFullWidth = styles["flat-btn-full-width"];
 export const flatBtnNoBorder = styles["flat-btn-no-border"];
 
 /* -------------------------------------------------------------------------- */
+
+export const fontSize4 = styles["font-size-4"];
+
+export const fontSize6 = styles["font-size-6"];
+
+export const fontSize8 = styles["font-size-8"];
+
+export const fontSize10 = styles["font-size-10"];
+
+export const fontSize12 = styles["font-size-12"];
+
+export const fontSize14 = styles["font-size-14"];
+
+export const fontSize16 = styles["font-size-16"];
+
+/* -------------------------------------------------------------------------- */
