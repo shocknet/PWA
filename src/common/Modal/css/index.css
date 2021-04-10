@@ -1,7 +1,7 @@
 /* ADD MODAL */
 
 .modal {
-  position: absolute;
+  position: fixed;
   top: 0;
   display: flex;
   align-items: center;
@@ -36,6 +36,8 @@
 }
 
 .modal-container {
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 90%;
   max-height: 90%;
@@ -45,7 +47,6 @@
   opacity: 0;
   z-index: 1;
   transition: transform 0.3s ease, opacity 0.2s ease;
-  overflow: scroll;
 }
 
 .modal-form {
