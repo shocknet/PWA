@@ -16,7 +16,7 @@ If you don't have a node already, hosting is offered in-app or a _Node installer
 
 - [X] Basic LND Channel and Peer Management
 - [ ] Fee Control from [mempool.space](https://github.com/mempool/mempool) source
-- [ ] LNURL-Pay, Withdraw and Channel
+- [X] LNURL-Pay, Withdraw and Channel
 - [X] Social Personas, Presence Indication and Feeds
 - [X] E2EEncrypted Chat/Messaging
 - [X] Automatic Seed and Channel Backup
@@ -33,6 +33,10 @@ If you don't have a node already, hosting is offered in-app or a _Node installer
 - [ ] Automatic Swaps
 - [ ] Portable LNURL-Auth Keyring
 
+
+## Build from source
+
+Test it in production: [https://wallet.shock.pub](https://wallet.shock.pub) 
 
 ### Build from source
 
