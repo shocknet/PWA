@@ -571,15 +571,11 @@ const ProfilePage = () => {
 
             {!navigator.clipboard && (
               <input
+                className="hidden-input"
                 id="public-key-holder"
                 readOnly
                 type="text"
                 value={publicKey}
-                style={{
-                  position: "relative",
-                  left: -10000,
-                  display: "none"
-                }}
               ></input>
             )}
             <div
