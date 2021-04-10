@@ -1,5 +1,6 @@
 import { takeEvery, select, put } from "redux-saga/effects";
 import SocketIO from "socket.io-client";
+import binaryParser from "socket.io-msgpack-parser"
 import { Constants, normalizeTimestampToMs } from "shock-common";
 
 import * as Utils from "../../utils";
@@ -29,7 +30,10 @@ function* ping() {
     if (token && host && !socket) {
       Utils.logger.log(`Will try to connect ping socket`);
       socket = SocketIO(`http://${host}/shockping`, {
-        query: {
+        withCredentials: true,
+        parser: binaryParser,
+        transports: ['websocket', 'polling'],
+        auth: {
           token
         }
       });

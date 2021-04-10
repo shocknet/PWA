@@ -1,9 +1,15 @@
 import SocketIO from "socket.io-client";
+import binaryParser from "socket.io-msgpack-parser"
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
 import FieldError from "./FieldError";
 
-const options = { reconnection: true, rejectUnauthorized: false };
+const options = { 
+  reconnection: true, 
+  rejectUnauthorized: false, 
+  parser: binaryParser, 
+  withCredentials: true 
+};
 
 const rifleSockets = new Map();
 
@@ -138,7 +144,7 @@ const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
         const { encryption } = store.getState();
         const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
           ...options,
-          query: {
+          auth: {
             token: authToken,
             encryptionId: encryption.deviceId
           }
@@ -236,7 +242,8 @@ export const rifle = async ({ host, query, publicKey, reconnect }) => {
   // TODO: remove circular dep
   const { store } = await import("../store");
   const opts = {
-    query: {
+    ...options,
+    auth: {
       encryptionId: store.getState().encryption.deviceId,
       $shock: query,
       publicKeyForDecryption: publicKey ?? ""
