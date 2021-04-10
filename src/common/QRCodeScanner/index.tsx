@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import QRScanner from "react-qr-scanner";
+import { isDesktop } from "../../utils/Platform";
 import "./css/index.css";
 
 type ScannerMode = "wizard" | "invoice";
@@ -30,14 +30,25 @@ const QRCodeScanner = ({
   onClose
 }: Props) => {
   const content = modeContents[mode];
+  const facingMode = isDesktop() ? "user" : "environment";
 
   return (
     <div className="qr-code-scanner-container">
       <div className="qr-scanner-top-section">
         <i className="fas fa-times" onClick={onClose}></i>
       </div>
-      <QRScanner onScan={onScan} onError={onError} />
-      <div className="qr-scanner-target"></div>
+
+      <QRScanner
+        constraints={{
+          video: {
+            facingMode: { exact: facingMode }
+          }
+        }}
+        onScan={onScan}
+        onError={onError}
+      />
+
+      <div className="qr-scanner-target" />
       <div className="qr-scanner-bottom-section">
         <p className="qr-scanner-bottom-title">
           {content.title}{" "}
