@@ -195,3 +195,9 @@ p.profile-clipboard-text {
   margin-left: 8px;
   margin-right: 8px;
 }
+
+.hidden-input {
+  position: relative;
+  left: -10000px;
+  display: none;
+}

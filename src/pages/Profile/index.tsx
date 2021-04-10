@@ -115,9 +115,11 @@ const ProfilePage = () => {
       const placeholderEl = document.querySelector(
         "#web-client-url-holder"
       ) as HTMLInputElement;
+      placeholderEl.style.display = "block";
       placeholderEl.select();
       document.execCommand("copy");
       placeholderEl.blur();
+      placeholderEl.style.display = "none";
     }
   }, [newWebClientPrefix, publicKey]);
 
@@ -329,9 +331,11 @@ const ProfilePage = () => {
         const placeholderEl = document.querySelector(
           "#public-key-holder"
         ) as HTMLInputElement;
+        placeholderEl.style.display = "block";
         placeholderEl.select();
         document.execCommand("copy");
         placeholderEl.blur();
+        placeholderEl.style.display = "none";
         setProfileModalOpen(false);
       }
     } catch (e) {
@@ -569,7 +573,7 @@ const ProfilePage = () => {
 
             {!navigator.clipboard && (
               <input
-                className="input-field"
+                className="hidden-input"
                 id="public-key-holder"
                 readOnly
                 type="text"
@@ -651,7 +655,7 @@ const ProfilePage = () => {
 
             {!navigator.clipboard && (
               <input
-                className="input-field"
+                className="hidden-input"
                 id="web-client-url-holder"
                 readOnly
                 type="text"
