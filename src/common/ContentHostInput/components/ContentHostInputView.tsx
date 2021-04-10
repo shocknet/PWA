@@ -4,6 +4,7 @@ import produce from "immer";
 
 import * as gStyles from "../../../styles";
 import Modal from "../../Modal";
+import * as Utils from "../../../utils";
 
 import styles from "./ContentHostInputView.module.css";
 import Host, { IHost as _IHost } from "./Host";
@@ -108,31 +109,20 @@ const ContentHostInputView = ({
   const onClickAdd = useCallback(() => {
     setPublicKeyOrServerURIData(
       produce((data: PublicKeyOrServerURIData) => {
-        if (data.publicKeyOrServerURI.startsWith("www.")) {
-          data.publicKeyOrServerURI = "https://" + data.publicKeyOrServerURI;
-        }
+        const url = Utils.normalizeURL(data.publicKeyOrServerURI);
 
-        // https://stackoverflow.com/a/43467144
-        const isURL = (() => {
-          let url: URL;
-
-          try {
-            url = new URL(data.publicKeyOrServerURI);
-          } catch (_) {
-            return false;
-          }
-
-          return url.protocol === "http:" || url.protocol === "https:";
-        })();
-
-        if (isURL) {
-          data.URIHostAwaitingForToken = data.publicKeyOrServerURI;
-        } else {
-          data.publicKeyOrServerURI = "";
+        if (url) {
+          data.publicKeyOrServerURI = url;
+          data.URIHostAwaitingForToken = url;
         }
       })
     );
-    onAddHost(publicKeyOrServerURI);
+
+    const url = Utils.normalizeURL(publicKeyOrServerURI);
+
+    if (!url) {
+      onAddHost(publicKeyOrServerURI);
+    }
   }, [setPublicKeyOrServerURIData, publicKeyOrServerURI, onAddHost]);
 
   const handleTokenPaste = useCallback(() => {
