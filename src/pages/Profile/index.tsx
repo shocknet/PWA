@@ -329,9 +329,11 @@ const ProfilePage = () => {
         const placeholderEl = document.querySelector(
           "#public-key-holder"
         ) as HTMLInputElement;
+        placeholderEl.style.display = "block";
         placeholderEl.select();
         document.execCommand("copy");
         placeholderEl.blur();
+        placeholderEl.style.display = "none";
         setProfileModalOpen(false);
       }
     } catch (e) {
@@ -569,11 +571,15 @@ const ProfilePage = () => {
 
             {!navigator.clipboard && (
               <input
-                className="input-field"
                 id="public-key-holder"
                 readOnly
                 type="text"
                 value={publicKey}
+                style={{
+                  position: "relative",
+                  left: -10000,
+                  display: "none"
+                }}
               ></input>
             )}
             <div
