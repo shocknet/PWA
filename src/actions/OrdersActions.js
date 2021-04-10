@@ -31,6 +31,15 @@ export const createService = (clear,encrypted) => async dispatch => {
     })
   })
   await Promise.all(all)
+  const {serviceType} = clear
+  //update the offered service
+  if(serviceType === 'torrentSeed' || serviceType === 'streamSeed'){
+    console.log("updating profile with service")
+    await Http.post('/api/gun/put',{
+      path:`$user>Profile>SeedServiceProvided`,
+      value:id,
+    })
+  }
   /* - The update will come from APi, this should not be needed 
   dispatch({
     type: ACTIONS.ADD_MY_SERVICE,

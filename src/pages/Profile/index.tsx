@@ -667,44 +667,6 @@ const ProfilePage = () => {
 
             <br></br>
 
-            <label htmlFor="localPub">Seed Service Provider</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={localSeedPub}
-              name="localPub"
-              onChange={onInputChange}
-            />
-
-            <label htmlFor="selfSeedUrl">Self Token Provider</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={"Seed Url"}
-              name="selfSeedUrl"
-              value={localSeedUrl}
-              onChange={onInputChange}
-            />
-
-            <input
-              type="text"
-              className="input-field"
-              placeholder={"Seed Token"}
-              name="selfSeedToken"
-              value={localSeedToken}
-              onChange={onInputChange}
-            />
-            <h2>Available Content Tokens</h2>
-            {tokensView.length === 0 && (
-              <p>You don't have any content token available</p>
-            )}
-            {tokensView}
-            <h2>Available Stream Tokens</h2>
-            {streamTokensView.length === 0 && (
-              <p>You don't have any stream token available</p>
-            )}
-            {streamTokensView}
-
             {somethingInsideConfigModalChanged && (
               <div className="flex-center" style={{ marginTop: "auto" }}>
                 <button
