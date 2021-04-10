@@ -179,7 +179,7 @@ const Host = ({
               <i
                 className={classNames(
                   "fas fa-exclamation-triangle",
-                  styles.icon,
+                  gStyles.fontSize12,
                   styles.yellow
                 )}
                 onClick={handleClickOnWarning}
@@ -192,7 +192,7 @@ const Host = ({
               <i
                 className={classNames(
                   "fas fa-hourglass-half",
-                  styles.icon,
+                  gStyles.fontSize12,
                   styles.yellow
                 )}
               />
@@ -202,14 +202,22 @@ const Host = ({
           if (isDefault) {
             return (
               <i
-                className={classNames("fas fa-check", styles.icon, styles.blue)}
+                className={classNames(
+                  "fas fa-check",
+                  gStyles.fontSize12,
+                  styles.blue
+                )}
               />
             );
           }
 
           return (
             <i
-              className={classNames("fas fa-link", styles.icon, styles.blue)}
+              className={classNames(
+                "fas fa-link",
+                gStyles.fontSize12,
+                styles.blue
+              )}
             ></i>
           );
         })()}
