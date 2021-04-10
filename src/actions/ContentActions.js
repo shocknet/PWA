@@ -14,12 +14,16 @@ export const ACTIONS = {
 };
 
 export const setSeedProviderPub = pub => async dispatch => {
+  let value = {
+    $$__ENCRYPT__FOR:'me',
+    value:pub
+  }
+  if(!pub){
+    value = ""
+  }
   await Http.post('/api/gun/put',{
     path:'$user>seedServiceProviderPubKey',
-    value:{
-      $$__ENCRYPT__FOR:'me',
-      value:pub
-    }
+    value
   })
   dispatch({
     type: ACTIONS.SET_SEED_PROVIDER_PUB,

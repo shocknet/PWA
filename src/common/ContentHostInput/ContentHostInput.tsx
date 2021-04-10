@@ -122,9 +122,12 @@ const ContentHostInput = () => {
       dispatch(unsubscribeUserProfile(seedProviderPub));
     };
   }, [seedProviderPub, dispatch]);
+  const filteredHosts = useMemo(()=>{
+    return hosts.filter(h => h)
+  },[hosts])
   return (
     <ContentHostInputView
-      hosts={hosts}
+      hosts={filteredHosts}
       onAddHost={addHost}
       onRemoveHost={removeHost}
       onRetryHost={()=>{}}

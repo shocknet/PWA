@@ -49,13 +49,7 @@ const ProfilePage = () => {
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
-  const seedProviderPub = Store.useSelector(
-    ({ content }) => content.seedProviderPub
-  );
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
-  const { seedUrl, seedToken } = Store.useSelector(
-    ({ content }) => content.seedInfo
-  );
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
   const availableTokens = Store.useSelector(
@@ -97,9 +91,6 @@ const ProfilePage = () => {
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(user.displayName);
   const [newBio, setNewBio] = useState(user.bio);
-  const [localSeedPub, setLocalSeedPub] = useState(seedProviderPub);
-  const [localSeedUrl, setLocalSeedUrl] = useState(seedUrl);
-  const [localSeedToken, setLocalSeedToken] = useState(seedToken);
   const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
@@ -156,20 +147,8 @@ const ProfilePage = () => {
   const onInputChange = (e: { target: { name: string; value: any } }) => {
     const { value, name } = e.target;
     switch (name) {
-      case "localPub": {
-        setLocalSeedPub(value);
-        return;
-      }
       case "selectedView": {
         setSelectedView(value);
-        return;
-      }
-      case "selfSeedUrl": {
-        setLocalSeedUrl(value);
-        return;
-      }
-      case "selfSeedToken": {
-        setLocalSeedToken(value);
         return;
       }
       default:
@@ -178,11 +157,8 @@ const ProfilePage = () => {
   };
 
   const somethingInsideConfigModalChanged =
-    localSeedPub !== seedProviderPub ||
     newDisplayName !== user.displayName ||
     newBio !== user.bio ||
-    localSeedUrl !== seedUrl ||
-    localSeedToken !== seedToken ||
     newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
@@ -200,24 +176,16 @@ const ProfilePage = () => {
   ]);
 
   const onConfigCancel = useCallback(() => {
-    setLocalSeedPub(seedProviderPub);
-    setLocalSeedUrl(seedUrl);
-    setLocalSeedToken(seedToken);
     setNewDisplayName(user.displayName);
     setNewBio(user.bio);
     toggleConfigModal();
   }, [
-    seedProviderPub,
-    seedUrl,
-    seedToken,
     user.displayName,
     user.bio,
     toggleConfigModal
   ]);
 
   const onConfigSubmit = useCallback(() => {
-    setSeedProviderPub(localSeedPub)(dispatch);
-    setSeedInfo(localSeedUrl, localSeedToken)(dispatch);
     if (newDisplayName !== user.displayName) {
       Utils.Http.put(`/api/gun/me`, {
         displayName: newDisplayName
@@ -244,10 +212,7 @@ const ProfilePage = () => {
     }
     toggleConfigModal();
   }, [
-    localSeedPub,
     dispatch,
-    localSeedUrl,
-    localSeedToken,
     newDisplayName,
     user.displayName,
     user.bio,
