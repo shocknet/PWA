@@ -5,11 +5,11 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/shockbtc)
 
 ![Banner](https://pbs.twimg.com/profile_banners/971667736978972673/1598594052)
-Shockwallet connects to your remote Lightning node and overlays [graph user nodes](https://gun.eco/) for a decentralized social network.
+Shockwallet runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
 
-Running a Shockwallet node requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
+Running a node for Shockwallet requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
 
-If you don't have a node already, hosting is offered in-app or a _Node installer available at [shocknet/Wizard](https://github.com/shocknet/wizard)_
+If you don't have a node already, hosting is offered in the app, or a _Node installer available at [shocknet/Wizard](https://github.com/shocknet/wizard)_
 
 ## Features:
 
@@ -34,11 +34,11 @@ If you don't have a node already, hosting is offered in-app or a _Node installer
 - [ ] Portable LNURL-Auth Keyring
 
 
-## Build from source
+## Try it out
 
-Test it in production: [https://wallet.shock.pub](https://wallet.shock.pub) 
+Run it directly from Github: [https://wallet.shock.pub](https://wallet.shock.pub) 
 
-### Build from source
+### Or build from source
 
 ```
 git clone https://github.com/shocknet/PWA
@@ -46,6 +46,7 @@ cd PWA
 npm install
 npm start
 ```
+To work properly, Shockwallet should be served with an SSL certificate. 
 
 #### Contributions:
 
