@@ -65,12 +65,12 @@ const Drawer = () => {
           </div>
         </div>
         <div className="drawer-bottom-section" >
-          <div className="drawer-item">
+          <NavLink className="drawer-item"  to="/moonpay" onClick={close}>
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>
             </div>
             <p className="drawer-item-title unselectable">Buy Bitcoins</p>
-          </div>
+          </NavLink>
           <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>
