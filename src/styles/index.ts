@@ -24,6 +24,10 @@ export const flexGrow1 = styles["flex-grow-1"];
 
 export const heightFull = styles["height-full"];
 
+export const widthAuto = styles["width-auto"];
+
+export const width100 = styles["width-100"];
+
 /* -------------------------------------------------------------------------- */
 
 export const fontWhite = styles["font-white"];
@@ -80,6 +84,52 @@ export const bgWhite = styles["bg-white"];
 
 export const cornersRounded = styles["corners-rounded"];
 
+export const childrenSpaced4 = styles["children-spaced-4"];
+
+export const childrenSpaced8 = styles["children-spaced-8"];
+
+export const childrenSpaced12 = styles["children-spaced-12"];
+
+export const childrenSpaced16 = styles["children-spaced-16"];
+
 export const childrenSpaced24 = styles["children-spaced-24"];
+
+export const padding0 = styles["padding-0"];
+
+export const padding2 = styles["padding-2"];
+
+export const padding4 = styles["padding-4"];
+
+export const padding8 = styles["padding-8"];
+
+export const padding12 = styles["padding-12"];
+
+export const padding16 = styles["padding-16"];
+
+export const padding24 = styles["padding-24"];
+
+/* -------------------------------------------------------------------------- */
+
+export const flatBtn = styles["flat-btn"];
+
+export const flatBtnFullWidth = styles["flat-btn-full-width"];
+
+export const flatBtnNoBorder = styles["flat-btn-no-border"];
+
+/* -------------------------------------------------------------------------- */
+
+export const fontSize4 = styles["font-size-4"];
+
+export const fontSize6 = styles["font-size-6"];
+
+export const fontSize8 = styles["font-size-8"];
+
+export const fontSize10 = styles["font-size-10"];
+
+export const fontSize12 = styles["font-size-12"];
+
+export const fontSize14 = styles["font-size-14"];
+
+export const fontSize16 = styles["font-size-16"];
 
 /* -------------------------------------------------------------------------- */

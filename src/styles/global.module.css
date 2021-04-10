@@ -63,6 +63,14 @@
   min-height: -webkit-fill-available;
 }
 
+.width-auto {
+  width: auto;
+}
+
+.width-100 {
+  width: 100%;
+}
+
 /* -------------------------------------------------------------------------- */
 
 .font-white {
@@ -149,7 +157,56 @@
   border-radius: 24;
 }
 
-.children-spaced-24 {
+.children-spaced-4 > *:not(:first-child):not(:last-child) {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.children-spaced-4 > *:first-child {
+  margin-right: 2px;
+}
+
+.children-spaced-4 > *:last-child {
+  margin-left: 2px;
+}
+
+.children-spaced-8 > *:not(:first-child):not(:last-child) {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.children-spaced-8 > *:first-child {
+  margin-right: 4px;
+}
+
+.children-spaced-8 > *:last-child {
+  margin-left: 4px;
+}
+
+.children-spaced-12 > *:not(:first-child):not(:last-child) {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.children-spaced-12 > *:first-child {
+  margin-right: 6px;
+}
+
+.children-spaced-12 > *:last-child {
+  margin-left: 6px;
+}
+
+.children-spaced-16 > *:not(:first-child):not(:last-child) {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.children-spaced-16 > *:first-child {
+  margin-right: 8px;
+}
+
+.children-spaced-16 > *:last-child {
+  margin-left: 8px;
 }
 
 .children-spaced-24 > *:not(:first-child):not(:last-child) {
@@ -163,6 +220,91 @@
 
 .children-spaced-24 > *:last-child {
   margin-left: 12px;
+}
+
+.padding-0 {
+  padding: 0px;
+}
+
+.padding-2 {
+  padding: 2px;
+}
+
+.padding-4 {
+  padding: 4px;
+}
+
+.padding-8 {
+  padding: 8px;
+}
+
+.padding-12 {
+  padding: 12px;
+}
+
+.padding-16 {
+  padding: 16px;
+}
+
+.padding-24 {
+  padding: 24px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+.flat-btn {
+  /* brought over from .input-field */
+  background-color: var(--input-black);
+  color: rgba(var(--white-rgb), 0.77);
+  border: 2px solid var(--btn-blue);
+  font-family: "Poppins";
+
+  -webkit-appearance: none;
+  border-radius: 0%; /* safari */
+
+  padding: 17px 25px;
+
+  font-size: 14px;
+}
+
+.flat-btn-full-width {
+  composes: flat-btn;
+  composes: width-100;
+}
+
+.flat-btn-no-border {
+  composes: flat-btn;
+  border: none;
+}
+
+/* -------------------------------------------------------------------------- */
+
+.font-size-4 {
+  font-size: 4px;
+}
+
+.font-size-6 {
+  font-size: 6px;
+}
+
+.font-size-8 {
+  font-size: 8px;
+}
+
+.font-size-10 {
+  font-size: 10px;
+}
+
+.font-size-12 {
+  font-size: 12px;
+}
+
+.font-size-14 {
+  font-size: 14px;
+}
+
+.font-size-16 {
+  font-size: 16px;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -24,6 +24,7 @@ import AddBtn from "../../common/AddBtn";
 import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
+import ContentHostInput from "../../common/ContentHostInput";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -657,6 +658,12 @@ const ProfilePage = () => {
                 value={newWebClientPrefix + "/" + publicKey}
               ></input>
             )}
+
+            <br></br>
+
+            <label htmlFor="content-host">Content Host</label>
+
+            <ContentHostInput />
 
             <br></br>
 

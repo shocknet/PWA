@@ -1,0 +1,67 @@
+.container-base {
+  border: 2px solid var(--btn-blue);
+  min-height: 64px;
+}
+
+/**
+ * TODO: For some reason, if the buttons have borders + width: 100%, the
+ * leftmost button has the left border cropped, so now I have to put this ugly
+ * hack where the buttons have no borders and I add the innermost borders here.
+ * The outermost borders will be provided by the parent
+ */
+.remove-or-cancel {
+  composes: container-base;
+  /* background-color: tomato; */
+}
+
+.remove-or-cancel > button:first-child {
+  border-right: 2px solid var(--btn-blue);
+}
+
+.remove-or-cancel > button:last-child {
+  border-left: 2px solid var(--btn-blue);
+}
+
+.container {
+  composes: container-base;
+  padding: 12px 12px;
+}
+
+.pill {
+  background-color: var(--input-black);
+  border-radius: 64px;
+  overflow: hidden;
+  width: 100%;
+  padding: 4px 8px;
+  max-width: 50%;
+}
+
+.display-name-or-uri {
+  font-size: 10px;
+  /* https://css-tricks.com/snippets/css/truncate-string-with-ellipsis/ */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-and-status {
+  max-width: 50%;
+}
+
+.price {
+  color: var(--text-blue);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.red {
+  color: red;
+}
+
+.yellow {
+  color: yellow;
+}
+
+.blue {
+  color: var(--pressed-blue);
+}

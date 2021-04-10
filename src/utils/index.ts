@@ -147,3 +147,33 @@ export const retryOperation = <T>(
         return reject(reason);
       });
   });
+
+/**
+ * Returns an empty string if the string provided is not an url.
+ */
+export const normalizeURL = (_url: string): string => {
+  let url = _url;
+
+  if (url.startsWith("www.")) {
+    url = "https://" + url;
+  }
+
+  // https://stackoverflow.com/a/43467144
+  const isURL = (() => {
+    let __url: URL;
+
+    try {
+      __url = new URL(url);
+    } catch (_) {
+      return false;
+    }
+
+    return __url.protocol === "http:" || __url.protocol === "https:";
+  })();
+
+  if (isURL) {
+    return new URL(url).href;
+  }
+
+  return "";
+};

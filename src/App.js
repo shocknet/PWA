@@ -98,7 +98,11 @@ const App = () => {
             <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
             <PrivateRoute path="/createPost" exact component={createPostPage} />
             <PrivateRoute path="/goLive" exact component={GoLivePage} />
-            <PrivateRoute path="/offerService" exact component={offerServicePage} />
+            <PrivateRoute
+              path="/offerService"
+              exact
+              component={offerServicePage}
+            />
             <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
             <PrivateRoute
               path="/otherUser/:publicKey"
