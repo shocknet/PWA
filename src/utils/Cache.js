@@ -36,12 +36,14 @@ export const renderCachedFile = (fileURL, selector) => {
   const elements = document.querySelectorAll(selector);
   if (elements && elements.length) {
     elements.forEach(element => {
-      element.src = fileURL;
-      element.muted = true;
-      element.autoplay = true;
+      if (!element.src) {
+        element.src = fileURL;
+        element.muted = true;
+        element.autoplay = true;
+      }
     });
   }
-  return !!elements && !!elements.length;
+  return !!elements?.length;
 };
 
 export const saveFile = (fileName, buffer) => {
