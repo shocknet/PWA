@@ -140,7 +140,7 @@ const Host = ({
         {publicKey ? (
           <ShockAvatar height={24} publicKey={publicKey} />
         ) : (
-          <div style={{ height: 24, width: 24 }} />
+          <i className={classNames("fas fa-globe")}></i>
         )}
 
         <span className={styles["display-name-or-uri"]}>
