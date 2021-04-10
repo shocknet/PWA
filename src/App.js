@@ -4,6 +4,7 @@ import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
+import FullHeight from "react-div-100vh";
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
@@ -76,8 +77,7 @@ const App = () => {
   }, [authenticated, dispatch, publicKey]);
 
   return (
-    <>
-      <div className="ShockWallet">
+      <FullHeight className="ShockWallet">
         <Drawer />
         <Suspense fallback={<Loader fullScreen text={null} />}>
           <Switch>
@@ -110,8 +110,7 @@ const App = () => {
             <Redirect to="/overview" />
           </Switch>
         </Suspense>
-      </div>
-    </>
+      </FullHeight>
   );
 };
 

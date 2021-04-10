@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { use100vh } from "react-div-100vh";
 import "./css/index.css";
 
 const Loader = ({
@@ -9,8 +10,11 @@ const Loader = ({
   overlayBackground = "rgba(44, 51, 58, 0.95)",
   style = {}
 }) => {
+  const height = use100vh() ?? "100vh";
+  // Fixes cutoff loading overlay in PWA mode
+  const standaloneMode = window.matchMedia("(display-mode: standalone)").matches
   const fullScreenStyles = fullScreen
-    ? { height: "100vh", marginBottom: 0 }
+    ? { height: standaloneMode ? "100%" : height, marginBottom: 0 }
     : {};
   const overlayStyles = overlay
     ? {
