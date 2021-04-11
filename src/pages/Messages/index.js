@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
-import classNames from "classnames";
+
 import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
