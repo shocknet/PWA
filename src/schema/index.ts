@@ -3,3 +3,11 @@ export type Contact = {
   avatar: string | null;
   displayName: string | null;
 };
+
+export interface ReceivedRequest {
+  id: string;
+  pk: string;
+  avatar: string | null;
+  displayName: string | null;
+  timestamp: number;
+}
