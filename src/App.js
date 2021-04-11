@@ -77,44 +77,44 @@ const App = () => {
   }, [authenticated, dispatch, publicKey]);
 
   return (
-      <FullHeight className="ShockWallet">
-        <Drawer />
-        <Suspense fallback={<Loader fullScreen text={null} />}>
-          <Switch>
-            <Route path="/auth" exact component={AuthPage} />
-            <PrivateRoute path="/overview" exact component={OverviewPage} />
-            <PrivateRoute path="/advanced" exact component={AdvancedPage} />
-            <PrivateRoute path="/chat" exact component={MessagesPage} />
-            <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
-            <PrivateRoute path="/send" exact component={SendPage} />
-            <PrivateRoute path="/request" exact component={RequestPage} />
-            <PrivateRoute path="/profile" exact component={ProfilePage} />
-            <PrivateRoute
-              path="/publishContent"
-              exact
-              component={PublishContentPage}
-            />
-            <PrivateRoute path="/feed" exact component={FeedPage} />
-            <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
-            <PrivateRoute path="/createPost" exact component={createPostPage} />
-            <PrivateRoute path="/goLive" exact component={GoLivePage} />
-            <PrivateRoute
-              path="/offerService"
-              exact
-              component={offerServicePage}
-            />
-            <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
-            <PrivateRoute
-              path="/otherUser/:publicKey"
-              exact
-              component={OtherUserPage}
-            />
-            <Route path="/story" exact component={Story} />
-            <Route path="/stories" exact component={Stories} />
-            <Redirect to="/overview" />
-          </Switch>
-        </Suspense>
-      </FullHeight>
+    <FullHeight className="ShockWallet">
+      <Drawer />
+      <Suspense fallback={<Loader fullScreen text={null} />}>
+        <Switch>
+          <Route path="/auth" exact component={AuthPage} />
+          <PrivateRoute path="/overview" exact component={OverviewPage} />
+          <PrivateRoute path="/advanced" exact component={AdvancedPage} />
+          <PrivateRoute path="/chat" exact component={MessagesPage} />
+          <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
+          <PrivateRoute path="/send" exact component={SendPage} />
+          <PrivateRoute path="/request" exact component={RequestPage} />
+          <PrivateRoute path="/profile" exact component={ProfilePage} />
+          <PrivateRoute
+            path="/publishContent"
+            exact
+            component={PublishContentPage}
+          />
+          <PrivateRoute path="/feed" exact component={FeedPage} />
+          <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
+          <PrivateRoute path="/createPost" exact component={createPostPage} />
+          <PrivateRoute path="/goLive" exact component={GoLivePage} />
+          <PrivateRoute
+            path="/offerService"
+            exact
+            component={offerServicePage}
+          />
+          <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
+          <PrivateRoute
+            path="/otherUser/:publicKey"
+            exact
+            component={OtherUserPage}
+          />
+          <Route path="/story" exact component={Story} />
+          <Route path="/stories" exact component={Stories} />
+          <Redirect to="/overview" />
+        </Switch>
+      </Suspense>
+    </FullHeight>
   );
 };
 
