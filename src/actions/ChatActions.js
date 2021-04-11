@@ -21,7 +21,7 @@ export const ACTIONS = {
   LOAD_RECEIVED_REQUESTS: /** @type {"chat/loadReceivedRequests"} */ ("chat/loadReceivedRequests"),
   SET_CHAT_CONTACTS: "chat/contacts",
   SET_CHAT_MESSAGES: "chat/messages",
-  SENT_REQUEST: "chat/request/sent",
+  SENT_REQUEST: /** @type {"chat/request/sent"} */ ("chat/request/sent"),
   ACCEPT_HANDSHAKE_REQUEST: "chat/request/accept",
   DECLINE_HANDSHAKE_REQUEST: "chat/request/decline",
   SENDING_MESSAGE: "chat/message/sending",
@@ -29,6 +29,12 @@ export const ACTIONS = {
   FAILED_MESSAGE: "chat/message/failed",
   RECEIVED_MESSAGE: "chat/message/received"
 };
+
+/**
+ * @typedef {object} SentRequestAction
+ * @prop {typeof ACTIONS.SENT_REQUEST} type
+ * @prop {string} data The public key.
+ */
 
 /**
  * @typedef {object} LoadChatDataAction
@@ -191,10 +197,12 @@ export const sendHandshakeRequest = publicKey => async (dispatch, getState) => {
   const [userExists] = sentRequests.filter(request => request.pk === publicKey);
 
   if (!userExists) {
-    dispatch({
+    /** @type {SentRequestAction} */
+    const action = {
       type: ACTIONS.SENT_REQUEST,
       data: publicKey
-    });
+    };
+    dispatch(action);
   }
 
   return data;
