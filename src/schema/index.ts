@@ -11,3 +11,12 @@ export interface ReceivedRequest {
   displayName: string | null;
   timestamp: number;
 }
+
+export interface SentRequest {
+  id: string;
+  pk: string;
+  avatar: string | null;
+  displayName: string | null;
+  changedAddress: boolean;
+  timestamp: number;
+}

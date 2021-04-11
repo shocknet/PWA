@@ -12,12 +12,13 @@ import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
+ * @typedef {import("../schema").SentRequest} SentRequest
  */
 
 const INITIAL_STATE = {
   contacts: /** @type {Contact[]} */ ([]),
   messages: {},
-  sentRequests: [],
+  sentRequests: /** @type {SentRequest[]} */ ([]),
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: []
 };
