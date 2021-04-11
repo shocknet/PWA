@@ -177,3 +177,8 @@ export const normalizeURL = (_url: string): string => {
 
   return "";
 };
+
+export const getContact = (
+  contacts: Array<Contact | SentRequest | ReceivedRequest>,
+  publicKey: string
+) => contacts.filter(contact => contact.pk === publicKey)[0];
