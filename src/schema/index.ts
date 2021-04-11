@@ -19,4 +19,5 @@ export interface SentRequest {
   displayName: string | null;
   changedAddress: boolean;
   timestamp: number;
+  loading: boolean;
 }
