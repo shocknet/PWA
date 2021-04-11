@@ -21,8 +21,6 @@ const ContentHostInput = () => {
     ({ content }) => content.seedInfo
   );
   const [hosts, setHosts] = useState<IHost[]>([]);
-  //effect to update service provider on mount
-  const userRef =userProfiles[seedProviderPub]
   useEffect(()=>{
     let pair = null
     if(seedUrl && seedToken){
@@ -97,7 +95,7 @@ const ContentHostInput = () => {
         })
       }
     }
-  },[seedUrl,seedToken,seedProviderPub,userRef,setHosts])
+  },[seedUrl,seedToken,seedProviderPub,setHosts])
   
   const addHost = useCallback((publicKeyOrURI, token)=>{
     if(publicKeyOrURI.startsWith("http")){

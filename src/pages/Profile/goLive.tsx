@@ -7,22 +7,20 @@ import Http from "../../utils/Http";
 import DialogNav from "../../common/DialogNav";
 import obsLogo from "../../images/obs-2.svg"
 import Stream from "../../common/Post/components/Stream";
-import {EnrollToken} from '../../utils/seed'
+import {EnrollToken, RequestToken} from '../../utils/seed'
 import { useHistory } from "react-router";
+import Modal from "../../common/Modal";
+import * as Store from "../../store";
 
 const GoLive = () => {
   const dispatch = useDispatch();
   const history = useHistory()
-  //@ts-ignore
-  const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
-  //@ts-ignore
-  const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
-  //@ts-ignore
-  const streamLiveToken = useSelector(({content}) => content.streamLiveToken)
-  //@ts-ignore
-  const streamUserToken = useSelector(({content}) => content.streamUserToken)
-  //@ts-ignore
-  const availableStreamTokens = useSelector(({content}) => content.availableStreamTokens)
+  const seedProviderPub = Store.useSelector(({content}) => content.seedProviderPub)
+  const {seedUrl,seedToken} = Store.useSelector(({content}) => content.seedInfo)
+  const streamLiveToken = Store.useSelector(({content}) => content.streamLiveToken)
+  const streamUserToken = Store.useSelector(({content}) => content.streamUserToken)
+  const availableTokens = Store.useSelector(({content}) => content.availableTokens)
+  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState('obs');
   const [loading, setLoading] = useState(false);
   const [streamToken,setStreamToken] = useState(streamLiveToken)
@@ -32,49 +30,18 @@ const GoLive = () => {
   const [error, setError] = useState<string|null>(null);
   const [rtmpUri,setRtmpUri] = useState("")
   const [rtmpApiUri,setRtmpApiUri] = useState("")
-  const [useDefault,setUseDefault] = useState(false)
-  const enroll = useCallback(async () =>{
+  const [promptInfo,setPromptInfo] = useState(null)
+  const onSubmitCb = useCallback(async (servicePrice?,serviceID?) =>{
     try {
       setLoading(true)
-      let orderData = null
-      let deleteToken = false
-        let availableToken = null
-        for (const key in availableStreamTokens) {
-          if (Object.prototype.hasOwnProperty.call(availableStreamTokens, key)) {
-            const element = availableStreamTokens[key];
-            if(element[0]){
-              availableToken = {seedUrl:key,tokens:element}
-              break
-            }
-          }
-        }
-      if(seedUrl && seedToken){
-        console.log("USING SELF SEED TOKEN")
-        const token = await EnrollToken(seedUrl,seedToken)
-        orderData = {seedUrl, tokens:[token]}
-      }else if(useDefault){
-        console.log("USING DEFAULT TOKEN PROVIDER")
-        const {data:seedData,status} = await Http.post('/api/lnd/unifiedTrx',{
-          type: 'streamSeed',
-          amt: 100,
-          to:seedProviderPub, 
-          memo:'',
-          feeLimit:500,
-          ackInfo:1
-        })
-        if(status !== 200){
-          setError("seed token request failed")
-          setLoading(false)
-        }
-        console.log(seedData)
-        const {orderAck} = seedData
-        orderData = JSON.parse(orderAck.response)
-      } else if(availableToken) {
-        console.log("USING AVAILABLE TOKEN")
-        orderData = availableToken
-        deleteToken = true
-      }
-      const {tokens,seedUrl:finalSeedUrl} = orderData
+      const {seedUrl:finalSeedUrl,tokens} = await RequestToken({
+        availableTokens,
+        seedProviderPub,
+        seedToken,
+        seedUrl,
+        serviceID,
+        servicePrice
+      })
       const [latestUserToken] = tokens
       setUserToken(latestUserToken)
       const {data:streamData} = await Http.post(
@@ -123,7 +90,48 @@ const GoLive = () => {
       setError(err?.errorMessage ?? err?.message)
       setLoading(false)
     }
-  },[paragraph,seedProviderPub,availableStreamTokens,seedUrl,seedToken,useDefault,setLoading,setStreamToken,setError,setUserToken,setRtmpUri,setRtmpApiUri,addStream])
+  },[paragraph,seedProviderPub,seedUrl,seedToken,setLoading,setStreamToken,setError,setUserToken,setRtmpUri,setRtmpApiUri,addStream])
+  
+  const closePrompt = useCallback(()=>{
+    setPromptInfo(null)
+  },[setPromptInfo])
+
+  const submitPrompt = useCallback(()=>{
+    const {servicePrice,serviceID} = promptInfo
+    onSubmitCb(servicePrice,serviceID)
+    setPromptInfo(null)
+  },[promptInfo,onSubmitCb,setPromptInfo])
+  
+  const onSubmit = useCallback(async(e)=>{
+    e.preventDefault();
+    let availableToken = false
+    for (const key in availableTokens) {
+      if (Object.prototype.hasOwnProperty.call(availableTokens, key)) {
+        const element = availableTokens[key];
+        if(element[0]){
+          availableToken = true
+          break
+        }
+      }
+    }
+    let serviceID = ""
+    if(userProfiles[seedProviderPub]){
+      //@ts-expect-error
+      serviceID = userProfiles[seedProviderPub].SeedServiceProvided
+    }
+    if(availableToken || (seedUrl && seedToken)){
+      onSubmitCb()
+    } else if(serviceID && seedProviderPub) {
+      const {data:service} = await Http.get(
+        `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${serviceID}`
+      )
+      const {servicePrice} = service.data
+      console.log(service)
+      setPromptInfo({servicePrice,serviceID})
+    } else {
+      setError("No way found to publish content")
+    }
+  },[availableTokens,setPromptInfo,setError,onSubmitCb])
   const copyToken = useCallback(() => {
     navigator.clipboard.writeText(streamToken);
   }, [streamToken]);
@@ -141,14 +149,11 @@ const GoLive = () => {
         setSelectedSource(value)
         return;
       }
-      case "useDefault":{
-        setUseDefault(checked)
-        return
-      }
       default:
         return;
     }
   }, [setParagraph,setSelectedSource]);
+  
   const stopStream = useCallback(()=>{
     removeStream()(dispatch)
     history.push("/profile")
@@ -189,14 +194,18 @@ const GoLive = () => {
         </div>
       </div>
       : <div className="vertical-flex-center">
-        <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
-        <label htmlFor="useDefault">Use default seed provider</label>
-        <input type="checkbox" name="useDefault" checked={useDefault} onChange={onInputChange} style={{marginLeft:"0.2em"}}  />
-      </div>
         <input className="input-field" type="text" name="paragraph" id="paragraph" value={paragraph} onChange={onInputChange}/>
-        <button onClick={enroll} className ="shock-form-button-confirm">START NOW</button>
+        <button onClick={onSubmit} className ="shock-form-button-confirm">START NOW</button>
       </div>}
       {error ? <p className="error-container">{error}</p> : null}
+      {promptInfo && <Modal modalOpen={(promptInfo && !loading)} toggleModal={closePrompt}>
+      <div style={{padding:"1rem"}}>
+        <p>The service from the default service provider will cost: <strong>{promptInfo.servicePrice} sats</strong></p>
+        
+        <button className='shock-form-button m-1' onClick={closePrompt}>cancel</button>
+        <button className='shock-form-button-confirm m-1' onClick={submitPrompt}>confirm</button>
+      </div>
+    </Modal>}
   </div>
 }
 
