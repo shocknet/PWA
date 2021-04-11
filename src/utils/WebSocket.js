@@ -1,14 +1,17 @@
 import SocketIO from "socket.io-client";
-import binaryParser from "socket.io-msgpack-parser"
+import binaryParser from "socket.io-msgpack-parser";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
 import FieldError from "./FieldError";
+/**
+ * @typedef {import('../schema').Contact} Contact
+ */
 
-const options = { 
-  reconnection: true, 
-  rejectUnauthorized: false, 
-  parser: binaryParser, 
-  withCredentials: true 
+const options = {
+  reconnection: true,
+  rejectUnauthorized: false,
+  parser: binaryParser,
+  withCredentials: true
 };
 
 const rifleSockets = new Map();
@@ -279,6 +282,9 @@ export const rifle = async ({ host, query, publicKey, reconnect }) => {
   return cachedSocket;
 };
 
+/**
+ * @returns {{ messages: any , contacts: Contact[]}}
+ */
 export const getChats = async ({ hostIP, authToken }) => {
   try {
     const chats = await fetchSocket({ hostIP, authToken, namespace: "chats" });

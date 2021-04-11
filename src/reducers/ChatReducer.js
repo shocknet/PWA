@@ -1,10 +1,20 @@
 /**
  * @format
  */
+/**
+ * @typedef {import('redux').AnyAction} AnyAction
+ */
+/**
+ * @template S
+ * @typedef {import('redux').Reducer<S, AnyAction>} Reducer
+ */
 import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
+/**
+ * @typedef {import('../schema').Contact} Contact
+ */
 
 const INITIAL_STATE = {
-  contacts: [],
+  contacts: /** @type {Contact[]} */ ([]),
   messages: {},
   sentRequests: [],
   receivedRequests: [],
@@ -58,6 +68,9 @@ const _processNewMessage = ({ data, status, state, outgoing = false }) => {
   };
 };
 
+/**
+ * @type {Reducer<typeof INITIAL_STATE>}
+ */
 const chat = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOAD_CHAT_DATA: {

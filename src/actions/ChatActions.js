@@ -8,9 +8,12 @@ import {
   rifle
 } from "../utils/WebSocket";
 import { initialMessagePrefix } from "../utils/String";
+/**
+ * @typedef {import('../schema').Contact} Contact
+ */
 
 export const ACTIONS = {
-  LOAD_CHAT_DATA: "chat/loadData",
+  LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
   LOAD_SENT_REQUESTS: "chat/loadSentRequests",
   LOAD_RECEIVED_REQUESTS: "chat/loadReceivedRequests",
   SET_CHAT_CONTACTS: "chat/contacts",
@@ -23,6 +26,12 @@ export const ACTIONS = {
   FAILED_MESSAGE: "chat/message/failed",
   RECEIVED_MESSAGE: "chat/message/received"
 };
+
+/**
+ * @typedef {object} LoadChatDataAction
+ * @prop {typeof ACTIONS.LOAD_CHAT_DATA} type
+ * @prop {{ message: any , contacts: Contact[] }} data
+ */
 
 export const MESSAGE_STATUS = {
   SENT: "SENT",
