@@ -6,17 +6,17 @@ import Loader from "../../common/Loader";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
 import {addPublishedContent,removeUnavailableToken} from '../../actions/ContentActions'
-import { EnrollToken } from "../../utils/seed";
+import { EnrollToken, RequestToken } from "../../utils/seed";
 import { useHistory } from "react-router";
+import * as Store from "../../store";
+import Modal from "../../common/Modal";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   const history = useHistory()
-  //@ts-ignore
-  const seedProviderPub = useSelector(({content}) => content.seedProviderPub)
-  //@ts-ignore
-  const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
-  //@ts-ignore
-  const availableTokens = useSelector(({content}) => content.availableTokens)
+  const seedProviderPub = Store.useSelector(({content}) => content.seedProviderPub)
+  const {seedUrl,seedToken} = Store.useSelector(({content}) => content.seedInfo)
+  const availableTokens = Store.useSelector(({ content }) => content.availableTokens)
+  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [error, setError] = useState<string|null>(null);
   const [loading, setLoading] = useState(false);
   const [mediaPreviews,setMediaPreviews] = useState([])
@@ -26,15 +26,13 @@ const PublishContentPage = () => {
   const [createPost,setCreatePost] = useState(false)
   const imageFile = useRef(null)
   const videoFile = useRef(null)
+  const [promptInfo,setPromptInfo] = useState(null)
 
-  const [useDefault,setUseDefault] = useState(false)
 
   const [selectedFiles,setSelectedFiles] = useState([]) 
-
-  const onSubmit = useCallback(
-    async e => {
-      e.preventDefault();
-      
+  
+  const onSubmitCb = useCallback(
+    async (servicePrice?,serviceID?) => {
       console.log([title,description,selectedFiles])
       if(selectedFiles.length === 0){
         setError("no selected files")
@@ -42,54 +40,15 @@ const PublishContentPage = () => {
       }
       setLoading(true)
       try{
-        let tokenInfo = null
-        let deleteToken = false
-        let availableToken = null
-        console.log("useDefault")
-        console.log(useDefault)
-        for (const key in availableTokens) {
-          if (Object.prototype.hasOwnProperty.call(availableTokens, key)) {
-            const element = availableTokens[key];
-            if(element[0]){
-              availableToken = {seedUrl:key,tokens:element}
-              break
-            }
-          }
-        }
-        if(seedUrl && seedToken){
-          console.log("USING SELF SEED TOKEN")
-          const token = await EnrollToken(seedUrl,seedToken)
-          console.log("token")
-          console.log(token)
-          tokenInfo = {seedUrl, tokens:[token]}
-        } else if(useDefault){
-          console.log("USING DEFAULT TOKEN PROVIDER")
-          const {data,status} = await Http.post('/api/lnd/unifiedTrx',{
-            type: 'torrentSeed',
-            amt: 100,
-            to:seedProviderPub,
-            memo:'',
-            feeLimit:500,
-            ackInfo:1
-          })
-          if(status !== 200){
-            setError("seed token request failed")
-            setLoading(false)
-          }
-          console.log(data)
-          const {orderAck} = data
-          tokenInfo = JSON.parse(orderAck.response)
-        } else if(availableToken) {
-          console.log("USING AVAILABLE TOKEN")
-          tokenInfo = availableToken
-          deleteToken = true
-        } else {
-          setError("provide the token data or use default seed provider")
-          setLoading(false)
-        return
-        }
-        const orderData = tokenInfo
-        const {seedUrl:finalSeedUrl,tokens} = orderData
+        
+        const {seedUrl:finalSeedUrl,tokens,deleteToken} = await RequestToken({
+          availableTokens,
+          seedProviderPub,
+          seedToken,
+          seedUrl,
+          serviceID,
+          servicePrice
+        })
         const formData = new FormData()
         //TODO support public/private content by requesting two tokens and doing this req twice
         Array.from(selectedFiles).forEach(file => formData.append('files', file))
@@ -109,7 +68,6 @@ const PublishContentPage = () => {
           if(err === "The provided token has already been used"){
             setError("An error occurred, please try again")
             removeUnavailableToken(finalSeedUrl,tokens[0])(dispatch)
-            
           } else {
             setError(err)
           }
@@ -145,17 +103,63 @@ const PublishContentPage = () => {
       }
 
     },
-    [title,description,selectedFiles,mediaPreviews,availableTokens,seedUrl, seedToken,useDefault,history, dispatch, setError]
+    [title,description,selectedFiles,mediaPreviews,availableTokens,seedUrl, seedToken,history, dispatch, setError]
   );
+
+  const closePrompt = useCallback(()=>{
+    setPromptInfo(null)
+  },[setPromptInfo])
+  const submitPrompt = useCallback(()=>{
+    const {servicePrice,serviceID} = promptInfo
+    onSubmitCb(servicePrice,serviceID)
+    setPromptInfo(null)
+  },[promptInfo,onSubmitCb,setPromptInfo])
+
+  const onSubmit = useCallback(async(e)=>{
+    e.preventDefault();
+    let availableToken = false
+    for (const key in availableTokens) {
+      if (Object.prototype.hasOwnProperty.call(availableTokens, key)) {
+        const element = availableTokens[key];
+        if(element[0]){
+          availableToken = true
+          break
+        }
+      }
+    }
+    let serviceID = ""
+    if(userProfiles[seedProviderPub]){
+      //@ts-expect-error
+      serviceID = userProfiles[seedProviderPub].SeedServiceProvided
+    }
+    if(availableToken || (seedUrl && seedToken)){
+      onSubmitCb()
+    } else if(serviceID && seedProviderPub) {
+      const {data:service} = await Http.get(
+        `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${serviceID}`
+      )
+      const {servicePrice} = service.data
+      console.log(service)
+      setPromptInfo({servicePrice,serviceID})
+    } else {
+      setError("No way found to publish content")
+    }
+  },[availableTokens,setPromptInfo,setError,onSubmitCb])
+
+  
+  
   const onDiscard = useCallback(
     async e => {
       e.preventDefault();
       setTitle("")
       setDescription("")
       setError(null)
+      setPromptInfo(null)
+      setSelectedFiles([])
+      setMediaPreviews([])
       
     },
-    [setDescription, setTitle, setError]
+    [setDescription, setTitle, setError,setPromptInfo,setSelectedFiles,setMediaPreviews]
   );
   const onInputChange = useCallback(e => {
     const { value, name,checked } = e.target;
@@ -177,15 +181,10 @@ const PublishContentPage = () => {
         console.log("create post")
         return
       }
-      case "useDefault":{
-        setUseDefault(checked)
-        console.log(checked)
-        return
-      }
       default:
         return;
     }
-  }, [setTitle,setDescription,setCreatePost,setUseDefault]);
+  }, [setTitle,setDescription,setCreatePost]);
   const onSelectedFile = useCallback(e =>{
     e.preventDefault()
     
@@ -298,10 +297,6 @@ const PublishContentPage = () => {
         className="input-field"
       />
       <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
-        <label htmlFor="useDefault">Use default seed provider</label>
-        <input type="checkbox" name="useDefault" checked={useDefault} onChange={onInputChange} style={{marginLeft:"0.2em"}}  />
-      </div>
-      <div style={{display:'flex',alignItems:'center',marginLeft:'auto'}}>
         <label htmlFor="createPost">Create Post/Teaser?</label>
       <input type="checkbox" name="createPost" style={{marginLeft:"0.2em"}}  />
       </div>
@@ -312,6 +307,14 @@ const PublishContentPage = () => {
       <input type="submit" value="submit" className='shock-form-button-confirm m-1' />
       </div>
     </form>
+    {promptInfo && <Modal modalOpen={(promptInfo && !loading)} toggleModal={closePrompt}>
+      <div style={{padding:"1rem"}}>
+        <p>The service from the default service provider will cost: <strong>{promptInfo.servicePrice} sats</strong></p>
+        
+        <button className='shock-form-button m-1' onClick={onDiscard}>cancel</button>
+        <button className='shock-form-button-confirm m-1' onClick={submitPrompt}>confirm</button>
+      </div>
+    </Modal>}
   </div>)
 };
 
