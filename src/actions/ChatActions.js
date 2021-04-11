@@ -11,11 +11,12 @@ import {
 import { initialMessagePrefix } from "../utils/String";
 /**
  * @typedef {import('../schema').Contact} Contact
+ * @typedef {import('../schema').SentRequest} SentRequest
  */
 
 export const ACTIONS = {
   LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
-  LOAD_SENT_REQUESTS: "chat/loadSentRequests",
+  LOAD_SENT_REQUESTS: /** @type {"chat/loadSentRequests"} */ ("chat/loadSentRequests"),
   LOAD_RECEIVED_REQUESTS: "chat/loadReceivedRequests",
   SET_CHAT_CONTACTS: "chat/contacts",
   SET_CHAT_MESSAGES: "chat/messages",
@@ -32,6 +33,12 @@ export const ACTIONS = {
  * @typedef {object} LoadChatDataAction
  * @prop {typeof ACTIONS.LOAD_CHAT_DATA} type
  * @prop {{ message: any , contacts: Contact[] }} data
+ */
+
+/**
+ * @typedef {object} LoadSentRequestsAction
+ * @prop {typeof ACTIONS.LOAD_SENT_REQUESTS} type
+ * @prop {SentRequest[]} data
  */
 
 export const MESSAGE_STATUS = {
