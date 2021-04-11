@@ -104,13 +104,23 @@ const MessagesPage = () => {
             <p className="messages-section-title">Sent Requests</p>
           ) : null}
           {sentRequests.map(request => (
-            <Request publicKey={request.pk} sent key={request.pk} />
+            <Request
+              publicKey={request.pk}
+              sent
+              key={request.pk}
+              time={undefined}
+            />
           ))}
           {receivedRequests.length > 0 ? (
             <p className="messages-section-title">Received Requests</p>
           ) : null}
           {receivedRequests.map(request => (
-            <Request publicKey={request.pk} key={request.pk} />
+            <Request
+              publicKey={request.pk}
+              key={request.pk}
+              sent={false}
+              time={undefined}
+            />
           ))}
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>
