@@ -23,7 +23,7 @@ jobs:
         run: |
           npm i -g npm@6
           npm install
-          npm run build
+          CI="" npm run build
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
