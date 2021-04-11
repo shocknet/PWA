@@ -12,12 +12,13 @@ import { initialMessagePrefix } from "../utils/String";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').SentRequest} SentRequest
+ * @typedef {import("../schema").ReceivedRequest} ReceivedRequest
  */
 
 export const ACTIONS = {
   LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
   LOAD_SENT_REQUESTS: /** @type {"chat/loadSentRequests"} */ ("chat/loadSentRequests"),
-  LOAD_RECEIVED_REQUESTS: "chat/loadReceivedRequests",
+  LOAD_RECEIVED_REQUESTS: /** @type {"chat/loadReceivedRequests"} */ ("chat/loadReceivedRequests"),
   SET_CHAT_CONTACTS: "chat/contacts",
   SET_CHAT_MESSAGES: "chat/messages",
   SENT_REQUEST: "chat/request/sent",
@@ -39,6 +40,12 @@ export const ACTIONS = {
  * @typedef {object} LoadSentRequestsAction
  * @prop {typeof ACTIONS.LOAD_SENT_REQUESTS} type
  * @prop {SentRequest[]} data
+ */
+
+/**
+ * @typedef {object} LoadReceivedRequestsAction
+ * @prop {typeof ACTIONS.LOAD_RECEIVED_REQUESTS} type
+ * @prop {ReceivedRequest[]} data
  */
 
 export const MESSAGE_STATUS = {
@@ -102,16 +109,24 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 
     console.log("receivedRequests:", receivedRequests);
 
-    dispatch({
+    /** @type {LoadReceivedRequestsAction} */
+    const action = {
       type: ACTIONS.LOAD_RECEIVED_REQUESTS,
-      data: receivedRequests.map(request => ({
-        id: request.id,
-        pk: request.requestorPK,
-        avatar: request.requestorAvatar,
-        displayName: request.requestorDisplayName,
-        timestamp: request.timestamp
-      }))
-    });
+      data: receivedRequests.map(request => {
+        /** @type {ReceivedRequest} */
+        const req = {
+          id: request.id,
+          pk: request.requestorPK,
+          avatar: request.requestorAvatar,
+          displayName: request.requestorDisplayName,
+          timestamp: request.timestamp
+        };
+
+        return req;
+      })
+    };
+
+    dispatch(action);
   });
 };
 
