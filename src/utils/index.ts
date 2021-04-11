@@ -1,5 +1,7 @@
 import * as Common from "shock-common";
 
+import { Contact, ReceivedRequest, SentRequest } from "../schema";
+
 export * from "./Date";
 export { default as Http } from "./Http";
 export * from "./Error";
