@@ -39,7 +39,7 @@ export const ACTIONS = {
 /**
  * @typedef {object} LoadChatDataAction
  * @prop {typeof ACTIONS.LOAD_CHAT_DATA} type
- * @prop {{ message: any , contacts: Contact[] }} data
+ * @prop {{ messages: any , contacts: Contact[] }} data
  */
 
 /**
