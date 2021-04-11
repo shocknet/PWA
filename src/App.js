@@ -1,16 +1,21 @@
 // @ts-check
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { withRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import FullHeight from "react-div-100vh";
+import uniq from "lodash/uniq";
+
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
 import "./styles/App.css";
-import { subscribeUserProfile } from "./actions/UserProfilesActions";
+import {
+  subscribeUserProfile,
+  unsubscribeUserProfile
+} from "./actions/UserProfilesActions";
 import * as Store from "./store";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
@@ -48,6 +53,11 @@ const App = () => {
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const publicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
+  const receivedRequests = Store.useSelector(
+    ({ chat }) => chat.receivedRequests
+  );
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -68,13 +78,53 @@ const App = () => {
     setAuthenticated(tokenExpired);
   }, [authToken, dispatch]);
 
+  const subbedUsers = useRef(/** @type {string[]} */ ([]));
+
   useEffect(() => {
     if (authenticated && dispatch) {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
+
+      const contactPKs = contacts.map(c => c.pk);
+      const sentReqsPKs = sentRequests.map(r => r.pk);
+      const receivedReqsPKs = receivedRequests.map(r => r.pk);
+
+      const publicKeysToSub = uniq(
+        /** @type {string[]} */ ([
+          ...contactPKs,
+          ...sentReqsPKs,
+          ...receivedReqsPKs
+        ])
+      ).filter(pk => !subbedUsers.current.includes(pk));
+
+      publicKeysToSub.forEach(pk => {
+        subbedUsers.current.push(pk);
+      });
+
+      publicKeysToSub.forEach(pk => {
+        subscribeUserProfile(pk);
+      });
     }
-  }, [authenticated, dispatch, publicKey]);
+
+    return () => {
+      // https://github.com/facebook/react/issues/15841#issuecomment-500133759
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const { current: currentSubbedUsers } = subbedUsers;
+      currentSubbedUsers.forEach(pk => {
+        unsubscribeUserProfile(pk);
+      });
+
+      currentSubbedUsers.splice(0, currentSubbedUsers.length);
+    };
+  }, [
+    authenticated,
+    dispatch,
+    publicKey,
+    contacts,
+    sentRequests,
+    receivedRequests
+  ]);
 
   return (
     <FullHeight className="ShockWallet">
