@@ -1,25 +1,32 @@
 {
-  "short_name": "ShockWallet",
-  "name": "ShockWallet",
+  "theme_color": "#294f93",
+  "background_color": "#1a2028",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "name": "Shockwallet",
+  "short_name": "Shockwallet",
+  "description": "Non-custodial, decentralized super-app",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/icon/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "/icon/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "/icon/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#4285b9",
-  "background_color": "#001122"
+  ]
 }
