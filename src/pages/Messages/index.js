@@ -12,6 +12,7 @@ import Loader from "../../common/Loader";
 import FieldError from "../../utils/FieldError";
 import "./css/index.css";
 import Modal from "../../common/Modal";
+import * as Store from "../../store";
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
@@ -19,10 +20,12 @@ const MessagesPage = () => {
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
-  const contacts = useSelector(({ chat }) => chat.contacts);
-  const messages = useSelector(({ chat }) => chat.messages);
-  const sentRequests = useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = useSelector(({ chat }) => chat.receivedRequests);
+  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+  const messages = Store.useSelector(({ chat }) => chat.messages);
+  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
+  const receivedRequests = Store.useSelector(
+    ({ chat }) => chat.receivedRequests
+  );
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
