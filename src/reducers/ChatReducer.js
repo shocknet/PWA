@@ -81,13 +81,9 @@ const chat = (state = INITIAL_STATE, action) => {
       return { ...state, contacts, messages };
     }
     case ACTIONS.LOAD_SENT_REQUESTS: {
-      const requestPublicKeys = state.sentRequests.map(
-        request => request.recipientPublicKey
-      );
+      const requestPublicKeys = state.sentRequests.map(request => request.pk);
       const pendingRequests = state.sentRequests.filter(
-        request =>
-          request.loading &&
-          !requestPublicKeys.includes(request.recipientPublicKey)
+        request => request.loading && !requestPublicKeys.includes(request.pk)
       );
 
       return {
@@ -106,7 +102,15 @@ const chat = (state = INITIAL_STATE, action) => {
         ...state,
         sentRequests: [
           ...state.sentRequests,
-          { recipientPublicKey: action.data, loading: true }
+          {
+            avatar: null,
+            changedAddress: false,
+            displayName: null,
+            id: "loading/" + action.data,
+            pk: action.data,
+            timestamp: Date.now(),
+            loading: true
+          }
         ]
       };
     }

@@ -69,17 +69,26 @@ export const loadSentRequests = () => (dispatch, getState) => {
 
     console.log("sentRequests:", sentRequests);
 
-    dispatch({
+    /** @type {LoadSentRequestsAction} */
+    const action = {
       type: ACTIONS.LOAD_SENT_REQUESTS,
-      data: sentRequests.map(request => ({
-        id: request.id,
-        pk: request.recipientPublicKey,
-        avatar: request.recipientAvatar,
-        displayName: request.recipientDisplayName,
-        changedAddress: request.recipientChangedRequestAddress,
-        timestamp: request.timestamp
-      }))
-    });
+      data: sentRequests.map(request => {
+        /** @type {SentRequest} */
+        const req = {
+          id: request.id,
+          pk: request.recipientPublicKey,
+          avatar: request.recipientAvatar,
+          displayName: request.recipientDisplayName,
+          changedAddress: request.recipientChangedRequestAddress,
+          timestamp: request.timestamp,
+          loading: false
+        };
+
+        return req;
+      })
+    };
+
+    dispatch(action);
   });
 };
 
@@ -162,10 +171,9 @@ export const sendHandshakeRequest = publicKey => async (dispatch, getState) => {
     publicKey
   });
 
-  const { sentRequests } = getState().chat;
-  const [userExists] = sentRequests.filter(
-    request => request.recipientPublicKey === publicKey
-  );
+  /** @type {SentRequest[]} */
+  const sentRequests = getState().chat.sentRequests;
+  const [userExists] = sentRequests.filter(request => request.pk === publicKey);
 
   if (!userExists) {
     dispatch({
