@@ -1,3 +1,4 @@
+// @ts-check
 import Http from "../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
