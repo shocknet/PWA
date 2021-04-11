@@ -14,16 +14,12 @@ import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
 import { processDisplayName } from "../../utils/String";
 import * as Store from "../../store";
+import { getContact } from "../../utils";
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const { publicKey: recipientPublicKey } = useParams();
   const [message, setMessage] = useState("");
-  const getContact = useCallback(
-    (contacts, publicKey) =>
-      contacts.filter(contact => contact.pk === publicKey)[0],
-    []
-  );
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
   );
