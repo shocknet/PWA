@@ -151,6 +151,7 @@ const ChatPage = () => {
             </div>
             <TextArea
               className="chat-input"
+              // @ts-expect-error
               type="text"
               enterKeyHint="send"
               onKeyPress={submitMessage}
