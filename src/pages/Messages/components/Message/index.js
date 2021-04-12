@@ -1,12 +1,13 @@
 // @ts-check
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { subscribeChatMessages } from "../../../../actions/ChatActions";
 import { processDisplayName } from "../../../../utils/String";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
+import * as Store from "../../../../store";
 
 import "./css/index.css";
 
@@ -18,7 +19,7 @@ const Message = ({
   chatLoaded = false
 }) => {
   const dispatch = useDispatch();
-  const gunPublicKey = useSelector(({ node }) => node.publicKey);
+  const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
 
   const [messagesListener, setMessagesListener] = useState();
 
