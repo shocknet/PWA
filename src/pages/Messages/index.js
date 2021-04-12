@@ -136,7 +136,6 @@ const MessagesPage = () => {
               <Message
                 key={contact.pk}
                 publicKey={contact.pk}
-                name={contact.displayName}
                 subtitle={lastMessage.body}
                 time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
                 chatLoaded={chatLoaded}
