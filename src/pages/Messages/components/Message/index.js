@@ -10,12 +10,7 @@ import * as Store from "../../../../store";
 
 import "./css/index.css";
 
-const Message = ({
-  subtitle = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
-  time,
-  publicKey,
-  chatLoaded = false
-}) => {
+const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
   const dispatch = useDispatch();
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const user = Store.useSelector(Store.selectUser(publicKey));
