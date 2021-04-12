@@ -118,8 +118,6 @@ const ChatPage = () => {
           <ChatMessage
             text={message.body}
             receivedMessage={!message.outgoing}
-            status={message.status}
-            timestamp={message.timestamp}
           />
         ))}
       </div>
