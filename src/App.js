@@ -1,6 +1,6 @@
 // @ts-check
 import React, { Suspense, useEffect, useRef } from "react";
-import { withRouter, Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
@@ -174,4 +174,4 @@ const App = () => {
   );
 };
 
-export default withRouter(App);
+export default App;
