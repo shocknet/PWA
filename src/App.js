@@ -1,7 +1,7 @@
 // @ts-check
 import React, { Suspense, useEffect, useRef } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { batch, useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import FullHeight from "react-div-100vh";
@@ -108,8 +108,10 @@ const App = () => {
         subbedUsers.current.push(pk);
       });
 
-      publicKeysToSub.forEach(pk => {
-        subscribeUserProfile(pk);
+      batch(() => {
+        publicKeysToSub.forEach(pk => {
+          dispatch(subscribeUserProfile(pk));
+        });
       });
     }
 
@@ -117,8 +119,11 @@ const App = () => {
       // https://github.com/facebook/react/issues/15841#issuecomment-500133759
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const { current: currentSubbedUsers } = subbedUsers;
-      currentSubbedUsers.forEach(pk => {
-        unsubscribeUserProfile(pk);
+
+      batch(() => {
+        currentSubbedUsers.forEach(pk => {
+          dispatch(unsubscribeUserProfile(pk));
+        });
       });
 
       currentSubbedUsers.splice(0, currentSubbedUsers.length);
