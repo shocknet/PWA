@@ -16,9 +16,15 @@ import { processDisplayName } from "../../utils/String";
 import * as Store from "../../store";
 import { getContact } from "../../utils";
 
+/**
+ * @typedef {object} ChatPageParams
+ * @prop {string} publicKey
+ */
+
 const ChatPage = () => {
   const dispatch = useDispatch();
-  const { publicKey: recipientPublicKey } = useParams();
+  const params = /** @type {ChatPageParams} */ (useParams());
+  const { publicKey: recipientPublicKey } = params;
   const [message, setMessage] = useState("");
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
