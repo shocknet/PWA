@@ -1,7 +1,15 @@
 import * as Common from "shock-common";
+import produce from "immer";
 
 import { ACTIONS } from "../actions/UserProfilesActions";
 import { ACTIONS as NODE_ACTIONS } from "../actions/NodeActions";
+import { ACTIONS as CHAT_ACTIONS } from "../actions/ChatActions";
+/**
+ * @typedef {import('../actions/ChatActions').LoadChatDataAction} LoadChatDataAction
+ * @typedef {import("../actions/ChatActions").LoadSentRequestsAction} LoadSentRequestsAction
+ * @typedef {import('../actions/ChatActions').LoadReceivedRequestsAction} LoadReceivedRequestsAction
+ * @typedef {import('../actions/ChatActions').SentRequestAction} SentRequestAction
+ */
 
 /**
  * @typedef {Record<string, Common.User>} UserProfilesState
@@ -72,6 +80,57 @@ const userProfiles = (state = INITIAL_STATE, action) => {
           ...newProfile
         }
       };
+    }
+    case CHAT_ACTIONS.LOAD_CHAT_DATA: {
+      return produce(state, draft => {
+        const { data } = /** @type {LoadChatDataAction} */ (action);
+
+        data.contacts.forEach(c => {
+          draft[c.pk] = {
+            ...Common.createEmptyUser(c.pk),
+            ...draft[c.pk],
+            avatar: c.avatar,
+            displayName: c.displayName
+          };
+        });
+      });
+    }
+    case CHAT_ACTIONS.LOAD_RECEIVED_REQUESTS: {
+      return produce(state, draft => {
+        const { data } = /** @type {LoadReceivedRequestsAction} */ (action);
+
+        data.forEach(req => {
+          draft[req.pk] = {
+            ...Common.createEmptyUser(req.pk),
+            ...draft[req.pk],
+            avatar: req.avatar,
+            displayName: req.displayName
+          };
+        });
+      });
+    }
+    case CHAT_ACTIONS.LOAD_SENT_REQUESTS: {
+      return produce(state, draft => {
+        const { data } = /** @type {LoadSentRequestsAction} */ (action);
+
+        data.forEach(req => {
+          draft[req.pk] = {
+            ...Common.createEmptyUser(req.pk),
+            ...draft[req.pk],
+            avatar: req.avatar,
+            displayName: req.displayName
+          };
+        });
+      });
+    }
+    case CHAT_ACTIONS.SENT_REQUEST: {
+      return produce(state, draft => {
+        const { data: pk } = /** @type {SentRequestAction} */ (action);
+
+        if (!draft[pk]) {
+          draft[pk] = Common.createEmptyUser(pk);
+        }
+      });
     }
     default:
       return state;

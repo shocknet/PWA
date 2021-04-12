@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+// @ts-check
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import MainNav from "../../common/MainNav";
 import ChatMessage from "./components/ChatMessage";
@@ -12,27 +13,26 @@ import {
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
 import { processDisplayName } from "../../utils/String";
+import * as Store from "../../store";
+import { getContact } from "../../utils";
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const { publicKey: recipientPublicKey } = useParams();
   const [message, setMessage] = useState("");
-  const getContact = useCallback(
-    (contacts, publicKey) =>
-      contacts.filter(contact => contact.pk === publicKey)[0],
-    []
+  const messages = Store.useSelector(
+    ({ chat }) => chat.messages[recipientPublicKey]
   );
-  const messages = useSelector(({ chat }) => chat.messages[recipientPublicKey]);
-  const contact = useSelector(({ chat }) =>
+  const contact = Store.useSelector(({ chat }) =>
     getContact(chat.contacts, recipientPublicKey)
   );
-  const sentRequest = useSelector(({ chat }) =>
+  const sentRequest = Store.useSelector(({ chat }) =>
     getContact(chat.sentRequests, recipientPublicKey)
   );
-  const receivedRequest = useSelector(({ chat }) =>
+  const receivedRequest = Store.useSelector(({ chat }) =>
     getContact(chat.receivedRequests, recipientPublicKey)
   );
-  const gunPublicKey = useSelector(({ node }) => node.publicKey);
+  const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const pendingSentRequest = !contact && sentRequest;
   const pendingReceivedRequest = !contact && receivedRequest;
 

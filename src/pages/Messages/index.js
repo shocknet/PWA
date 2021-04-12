@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// @ts-check
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
-import classNames from "classnames";
+
 import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
@@ -12,6 +13,7 @@ import Loader from "../../common/Loader";
 import FieldError from "../../utils/FieldError";
 import "./css/index.css";
 import Modal from "../../common/Modal";
+import * as Store from "../../store";
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
@@ -19,10 +21,12 @@ const MessagesPage = () => {
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
-  const contacts = useSelector(({ chat }) => chat.contacts);
-  const messages = useSelector(({ chat }) => chat.messages);
-  const sentRequests = useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = useSelector(({ chat }) => chat.receivedRequests);
+  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+  const messages = Store.useSelector(({ chat }) => chat.messages);
+  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
+  const receivedRequests = Store.useSelector(
+    ({ chat }) => chat.receivedRequests
+  );
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
@@ -100,13 +104,23 @@ const MessagesPage = () => {
             <p className="messages-section-title">Sent Requests</p>
           ) : null}
           {sentRequests.map(request => (
-            <Request publicKey={request.pk} sent key={request.pk} />
+            <Request
+              publicKey={request.pk}
+              sent
+              key={request.pk}
+              time={undefined}
+            />
           ))}
           {receivedRequests.length > 0 ? (
             <p className="messages-section-title">Received Requests</p>
           ) : null}
           {receivedRequests.map(request => (
-            <Request publicKey={request.pk} key={request.pk} />
+            <Request
+              publicKey={request.pk}
+              key={request.pk}
+              sent={false}
+              time={undefined}
+            />
           ))}
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>

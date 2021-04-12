@@ -1,16 +1,21 @@
 // @ts-check
-import React, { Suspense, useEffect } from "react";
-import { withRouter, Redirect, Route, Switch } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import React, { Suspense, useEffect, useRef } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { batch, useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import FullHeight from "react-div-100vh";
+import uniq from "lodash/uniq";
+
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
 import "./styles/App.css";
-import { subscribeUserProfile } from "./actions/UserProfilesActions";
+import {
+  subscribeUserProfile,
+  unsubscribeUserProfile
+} from "./actions/UserProfilesActions";
 import * as Store from "./store";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
@@ -48,6 +53,11 @@ const App = () => {
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const publicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
+  const receivedRequests = Store.useSelector(
+    ({ chat }) => chat.receivedRequests
+  );
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -68,6 +78,8 @@ const App = () => {
     setAuthenticated(tokenExpired);
   }, [authToken, dispatch]);
 
+  const subbedUsers = useRef(/** @type {string[]} */ ([]));
+
   useEffect(() => {
     if (authenticated && dispatch) {
       dispatch(loadSentRequests());
@@ -76,46 +88,95 @@ const App = () => {
     }
   }, [authenticated, dispatch, publicKey]);
 
+  // Keep this effect separate from the one above, as having both together
+  // causes an infinite loop due to implicit/explicit dependencies.
+  useEffect(() => {
+    if (authenticated && dispatch) {
+      const contactPKs = contacts.map(c => c.pk);
+      const sentReqsPKs = sentRequests.map(r => r.pk);
+      const receivedReqsPKs = receivedRequests.map(r => r.pk);
+
+      const publicKeysToSub = uniq(
+        /** @type {string[]} */ ([
+          ...contactPKs,
+          ...sentReqsPKs,
+          ...receivedReqsPKs
+        ])
+      ).filter(pk => !subbedUsers.current.includes(pk));
+
+      publicKeysToSub.forEach(pk => {
+        subbedUsers.current.push(pk);
+      });
+
+      batch(() => {
+        publicKeysToSub.forEach(pk => {
+          dispatch(subscribeUserProfile(pk));
+        });
+      });
+    }
+
+    return () => {
+      // https://github.com/facebook/react/issues/15841#issuecomment-500133759
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const { current: currentSubbedUsers } = subbedUsers;
+
+      batch(() => {
+        currentSubbedUsers.forEach(pk => {
+          dispatch(unsubscribeUserProfile(pk));
+        });
+      });
+
+      currentSubbedUsers.splice(0, currentSubbedUsers.length);
+    };
+  }, [
+    authenticated,
+    dispatch,
+    publicKey,
+    contacts,
+    sentRequests,
+    receivedRequests
+  ]);
+
   return (
-      <FullHeight className="ShockWallet">
-        <Drawer />
-        <Suspense fallback={<Loader fullScreen text={null} />}>
-          <Switch>
-            <Route path="/auth" exact component={AuthPage} />
-            <PrivateRoute path="/overview" exact component={OverviewPage} />
-            <PrivateRoute path="/advanced" exact component={AdvancedPage} />
-            <PrivateRoute path="/chat" exact component={MessagesPage} />
-            <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
-            <PrivateRoute path="/send" exact component={SendPage} />
-            <PrivateRoute path="/request" exact component={RequestPage} />
-            <PrivateRoute path="/profile" exact component={ProfilePage} />
-            <PrivateRoute
-              path="/publishContent"
-              exact
-              component={PublishContentPage}
-            />
-            <PrivateRoute path="/feed" exact component={FeedPage} />
-            <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
-            <PrivateRoute path="/createPost" exact component={createPostPage} />
-            <PrivateRoute path="/goLive" exact component={GoLivePage} />
-            <PrivateRoute
-              path="/offerService"
-              exact
-              component={offerServicePage}
-            />
-            <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
-            <PrivateRoute
-              path="/otherUser/:publicKey"
-              exact
-              component={OtherUserPage}
-            />
-            <Route path="/story" exact component={Story} />
-            <Route path="/stories" exact component={Stories} />
-            <Redirect to="/overview" />
-          </Switch>
-        </Suspense>
-      </FullHeight>
+    <FullHeight className="ShockWallet">
+      <Drawer />
+      <Suspense fallback={<Loader fullScreen text={null} />}>
+        <Switch>
+          <Route path="/auth" exact component={AuthPage} />
+          <PrivateRoute path="/overview" exact component={OverviewPage} />
+          <PrivateRoute path="/advanced" exact component={AdvancedPage} />
+          <PrivateRoute path="/chat" exact component={MessagesPage} />
+          <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
+          <PrivateRoute path="/send" exact component={SendPage} />
+          <PrivateRoute path="/request" exact component={RequestPage} />
+          <PrivateRoute path="/profile" exact component={ProfilePage} />
+          <PrivateRoute
+            path="/publishContent"
+            exact
+            component={PublishContentPage}
+          />
+          <PrivateRoute path="/feed" exact component={FeedPage} />
+          <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
+          <PrivateRoute path="/createPost" exact component={createPostPage} />
+          <PrivateRoute path="/goLive" exact component={GoLivePage} />
+          <PrivateRoute
+            path="/offerService"
+            exact
+            component={offerServicePage}
+          />
+          <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
+          <PrivateRoute
+            path="/otherUser/:publicKey"
+            exact
+            component={OtherUserPage}
+          />
+          <Route path="/story" exact component={Story} />
+          <Route path="/stories" exact component={Stories} />
+          <Redirect to="/overview" />
+        </Switch>
+      </Suspense>
+    </FullHeight>
   );
 };
 
-export default withRouter(App);
+export default App;

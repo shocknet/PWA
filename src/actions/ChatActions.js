@@ -1,3 +1,4 @@
+// @ts-check
 import Http from "../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
@@ -8,14 +9,19 @@ import {
   rifle
 } from "../utils/WebSocket";
 import { initialMessagePrefix } from "../utils/String";
+/**
+ * @typedef {import('../schema').Contact} Contact
+ * @typedef {import('../schema').SentRequest} SentRequest
+ * @typedef {import("../schema").ReceivedRequest} ReceivedRequest
+ */
 
 export const ACTIONS = {
-  LOAD_CHAT_DATA: "chat/loadData",
-  LOAD_SENT_REQUESTS: "chat/loadSentRequests",
-  LOAD_RECEIVED_REQUESTS: "chat/loadReceivedRequests",
+  LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
+  LOAD_SENT_REQUESTS: /** @type {"chat/loadSentRequests"} */ ("chat/loadSentRequests"),
+  LOAD_RECEIVED_REQUESTS: /** @type {"chat/loadReceivedRequests"} */ ("chat/loadReceivedRequests"),
   SET_CHAT_CONTACTS: "chat/contacts",
   SET_CHAT_MESSAGES: "chat/messages",
-  SENT_REQUEST: "chat/request/sent",
+  SENT_REQUEST: /** @type {"chat/request/sent"} */ ("chat/request/sent"),
   ACCEPT_HANDSHAKE_REQUEST: "chat/request/accept",
   DECLINE_HANDSHAKE_REQUEST: "chat/request/decline",
   SENDING_MESSAGE: "chat/message/sending",
@@ -23,6 +29,30 @@ export const ACTIONS = {
   FAILED_MESSAGE: "chat/message/failed",
   RECEIVED_MESSAGE: "chat/message/received"
 };
+
+/**
+ * @typedef {object} SentRequestAction
+ * @prop {typeof ACTIONS.SENT_REQUEST} type
+ * @prop {string} data The public key.
+ */
+
+/**
+ * @typedef {object} LoadChatDataAction
+ * @prop {typeof ACTIONS.LOAD_CHAT_DATA} type
+ * @prop {{ messages: any , contacts: Contact[] }} data
+ */
+
+/**
+ * @typedef {object} LoadSentRequestsAction
+ * @prop {typeof ACTIONS.LOAD_SENT_REQUESTS} type
+ * @prop {SentRequest[]} data
+ */
+
+/**
+ * @typedef {object} LoadReceivedRequestsAction
+ * @prop {typeof ACTIONS.LOAD_RECEIVED_REQUESTS} type
+ * @prop {ReceivedRequest[]} data
+ */
 
 export const MESSAGE_STATUS = {
   SENT: "SENT",
@@ -52,17 +82,26 @@ export const loadSentRequests = () => (dispatch, getState) => {
 
     console.log("sentRequests:", sentRequests);
 
-    dispatch({
+    /** @type {LoadSentRequestsAction} */
+    const action = {
       type: ACTIONS.LOAD_SENT_REQUESTS,
-      data: sentRequests.map(request => ({
-        id: request.id,
-        pk: request.recipientPublicKey,
-        avatar: request.recipientAvatar,
-        displayName: request.recipientDisplayName,
-        changedAddress: request.recipientChangedRequestAddress,
-        timestamp: request.timestamp
-      }))
-    });
+      data: sentRequests.map(request => {
+        /** @type {SentRequest} */
+        const req = {
+          id: request.id,
+          pk: request.recipientPublicKey,
+          avatar: request.recipientAvatar,
+          displayName: request.recipientDisplayName,
+          changedAddress: request.recipientChangedRequestAddress,
+          timestamp: request.timestamp,
+          loading: false
+        };
+
+        return req;
+      })
+    };
+
+    dispatch(action);
   });
 };
 
@@ -76,16 +115,24 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 
     console.log("receivedRequests:", receivedRequests);
 
-    dispatch({
+    /** @type {LoadReceivedRequestsAction} */
+    const action = {
       type: ACTIONS.LOAD_RECEIVED_REQUESTS,
-      data: receivedRequests.map(request => ({
-        id: request.id,
-        pk: request.requestorPK,
-        avatar: request.requestorAvatar,
-        displayName: request.requestorDisplayName,
-        timestamp: request.timestamp
-      }))
-    });
+      data: receivedRequests.map(request => {
+        /** @type {ReceivedRequest} */
+        const req = {
+          id: request.id,
+          pk: request.requestorPK,
+          avatar: request.requestorAvatar,
+          displayName: request.requestorDisplayName,
+          timestamp: request.timestamp
+        };
+
+        return req;
+      })
+    };
+
+    dispatch(action);
   });
 };
 
@@ -145,16 +192,17 @@ export const sendHandshakeRequest = publicKey => async (dispatch, getState) => {
     publicKey
   });
 
-  const { sentRequests } = getState().chat;
-  const [userExists] = sentRequests.filter(
-    request => request.recipientPublicKey === publicKey
-  );
+  /** @type {SentRequest[]} */
+  const sentRequests = getState().chat.sentRequests;
+  const [userExists] = sentRequests.filter(request => request.pk === publicKey);
 
   if (!userExists) {
-    dispatch({
+    /** @type {SentRequestAction} */
+    const action = {
       type: ACTIONS.SENT_REQUEST,
       data: publicKey
-    });
+    };
+    dispatch(action);
   }
 
   return data;

@@ -1,13 +1,31 @@
+// @ts-check
 /**
  * @format
  */
+/**
+ * @typedef {import('redux').AnyAction} AnyAction
+ */
+/**
+ * @template S
+ * @typedef {import('redux').Reducer<S, AnyAction>} Reducer
+ */
 import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
+/**
+ * @typedef {import('../schema').Contact} Contact
+ * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
+ * @typedef {import("../schema").SentRequest} SentRequest
+ *
+ * @typedef {import('../actions/ChatActions').SentRequestAction} SentRequestAction
+ * @typedef {import('../actions/ChatActions').LoadChatDataAction} LoadChatDataAction
+ * @typedef {import('../actions/ChatActions').LoadReceivedRequestsAction} LoadReceivedRequestsAction
+ * @typedef {import('../actions/ChatActions').LoadSentRequestsAction} LoadSentRequestsAction
+ */
 
 const INITIAL_STATE = {
-  contacts: [],
+  contacts: /** @type {Contact[]} */ ([]),
   messages: {},
-  sentRequests: [],
-  receivedRequests: [],
+  sentRequests: /** @type {SentRequest[]} */ ([]),
+  receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: []
 };
 
@@ -58,39 +76,56 @@ const _processNewMessage = ({ data, status, state, outgoing = false }) => {
   };
 };
 
+/**
+ * @type {Reducer<typeof INITIAL_STATE>}
+ */
 const chat = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOAD_CHAT_DATA: {
-      const { contacts, messages } = action.data;
+      const {
+        data: { contacts, messages }
+      } = /** @type {LoadChatDataAction} */ (action);
       return { ...state, contacts, messages };
     }
     case ACTIONS.LOAD_SENT_REQUESTS: {
-      const requestPublicKeys = state.sentRequests.map(
-        request => request.recipientPublicKey
-      );
+      const {
+        data: sentRequests
+      } = /** @type {LoadSentRequestsAction} */ (action);
+      const requestPublicKeys = state.sentRequests.map(request => request.pk);
       const pendingRequests = state.sentRequests.filter(
-        request =>
-          request.loading &&
-          !requestPublicKeys.includes(request.recipientPublicKey)
+        request => request.loading && !requestPublicKeys.includes(request.pk)
       );
 
       return {
         ...state,
-        sentRequests: [...pendingRequests, ...action.data]
+        sentRequests: [...pendingRequests, ...sentRequests]
       };
     }
     case ACTIONS.LOAD_RECEIVED_REQUESTS: {
+      const {
+        data: receivedRequests
+      } = /** @type {LoadReceivedRequestsAction} */ (action);
+
       return {
         ...state,
-        receivedRequests: action.data
+        receivedRequests
       };
     }
     case ACTIONS.SENT_REQUEST: {
+      const { data: publicKey } = /** @type {SentRequestAction} */ (action);
       return {
         ...state,
         sentRequests: [
           ...state.sentRequests,
-          { recipientPublicKey: action.data, loading: true }
+          {
+            avatar: null,
+            changedAddress: false,
+            displayName: null,
+            id: "loading/" + publicKey,
+            pk: publicKey,
+            timestamp: Date.now(),
+            loading: true
+          }
         ]
       };
     }
