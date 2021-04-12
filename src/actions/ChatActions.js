@@ -2,6 +2,10 @@
 import Http from "../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
+/**
+ * @typedef {import('shock-common').Message} RawMessage
+ */
+
 import {
   getChats,
   getReceivedRequests,
@@ -9,10 +13,12 @@ import {
   rifle
 } from "../utils/WebSocket";
 import { initialMessagePrefix } from "../utils/String";
+import * as Schema from "../schema";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').SentRequest} SentRequest
  * @typedef {import("../schema").ReceivedRequest} ReceivedRequest
+ * @typedef {import('../schema').ChatMessage} ChatMessage
  */
 
 export const ACTIONS = {
@@ -27,7 +33,7 @@ export const ACTIONS = {
   SENDING_MESSAGE: "chat/message/sending",
   SENT_MESSAGE: "chat/message/sent",
   FAILED_MESSAGE: "chat/message/failed",
-  RECEIVED_MESSAGE: "chat/message/received"
+  RECEIVED_MESSAGE: /** @type {"chat/message/received"} */ ("chat/message/received")
 };
 
 /**
@@ -39,7 +45,7 @@ export const ACTIONS = {
 /**
  * @typedef {object} LoadChatDataAction
  * @prop {typeof ACTIONS.LOAD_CHAT_DATA} type
- * @prop {{ messages: any , contacts: Contact[] }} data
+ * @prop {{ messages: Record<string, ChatMessage[]> , contacts: Contact[] }} data
  */
 
 /**
@@ -54,12 +60,11 @@ export const ACTIONS = {
  * @prop {ReceivedRequest[]} data
  */
 
-export const MESSAGE_STATUS = {
-  SENT: "SENT",
-  SENDING: "SENDING",
-  FAILED: "FAILED",
-  RECEIVED: "RECEIVED"
-};
+/**
+ * @typedef {object} ReceivedMessageAction
+ * @prop {typeof ACTIONS.RECEIVED_MESSAGE} type
+ * @prop {ChatMessage} data
+ */
 
 export const loadChatData = () => async (dispatch, getState) => {
   const { hostIP, authToken } = getState().node;
@@ -165,10 +170,27 @@ export const subscribeChatMessages = (
     if (!message.body || message.body === initialMessagePrefix) {
       return;
     }
-    dispatch({
+    /** @type {RawMessage} */
+    const rawMsg = message;
+
+    /** @type {ChatMessage} */
+    const msg = {
+      body: rawMsg.body,
+      id,
+      localId: id,
+      outgoing: false,
+      recipientPublicKey,
+      status: Schema.CHAT_MESSAGE_STATUS.SENT,
+      timestamp: rawMsg.timestamp
+    };
+
+    /** @type {ReceivedMessageAction} */
+    const action = {
       type: ACTIONS.RECEIVED_MESSAGE,
-      data: { ...message, id, recipientPublicKey, localId: id }
-    });
+      data: msg
+    };
+
+    dispatch(action);
   });
 
   return incomingMessages;

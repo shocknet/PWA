@@ -9,7 +9,9 @@
  * @template S
  * @typedef {import('redux').Reducer<S, AnyAction>} Reducer
  */
-import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
+
+import * as Schema from "../schema";
+import { ACTIONS } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
@@ -23,20 +25,44 @@ import { ACTIONS, MESSAGE_STATUS } from "../actions/ChatActions";
 
 const INITIAL_STATE = {
   contacts: /** @type {Contact[]} */ ([]),
+  /**
+   * @type {Record<string, Schema.ChatMessage[]>}
+   */
   messages: {},
   sentRequests: /** @type {SentRequest[]} */ ([]),
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: []
 };
 
+/**
+ * @param {Schema.ChatMessage} oldMessage
+ * @param {Schema.ChatMessage} newMessage
+ * @returns {boolean}
+ */
 const _identicalMessages = (oldMessage, newMessage) =>
   oldMessage.id && newMessage.id
     ? oldMessage.id === newMessage.id
     : oldMessage.localId === newMessage.localId;
 
+/**
+ * @param {Schema.ChatMessage[]} messages
+ * @returns {Schema.ChatMessage[]}
+ */
 const _sortMessages = (messages = []) =>
   messages.sort((a, b) => b.timestamp - a.timestamp);
 
+/**
+ * @typedef {object} ProcessNewMessageParams
+ * @prop {Schema.ChatMessage} data
+ * @prop {Schema.ChatMessageStatus} status
+ * @prop {typeof INITIAL_STATE} state
+ * @prop {boolean=} outgoing
+ */
+
+/**
+ * @param {ProcessNewMessageParams} args
+ * @returns {typeof INITIAL_STATE}
+ */
 const _processNewMessage = ({ data, status, state, outgoing = false }) => {
   const userMessages = state.messages[data.recipientPublicKey] ?? [];
   const [existingMessage] = userMessages.filter(message =>
@@ -153,7 +179,7 @@ const chat = (state = INITIAL_STATE, action) => {
       const { data } = action;
       return _processNewMessage({
         data,
-        status: MESSAGE_STATUS.SENDING,
+        status: Schema.CHAT_MESSAGE_STATUS.SENDING,
         state,
         outgoing: true
       });
@@ -162,7 +188,7 @@ const chat = (state = INITIAL_STATE, action) => {
       const { data } = action;
       return _processNewMessage({
         data,
-        status: MESSAGE_STATUS.SENT,
+        status: Schema.CHAT_MESSAGE_STATUS.SENT,
         state,
         outgoing: true
       });
@@ -171,7 +197,7 @@ const chat = (state = INITIAL_STATE, action) => {
       const { data } = action;
       return _processNewMessage({
         data,
-        status: MESSAGE_STATUS.FAILED,
+        status: Schema.CHAT_MESSAGE_STATUS.FAILED,
         state,
         outgoing: true
       });
@@ -180,7 +206,7 @@ const chat = (state = INITIAL_STATE, action) => {
       const { data } = action;
       return _processNewMessage({
         data,
-        status: MESSAGE_STATUS.RECEIVED,
+        status: Schema.CHAT_MESSAGE_STATUS.RECEIVED,
         state
       });
     }
