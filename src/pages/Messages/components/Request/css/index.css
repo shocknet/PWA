@@ -27,8 +27,6 @@
 }
 
 .request-author-avatar {
-  width: 55px;
-  height: 55px;
   border-radius: 100px;
   margin-right: 10px;
   background-color: var(--main-blue);

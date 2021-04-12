@@ -2,6 +2,8 @@
 import { Link } from "react-router-dom";
 
 import * as Store from "../../../../store";
+import ShockAvatar from "../../../../common/ShockAvatar";
+import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 
 import "./css/index.css";
 
@@ -11,7 +13,9 @@ const Request = ({ publicKey = "", time, sent }) => {
   return (
     <Link to={`/chat/${publicKey}`} className="request-container">
       <div className="request-author-container">
-        <div className="request-author-avatar"></div>
+        <div className="request-author-avatar" style={AVATAR_CONTAINER_STYLE}>
+          <ShockAvatar publicKey={publicKey} height={AVATAR_SIZE} />
+        </div>
         <div className="request-author-details">
           <p className="request-author-username">
             {sent ? "Sent Request" : "Received Request"} - {user.displayName}

@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 
 import { subscribeChatMessages } from "../../../../actions/ChatActions";
 import { processDisplayName } from "../../../../utils/String";
+import ShockAvatar from "../../../../common/ShockAvatar";
+import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 
 import "./css/index.css";
 
@@ -49,7 +51,10 @@ const Message = ({
   return (
     <Link to={`/chat/${publicKey}`} className="message-container">
       <div className="message-author-container">
-        <div className="message-author-avatar"></div>
+        <div className="message-author-avatar" style={AVATAR_CONTAINER_STYLE}>
+          <ShockAvatar publicKey={publicKey} height={AVATAR_SIZE} />
+        </div>
+
         <div className="message-author-details">
           <p className="message-author-username">{contactName}</p>
           <p className="message-author-text">{subtitle}</p>
