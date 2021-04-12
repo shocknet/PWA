@@ -15,6 +15,9 @@ import "./css/index.css";
 import { processDisplayName } from "../../utils/String";
 import * as Store from "../../store";
 import { getContact } from "../../utils";
+/**
+ * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
+ */
 
 /**
  * @typedef {object} ChatPageParams
@@ -35,9 +38,9 @@ const ChatPage = () => {
   const sentRequest = Store.useSelector(({ chat }) =>
     getContact(chat.sentRequests, recipientPublicKey)
   );
-  const receivedRequest = Store.useSelector(({ chat }) =>
-    getContact(chat.receivedRequests, recipientPublicKey)
-  );
+  const receivedRequest = /** @type {ReceivedRequest} */ (Store.useSelector(
+    ({ chat }) => getContact(chat.receivedRequests, recipientPublicKey)
+  ));
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const pendingSentRequest = !contact && sentRequest;
   const pendingReceivedRequest = !contact && receivedRequest;
