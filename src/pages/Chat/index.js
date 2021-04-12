@@ -109,6 +109,7 @@ const ChatPage = () => {
           <ChatMessage
             text={message.body}
             receivedMessage={!message.outgoing}
+            publicKey={message.recipientPublicKey}
           />
         ))}
       </div>

@@ -1,9 +1,16 @@
 // @ts-check
 import classNames from "classnames";
 
+import Pad from "../../../../common/Pad";
+import ShockAvatar from "../../../../common/ShockAvatar";
+
 import "./css/index.css";
 
-const ChatMessage = ({ text = "", receivedMessage = false }) => {
+const ChatMessage = ({
+  text = "",
+  receivedMessage = false,
+  publicKey = ""
+}) => {
   return (
     <div
       className={classNames({
@@ -11,7 +18,14 @@ const ChatMessage = ({ text = "", receivedMessage = false }) => {
         "chat-message-received": receivedMessage
       })}
     >
-      {receivedMessage ? <div className="chat-message-avatar"></div> : null}
+      {receivedMessage && (
+        <>
+          <ShockAvatar height={48} publicKey={publicKey} />
+
+          <Pad amt={16} insideRow />
+        </>
+      )}
+
       <p className="chat-message-text">{text}</p>
     </div>
   );
