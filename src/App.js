@@ -85,7 +85,13 @@ const App = () => {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
+    }
+  }, [authenticated, dispatch, publicKey]);
 
+  // Keep this effect separate from the one above, as having both together
+  // causes an infinite loop due to implicit/explicit dependencies.
+  useEffect(() => {
+    if (authenticated && dispatch) {
       const contactPKs = contacts.map(c => c.pk);
       const sentReqsPKs = sentRequests.map(r => r.pk);
       const receivedReqsPKs = receivedRequests.map(r => r.pk);
