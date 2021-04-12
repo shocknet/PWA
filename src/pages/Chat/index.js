@@ -12,7 +12,6 @@ import {
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
-import { processDisplayName } from "../../utils/String";
 import * as Store from "../../store";
 import { getContact } from "../../utils";
 /**
@@ -28,6 +27,7 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { publicKey: recipientPublicKey } = params;
+  const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
@@ -95,31 +95,11 @@ const ChatPage = () => {
     const unsubscribe = subscribeIncomingMessages();
 
     return () => {
-      unsubscribe()
+      unsubscribe();
     };
   }, [subscribeIncomingMessages]);
 
-  const contactName = useMemo(() => {
-    if (pendingSentRequest) {
-      return processDisplayName(
-        pendingSentRequest.pk,
-        pendingSentRequest.displayName
-      );
-    }
-
-    if (pendingReceivedRequest) {
-      return processDisplayName(
-        pendingReceivedRequest.pk,
-        pendingReceivedRequest.displayName
-      );
-    }
-
-    if (contact) {
-      return processDisplayName(contact.pk, contact.displayName);
-    }
-
-    return "";
-  }, [pendingSentRequest, pendingReceivedRequest, contact]);
+  const contactName = user.displayName;
 
   return (
     <div className="page-container chat-page">
