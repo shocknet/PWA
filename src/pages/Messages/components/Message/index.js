@@ -11,7 +11,6 @@ import * as Store from "../../../../store";
 import "./css/index.css";
 
 const Message = ({
-  name = "John Smith",
   subtitle = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
   time,
   publicKey,
