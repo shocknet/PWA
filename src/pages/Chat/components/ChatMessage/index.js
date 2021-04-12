@@ -1,4 +1,6 @@
+// @ts-check
 import classNames from "classnames";
+
 import "./css/index.css";
 
 const ChatMessage = ({ text = "", receivedMessage = false }) => {
