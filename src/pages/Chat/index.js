@@ -91,7 +91,9 @@ const ChatPage = () => {
   useEffect(() => {
     const unsubscribe = subscribeIncomingMessages();
 
-    return unsubscribe;
+    return () => {
+      unsubscribe()
+    };
   }, [subscribeIncomingMessages]);
 
   const contactName = useMemo(() => {
