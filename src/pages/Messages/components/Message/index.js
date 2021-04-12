@@ -1,10 +1,9 @@
 // @ts-check
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { subscribeChatMessages } from "../../../../actions/ChatActions";
-import { processDisplayName } from "../../../../utils/String";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 import * as Store from "../../../../store";
@@ -20,13 +19,10 @@ const Message = ({
 }) => {
   const dispatch = useDispatch();
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
+  const user = Store.useSelector(Store.selectUser(publicKey));
 
   const [messagesListener, setMessagesListener] = useState();
 
-  const contactName = useMemo(() => processDisplayName(publicKey, name), [
-    publicKey,
-    name
-  ]);
   const subscribeMessages = useCallback(async () => {
     try {
       const subscription = await dispatch(
@@ -57,7 +53,7 @@ const Message = ({
         </div>
 
         <div className="message-author-details">
-          <p className="message-author-username">{contactName}</p>
+          <p className="message-author-username">{user.displayName}</p>
           <p className="message-author-text">{subtitle}</p>
         </div>
       </div>
