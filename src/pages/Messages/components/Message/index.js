@@ -21,6 +21,7 @@ const Message = ({
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const user = Store.useSelector(Store.selectUser(publicKey));
 
+  // TODO: use a ref
   const [messagesListener, setMessagesListener] = useState();
 
   const subscribeMessages = useCallback(async () => {
@@ -28,6 +29,7 @@ const Message = ({
       const subscription = await dispatch(
         subscribeChatMessages(gunPublicKey, publicKey)
       );
+      // @ts-expect-error
       setMessagesListener(subscription);
     } catch (err) {
       console.warn(err);
@@ -41,6 +43,7 @@ const Message = ({
 
     return () => {
       console.log("Closing Subscription...", publicKey);
+      // @ts-expect-error
       messagesListener?.close();
     };
   }, [messagesListener, subscribeMessages, publicKey, chatLoaded]);
