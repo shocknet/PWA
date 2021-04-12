@@ -1,3 +1,4 @@
+// @ts-check
 import { Link } from "react-router-dom";
 import { processDisplayName } from "../../../../utils/String";
 import "./css/index.css";
