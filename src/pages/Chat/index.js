@@ -76,6 +76,8 @@ const ChatPage = () => {
 
     return async () => {
       const resolvedSubscription = await subscription;
+      // @ts-expect-error Until thunks are better typed and also dispatch is
+      // this will throw
       resolvedSubscription?.close();
     };
   }, [dispatch, gunPublicKey, recipientPublicKey]);
