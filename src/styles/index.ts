@@ -151,3 +151,13 @@ export const absoluteStickToLeft = styles["absolute-stick-to-left"];
 export const absoluteStickToRight = styles["absolute-stick-to-right"];
 
 /* -------------------------------------------------------------------------- */
+
+export const opacityFull = styles["opacity-full"];
+
+export const opacityHalf = styles["opacity-half"];
+
+export const opacityNone = styles["opacity-none"];
+
+export const opacityThreeQuarters = styles["opacity-three-quarters"];
+
+/* -------------------------------------------------------------------------- */
