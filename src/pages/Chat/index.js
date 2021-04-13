@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
@@ -12,13 +12,22 @@ import {
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
-import { processDisplayName } from "../../utils/String";
 import * as Store from "../../store";
 import { getContact } from "../../utils";
+/**
+ * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
+ */
+
+/**
+ * @typedef {object} ChatPageParams
+ * @prop {string} publicKey
+ */
 
 const ChatPage = () => {
   const dispatch = useDispatch();
-  const { publicKey: recipientPublicKey } = useParams();
+  const params = /** @type {ChatPageParams} */ (useParams());
+  const { publicKey: recipientPublicKey } = params;
+  const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
@@ -29,9 +38,9 @@ const ChatPage = () => {
   const sentRequest = Store.useSelector(({ chat }) =>
     getContact(chat.sentRequests, recipientPublicKey)
   );
-  const receivedRequest = Store.useSelector(({ chat }) =>
-    getContact(chat.receivedRequests, recipientPublicKey)
-  );
+  const receivedRequest = /** @type {ReceivedRequest} */ (Store.useSelector(
+    ({ chat }) => getContact(chat.receivedRequests, recipientPublicKey)
+  ));
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const pendingSentRequest = !contact && sentRequest;
   const pendingReceivedRequest = !contact && receivedRequest;
@@ -76,6 +85,8 @@ const ChatPage = () => {
 
     return async () => {
       const resolvedSubscription = await subscription;
+      // @ts-expect-error Until thunks are better typed and also dispatch is
+      // this will throw
       resolvedSubscription?.close();
     };
   }, [dispatch, gunPublicKey, recipientPublicKey]);
@@ -83,30 +94,12 @@ const ChatPage = () => {
   useEffect(() => {
     const unsubscribe = subscribeIncomingMessages();
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, [subscribeIncomingMessages]);
 
-  const contactName = useMemo(() => {
-    if (pendingSentRequest) {
-      return processDisplayName(
-        pendingSentRequest.pk,
-        pendingSentRequest.displayName
-      );
-    }
-
-    if (pendingReceivedRequest) {
-      return processDisplayName(
-        pendingReceivedRequest.pk,
-        pendingReceivedRequest.displayName
-      );
-    }
-
-    if (contact) {
-      return processDisplayName(contact.pk, contact.displayName);
-    }
-
-    return "";
-  }, [pendingSentRequest, pendingReceivedRequest, contact]);
+  const contactName = user.displayName;
 
   return (
     <div className="page-container chat-page">
@@ -116,8 +109,7 @@ const ChatPage = () => {
           <ChatMessage
             text={message.body}
             receivedMessage={!message.outgoing}
-            status={message.status}
-            timestamp={message.timestamp}
+            publicKey={message.recipientPublicKey}
           />
         ))}
       </div>
@@ -160,6 +152,7 @@ const ChatPage = () => {
             </div>
             <TextArea
               className="chat-input"
+              // @ts-expect-error
               type="text"
               enterKeyHint="send"
               onKeyPress={submitMessage}

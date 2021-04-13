@@ -233,7 +233,7 @@ export const sendHandshakeRequest = publicKey => async (dispatch, getState) => {
 export const sendMessage = ({
   publicKey,
   message,
-  localId
+  localId = null
 }) => async dispatch => {
   const tempId = localId ?? uuidv4();
   try {
