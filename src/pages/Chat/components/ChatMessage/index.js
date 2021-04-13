@@ -1,15 +1,19 @@
 // @ts-check
 import classNames from "classnames";
+import { DateTime } from "luxon";
+import * as Common from "shock-common";
 
 import Pad from "../../../../common/Pad";
 import ShockAvatar from "../../../../common/ShockAvatar";
+import * as gStyles from "../../../../styles";
 
 import "./css/index.css";
 
 const ChatMessage = ({
   text = "",
   receivedMessage = false,
-  publicKey = ""
+  publicKey = "",
+  timestamp
 }) => {
   return (
     <div
@@ -27,6 +31,25 @@ const ChatMessage = ({
       )}
 
       <p className="chat-message-text">{text}</p>
+
+      {(() => {
+        try {
+          const normalizedTimestamp = Common.normalizeTimestampToMs(timestamp);
+
+          const dateTime = DateTime.fromMillis(normalizedTimestamp);
+
+          const dateTxt = dateTime.toRelative();
+
+          return (
+            <div className={classNames(gStyles.rowCentered)}>
+              <p>{dateTxt}</p>
+            </div>
+          );
+        } catch (e) {
+          console.log(e);
+          return null;
+        }
+      })()}
     </div>
   );
 };
