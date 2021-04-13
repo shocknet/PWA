@@ -32,17 +32,26 @@ const ChatMessage = ({
 
       <p className="chat-message-text">{text}</p>
 
+      <Pad amt={8} insideRow />
+
       {(() => {
         try {
           const normalizedTimestamp = Common.normalizeTimestampToMs(timestamp);
 
           const dateTime = DateTime.fromMillis(normalizedTimestamp);
 
-          const dateTxt = dateTime.toRelative();
+          const yesterday = DateTime.now().minus({
+            day: 1
+          });
+
+          const dateTxt =
+            dateTime > yesterday
+              ? dateTime.toLocaleString(DateTime.TIME_24_SIMPLE)
+              : dateTime.toRelativeCalendar();
 
           return (
             <div className={classNames(gStyles.rowCentered)}>
-              <p>{dateTxt}</p>
+              <p className={gStyles.fontSize12}>{dateTxt}</p>
             </div>
           );
         } catch (e) {

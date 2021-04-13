@@ -110,6 +110,7 @@ const ChatPage = () => {
             text={message.body}
             receivedMessage={!message.outgoing}
             publicKey={message.recipientPublicKey}
+            timestamp={message.timestamp}
           />
         ))}
       </div>
