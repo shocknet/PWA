@@ -7,7 +7,7 @@ import Http from "../../../../utils/Http";
 const REACT_APP_SL_SEED_URI = "https://webtorrent.shock.network"
 const STREAM_STATUS_URI = `${REACT_APP_SL_SEED_URI}/rtmpapi/api/streams/live`
 
-const Stream = ({ id, item, index, postId, tipValue, tipCounter, hideRibbon,width }) => {
+const Stream = ({ id, item, index, postId, tipValue, tipCounter, hideRibbon,width,timeout = 10000 }) => {
   const playerDOM = useRef(null)
   const [isLive,setIsLive] = useState(false)
   const videoStyle = { width:"100%"}
@@ -57,7 +57,7 @@ const Stream = ({ id, item, index, postId, tipValue, tipCounter, hideRibbon,widt
           clearInterval(recheckInterval)
           return
         }
-      },10000)
+      },timeout)
     })
     
     return () => {

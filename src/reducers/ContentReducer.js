@@ -3,6 +3,7 @@ const INITIAL_STATE = {
   seedProviderPub:'test',
   streamUserToken:'',
   streamLiveToken:'',
+  streamUrl:'',
   publishedContent:{},
   unlockedContent:{},
   seedInfo:{},
@@ -32,7 +33,7 @@ const content = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.ADD_STREAM:{
       const {data} = action
-      return {...state, streamLiveToken:data.liveToken,streamUserToken:data.seedToken}
+      return {...state, streamLiveToken:data.liveToken,streamUserToken:data.seedToken,streamUrl:data.streamUrl}
     }
     case ACTIONS.REMOVE_STREAM:{
       return {...state, streamLiveToken:'',streamUserToken:''}

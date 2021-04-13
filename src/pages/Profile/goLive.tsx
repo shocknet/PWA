@@ -1,4 +1,4 @@
-import React, {  useCallback,   useState } from "react";
+import React, {  useCallback,   useMemo,   useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import {addStream,removeStream} from "../../actions/ContentActions"
 import "./css/index.css";
@@ -20,6 +20,7 @@ const GoLive = () => {
   const streamLiveToken = Store.useSelector(({content}) => content.streamLiveToken)
   const streamUserToken = Store.useSelector(({content}) => content.streamUserToken)
   const availableTokens = Store.useSelector(({content}) => content.availableTokens)
+  const streamUrl = Store.useSelector(({content}) => content.streamUrl)
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState('obs');
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,6 @@ const GoLive = () => {
   const [isLive,setIsLive] = useState(true)
   const [error, setError] = useState<string|null>(null);
   const [rtmpUri,setRtmpUri] = useState("")
-  const [rtmpApiUri,setRtmpApiUri] = useState("")
   const [promptInfo,setPromptInfo] = useState(null)
   const onSubmitCb = useCallback(async (servicePrice?,serviceID?) =>{
     try {
@@ -52,10 +52,10 @@ const GoLive = () => {
       console.log(obsToken)
       const liveToken = `${latestUserToken}?key=${obsToken}`
       setStreamToken(`${latestUserToken}?key=${obsToken}`)
+      const streamPlaybackUrl = `${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`
       const rtmp = finalSeedUrl.replace('https','rtmp')
       setRtmpUri(`${rtmp}/live`)
-      setRtmpApiUri(`${finalSeedUrl}/rtmpapi`)
-      addStream(latestUserToken,liveToken)(dispatch)
+      addStream(latestUserToken,liveToken,streamPlaybackUrl)(dispatch)
       let contentItems = []
       if(paragraph !== ''){
         contentItems.push({
@@ -67,7 +67,7 @@ const GoLive = () => {
         type:'stream/embedded',
         width:0,
         height:0,
-        magnetURI:`${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`,
+        magnetURI:streamPlaybackUrl,
         isPreview:false,
         isPrivate:false,
         userToken:latestUserToken
@@ -90,8 +90,7 @@ const GoLive = () => {
       setError(err?.errorMessage ?? err?.message)
       setLoading(false)
     }
-  },[paragraph,seedProviderPub,seedUrl,seedToken,setLoading,setStreamToken,setError,setUserToken,setRtmpUri,setRtmpApiUri,addStream])
-  
+  },[paragraph,seedProviderPub,seedUrl,seedToken,setLoading,setStreamToken,setError,setUserToken,setRtmpUri,addStream])
   const closePrompt = useCallback(()=>{
     setPromptInfo(null)
   },[setPromptInfo])
@@ -153,22 +152,27 @@ const GoLive = () => {
         return;
     }
   }, [setParagraph,setSelectedSource]);
-  
   const stopStream = useCallback(()=>{
     removeStream()(dispatch)
     history.push("/profile")
   },[history])
+
+  const StreamRender = useMemo(()=>{
+    {/*@ts-expect-error */}
+    return <Stream
+      hideRibbon={true}
+      item={{magnetURI:streamUrl}}
+      timeout={1500}
+    />
+  },[streamUrl])
   return <div className="h-100 m-1">
     {loading ? (
       <Loader overlay fullScreen text="" />
     ) : null}
     <DialogNav  drawerVisible={false} pageTitle="GO LIVE" />
     
-    {/*@ts-expect-error */}
-    {isLive && <div ><Stream
-      hideRibbon={true}
-      item={{magnetURI:`${rtmpApiUri}/live/${userToken}/index.m3u8`}}
-    /></div>}
+    
+    {isLive && <div >{StreamRender}</div>}
     <select value={selectedSource} onChange={onInputChange} name="source" id="source" style={{backgroundColor:"rgba(0,0,0,0)",color:'white',width:'100%',border:'0',marginBottom:'1em'}}>
       <option value="camera" style={{backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)'}}>Camera</option>
       <option value="obs" style={{backgroundColor:"rgba(0,0,0,0)",color:'var(--main-blue)'}}>OBS</option>
