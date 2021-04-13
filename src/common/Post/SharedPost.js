@@ -37,7 +37,7 @@ const SharedPost = ({
           <div
             className="av"
             style={{
-              backgroundImage: `url(data:image/png;base64,${sharerProfile?.avatar})`
+              backgroundImage: `url(data:image/jpeg;base64,${sharerProfile?.avatar})`
             }}
           ></div>
           <div className="details">
@@ -58,7 +58,7 @@ const SharedPost = ({
             timestamp={originalPost.date}
             avatar={
               originalPostProfile.avatar
-                ? `data:image/png;base64,${originalPostProfile.avatar}`
+                ? `data:image/jpeg;base64,${originalPostProfile.avatar}`
                 : av1
             }
             tipCounter={originalPost.tipCounter}
