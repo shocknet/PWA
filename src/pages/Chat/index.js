@@ -1,9 +1,10 @@
 // @ts-check
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
+import debounce from "lodash/debounce";
 
 import MainNav from "../../common/MainNav";
 import ChatMessage from "./components/ChatMessage";
@@ -32,7 +33,33 @@ const ChatPage = () => {
   const { publicKey: recipientPublicKey } = params;
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
-  const [shouldShowDateBubble] = useState(false);
+  /* ------------------------------------------------------------------------ */
+  // Date Bubble
+  const [shouldShowDateBubble, setShouldShowDateBubble] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(-1);
+  const chatDateBubbleContainerStyle = useMemo(
+    () => ({
+      top: headerHeight + 8 + "px"
+    }),
+    [headerHeight]
+  );
+
+  const handleHeaderHeight = useCallback(
+    (/** @type {number} */ height) => {
+      setHeaderHeight(height);
+    },
+    [setHeaderHeight]
+  );
+
+  const handleScroll = debounce(() => {
+    if (!shouldShowDateBubble) {
+      setShouldShowDateBubble(true);
+      setTimeout(() => {
+        setShouldShowDateBubble(false);
+      }, 1500);
+    }
+  });
+  /* ------------------------------------------------------------------------ */
 
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
@@ -108,9 +135,14 @@ const ChatPage = () => {
 
   return (
     <div className="page-container">
-      <MainNav solid pageTitle={contactName} enableBackButton />
+      <MainNav
+        solid
+        pageTitle={contactName}
+        enableBackButton
+        onHeight={handleHeaderHeight}
+      />
 
-      <div className="chat-messages-container">
+      <div className="chat-messages-container" onScroll={handleScroll}>
         {messages?.map(message => (
           <ChatMessage
             text={message.body}
@@ -119,27 +151,28 @@ const ChatPage = () => {
             timestamp={message.timestamp}
           />
         ))}
+      </div>
 
-        {shouldShowDateBubble && (
-          <div
-            className={classNames(
-              gStyles.horizontallyCenteredAbsolute,
-              gStyles.absoluteStickToTop,
-              gStyles.centerAlign,
-              gStyles.centerJustify,
-              "chat-date-bubble-container"
-            )}
-          >
-            <span
-              className={classNames(gStyles.fontSize12, "chat-date-bubble")}
-              style={{
-                textAlign: "center"
-              }}
-            >
-              April 12th
-            </span>
-          </div>
+      <div
+        className={classNames(
+          gStyles.horizontallyCenteredAbsolute,
+          gStyles.absoluteStickToTop,
+          gStyles.centerAlign,
+          gStyles.centerJustify
         )}
+        style={chatDateBubbleContainerStyle}
+      >
+        <span
+          className={classNames(
+            gStyles.fontSize12,
+            "chat-date-bubble",
+            shouldShowDateBubble
+              ? gStyles.opacityThreeQuarters
+              : gStyles.opacityNone
+          )}
+        >
+          April 12th
+        </span>
       </div>
       {pendingReceivedRequest ? (
         <div className="chat-permission-bar">

@@ -4,9 +4,6 @@
   flex: 1;
   overflow: auto;
   background-color: var(--body-background);
-  /* position:absolute elements obey the nearest position:relative element */
-  /* need this for the date bubble to not render above the header */
-  position: relative;
 }
 
 .chat-bottom-bar {
@@ -130,12 +127,14 @@ p.chat-permission-bar-title {
   border-color: rgba(90, 186, 199, 0.1);
 }
 
-.chat-date-bubble-container {
-  margin-top: 12px;
-}
-
 .chat-date-bubble {
   background-color: var(--dark-blue);
   padding: 12px 16px;
   border-radius: 24px;
+  text-align: center;
+
+  -webkit-transition: opacity 0.5s ease-in-out;
+  -moz-transition: opacity 0.5s ease-in-out;
+  -ms-transition: opacity 0.5s ease-in-out;
+  -o-transition: opacity 0.5s ease-in-out;
 }
