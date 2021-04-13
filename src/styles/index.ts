@@ -133,3 +133,21 @@ export const fontSize14 = styles["font-size-14"];
 export const fontSize16 = styles["font-size-16"];
 
 /* -------------------------------------------------------------------------- */
+
+export const absolute = styles["absolute"];
+
+export const horizontallyCenteredAbsolute =
+  styles["horizontally-centered-absolute"];
+
+export const verticallyCenteredAbsolute =
+  styles["vertically-centered-absolute"];
+
+export const absoluteStickToTop = styles["absolute-stick-to-top"];
+
+export const absoluteStickToBottom = styles["absolute-stick-to-bottom"];
+
+export const absoluteStickToLeft = styles["absolute-stick-to-left"];
+
+export const absoluteStickToRight = styles["absolute-stick-to-right"];
+
+/* -------------------------------------------------------------------------- */
