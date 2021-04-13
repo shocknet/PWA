@@ -111,6 +111,15 @@ const ChatPage = () => {
       <MainNav solid pageTitle={contactName} enableBackButton />
 
       <div className="chat-messages-container">
+        {messages?.map(message => (
+          <ChatMessage
+            text={message.body}
+            receivedMessage={!message.outgoing}
+            publicKey={message.recipientPublicKey}
+            timestamp={message.timestamp}
+          />
+        ))}
+
         {shouldShowDateBubble && (
           <div
             className={classNames(
@@ -131,15 +140,6 @@ const ChatPage = () => {
             </span>
           </div>
         )}
-
-        {messages?.map(message => (
-          <ChatMessage
-            text={message.body}
-            receivedMessage={!message.outgoing}
-            publicKey={message.recipientPublicKey}
-            timestamp={message.timestamp}
-          />
-        ))}
       </div>
       {pendingReceivedRequest ? (
         <div className="chat-permission-bar">
