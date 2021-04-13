@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
+import classNames from "classnames";
+
 import MainNav from "../../common/MainNav";
 import ChatMessage from "./components/ChatMessage";
 import {
@@ -14,6 +16,7 @@ import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
 import * as Store from "../../store";
 import { getContact } from "../../utils";
+import * as gStyles from "../../styles";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
  */
@@ -29,6 +32,8 @@ const ChatPage = () => {
   const { publicKey: recipientPublicKey } = params;
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
+  const [shouldShowDateBubble] = useState(false);
+
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
   );
@@ -104,7 +109,29 @@ const ChatPage = () => {
   return (
     <div className="page-container">
       <MainNav solid pageTitle={contactName} enableBackButton />
+
       <div className="chat-messages-container">
+        {shouldShowDateBubble && (
+          <div
+            className={classNames(
+              gStyles.horizontallyCenteredAbsolute,
+              gStyles.absoluteStickToTop,
+              gStyles.centerAlign,
+              gStyles.centerJustify,
+              "chat-date-bubble-container"
+            )}
+          >
+            <span
+              className={classNames(gStyles.fontSize12, "chat-date-bubble")}
+              style={{
+                textAlign: "center"
+              }}
+            >
+              April 12th
+            </span>
+          </div>
+        )}
+
         {messages?.map(message => (
           <ChatMessage
             text={message.body}
