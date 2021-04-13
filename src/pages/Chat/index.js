@@ -102,7 +102,7 @@ const ChatPage = () => {
   const contactName = user.displayName;
 
   return (
-    <div className="page-container chat-page">
+    <div className="page-container">
       <MainNav solid pageTitle={contactName} enableBackButton />
       <div className="chat-messages-container">
         {messages?.map(message => (
