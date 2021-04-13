@@ -94,7 +94,7 @@ const FeedPage = () => {
           addButton
           large
           main
-          avatar={avatar ? `data:image/png;base64,${avatar}` : null}
+          avatar={avatar ? `data:image/jpeg;base64,${avatar}` : null}
           username={null}
         />
         <div className="following-bar-list">
@@ -105,7 +105,7 @@ const FeedPage = () => {
             return (
               <UserIcon
                 username={processDisplayName(publicKey, profile.displayName)}
-                avatar={`data:image/png;base64,${profile.avatar}`}
+                avatar={`data:image/jpeg;base64,${profile.avatar}`}
                 key={publicKey}
               />
             );
@@ -148,7 +148,7 @@ const FeedPage = () => {
                 id={post.id}
                 timestamp={post.date}
                 contentItems={post.contentItems}
-                avatar={`data:image/png;base64,${profile?.avatar}`}
+                avatar={`data:image/jpeg;base64,${profile?.avatar}`}
                 username={processDisplayName(
                   profile?.publicKey,
                   profile?.displayName

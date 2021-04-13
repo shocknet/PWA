@@ -88,9 +88,7 @@ const userProfiles = (state = INITIAL_STATE, action) => {
         data.contacts.forEach(c => {
           draft[c.pk] = {
             ...Common.createEmptyUser(c.pk),
-            ...draft[c.pk],
-            avatar: c.avatar,
-            displayName: c.displayName
+            ...draft[c.pk]
           };
         });
       });
@@ -102,9 +100,7 @@ const userProfiles = (state = INITIAL_STATE, action) => {
         data.forEach(req => {
           draft[req.pk] = {
             ...Common.createEmptyUser(req.pk),
-            ...draft[req.pk],
-            avatar: req.avatar,
-            displayName: req.displayName
+            ...draft[req.pk]
           };
         });
       });
@@ -116,9 +112,7 @@ const userProfiles = (state = INITIAL_STATE, action) => {
         data.forEach(req => {
           draft[req.pk] = {
             ...Common.createEmptyUser(req.pk),
-            ...draft[req.pk],
-            avatar: req.avatar,
-            displayName: req.displayName
+            ...draft[req.pk]
           };
         });
       });
