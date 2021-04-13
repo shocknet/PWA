@@ -111,7 +111,15 @@ const chat = (state = INITIAL_STATE, action) => {
       const {
         data: { contacts, messages }
       } = /** @type {LoadChatDataAction} */ (action);
-      return { ...state, contacts, messages };
+      return {
+        ...state,
+        contacts,
+        // TODO: Could not replacing messages altogether be bad?
+        messages: {
+          ...state.messages,
+          ...messages
+        }
+      };
     }
     case ACTIONS.LOAD_SENT_REQUESTS: {
       const {
