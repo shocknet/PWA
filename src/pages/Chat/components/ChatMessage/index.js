@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import * as Common from "shock-common";
@@ -65,14 +65,7 @@ const ChatMessage = ({
 
           const dateTime = DateTime.fromMillis(normalizedTimestamp);
 
-          const yesterday = DateTime.now().minus({
-            day: 1
-          });
-
-          const dateTxt =
-            dateTime > yesterday
-              ? dateTime.toLocaleString(DateTime.TIME_24_SIMPLE)
-              : dateTime.toRelativeCalendar();
+          const dateTxt = dateTime.toLocaleString(DateTime.TIME_SIMPLE);
 
           return (
             <div className={classNames(gStyles.rowCentered)}>
