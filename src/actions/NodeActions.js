@@ -37,7 +37,9 @@ const retryOperation = (operation, delay, retries) =>
       .catch(reason => {
         if (retries > 0) {
           return wait(delay)
-            .then(retryOperation.bind(null, operation, delay, retries - 1))
+            .then(
+              retryOperation.bind(null, operation, delay * retries, retries - 1)
+            )
             .then(resolve)
             .catch(reject);
         }
