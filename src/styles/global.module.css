@@ -308,3 +308,57 @@
 }
 
 /* -------------------------------------------------------------------------- */
+
+.absolute {
+  position: absolute;
+}
+
+.horizontally-centered-absolute {
+  composes: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vertically-centered-absolute {
+  composes: absolute;
+  top: 0;
+  bottom: 0;
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+.absolute-stick-to-top {
+  top: 0;
+}
+
+.absolute-stick-to-bottom {
+  bottom: 0;
+}
+
+.absolute-stick-to-left {
+  left: 0;
+}
+
+.absolute-stick-to-right {
+  right: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+
+.opacity-full {
+  opacity: 1;
+}
+
+.opacity-half {
+  opacity: 0.5;
+}
+
+.opacity-none {
+  opacity: 0;
+}
+
+.opacity-three-quarters {
+  opacity: 0.75;
+}

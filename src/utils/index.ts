@@ -184,3 +184,5 @@ export const getContact = (
   contacts: Array<Contact | SentRequest | ReceivedRequest>,
   publicKey: string
 ) => contacts.filter(contact => contact.pk === publicKey)[0];
+
+export const EMPTY_FN: (...args: any[]) => void = () => {};
