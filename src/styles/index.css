@@ -152,6 +152,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--main);
   min-width: 100%;
+  min-height: none;
   color: white;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
@@ -246,7 +247,7 @@ p.shock-form-button-text {
 }
 
 @media (display-mode: standalone) {
-  html, 
+  html,
   body {
     min-height: 100vh !important;
     height: 100% !important;
