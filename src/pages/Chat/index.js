@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
 import debounce from "lodash/debounce";
+import { DateTime } from "luxon";
+import produce, { enableMapSet } from "immer";
 
 import MainNav from "../../common/MainNav";
 import ChatMessage from "./components/ChatMessage";
@@ -21,6 +23,8 @@ import * as gStyles from "../../styles";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
  */
+
+enableMapSet();
 
 /**
  * @typedef {object} ChatPageParams
@@ -131,6 +135,48 @@ const ChatPage = () => {
     };
   }, [subscribeIncomingMessages]);
 
+  // ------------------------------------------------------------------------ //
+  // Date bubble
+
+  const [visibleMessages, setVisibleMessages] = useState(
+    /** @type {Set<string>} */ (new Set())
+  );
+
+  const newestTimestampOnView = useMemo(() => {
+    if (visibleMessages.size === 0) {
+      return Date.now(); // TODO: use newest messages timestamp
+    }
+    const sorted = Array.from(visibleMessages)
+      .map(id => messages.find(msg => msg.id === id))
+      .filter(x => !!x)
+      .sort((a, b) => b.timestamp - a.timestamp);
+
+    return sorted[0].timestamp;
+  }, [messages, visibleMessages]);
+
+  const handleMessageInView = useCallback(
+    id => {
+      setVisibleMessages(
+        produce(draft => {
+          draft.add(id);
+        })
+      );
+    },
+    [setVisibleMessages]
+  );
+  const handleMessageOutView = useCallback(
+    id => {
+      setVisibleMessages(
+        produce(draft => {
+          draft.delete(id);
+        })
+      );
+    },
+    [setVisibleMessages]
+  );
+
+  // ------------------------------------------------------------------------ //
+
   const contactName = user.displayName;
 
   return (
@@ -149,6 +195,9 @@ const ChatPage = () => {
             receivedMessage={!message.outgoing}
             publicKey={message.recipientPublicKey}
             timestamp={message.timestamp}
+            onInView={handleMessageInView}
+            onOutView={handleMessageOutView}
+            id={message.id}
           />
         ))}
       </div>
@@ -171,9 +220,19 @@ const ChatPage = () => {
               : gStyles.opacityNone
           )}
         >
-          April 12th
+          {(() => {
+            const dateTime = DateTime.fromMillis(newestTimestampOnView);
+            const today = DateTime.now();
+
+            if (dateTime.hasSame(today, "day")) {
+              return "Today";
+            }
+
+            return dateTime.toFormat("DD");
+          })()}
         </span>
       </div>
+
       {pendingReceivedRequest ? (
         <div className="chat-permission-bar">
           <p className="chat-permission-bar-title unselectable">
