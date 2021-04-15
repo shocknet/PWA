@@ -67,7 +67,6 @@ const userProfiles = (state = INITIAL_STATE, action) => {
       const { publicKey, profile: newProfile } = action.data;
       const oldProfile = state[publicKey];
 
-      console.log("Updating User Profile:", publicKey, newProfile);
       if (!oldProfile || !newProfile) {
         return state;
       }
