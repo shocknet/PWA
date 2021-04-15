@@ -85,7 +85,7 @@ const OtherUserPage = () => {
       console.log(postsReady);
       setUserPosts(postsReady);
     });
-  }, [userPublicKey]);
+  }, [hostIP, userPublicKey]);
 
   const subscribeSharedPosts = useCallback(async () => {
     const query = `${userPublicKey}::sharedPosts::on`;
@@ -131,7 +131,7 @@ const OtherUserPage = () => {
         disconnectRifleSocket(query);
       };
     }
-  }, [userPublicKey]);
+  }, [hostIP, userPublicKey]);
 
   //effect for user profile
   useEffect(() => {
@@ -139,7 +139,7 @@ const OtherUserPage = () => {
     return () => {
       dispatch(unsubscribeUserProfile(userPublicKey));
     };
-  }, [userPublicKey]);
+  }, [dispatch, userPublicKey]);
   //effect for user posts
   useEffect(() => {
     subscribeUserPosts();
@@ -166,7 +166,7 @@ const OtherUserPage = () => {
     return () => {
       unSubProfiles.forEach(unSub => unSub());
     };
-  }, [userPosts, userSharedPosts]);
+  }, [dispatch, userPosts, userProfiles, userSharedPosts]);
   //effect for services
   useEffect(() => {
     Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
