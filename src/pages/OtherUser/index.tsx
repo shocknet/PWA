@@ -79,7 +79,7 @@ const OtherUserPage = () => {
       });
       const postsAlmostReady = await Promise.allSettled(proms);
       const postsReady = postsAlmostReady
-        .filter(maybeok => maybeok.status === "fulfilled")
+        .filter(maybeOk => maybeOk.status === "fulfilled")
         //@ts-expect-error
         .map(res => res.value);
       console.log(postsReady);
@@ -120,7 +120,7 @@ const OtherUserPage = () => {
       const postsAlmostReady = await Promise.allSettled(proms);
       console.log(postsAlmostReady);
       const postsReady = postsAlmostReady
-        .filter(maybeok => maybeok.status === "fulfilled")
+        .filter(maybeOk => maybeOk.status === "fulfilled")
         // @ts-expect-error
         .map(res => res.value);
       console.log(postsReady);

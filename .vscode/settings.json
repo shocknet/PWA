@@ -12,6 +12,7 @@
     "healthz",
     "immer",
     "luxon",
+    "otheruser",
     "pendingchannels",
     "persistor",
     "pubkey",
