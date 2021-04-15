@@ -1,3 +1,4 @@
+// @ts-check
 import DialogNav from "../../common/DialogNav";
 import "./css/index.css";
 
