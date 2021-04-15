@@ -142,16 +142,17 @@ const ChatPage = () => {
     /** @type {Set<string>} */ (new Set())
   );
 
-  const newestTimestampOnView = useMemo(() => {
+  const [newestTimestampInView, oldestTimestampInView] = useMemo(() => {
     if (visibleMessages.size === 0) {
-      return Date.now(); // TODO: use newest messages timestamp
+      return [DateTime.now().valueOf(), Date.now().valueOf()];
     }
     const sorted = Array.from(visibleMessages)
       .map(id => messages.find(msg => msg.id === id))
       .filter(x => !!x)
       .sort((a, b) => b.timestamp - a.timestamp);
-
-    return sorted[0].timestamp;
+    /** @type {[number|null , number|null]} */
+    const res = [sorted[0].timestamp, sorted[sorted.length - 1].timestamp];
+    return res;
   }, [messages, visibleMessages]);
 
   const handleMessageInView = useCallback(
@@ -221,14 +222,70 @@ const ChatPage = () => {
           )}
         >
           {(() => {
-            const dateTime = DateTime.fromMillis(newestTimestampOnView);
-            const today = DateTime.now();
+            const newest = DateTime.fromMillis(newestTimestampInView).startOf(
+              "day"
+            );
+            const oldest = DateTime.fromMillis(oldestTimestampInView).startOf(
+              "day"
+            );
+            const today = DateTime.now().startOf("day");
+            const yesterday = DateTime.now()
+              .minus({
+                day: 1
+              })
+              .startOf("day");
+            const allMessagesThisYear =
+              newest.hasSame(today, "year") && oldest.hasSame(today, "year");
 
-            if (dateTime.hasSame(today, "day")) {
-              return "Today";
+            const allMessagesSameDay = (newest || oldest).hasSame(
+              oldest,
+              "day"
+            );
+            if (allMessagesSameDay) {
+              if (newest.hasSame(today, "day")) {
+                return "Today";
+              }
+              if (newest.hasSame(yesterday, "day")) {
+                return "Yesterday";
+              }
+              return allMessagesThisYear
+                ? // August 13
+                  newest.toFormat("LLLL d")
+                : // August 13, 2017
+                  newest.toLocaleString(DateTime.DATE_FULL);
             }
 
-            return dateTime.toFormat("DD");
+            const allMessagesSameMonth = newest.hasSame(oldest, "month");
+            if (allMessagesSameMonth) {
+              const firstDay = oldest.toFormat("d");
+              const lastDay = newest.toFormat("d");
+              const month = (newest || oldest).toFormat("LLLL");
+              if (allMessagesThisYear) {
+                // August 13 - 27
+                return `${month} ${firstDay} - ${lastDay}`;
+              }
+              const year = newest.toFormat("y");
+              // August 13 - 27, 2020
+              return `${month} ${firstDay} - ${lastDay}, ${year}`;
+            }
+
+            if (allMessagesThisYear) {
+              const firstDay = oldest.toFormat("d");
+              const lastDay = newest.toFormat("d");
+              const firstMonth = oldest.toFormat("LLLL");
+              const lastMonth = newest.toFormat("LLLL");
+              // January 12 - February 14
+              return `${firstMonth} ${firstDay} - ${lastMonth} ${lastDay}`;
+            }
+
+            const firstDay = oldest.toFormat("d");
+            const lastDay = newest.toFormat("d");
+            const firstMonth = oldest.toFormat("LLLL");
+            const lastMonth = newest.toFormat("LLLL");
+            const firstYear = oldest.toFormat("y");
+            const lastYear = newest.toFormat("y");
+            // December 27, 2020 - January 2, 2021
+            return `${firstMonth} ${firstDay}, ${firstYear} - ${lastMonth} ${lastDay}, ${lastYear}`;
           })()}
         </span>
       </div>
