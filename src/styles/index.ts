@@ -132,6 +132,8 @@ export const fontSize14 = styles["font-size-14"];
 
 export const fontSize16 = styles["font-size-16"];
 
+export const fontSize18 = styles["font-size-18"];
+
 /* -------------------------------------------------------------------------- */
 
 export const absolute = styles["absolute"];

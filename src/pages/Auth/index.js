@@ -27,6 +27,11 @@ const AuthPage = () => {
   const authStep = useSelector(({ auth }) => auth.authStep);
   const authMethod = useSelector(({ auth }) => auth.authMethod);
 
+  const handleBackOnError = useCallback(() => {
+    setError(null);
+    dispatch(setAuthStep("host"));
+  }, [setError, dispatch]);
+
   const currentStep = useMemo(() => {
     if (authMethod === "manual") {
       if (authStep === "host") {
@@ -107,7 +112,12 @@ const AuthPage = () => {
   }, [loadCachedNode]);
 
   return (
-    <DialogPageContainer disableNav contentClassName="auth-page-content">
+    <DialogPageContainer
+      disableNav
+      contentClassName="auth-page-content"
+      onBack={handleBackOnError}
+      showBackBtn={!!error}
+    >
       <LogoSection />
       {loading && <span>Loading...</span>}
 
