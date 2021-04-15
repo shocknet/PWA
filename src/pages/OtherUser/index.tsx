@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import classNames from "classnames";
 
 import { GUN_PROPS } from "../../utils/Gun";
@@ -46,8 +46,6 @@ const OtherUserPage = () => {
   //@ts-expect-error
   const hostIP = useSelector(({ node }) => node.hostIP);
   //@ts-expect-error
-  const follows = useSelector(({ feed }) => feed.follows);
-  //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
   const [userPosts, setUserPosts] = useState([]);
@@ -60,7 +58,6 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState("posts");
   const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`;
-    const socketExists = rifleSocketExists(query);
     const subscription = await rifle({
       host: hostIP,
       query,
