@@ -17,7 +17,7 @@ import "./css/index.css";
 
 /** @type {IntersectionOptions} */
 const USE_IN_VIEW_OPTS = {
-  threshold: 0.5
+  threshold: 0.2
 };
 
 const ChatMessage = ({
