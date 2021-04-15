@@ -1,4 +1,3 @@
-import React from "react";
 import DialogNav from "../../common/DialogNav";
 import "./css/index.css";
 
