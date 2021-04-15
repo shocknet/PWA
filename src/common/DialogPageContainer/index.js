@@ -20,7 +20,9 @@ const DialogPageContainer = ({
           : {}
       }
     >
-      {!disableNav ? <DialogNav pageTitle={title} /> : null}
+      {!disableNav ? (
+        <DialogNav drawerVisible={false} pageTitle={title} />
+      ) : null}
       <div className={`dialog-content-container ${contentClassName}`}>
         {children}
       </div>
