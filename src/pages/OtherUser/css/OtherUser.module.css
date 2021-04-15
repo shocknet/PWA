@@ -69,12 +69,6 @@
   font-weight: 600;
 }
 
-.profile-choices-container {
-  flex: 1 1;
-  flex-shrink: 1;
-  overflow: auto;
-}
-
 .profile-choice-container {
   display: flex;
   align-items: center;
