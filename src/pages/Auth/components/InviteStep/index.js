@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
-import { connectHost,SetAttemptsDone } from "../../../../actions/NodeActions";
+import { connectHost, SetAttemptsDone } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
 import Http from "../../../../utils/Http";
 import Loader from "../../../../common/Loader";
@@ -11,7 +11,9 @@ const HOSTING_SERVER = "pool.shock.network";
 
 const InviteStep = () => {
   const dispatch = useDispatch();
-  const hostingAttemptsDone = useSelector(({node}) => node.hostingAttemptsDone)
+  const hostingAttemptsDone = useSelector(
+    ({ node }) => node.hostingAttemptsDone
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -27,6 +29,27 @@ const InviteStep = () => {
         return;
     }
   }, []);
+
+  const getTunnelURI = async address =>
+    new Promise((res, rej) => {
+      const port = address.match(/:(\d+)/);
+      if (!port) {
+        return res(address);
+      }
+
+      const socket = new WebSocket(`wss://${HOSTING_SERVER}/ws/healthz`);
+      socket.addEventListener("open", function (event) {
+        socket.send(`health(${port[1]})`);
+      });
+
+      socket.addEventListener("message", function (event) {
+        const data = JSON.parse(event.data);
+        if (data.api_uri && data.api_uri != "") {
+          socket.close();
+          res(data.api_uri);
+        }
+      });
+    });
 
   const onSubmit = useCallback(
     async e => {
@@ -44,13 +67,16 @@ const InviteStep = () => {
           }
         );
         const nodeURL = response.data.address;
-        const noProtocolHostIP = nodeURL.replace(/^http(s)?:\/\//gi, "");
-        const retries = hostingAttemptsDone ? 0 : 4
-        const { withProtocolHostIP } = await connectHost(noProtocolHostIP,true,retries)(
-          dispatch
-        );
-        if(hostingAttemptsDone){
-          SetAttemptsDone()(dispatch)
+        const tunnelURI = await getTunnelURI(nodeURL);
+        const noProtocolHostIP = tunnelURI.replace(/^http(s)?:\/\//gi, "");
+        const retries = hostingAttemptsDone ? 0 : 4;
+        const { withProtocolHostIP } = await connectHost(
+          noProtocolHostIP,
+          true,
+          retries
+        )(dispatch);
+        if (hostingAttemptsDone) {
+          SetAttemptsDone()(dispatch);
         }
         connectSocket(withProtocolHostIP);
       } catch (error) {
@@ -58,7 +84,7 @@ const InviteStep = () => {
         setError("Unable to connect to host");
       }
     },
-    [dispatch,SetAttemptsDone,hostingAttemptsDone, inviteCode]
+    [dispatch, SetAttemptsDone, hostingAttemptsDone, inviteCode]
   );
 
   const chooseAnotherMethod = useCallback(() => {
