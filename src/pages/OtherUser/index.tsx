@@ -8,6 +8,8 @@ import React, {
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link, useParams } from "react-router-dom";
+import classNames from "classnames";
+
 import { GUN_PROPS } from "../../utils/Gun";
 import Http from "../../utils/Http";
 import { processDisplayName } from "../../utils/String";
@@ -29,10 +31,11 @@ import Loader from "../../common/Loader";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
-import "./css/index.css";
 import SendTipModal from "../Feed/components/SendTipModal";
 import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
+
+import styles from "./css/OtherUser.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -300,7 +303,7 @@ const OtherUserPage = () => {
           });
         };
         return (
-          <div className="post">
+          <div className={styles.post}>
             <strong>Service ID</strong>
             <p>{id}</p>
             <strong>Service Tpe</strong>
@@ -324,20 +327,20 @@ const OtherUserPage = () => {
       });
   };
   return (
-    <div className="page-container profile-page">
-      <div className="profile-container">
-        <div className="profile-cover" />
-        <div className="profile-info-container">
+    <div className={classNames("page-container", styles["profile-page"])}>
+      <div className={styles["profile-container"]}>
+        <div className={styles["profile-cover"]} />
+        <div className={styles["profile-info-container"]}>
           <div
-            className="profile-avatar"
+            className={styles["profile-avatar"]}
             style={{ backgroundImage: `url(${avatar})` }}
           />
-          <div className="profile-info">
-            <p className="profile-name">{processedDisplayName}</p>
-            <p className="profile-desc">{userProfile?.bio || ""}</p>
+          <div className={styles["profile-info"]}>
+            <p className={styles["profile-name"]}>{processedDisplayName}</p>
+            <p className={styles["profile-desc"]}>{userProfile?.bio || ""}</p>
           </div>
         </div>
-        <div className="">
+        <div>
           <select
             value={selectedView}
             name="selectedView"
@@ -361,16 +364,23 @@ const OtherUserPage = () => {
             fgColor="#4285b9"
             value={userPublicKey}
             size={180}
-            className="profile-qrcode"
+            className={styles["profile-qrcode"]}
           />
-          <p className="profile-qrcode-desc">Scan this code to contact me</p>
-          <div className="profile-clipboard-container" onClick={copyClipboard}>
+          <p className={styles["profile-qrcode-desc"]}>
+            Scan this code to contact me
+          </p>
+          <div
+            className={styles["profile-clipboard-container"]}
+            onClick={copyClipboard}
+          >
             <img
               src={ClipboardIcon}
-              className="profile-clipboard-icon"
+              className={styles["profile-clipboard-icon"]}
               alt=""
             />
-            <p className="profile-clipboard-text">Tap to copy to clipboard</p>
+            <p className={styles["profile-clipboard-text"]}>
+              Tap to copy to clipboard
+            </p>
           </div>
         </Modal>
         <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
