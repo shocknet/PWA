@@ -1,10 +1,4 @@
-import React, {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { useParams } from "react-router-dom";
@@ -28,19 +22,24 @@ import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
 import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import SendTipModal from "../Feed/components/SendTipModal";
 import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
+import * as Store from "../../store";
 
 import styles from "./css/OtherUser.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
+const AVATAR_SIZE = 122;
+
 const OtherUserPage = () => {
+  //#region controller
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
@@ -48,6 +47,7 @@ const OtherUserPage = () => {
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
+  const user = Store.useSelector(Store.selectUser(userPublicKey));
   const [userPosts, setUserPosts] = useState([]);
   const [userSharedPosts, setUserSharedPosts] = useState([]);
   const [finalPosts, setFinalPosts] = useState([]);
@@ -65,7 +65,6 @@ const OtherUserPage = () => {
       reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -82,7 +81,6 @@ const OtherUserPage = () => {
         .filter(maybeOk => maybeOk.status === "fulfilled")
         //@ts-expect-error
         .map(res => res.value);
-      console.log(postsReady);
       setUserPosts(postsReady);
     });
   }, [hostIP, userPublicKey]);
@@ -97,7 +95,6 @@ const OtherUserPage = () => {
       reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -118,12 +115,10 @@ const OtherUserPage = () => {
         };
       });
       const postsAlmostReady = await Promise.allSettled(proms);
-      console.log(postsAlmostReady);
       const postsReady = postsAlmostReady
         .filter(maybeOk => maybeOk.status === "fulfilled")
         // @ts-expect-error
         .map(res => res.value);
-      console.log(postsReady);
       setUserSharedPosts(postsReady);
     });
     if (!socketExists) {
@@ -171,28 +166,17 @@ const OtherUserPage = () => {
   useEffect(() => {
     Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
       ({ data }) => {
-        console.log("SERVICES");
-        console.log(data);
         setUserServices(data.data);
       }
     );
   }, [userPublicKey]);
-  const userProfile = userProfiles[userPublicKey];
-  console.log(userProfile);
-  const avatar =
-    userProfile?.avatar && `data:image/jpeg;base64,${userProfile?.avatar}`;
 
-  const processedDisplayName = useMemo(
-    () => processDisplayName(userPublicKey, userProfile?.displayName),
-    [userPublicKey, userProfile]
-  );
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
 
   const toggleTipModal = useCallback(
     tipData => {
-      console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
       }
@@ -203,7 +187,6 @@ const OtherUserPage = () => {
   );
   const toggleBuyServiceModal = useCallback(
     buyData => {
-      console.log(buyData);
       if (buyServiceModalData || !buyData) {
         setBuyServiceModalOpen(null);
       }
@@ -214,7 +197,6 @@ const OtherUserPage = () => {
   );
   const toggleUnlockModal = useCallback(
     unlockData => {
-      console.log(unlockData);
       if (unlockModalData || !unlockData) {
         setUnlockModalOpen(null);
       }
@@ -287,7 +269,6 @@ const OtherUserPage = () => {
     });
   };
   const renderServices = () => {
-    console.log(userServices);
     return Object.entries(userServices)
       .filter(([id, service]) => !!service)
       .map(([id, service]) => {
@@ -323,18 +304,39 @@ const OtherUserPage = () => {
         );
       });
   };
+  //#endregion controller
+
   return (
     <div className={classNames("page-container", styles["profile-page"])}>
       <div className={styles["profile-container"]}>
-        <div className={styles["profile-cover"]} />
+        <div className="profile-cover">
+          {user.header && (
+            <img
+              alt="User set profile header."
+              src={`data:image/jpeg;base64,${user.header}`}
+            />
+          )}
+        </div>
+
         <div className={styles["profile-info-container"]}>
           <div
             className={styles["profile-avatar"]}
-            style={{ backgroundImage: `url(${avatar})` }}
-          />
+            style={{
+              height: `${AVATAR_SIZE}px`,
+              width: `${AVATAR_SIZE}px`
+            }}
+          >
+            <ShockAvatar
+              height={AVATAR_SIZE}
+              publicKey={userPublicKey}
+              greyBorder
+            />
+          </div>
           <div className={styles["profile-info"]}>
-            <p className={styles["profile-name"]}>{processedDisplayName}</p>
-            <p className={styles["profile-desc"]}>{userProfile?.bio || ""}</p>
+            <p className={styles["profile-name"]}>{user.displayName}</p>
+            <p className={styles["profile-desc"]}>
+              {user.bio || "Shockwallet user"}
+            </p>
           </div>
         </div>
         <div>
