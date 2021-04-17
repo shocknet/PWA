@@ -308,7 +308,7 @@ const ProfilePage = () => {
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
     }
-  }, [deletePostModalData, publicKey, toggleDeleteModal]);
+  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
