@@ -259,6 +259,7 @@ const OtherUserPage = () => {
               openUnlockModal={toggleUnlockModal}
               // TODO: User online status handling
               isOnlineNode
+              openDeleteModal={null}
             />
           </Suspense>
         );
@@ -279,6 +280,7 @@ const OtherUserPage = () => {
             tipValue={0}
             // TODO: User online status handling
             isOnlineNode
+            openDeleteModal={null}
           />
         </Suspense>
       );

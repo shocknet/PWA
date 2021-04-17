@@ -207,3 +207,12 @@ export const sendTipPost = ({
     }
   });
 };
+
+export const deleteUserPost = ({id,authorId}) => dispatch => {
+  dispatch({
+    type:ACTIONS.DELETE_USER_POST,
+    data:{
+      id,authorId
+    }
+  })
+}

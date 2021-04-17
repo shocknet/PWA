@@ -21,7 +21,8 @@ const Post = ({
   openUnlockModal,
   contentItems = {},
   username,
-  isOnlineNode
+  isOnlineNode,
+  openDeleteModal
 }) => {
   const dispatch = useDispatch();
   const unlockedContent = useSelector(({content}) => content.unlockedContent)
@@ -191,6 +192,10 @@ const Post = ({
     });
   }, [id, isOnlineNode, openUnlockModal, publicKey]);
 
+  const deletePost = useCallback(()=>{
+    openDeleteModal({id,shared:false});
+  },[id,openDeleteModal])
+
   useEffect(() => {
     Tooltip.rebuild();
   }, []);
@@ -199,6 +204,7 @@ const Post = ({
     <div className="post">
       <div className="head">
         <div className="user">
+        
           <Link
             className="av"
             to={`/${publicKey}`}
@@ -215,6 +221,7 @@ const Post = ({
             </p>
           </div>
         </div>
+        {openDeleteModal && <i className="fas fa-trash" onClick={deletePost}></i>}
       </div>
 
       <div className="content">
