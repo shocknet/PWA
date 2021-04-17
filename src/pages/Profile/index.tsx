@@ -32,6 +32,7 @@ import * as Store from "../../store";
 import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
 
 import "./css/index.css";
+import { deleteUserPost } from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -45,6 +46,7 @@ export type WebClientPrefix =
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [deletePostModalData,setDeletePostModalData] = useState(null)
 
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
@@ -283,6 +285,34 @@ const ProfilePage = () => {
   }, []);
   // ------------------------------------------------------------------------ //
 
+  const toggleDeleteModal = useCallback(
+    deleteData => {
+      console.log(deleteData);
+      if (deletePostModalData || !deleteData) {
+        setDeletePostModalData(null);
+      }
+      setDeletePostModalData(deleteData);
+    },
+    [deletePostModalData]
+  );
+
+  const deletePost = useCallback(async ()=>{
+    if(!deletePostModalData || !deletePostModalData.id){
+      return
+    }
+    console.log("deleting:")
+    console.log(deletePostModalData)
+    const key = deletePostModalData.shared ? "sharedPosts" :"posts"
+    await Utils.Http.post('/api/gun/put',{
+      path:`$user>${key}>${deletePostModalData.id}`,
+      value:null
+    })
+    deleteUserPost({
+      id:deletePostModalData.id,
+      authorId:publicKey
+    })
+    toggleDeleteModal(null)
+  },[deletePostModalData])
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -324,6 +354,7 @@ const ProfilePage = () => {
               openUnlockModal={() => {}}
               // TODO: User online status handling
               isOnlineNode
+              openDeleteModal={toggleDeleteModal}
             />
           </Suspense>
         );
@@ -347,6 +378,7 @@ const ProfilePage = () => {
             tipValue={0}
             // TODO: User online status handling
             isOnlineNode
+            openDeleteModal={toggleDeleteModal}
           />
         </Suspense>
       );
@@ -650,6 +682,30 @@ const ProfilePage = () => {
             )}
           </Modal>
 
+          <Modal
+            toggleModal={toggleDeleteModal}
+            modalOpen={deletePostModalData}
+            
+            contentStyle={{
+              padding: "2em 2em"
+            }}
+          >
+            <div>You sure delete</div>
+            <div className="flex-center" style={{ marginTop: "auto" }}>
+              <button
+                onClick={toggleDeleteModal}
+                className="shock-form-button m-1"
+              >
+                CANCEL
+              </button>
+              <button
+                onClick={deletePost}
+                className="shock-form-button-confirm m-1"
+              >
+                DELETE
+              </button>
+            </div>
+          </Modal>
           <AddBtn
             onClick={toggleModal}
             large
