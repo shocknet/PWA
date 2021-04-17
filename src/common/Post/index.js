@@ -4,7 +4,7 @@ import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Video from "./components/Video";
 import Image from "./components/Image";
 import Stream from "./components/Stream";
@@ -24,7 +24,7 @@ const Post = ({
   isOnlineNode
 }) => {
   const dispatch = useDispatch();
-  const unlockedContent = useSelector(({content}) => content.unlockedContent)
+  const unlockedContent = useSelector(({ content }) => content.unlockedContent);
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
     align: "center"
@@ -46,27 +46,31 @@ const Post = ({
     );
   };
 
-  useEffect(()=>{
-    getMediaContent().forEach(([k,e]) => {
-      const path = `${publicKey}>posts>${k}`
-      if (e.isPrivate && !unlockedContent[path]){
-        setIsPrivate(true)
+  useEffect(() => {
+    getMediaContent().forEach(([k, e]) => {
+      const path = `${publicKey}>posts>${k}`;
+      if (e.isPrivate && !unlockedContent[path]) {
+        setIsPrivate(true);
       }
-    })
-  },[contentItems,publicKey])
+    });
+  }, [contentItems, publicKey]);
 
   const parseContent = ([key, item], index) => {
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
     }
-    const finalItem = item
+    const finalItem = item;
     if (item.isPrivate) {
-      const path = `${publicKey}>posts>${id}`
-      const cached = unlockedContent[path]
-      if (cached){
-        finalItem.magnetURI = cached
+      const path = `${publicKey}>posts>${id}`;
+      const cached = unlockedContent[path];
+      if (cached) {
+        finalItem.magnetURI = cached;
       } else {
-        return <div><i className="fas fa-lock fa-10x"></i></div>
+        return (
+          <div>
+            <i className="fas fa-lock fa-10x"></i>
+          </div>
+        );
       }
     }
 
@@ -209,8 +213,8 @@ const Post = ({
           <div className="details">
             <Link to={`/${publicKey}`}>{username}</Link>
             <p>
-              {timestamp && typeof timestamp === "number" 
-                ? DateTime.fromMillis(timestamp).toRelative() 
+              {timestamp && typeof timestamp === "number"
+                ? DateTime.fromMillis(timestamp).toRelative()
                 : "Loading..."}
             </p>
           </div>

@@ -135,7 +135,10 @@ export const attachMedia = (
 
                     await saveFile(fileName, blob);
                     const element = document.querySelector(target);
-                    if (element?.dataset.played === "false" && !element?.getAttribute("src")) {
+                    if (
+                      element?.dataset.played === "false" &&
+                      !element?.getAttribute("src")
+                    ) {
                       const cachedFile = await getCachedFile(fileName);
                       renderCachedFile(cachedFile, target);
                     }

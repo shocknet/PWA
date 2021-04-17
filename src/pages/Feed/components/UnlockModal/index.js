@@ -13,13 +13,16 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
   const [loading, setLoading] = useState(false);
   const [unlockSuccess, setUnlockSuccess] = useState(false);
 
-
   const submitUnlock = useCallback(
     async e => {
       e.preventDefault();
       try {
         setLoading(true);
-        await unlockContent(100,unlockData.publicKey,unlockData.postID)(dispatch)
+        await unlockContent(
+          100,
+          unlockData.publicKey,
+          unlockData.postID
+        )(dispatch);
         setUnlockSuccess(true);
       } catch (err) {
         console.error(err);
@@ -45,7 +48,11 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
   }, [unlockData]);
 
   return (
-    <Modal toggleModal={toggleOpen} modalOpen={!!unlockData} modalTitle="Unlock content">
+    <Modal
+      toggleModal={toggleOpen}
+      modalOpen={!!unlockData}
+      modalTitle="Unlock content"
+    >
       {unlockSuccess ? (
         <div className="tip-modal-success">
           <i className="tip-success-icon fas fa-check-circle"></i>

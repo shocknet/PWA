@@ -64,8 +64,8 @@ const Drawer = () => {
             <p className="drawer-item-title unselectable">Seed Backup</p>
           </div>
         </div>
-        <div className="drawer-bottom-section" >
-          <NavLink className="drawer-item"  to="/moonpay" onClick={close}>
+        <div className="drawer-bottom-section">
+          <NavLink className="drawer-item" to="/moonpay" onClick={close}>
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>
             </div>
@@ -80,13 +80,13 @@ const Drawer = () => {
         </div>
 
         <div className="drawer-logout-and-scan">
-        <NavLink  to="/QRScanner" onClick={close}>
-          <i
-            onClick={onClickScan}
-            className="icon-solid-scan"
-            style={{ color: "var(--main-blue)" }}
-          ></i>
-        </NavLink>
+          <NavLink to="/QRScanner" onClick={close}>
+            <i
+              onClick={onClickScan}
+              className="icon-solid-scan"
+              style={{ color: "var(--main-blue)" }}
+            ></i>
+          </NavLink>
           <i
             onClick={onClickLogout}
             className="fas fa-power-off"
