@@ -296,10 +296,12 @@ const ProfilePage = () => {
         path: `$user>${key}>${deletePostModalData.id}`,
         value: null
       });
-      deleteUserPost({
-        id: deletePostModalData.id,
-        authorId: publicKey
-      });
+      dispatch(
+        deleteUserPost({
+          id: deletePostModalData.id,
+          authorId: publicKey
+        })
+      );
       toggleDeleteModal(null);
     } catch (e) {
       console.log(`Error when deleting post:`);
