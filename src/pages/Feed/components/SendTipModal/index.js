@@ -62,11 +62,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
         <div className="tip-modal-success">
           <i className="tip-success-icon fas fa-check-circle"></i>
           <p className="tip-success-title">Post tipped successfully!</p>
-          <p className="tip-success-desc">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sunt
-            ratione repudiandae voluptates debitis esse ea ut molestiae
-            praesentium possimus quia
-          </p>
+          <p className="tip-success-desc"></p>
         </div>
       ) : (
         <form className="modal-form tip-form" onSubmit={submitTip}>
