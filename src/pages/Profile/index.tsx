@@ -285,21 +285,27 @@ const ProfilePage = () => {
   );
 
   const deletePost = useCallback(async () => {
-    if (!deletePostModalData || !deletePostModalData.id) {
-      return;
+    try {
+      if (!deletePostModalData || !deletePostModalData.id) {
+        return;
+      }
+      console.log("deleting:");
+      console.log(deletePostModalData);
+      const key = deletePostModalData.shared ? "sharedPosts" : "posts";
+      await Utils.Http.post("/api/gun/put", {
+        path: `$user>${key}>${deletePostModalData.id}`,
+        value: null
+      });
+      deleteUserPost({
+        id: deletePostModalData.id,
+        authorId: publicKey
+      });
+      toggleDeleteModal(null);
+    } catch (e) {
+      console.log(`Error when deleting post:`);
+      console.log(e);
+      alert(`Could not delete post: ${e.message}`);
     }
-    console.log("deleting:");
-    console.log(deletePostModalData);
-    const key = deletePostModalData.shared ? "sharedPosts" : "posts";
-    await Utils.Http.post("/api/gun/put", {
-      path: `$user>${key}>${deletePostModalData.id}`,
-      value: null
-    });
-    deleteUserPost({
-      id: deletePostModalData.id,
-      authorId: publicKey
-    });
-    toggleDeleteModal(null);
   }, [deletePostModalData, publicKey, toggleDeleteModal]);
   const copyClipboard = useCallback(() => {
     try {
