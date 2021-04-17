@@ -307,7 +307,7 @@ const ProfilePage = () => {
       authorId: publicKey
     });
     toggleDeleteModal(null);
-  }, [deletePostModalData]);
+  }, [deletePostModalData, publicKey, toggleDeleteModal]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
