@@ -53,7 +53,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width 
           data-torrent={item.magnetURI}
           data-file-key={index}
           style={mainImageStyle}
-          src={contentURL}
+          //src={contentURL}
         />
         <img
           className={`enlarged-img enlarged-img-${postId}-${id}`}
@@ -63,7 +63,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width 
             setZoomLoaded(true);
           }}
           style={{ opacity: zoomLoaded ? 1 : 0 }}
-          src={contentURL}
+          //src={contentURL}
         />
         {!hideRibbon && <TipRibbon
           tipCounter={tipCounter}
