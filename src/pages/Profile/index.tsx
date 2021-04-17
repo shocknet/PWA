@@ -25,6 +25,8 @@ import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ContentHostInput from "../../common/ContentHostInput";
+import ProfileDivider from "../../common/ProfileDivider";
+import Pad from "../../common/Pad";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -46,7 +48,7 @@ export type WebClientPrefix =
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [deletePostModalData,setDeletePostModalData] = useState(null)
+  const [deletePostModalData, setDeletePostModalData] = useState(null);
 
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
@@ -60,7 +62,9 @@ const ProfilePage = () => {
   const availableStreamTokens = Store.useSelector(
     ({ content }) => content.availableStreamTokens
   );
-  const [selectedView, setSelectedView] = useState("posts");
+  const [selectedView, setSelectedView] = useState<"posts" | "services">(
+    "posts"
+  );
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
@@ -148,17 +152,9 @@ const ProfilePage = () => {
     };
   }, [hostIP, publicKey /* handles alias switch */]);
 
-  const onInputChange = (e: { target: { name: string; value: any } }) => {
-    const { value, name } = e.target;
-    switch (name) {
-      case "selectedView": {
-        setSelectedView(value);
-        return;
-      }
-      default:
-        return;
-    }
-  };
+  const handleViewChange = useCallback((view: "posts" | "services") => {
+    setSelectedView(view);
+  }, []);
 
   const somethingInsideConfigModalChanged =
     newDisplayName !== user.displayName ||
@@ -212,7 +208,6 @@ const ProfilePage = () => {
     }
     toggleConfigModal();
   }, [
-    dispatch,
     newDisplayName,
     user.displayName,
     user.bio,
@@ -296,23 +291,23 @@ const ProfilePage = () => {
     [deletePostModalData]
   );
 
-  const deletePost = useCallback(async ()=>{
-    if(!deletePostModalData || !deletePostModalData.id){
-      return
+  const deletePost = useCallback(async () => {
+    if (!deletePostModalData || !deletePostModalData.id) {
+      return;
     }
-    console.log("deleting:")
-    console.log(deletePostModalData)
-    const key = deletePostModalData.shared ? "sharedPosts" :"posts"
-    await Utils.Http.post('/api/gun/put',{
-      path:`$user>${key}>${deletePostModalData.id}`,
-      value:null
-    })
+    console.log("deleting:");
+    console.log(deletePostModalData);
+    const key = deletePostModalData.shared ? "sharedPosts" : "posts";
+    await Utils.Http.post("/api/gun/put", {
+      path: `$user>${key}>${deletePostModalData.id}`,
+      value: null
+    });
     deleteUserPost({
-      id:deletePostModalData.id,
-      authorId:publicKey
-    })
-    toggleDeleteModal(null)
-  },[deletePostModalData])
+      id: deletePostModalData.id,
+      authorId: publicKey
+    });
+    toggleDeleteModal(null);
+  }, [deletePostModalData]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -534,18 +529,16 @@ const ProfilePage = () => {
               <p className="profile-choice-text">Offer a Service</p>
             </Link>
           </div>
+
+          <ProfileDivider onChange={handleViewChange} selected={selectedView} />
           <div className="">
-            <select
-              value={selectedView}
-              name="selectedView"
-              onChange={onInputChange}
-            >
-              <option value="posts">POSTS</option>
-              <option value="services">SERVICES</option>
-            </select>
             {selectedView === "posts" && renderPosts()}
             {selectedView === "services" && renderServices()}
           </div>
+
+          {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
+          <Pad amt={200} />
+
           <Modal
             toggleModal={toggleModal}
             modalOpen={profileModalOpen}
@@ -685,7 +678,6 @@ const ProfilePage = () => {
           <Modal
             toggleModal={toggleDeleteModal}
             modalOpen={deletePostModalData}
-            
             contentStyle={{
               padding: "2em 2em"
             }}
