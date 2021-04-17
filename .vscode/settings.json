@@ -9,6 +9,7 @@
     "Sats",
     "Unmount",
     "autocorrect",
+    "callout",
     "healthz",
     "immer",
     "luxon",
@@ -20,6 +21,7 @@
     "reduxjs",
     "serv",
     "shockping",
+    "unselectable",
     "uuidv",
     "videojs",
     "youtube"
