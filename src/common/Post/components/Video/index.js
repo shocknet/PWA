@@ -25,7 +25,7 @@ const Video = ({ id, item, index, postId, tipValue, tipCounter, hideRibbon,width
           data-file-key={index}
           controls
           data-played="false"
-          src={contentURL}
+          //src={contentURL}
         />
         {!hideRibbon && <TipRibbon tipCounter={tipCounter} tipValue={tipValue} />}
       </div>
