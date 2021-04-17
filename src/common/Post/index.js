@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import * as Store from "../../store";
 
@@ -27,7 +27,6 @@ const Post = ({
   isOnlineNode,
   openDeleteModal = undefined
 }) => {
-  const dispatch = useDispatch();
   const unlockedContent = useSelector(({ content }) => content.unlockedContent);
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
