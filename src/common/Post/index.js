@@ -207,13 +207,13 @@ const Post = ({
         
           <Link
             className="av"
-            to={`/${publicKey}`}
+            to={`/otherUser/${publicKey}`}
             style={{
               backgroundImage: `url(${avatar})`
             }}
           />
           <div className="details">
-            <Link to={`/${publicKey}`}>{username}</Link>
+            <Link to={`/otherUser/${publicKey}`}>{username}</Link>
             <p>
               {timestamp && typeof timestamp === "number" 
                 ? DateTime.fromMillis(timestamp).toRelative() 
