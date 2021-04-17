@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
+
 
 import {
   fetchWalletBalance,
@@ -16,12 +17,15 @@ import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
 import Transaction from "./components/Transaction";
 import "./css/index.css";
+import {Http} from "../../utils"
+import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 
 const OverviewPage = () => {
 
   const dispatch = useDispatch();
   const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
+  const publicKey = useSelector(({ node }) => node.publicKey);
   const recentTransactions = useSelector(
     ({ wallet }) => wallet.recentTransactions
   );
@@ -32,6 +36,52 @@ const OverviewPage = () => {
     fetchWalletBalance()(dispatch);
     fetchUnifiedTransactions()(dispatch);
   }, [dispatch]);
+
+  //load info about content provider stored into gun
+  const loadContentInfo = useCallback(async ()=>{
+    try{
+      const { data: serviceProvider } = await Http.get(
+        `/api/gun/user/load/seedServiceProviderPubKey`,
+        {
+          headers:{
+            "public-key-for-decryption":publicKey
+          }
+        }
+      );
+      if(
+        serviceProvider && 
+        typeof serviceProvider.data === 'string' && 
+        serviceProvider.data !== ''
+      ){
+        setSeedProviderPub(serviceProvider.data)(dispatch)
+      }
+      const { data: seedData } = await Http.get(
+        `/api/gun/user/load/seedServiceSeedData`,
+        {
+          headers:{
+            "public-key-for-decryption":publicKey
+          }
+        }
+      );
+      if(
+        seedData && 
+        typeof seedData.data === 'string' && 
+        seedData.data !== ''
+      ){
+        const JObject = JSON.parse(seedData.data)
+        if(JObject && JObject.seedUrl && JObject.seedToken){
+          setSeedInfo(JObject.seedUrl,JObject.seedToken)(dispatch)
+        }
+      }
+    }catch(err){
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err)
+    }
+
+  },[])
+  useEffect(()=>{
+    loadContentInfo()
+  },[])
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
