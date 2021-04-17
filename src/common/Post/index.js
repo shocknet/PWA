@@ -25,7 +25,7 @@ const Post = ({
   contentItems = {},
   username,
   isOnlineNode,
-  openDeleteModal
+  openDeleteModal = undefined
 }) => {
   const dispatch = useDispatch();
   const unlockedContent = useSelector(({ content }) => content.unlockedContent);
