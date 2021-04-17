@@ -5,6 +5,33 @@ import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
+const isIP = (hostname) => {
+  const digits = hostname.split(".")
+  if(digits.length !== 4){
+      return false
+  }
+  const notNumber = digits.find(e => (isNaN(e) || parseInt(e,10) > 255))
+  return !notNumber
+}
+
+const parseUrl = (url) => {
+  console.log("check ip")
+  if(url === 'localhost' || url === 'http://localhost'){
+    return url+":9835"
+  }
+  if(isIP(url)){
+    return url+":9835"
+  }
+  //if not an IP it must start with http
+  const toTest = url.startsWith("http") ? url : "http://"+url
+  const u = new URL(toTest)
+  //let check again if it's an IP
+  if(!u.port && isIP(u.hostname)){
+    return u.hostname+":9835"
+  }
+  return u.host
+}
+
 const HostStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
@@ -31,7 +58,8 @@ const HostStep = () => {
       }
       setConnecting(true);
       setError(null);
-      const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
+      
+      const noProtocolHostIP = parseUrl(hostIP);
       const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
         dispatch
       );
