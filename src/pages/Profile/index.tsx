@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
 
 import * as Utils from "../../utils";
-import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
   subscribeMyServices
@@ -56,12 +55,6 @@ const ProfilePage = () => {
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
-  const availableTokens = Store.useSelector(
-    ({ content }) => content.availableTokens
-  );
-  const availableStreamTokens = Store.useSelector(
-    ({ content }) => content.availableStreamTokens
-  );
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
@@ -408,51 +401,7 @@ const ProfilePage = () => {
         );
       });
   };
-  const tokensView = useMemo(() => {
-    return Object.entries(availableTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
-    });
-  }, [availableTokens]);
 
-  const streamTokensView = useMemo(() => {
-    return Object.entries(availableStreamTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
-    });
-  }, [availableStreamTokens]);
   return (
     <>
       <div className="page-container profile-page">
