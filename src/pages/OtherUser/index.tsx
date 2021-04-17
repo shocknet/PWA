@@ -1,13 +1,9 @@
-import React, {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import classNames from "classnames";
+
 import { GUN_PROPS } from "../../utils/Gun";
 import Http from "../../utils/Http";
 import { processDisplayName } from "../../utils/String";
@@ -26,27 +22,34 @@ import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
 import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
+import ProfileDivider from "../../common/ProfileDivider";
+import Pad from "../../common/Pad";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
-import "./css/index.css";
 import SendTipModal from "../Feed/components/SendTipModal";
 import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
+import * as Store from "../../store";
+
+import styles from "./css/OtherUser.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
+const AVATAR_SIZE = 122;
+
 const OtherUserPage = () => {
+  //#region controller
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const hostIP = useSelector(({ node }) => node.hostIP);
   //@ts-expect-error
-  const follows = useSelector(({ feed }) => feed.follows);
-  //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
+  const user = Store.useSelector(Store.selectUser(userPublicKey));
   const [userPosts, setUserPosts] = useState([]);
   const [userSharedPosts, setUserSharedPosts] = useState([]);
   const [finalPosts, setFinalPosts] = useState([]);
@@ -54,10 +57,11 @@ const OtherUserPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
-  const [selectedView, setSelectedView] = useState("posts");
+  const [selectedView, setSelectedView] = useState<"posts" | "services">(
+    "posts"
+  );
   const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`;
-    const socketExists = rifleSocketExists(query);
     const subscription = await rifle({
       host: hostIP,
       query,
@@ -65,7 +69,6 @@ const OtherUserPage = () => {
       reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -79,13 +82,12 @@ const OtherUserPage = () => {
       });
       const postsAlmostReady = await Promise.allSettled(proms);
       const postsReady = postsAlmostReady
-        .filter(maybeok => maybeok.status === "fulfilled")
+        .filter(maybeOk => maybeOk.status === "fulfilled")
         //@ts-expect-error
         .map(res => res.value);
-      console.log(postsReady);
       setUserPosts(postsReady);
     });
-  }, [userPublicKey]);
+  }, [hostIP, userPublicKey]);
 
   const subscribeSharedPosts = useCallback(async () => {
     const query = `${userPublicKey}::sharedPosts::on`;
@@ -97,7 +99,6 @@ const OtherUserPage = () => {
       reconnect: false
     });
     subscription.on("$shock", async posts => {
-      console.log(posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -118,12 +119,10 @@ const OtherUserPage = () => {
         };
       });
       const postsAlmostReady = await Promise.allSettled(proms);
-      console.log(postsAlmostReady);
       const postsReady = postsAlmostReady
-        .filter(maybeok => maybeok.status === "fulfilled")
+        .filter(maybeOk => maybeOk.status === "fulfilled")
         // @ts-expect-error
         .map(res => res.value);
-      console.log(postsReady);
       setUserSharedPosts(postsReady);
     });
     if (!socketExists) {
@@ -131,7 +130,7 @@ const OtherUserPage = () => {
         disconnectRifleSocket(query);
       };
     }
-  }, [userPublicKey]);
+  }, [hostIP, userPublicKey]);
 
   //effect for user profile
   useEffect(() => {
@@ -139,7 +138,7 @@ const OtherUserPage = () => {
     return () => {
       dispatch(unsubscribeUserProfile(userPublicKey));
     };
-  }, [userPublicKey]);
+  }, [dispatch, userPublicKey]);
   //effect for user posts
   useEffect(() => {
     subscribeUserPosts();
@@ -166,33 +165,22 @@ const OtherUserPage = () => {
     return () => {
       unSubProfiles.forEach(unSub => unSub());
     };
-  }, [userPosts, userSharedPosts]);
+  }, [dispatch, userPosts, userProfiles, userSharedPosts]);
   //effect for services
   useEffect(() => {
     Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
       ({ data }) => {
-        console.log("SERVICES");
-        console.log(data);
         setUserServices(data.data);
       }
     );
   }, [userPublicKey]);
-  const userProfile = userProfiles[userPublicKey];
-  console.log(userProfile);
-  const avatar =
-    userProfile?.avatar && `data:image/jpeg;base64,${userProfile?.avatar}`;
 
-  const processedDisplayName = useMemo(
-    () => processDisplayName(userPublicKey, userProfile?.displayName),
-    [userPublicKey, userProfile]
-  );
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
 
   const toggleTipModal = useCallback(
     tipData => {
-      console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
       }
@@ -203,7 +191,6 @@ const OtherUserPage = () => {
   );
   const toggleBuyServiceModal = useCallback(
     buyData => {
-      console.log(buyData);
       if (buyServiceModalData || !buyData) {
         setBuyServiceModalOpen(null);
       }
@@ -214,7 +201,6 @@ const OtherUserPage = () => {
   );
   const toggleUnlockModal = useCallback(
     unlockData => {
-      console.log(unlockData);
       if (unlockModalData || !unlockData) {
         setUnlockModalOpen(null);
       }
@@ -227,20 +213,6 @@ const OtherUserPage = () => {
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
-  const onInputChange = useCallback(
-    e => {
-      const { value, name } = e.target;
-      switch (name) {
-        case "selectedView": {
-          setSelectedView(value);
-          return;
-        }
-        default:
-          return;
-      }
-    },
-    [setSelectedView]
-  );
   const renderPosts = () => {
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
@@ -287,7 +259,6 @@ const OtherUserPage = () => {
     });
   };
   const renderServices = () => {
-    console.log(userServices);
     return Object.entries(userServices)
       .filter(([id, service]) => !!service)
       .map(([id, service]) => {
@@ -300,7 +271,7 @@ const OtherUserPage = () => {
           });
         };
         return (
-          <div className="post">
+          <div className={styles.post}>
             <strong>Service ID</strong>
             <p>{id}</p>
             <strong>Service Tpe</strong>
@@ -323,32 +294,55 @@ const OtherUserPage = () => {
         );
       });
   };
+  const handleViewChange = useCallback((selected: "posts" | "services") => {
+    setSelectedView(selected);
+  }, []);
+  //#endregion controller
+
   return (
-    <div className="page-container profile-page">
-      <div className="profile-container">
-        <div className="profile-cover" />
-        <div className="profile-info-container">
+    <div className={classNames("page-container", styles["profile-page"])}>
+      <div className={styles["profile-container"]}>
+        <div className="profile-cover">
+          {user.header && (
+            <img
+              alt="User set profile header."
+              src={`data:image/jpeg;base64,${user.header}`}
+            />
+          )}
+        </div>
+
+        <div className={styles["profile-info-container"]}>
           <div
-            className="profile-avatar"
-            style={{ backgroundImage: `url(${avatar})` }}
-          />
-          <div className="profile-info">
-            <p className="profile-name">{processedDisplayName}</p>
-            <p className="profile-desc">{userProfile?.bio || ""}</p>
+            className={styles["profile-avatar"]}
+            style={{
+              height: `${AVATAR_SIZE}px`,
+              width: `${AVATAR_SIZE}px`
+            }}
+          >
+            <ShockAvatar
+              height={AVATAR_SIZE}
+              publicKey={userPublicKey}
+              greyBorder
+            />
+          </div>
+          <div className={styles["profile-info"]}>
+            <p className={styles["profile-name"]}>{user.displayName}</p>
+            <p className={styles["profile-desc"]}>
+              {user.bio || "Shockwallet user"}
+            </p>
           </div>
         </div>
-        <div className="">
-          <select
-            value={selectedView}
-            name="selectedView"
-            onChange={onInputChange}
-          >
-            <option value="posts">POSTS</option>
-            <option value="services">SERVICES</option>
-          </select>
+
+        <ProfileDivider onChange={handleViewChange} selected={selectedView} />
+
+        <div>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
         </div>
+
+        {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
+        <Pad amt={200} />
+
         <Modal
           toggleModal={toggleModal}
           modalOpen={profileModalOpen}
@@ -361,16 +355,23 @@ const OtherUserPage = () => {
             fgColor="#4285b9"
             value={userPublicKey}
             size={180}
-            className="profile-qrcode"
+            className={styles["profile-qrcode"]}
           />
-          <p className="profile-qrcode-desc">Scan this code to contact me</p>
-          <div className="profile-clipboard-container" onClick={copyClipboard}>
+          <p className={styles["profile-qrcode-desc"]}>
+            Scan this code to contact this user
+          </p>
+          <div
+            className={styles["profile-clipboard-container"]}
+            onClick={copyClipboard}
+          >
             <img
               src={ClipboardIcon}
-              className="profile-clipboard-icon"
+              className={styles["profile-clipboard-icon"]}
               alt=""
             />
-            <p className="profile-clipboard-text">Tap to copy to clipboard</p>
+            <p className={styles["profile-clipboard-text"]}>
+              Tap to copy to clipboard
+            </p>
           </div>
         </Modal>
         <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />

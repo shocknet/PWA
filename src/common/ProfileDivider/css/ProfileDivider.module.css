@@ -1,0 +1,25 @@
+.container {
+  background-color: var(--dark-blue);
+
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: var(--btn-blue-border);
+
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: var(--btn-blue-border);
+}
+
+.selected {
+  color: var(--main-blue);
+}
+
+.unselected {
+  color: var(--text-gray);
+}
+
+.divider {
+  height: 100%;
+  width: 1px;
+  color: white;
+}
