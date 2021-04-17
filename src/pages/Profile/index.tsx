@@ -66,8 +66,8 @@ const ProfilePage = () => {
     }
     return [];
   }, [posts, publicKey]);
-  console.log(posts);
-  console.log(myPosts);
+  console.debug(posts);
+  console.debug(myPosts);
   const processedDisplayName = useMemo(
     () => processDisplayName(publicKey, user.displayName),
     [publicKey, user.displayName]
