@@ -87,6 +87,7 @@ const App = () => {
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
       dispatch(FeedActions.subscribeUserPosts(publicKey));
+      dispatch(FeedActions.subscribeSharedUserPosts(publicKey));
     }
   }, [authenticated, dispatch, publicKey]);
 
