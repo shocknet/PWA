@@ -234,7 +234,7 @@ const PublishContentPage = () => {
   },[videoFile])
   return (<div className="publish-content-form-container m-1">
     {loading ? (
-      <Loader overlay fullScreen text="" />
+      <Loader overlay fullScreen text="Creating content..." />
     ) : null}
     <DialogNav  drawerVisible={false} pageTitle="PUBLISH CONTENT" />
     

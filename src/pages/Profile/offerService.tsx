@@ -41,11 +41,22 @@ const OfferService = () => {
         setError("seed url and token are not set in config")
         return
       }
-      const clear = {serviceType,serviceTitle:"Content Seeding",serviceDescription:"",serviceCondition:"",servicePrice}
-      const encrypt = {serviceSeedUrl:seedUrl,serviceSeedToken:seedToken}
-      const res = await createService(clear,encrypt)(dispatch)
-      console.log(res)
-      history.push("/profile")
+      if(servicePrice <= 0){
+        setError("service price must be greater than 0")
+        return
+      }
+      try{
+        setLoading(true)
+        const clear = {serviceType,serviceTitle:"Content Seeding",serviceDescription:"",serviceCondition:"",servicePrice}
+        const encrypt = {serviceSeedUrl:seedUrl,serviceSeedToken:seedToken}
+        const res = await createService(clear,encrypt)(dispatch)
+        console.log(res)
+        setLoading(false)
+        history.push("/profile")
+      } catch(err){
+        setLoading(false)
+        setError(err.message || err)
+      }
     },
     [serviceType,servicePrice,history]
   );
@@ -62,7 +73,7 @@ const OfferService = () => {
   
   return (<div className="publish-content-form-container m-1" style={{overflow:'auto'}}>
   {loading ? (
-    <Loader overlay fullScreen text="Unlocking Wallet..." />
+    <Loader overlay fullScreen text="Creating service..." />
   ) : null}
   <DialogNav  drawerVisible={false}  pageTitle="" />
   <form className="publish-content-form" onSubmit={onSubmit} onReset={onDiscard}>
