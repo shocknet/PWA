@@ -40,11 +40,11 @@ const Post = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = selfPublicKey === publicKey;
 
-  const getMediaContent = () => {
+  const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
       ([_, item]) => item.type !== "text/paragraph"
     );
-  };
+  }, [contentItems]);
 
   const getTextContent = () => {
     return Object.entries(contentItems).filter(
@@ -59,7 +59,7 @@ const Post = ({
         setIsPrivate(true);
       }
     });
-  }, [contentItems, publicKey]);
+  }, [contentItems, getMediaContent, publicKey, unlockedContent]);
 
   const parseContent = ([key, item], index) => {
     if (item.type === "text/paragraph") {
