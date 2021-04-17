@@ -353,7 +353,7 @@ const OtherUserPage = () => {
             className={styles["profile-qrcode"]}
           />
           <p className={styles["profile-qrcode-desc"]}>
-            Scan this code to contact me
+            Scan this code to contact this user
           </p>
           <div
             className={styles["profile-clipboard-container"]}
