@@ -25,9 +25,9 @@ const SharedPost = ({
       attachMedia([originalPost], false);
     }
   }, [originalPost]);
-  const deletePost = useCallback(()=>{
-    openDeleteModal({id:originalPost.id,shared:true});
-  },[originalPost,openDeleteModal])
+  const deletePost = useCallback(() => {
+    openDeleteModal({ id: originalPost.id, shared: true });
+  }, [originalPost, openDeleteModal]);
 
   useLayoutEffect(() => {
     Tooltip.rebuild();
@@ -53,7 +53,9 @@ const SharedPost = ({
             </p>
           </div>
         </div>
-        {openDeleteModal && <i className="fas fa-trash" onClick={deletePost}></i>}
+        {openDeleteModal && (
+          <i className="fas fa-trash" onClick={deletePost}></i>
+        )}
       </div>
 
       <div className="shared-content">
