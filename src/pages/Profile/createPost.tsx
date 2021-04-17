@@ -150,7 +150,7 @@ const PublishContentPage = () => {
   console.log(selectedContent)
   return (<div className="publish-content-form-container m-1">
     {loading ? (
-      <Loader overlay fullScreen text="Unlocking Wallet..." />
+      <Loader overlay fullScreen text="Creating post..." />
     ) : null}
     <DialogNav  drawerVisible={false}  pageTitle="CREATE POST" />
     <form className="publish-content-form" onSubmit={onSubmit} onReset={onDiscard}>
