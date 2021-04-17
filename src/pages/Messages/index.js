@@ -91,8 +91,12 @@ const MessagesPage = () => {
   );
 
   const sendRequestClipboard = useCallback(async () => {
-    const clipboardText = await navigator.clipboard.readText();
-    return sendRequest(clipboardText);
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      return sendRequest(clipboardText);
+    } catch (e) {
+      alert(e.message);
+    }
   }, [sendRequest]);
 
   return (
