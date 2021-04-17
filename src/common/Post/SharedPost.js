@@ -18,7 +18,7 @@ const SharedPost = ({
   postPublicKey,
   openTipModal,
   openUnlockModal,
-  openDeleteModal
+  openDeleteModal = undefined
 }) => {
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
