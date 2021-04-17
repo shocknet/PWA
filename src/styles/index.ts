@@ -163,3 +163,5 @@ export const opacityNone = styles["opacity-none"];
 export const opacityThreeQuarters = styles["opacity-three-quarters"];
 
 /* -------------------------------------------------------------------------- */
+
+export const unselectable = styles["unselectable"];
