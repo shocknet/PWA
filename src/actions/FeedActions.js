@@ -1,6 +1,6 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
-import { disconnectRifleSocket, rifle } from "../utils/WebSocket";
+import { rifle } from "../utils/WebSocket";
 import {
   subscribeUserProfile,
   unsubscribeUserProfile
