@@ -23,6 +23,7 @@ import AddBtn from "../../common/AddBtn";
 import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
+import ProfileDivider from "../../common/ProfileDivider";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -55,7 +56,9 @@ const OtherUserPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
-  const [selectedView, setSelectedView] = useState("posts");
+  const [selectedView, setSelectedView] = useState<"posts" | "services">(
+    "posts"
+  );
   const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = await rifle({
@@ -209,20 +212,6 @@ const OtherUserPage = () => {
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
-  const onInputChange = useCallback(
-    e => {
-      const { value, name } = e.target;
-      switch (name) {
-        case "selectedView": {
-          setSelectedView(value);
-          return;
-        }
-        default:
-          return;
-      }
-    },
-    [setSelectedView]
-  );
   const renderPosts = () => {
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
@@ -304,6 +293,9 @@ const OtherUserPage = () => {
         );
       });
   };
+  const handleViewChange = useCallback((selected: "posts" | "services") => {
+    setSelectedView(selected);
+  }, []);
   //#endregion controller
 
   return (
@@ -339,15 +331,10 @@ const OtherUserPage = () => {
             </p>
           </div>
         </div>
+
+        <ProfileDivider onChange={handleViewChange} selected={selectedView} />
+
         <div>
-          <select
-            value={selectedView}
-            name="selectedView"
-            onChange={onInputChange}
-          >
-            <option value="posts">POSTS</option>
-            <option value="services">SERVICES</option>
-          </select>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
         </div>
