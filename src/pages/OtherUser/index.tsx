@@ -24,6 +24,7 @@ import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ProfileDivider from "../../common/ProfileDivider";
+import Pad from "../../common/Pad";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -338,6 +339,10 @@ const OtherUserPage = () => {
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
         </div>
+
+        {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
+        <Pad amt={200} />
+
         <Modal
           toggleModal={toggleModal}
           modalOpen={profileModalOpen}
