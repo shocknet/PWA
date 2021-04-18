@@ -12,6 +12,10 @@ const OfferService = () => {
   const history = useHistory()
   //@ts-expect-error
   const {seedUrl,seedToken} = useSelector(({content}) => content.seedInfo)
+  //@ts-expect-error
+  const publicKey = useSelector(({node}) => node.publicKey)
+  //@ts-expect-error
+  const userProfiles = useSelector(({userProfiles}) => userProfiles)
   const [loading, setLoading] = useState(false);
   const [error,setError] = useState(null)
   const [serviceType,setServiceType] = useState("torrentSeed")
@@ -47,9 +51,13 @@ const OfferService = () => {
       }
       try{
         setLoading(true)
+        let serviceID = ""
+        if(userProfiles[publicKey] && userProfiles[publicKey].SeedServiceProvided){
+          serviceID = userProfiles[publicKey].SeedServiceProvided
+        }
         const clear = {serviceType,serviceTitle:"Content Seeding",serviceDescription:"",serviceCondition:"",servicePrice}
         const encrypt = {serviceSeedUrl:seedUrl,serviceSeedToken:seedToken}
-        const res = await createService(clear,encrypt)(dispatch)
+        const res = await createService(clear,encrypt,serviceID)(dispatch)
         console.log(res)
         setLoading(false)
         history.push("/profile")
