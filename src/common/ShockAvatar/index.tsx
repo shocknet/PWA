@@ -48,7 +48,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const { avatar: image, displayName, lastSeenNode } = Store.useSelector(
+  const { avatar: image, displayName, lastSeenApp } = Store.useSelector(
     Store.selectUser(publicKey)
   );
   const story = Hooks.useStory(publicKey);
@@ -77,7 +77,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     avatarStyle.borderColor = "grey";
   }
 
-  if (!isSelf && !disableOnlineRing && Utils.isOnline(lastSeenNode)) {
+  if (!isSelf && !disableOnlineRing && Utils.isOnline(lastSeenApp)) {
     avatarStyle.borderWidth = 2;
     avatarStyle.borderStyle = "solid";
     avatarStyle.borderColor = "#39B54A";

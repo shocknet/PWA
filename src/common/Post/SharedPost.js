@@ -45,7 +45,7 @@ const SharedPost = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = sharerProfile.publicKey === selfPublicKey;
   const isOnlineNode = Utils.isOnline(
-    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenNode
+    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenApp
   );
 
   return (
