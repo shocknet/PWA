@@ -74,8 +74,10 @@ const SharedPost = ({
                 ? `data:image/jpeg;base64,${originalPostProfile.avatar}`
                 : av1
             }
-            tipCounter={originalPost.tipCounter}
-            tipValue={originalPost.tipValue}
+            // @ts-expect-error tipCounter not wired right now I think
+            tipCounter={originalPost.tipCounter || 0}
+            // @ts-expect-error tipValue ??
+            tipValue={originalPost.tipValue || 0}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}
