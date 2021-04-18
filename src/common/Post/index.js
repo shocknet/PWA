@@ -43,7 +43,7 @@ const Post = ({
   const isOwn = selfPublicKey === publicKey;
 
   const isOnlineNode = Utils.isOnline(
-    Store.useSelector(Store.selectUser(publicKey)).lastSeenNode
+    Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );
 
   const getMediaContent = useCallback(() => {
