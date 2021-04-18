@@ -1,6 +1,6 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
-import { disconnectRifleSocket, rifle } from "../utils/WebSocket";
+import { rifle } from "../utils/WebSocket";
 import {
   subscribeUserProfile,
   unsubscribeUserProfile
@@ -208,11 +208,10 @@ export const sendTipPost = ({
   });
 };
 
-export const deleteUserPost = ({id,authorId}) => dispatch => {
-  dispatch({
-    type:ACTIONS.DELETE_USER_POST,
-    data:{
-      id,authorId
-    }
-  })
-}
+export const deleteUserPost = ({ id, authorId }) => ({
+  type: ACTIONS.DELETE_USER_POST,
+  data: {
+    id,
+    authorId
+  }
+});

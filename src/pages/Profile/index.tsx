@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { processDisplayName } from "../../utils/String";
 
 import * as Utils from "../../utils";
-import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
   subscribeMyServices
@@ -35,6 +34,7 @@ import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
+import { isSharedPost } from "../../schema";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -56,25 +56,24 @@ const ProfilePage = () => {
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
-  const availableTokens = Store.useSelector(
-    ({ content }) => content.availableTokens
-  );
-  const availableStreamTokens = Store.useSelector(
-    ({ content }) => content.availableStreamTokens
-  );
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => b.date - a.date);
+      const myP = posts[publicKey].sort((a, b) => {
+        const alpha = isSharedPost(a) ? a.shareDate : a.date;
+        const beta = isSharedPost(b) ? b.shareDate : b.date;
+
+        return beta - alpha;
+      });
       return myP;
     }
     return [];
   }, [posts, publicKey]);
-  console.log(posts);
-  console.log(myPosts);
+  console.debug(posts);
+  console.debug(myPosts);
   const processedDisplayName = useMemo(
     () => processDisplayName(publicKey, user.displayName),
     [publicKey, user.displayName]
@@ -290,24 +289,35 @@ const ProfilePage = () => {
     },
     [deletePostModalData]
   );
+  const closeDeleteModal = useCallback(()=>{
+    setDeletePostModalData(null)
+  },[])
 
   const deletePost = useCallback(async () => {
-    if (!deletePostModalData || !deletePostModalData.id) {
-      return;
+    try {
+      if (!deletePostModalData || !deletePostModalData.id) {
+        return;
+      }
+      console.log("deleting:");
+      console.log(deletePostModalData);
+      const key = deletePostModalData.shared ? "sharedPosts" : "posts";
+      await Utils.Http.post("/api/gun/put", {
+        path: `$user>${key}>${deletePostModalData.id}`,
+        value: null
+      });
+      dispatch(
+        deleteUserPost({
+          id: deletePostModalData.id,
+          authorId: publicKey
+        })
+      );
+      toggleDeleteModal(null);
+    } catch (e) {
+      console.log(`Error when deleting post:`);
+      console.log(e);
+      alert(`Could not delete post: ${e.message}`);
     }
-    console.log("deleting:");
-    console.log(deletePostModalData);
-    const key = deletePostModalData.shared ? "sharedPosts" : "posts";
-    await Utils.Http.post("/api/gun/put", {
-      path: `$user>${key}>${deletePostModalData.id}`,
-      value: null
-    });
-    deleteUserPost({
-      id: deletePostModalData.id,
-      authorId: publicKey
-    });
-    toggleDeleteModal(null);
-  }, [deletePostModalData]);
+  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -333,17 +343,20 @@ const ProfilePage = () => {
 
   const renderPosts = () => {
     return myPosts.map((post, index) => {
-      const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
+        const sharerProfile = userProfiles[post.sharerId];
         const originalPublicKey = post.originalAuthor;
         const originalProfile = userProfiles[originalPublicKey];
         return (
-          <Suspense fallback={<Loader />} key={index}>
+          <Suspense
+            fallback={<Loader />}
+            key={post.sharerId + post.originalPost.id}
+          >
             <SharedPost
               originalPost={post.originalPost}
               originalPostProfile={originalProfile}
               sharedTimestamp={post.shareDate}
-              sharerProfile={profile}
+              sharerProfile={sharerProfile}
               postPublicKey={originalPublicKey}
               openTipModal={() => {}}
               openUnlockModal={() => {}}
@@ -355,8 +368,10 @@ const ProfilePage = () => {
         );
       }
 
+      const profile = userProfiles[post.authorId];
+
       return (
-        <Suspense fallback={<Loader />} key={index}>
+        <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
             timestamp={post.date}
@@ -408,51 +423,7 @@ const ProfilePage = () => {
         );
       });
   };
-  const tokensView = useMemo(() => {
-    return Object.entries(availableTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
-    });
-  }, [availableTokens]);
 
-  const streamTokensView = useMemo(() => {
-    return Object.entries(availableStreamTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
-    });
-  }, [availableStreamTokens]);
   return (
     <>
       <div className="page-container profile-page">
@@ -685,7 +656,7 @@ const ProfilePage = () => {
             <div>You sure delete</div>
             <div className="flex-center" style={{ marginTop: "auto" }}>
               <button
-                onClick={toggleDeleteModal}
+                onClick={closeDeleteModal}
                 className="shock-form-button m-1"
               >
                 CANCEL

@@ -1,10 +1,13 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+
+import * as Store from "../../store";
+
 import Video from "./components/Video";
 import Image from "./components/Image";
 import Stream from "./components/Stream";
@@ -22,10 +25,9 @@ const Post = ({
   contentItems = {},
   username,
   isOnlineNode,
-  openDeleteModal
+  openDeleteModal = undefined
 }) => {
-  const dispatch = useDispatch();
-  const unlockedContent = useSelector(({content}) => content.unlockedContent)
+  const unlockedContent = useSelector(({ content }) => content.unlockedContent);
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
     align: "center"
@@ -35,11 +37,14 @@ const Post = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const getMediaContent = () => {
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const isOwn = selfPublicKey === publicKey;
+
+  const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
       ([_, item]) => item.type !== "text/paragraph"
     );
-  };
+  }, [contentItems]);
 
   const getTextContent = () => {
     return Object.entries(contentItems).filter(
@@ -47,27 +52,31 @@ const Post = ({
     );
   };
 
-  useEffect(()=>{
-    getMediaContent().forEach(([k,e]) => {
-      const path = `${publicKey}>posts>${k}`
-      if (e.isPrivate && !unlockedContent[path]){
-        setIsPrivate(true)
+  useEffect(() => {
+    getMediaContent().forEach(([k, e]) => {
+      const path = `${publicKey}>posts>${k}`;
+      if (e.isPrivate && !unlockedContent[path]) {
+        setIsPrivate(true);
       }
-    })
-  },[contentItems,publicKey])
+    });
+  }, [contentItems, getMediaContent, publicKey, unlockedContent]);
 
   const parseContent = ([key, item], index) => {
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
     }
-    const finalItem = item
+    const finalItem = item;
     if (item.isPrivate) {
-      const path = `${publicKey}>posts>${id}`
-      const cached = unlockedContent[path]
-      if (cached){
-        finalItem.magnetURI = cached
+      const path = `${publicKey}>posts>${id}`;
+      const cached = unlockedContent[path];
+      if (cached) {
+        finalItem.magnetURI = cached;
       } else {
-        return <div><i className="fas fa-lock fa-10x"></i></div>
+        return (
+          <div>
+            <i className="fas fa-lock fa-10x"></i>
+          </div>
+        );
       }
     }
 
@@ -192,22 +201,25 @@ const Post = ({
     });
   }, [id, isOnlineNode, openUnlockModal, publicKey]);
 
-  const deletePost = useCallback(()=>{
-    openDeleteModal({id,shared:false});
-  },[id,openDeleteModal])
+  const deletePost = useCallback(() => {
+    openDeleteModal({ id, shared: false });
+  }, [id, openDeleteModal]);
 
   useEffect(() => {
-    Tooltip.rebuild();
+    try {
+      Tooltip.rebuild();
+    } catch (e) {
+      console.log(`Error inside <Post />: `, e);
+    }
   }, []);
 
   return (
     <div className="post">
       <div className="head">
         <div className="user">
-        
           <Link
             className="av"
-            to={`/otherUser/${publicKey}`}
+            to={isOwn ? `/profile` : `/otherUser/${publicKey}`}
             style={{
               backgroundImage: `url(${avatar})`
             }}
@@ -215,13 +227,15 @@ const Post = ({
           <div className="details">
             <Link to={`/otherUser/${publicKey}`}>{username}</Link>
             <p>
-              {timestamp && typeof timestamp === "number" 
-                ? DateTime.fromMillis(timestamp).toRelative() 
+              {timestamp && typeof timestamp === "number"
+                ? DateTime.fromMillis(timestamp).toRelative()
                 : "Loading..."}
             </p>
           </div>
         </div>
-        {openDeleteModal && <i className="fas fa-trash" onClick={deletePost}></i>}
+        {openDeleteModal && (
+          <i className="fas fa-trash" onClick={deletePost}></i>
+        )}
       </div>
 
       <div className="content">

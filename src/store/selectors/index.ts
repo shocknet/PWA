@@ -10,3 +10,4 @@ export const useSelector: TypedUseSelectorHook<State> = (selector, eqFn) =>
 
 export * from "./auth";
 export * from "./users";
+export * from "./follows";

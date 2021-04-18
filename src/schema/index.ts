@@ -1,3 +1,5 @@
+import * as Common from "shock-common";
+
 export type Contact = {
   pk: string;
   avatar: string | null;
@@ -40,3 +42,42 @@ export interface ChatMessage {
   status: ChatMessageStatus;
   timestamp: number;
 }
+
+export interface Post extends Common.RawPost {
+  authorId: string;
+  id: string;
+  type: "post";
+}
+
+/**
+ * Different from the one in shock-common.
+ */
+export interface SharedPost extends Common.SharedPostRaw {
+  authorId: string;
+  sharerId: string;
+  id: string;
+  type: "shared";
+  originalPost: Post;
+}
+
+export const isSharedPost = (post: any): post is SharedPost => {
+  if (!Common.isObj(post)) {
+    return false;
+  }
+
+  const obj = (post as unknown) as SharedPost;
+
+  if (typeof obj.authorId !== "string") {
+    return false;
+  }
+
+  if (typeof obj.id !== "string") {
+    return false;
+  }
+
+  if (typeof obj.originalAuthor !== "string") {
+    return false;
+  }
+
+  return obj.type === "shared";
+};

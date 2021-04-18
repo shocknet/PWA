@@ -16,6 +16,7 @@ import {
   subscribeUserProfile,
   unsubscribeUserProfile
 } from "./actions/UserProfilesActions";
+import * as FeedActions from "./actions/FeedActions";
 import * as Store from "./store";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
@@ -85,6 +86,8 @@ const App = () => {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
+      dispatch(FeedActions.subscribeUserPosts(publicKey));
+      dispatch(FeedActions.subscribeSharedUserPosts(publicKey));
     }
   }, [authenticated, dispatch, publicKey]);
 

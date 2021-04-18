@@ -19,6 +19,7 @@ import SendTipModal from "./components/SendTipModal";
 import Loader from "../../common/Loader";
 
 import { subscribeFollows } from "../../actions/FeedActions";
+import { isSharedPost } from "../../schema";
 
 import "./css/index.css";
 import UnlockModal from "./components/UnlockModal";
@@ -28,7 +29,7 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
   const dispatch = useDispatch();
-  const follows = Store.useSelector(({ feed }) => feed.follows);
+  const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
@@ -39,13 +40,24 @@ const FeedPage = () => {
     if (posts) {
       const feed = Object.values(posts)
         .reduce((posts, userPosts) => [...posts, ...userPosts], [])
-        .sort((a, b) => b.date - a.date);
+        .filter(p => {
+          if (isSharedPost(p)) {
+            return !!follows.find(f => f.user === p.sharerId);
+          }
+          return !!follows.find(f => f.user === p.authorId);
+        })
+        .sort((a, b) => {
+          const alpha = isSharedPost(a) ? a.shareDate : a.date;
+          const beta = isSharedPost(b) ? b.shareDate : b.date;
+
+          return beta - alpha;
+        });
 
       return feed;
     }
 
     return [];
-  }, [posts]);
+  }, [follows, posts]);
 
   const toggleTipModal = useCallback(
     tipData => {
@@ -120,9 +132,8 @@ const FeedPage = () => {
       </div>
       <div className="posts-holder">
         {followedPosts.map((post, index) => {
-          const profile = userProfiles[post.authorId];
-
           if (post.type === "shared") {
+            const sharerProfile = userProfiles[post.sharerId];
             const originalPublicKey = post.originalAuthor;
             const originalProfile = userProfiles[originalPublicKey];
             return (
@@ -131,7 +142,7 @@ const FeedPage = () => {
                   originalPost={post.originalPost}
                   originalPostProfile={originalProfile}
                   sharedTimestamp={post.shareDate}
-                  sharerProfile={profile}
+                  sharerProfile={sharerProfile}
                   postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
                   openUnlockModal={toggleUnlockModal}
@@ -141,6 +152,8 @@ const FeedPage = () => {
               </Suspense>
             );
           }
+
+          const profile = userProfiles[post.authorId];
 
           return (
             <Suspense fallback={<Loader />} key={index}>

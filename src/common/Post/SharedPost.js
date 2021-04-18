@@ -1,3 +1,4 @@
+// @ts-check
 import React, { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
@@ -8,26 +9,31 @@ import av1 from "../../images/av1.jpg";
 import "../Post/css/index.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
+/**
+ * @typedef {import('../../schema').Post} Post
+ */
 
 const SharedPost = ({
   sharerProfile,
   originalPostProfile,
-  originalPost,
+  originalPost: origPost,
   sharedTimestamp,
   isOnlineNode,
   postPublicKey,
   openTipModal,
   openUnlockModal,
-  openDeleteModal
+  openDeleteModal = undefined
 }) => {
+  /** @type {Post} */
+  const originalPost = origPost;
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
       attachMedia([originalPost], false);
     }
   }, [originalPost]);
-  const deletePost = useCallback(()=>{
-    openDeleteModal({id:originalPost.id,shared:true});
-  },[originalPost,openDeleteModal])
+  const deletePost = useCallback(() => {
+    openDeleteModal({ id: originalPost.id, shared: true });
+  }, [originalPost, openDeleteModal]);
 
   useLayoutEffect(() => {
     Tooltip.rebuild();
@@ -53,7 +59,9 @@ const SharedPost = ({
             </p>
           </div>
         </div>
-        {openDeleteModal && <i className="fas fa-trash" onClick={deletePost}></i>}
+        {openDeleteModal && (
+          <i className="fas fa-trash" onClick={deletePost}></i>
+        )}
       </div>
 
       <div className="shared-content">
@@ -66,8 +74,10 @@ const SharedPost = ({
                 ? `data:image/jpeg;base64,${originalPostProfile.avatar}`
                 : av1
             }
-            tipCounter={originalPost.tipCounter}
-            tipValue={originalPost.tipValue}
+            // @ts-expect-error tipCounter not wired right now I think
+            tipCounter={originalPost.tipCounter || 0}
+            // @ts-expect-error tipValue ??
+            tipValue={originalPost.tipValue || 0}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}
