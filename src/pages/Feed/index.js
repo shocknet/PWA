@@ -2,12 +2,10 @@
 import React, {
   Suspense,
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState
 } from "react";
-import { useDispatch } from "react-redux";
 import * as Common from "shock-common";
 
 import { processDisplayName } from "../../utils/String";
@@ -18,7 +16,6 @@ import UserIcon from "./components/UserIcon";
 import SendTipModal from "./components/SendTipModal";
 import Loader from "../../common/Loader";
 
-import { subscribeFollows } from "../../actions/FeedActions";
 import { isSharedPost } from "../../schema";
 
 import "./css/index.css";
@@ -28,7 +25,6 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
-  const dispatch = useDispatch();
   const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
@@ -81,16 +77,6 @@ const FeedPage = () => {
     },
     [unlockModalData]
   );
-
-  const startFollowsSubscription = useCallback(async () => {
-    const subscription = await dispatch(subscribeFollows());
-
-    return subscription;
-  }, [dispatch]);
-
-  useEffect(() => {
-    startFollowsSubscription();
-  }, [dispatch, startFollowsSubscription]);
 
   useLayoutEffect(() => {
     attachMedia(

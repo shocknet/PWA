@@ -144,6 +144,10 @@ const App = () => {
   ]);
 
   useEffect(() => {
+    dispatch(FeedActions.subscribeFollows());
+  }, [authenticated, dispatch]);
+
+  useEffect(() => {
     batch(() => {
       followedPublicKeys.forEach(pk => {
         dispatch(subscribeUserProfile(pk));
