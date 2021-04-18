@@ -9,11 +9,14 @@ import av1 from "../../images/av1.jpg";
 import "../Post/css/index.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
+/**
+ * @typedef {import('../../schema').Post} Post
+ */
 
 const SharedPost = ({
   sharerProfile,
   originalPostProfile,
-  originalPost,
+  originalPost: origPost,
   sharedTimestamp,
   isOnlineNode,
   postPublicKey,
@@ -21,6 +24,8 @@ const SharedPost = ({
   openUnlockModal,
   openDeleteModal = undefined
 }) => {
+  /** @type {Post} */
+  const originalPost = origPost;
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
       attachMedia([originalPost], false);
