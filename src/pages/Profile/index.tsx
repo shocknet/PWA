@@ -34,6 +34,7 @@ import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
+import { isSharedPost } from "../../schema";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -61,7 +62,12 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => b.date - a.date);
+      const myP = posts[publicKey].sort((a, b) => {
+        const alpha = isSharedPost(a) ? a.shareDate : a.date;
+        const beta = isSharedPost(b) ? b.shareDate : b.date;
+
+        return beta - alpha;
+      });
       return myP;
     }
     return [];
@@ -334,17 +340,20 @@ const ProfilePage = () => {
 
   const renderPosts = () => {
     return myPosts.map((post, index) => {
-      const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
+        const sharerProfile = userProfiles[post.sharerId];
         const originalPublicKey = post.originalAuthor;
         const originalProfile = userProfiles[originalPublicKey];
         return (
-          <Suspense fallback={<Loader />} key={index}>
+          <Suspense
+            fallback={<Loader />}
+            key={post.sharerId + post.originalPost.id}
+          >
             <SharedPost
               originalPost={post.originalPost}
               originalPostProfile={originalProfile}
               sharedTimestamp={post.shareDate}
-              sharerProfile={profile}
+              sharerProfile={sharerProfile}
               postPublicKey={originalPublicKey}
               openTipModal={() => {}}
               openUnlockModal={() => {}}
@@ -356,8 +365,10 @@ const ProfilePage = () => {
         );
       }
 
+      const profile = userProfiles[post.authorId];
+
       return (
-        <Suspense fallback={<Loader />} key={index}>
+        <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
             timestamp={post.date}
