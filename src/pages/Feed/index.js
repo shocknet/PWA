@@ -155,8 +155,6 @@ const FeedPage = () => {
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}
-                // TODO: User online status handling
-                isOnlineNode
                 tipCounter={undefined}
                 tipValue={undefined}
               />

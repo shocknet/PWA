@@ -289,9 +289,9 @@ const ProfilePage = () => {
     },
     [deletePostModalData]
   );
-  const closeDeleteModal = useCallback(()=>{
-    setDeletePostModalData(null)
-  },[])
+  const closeDeleteModal = useCallback(() => {
+    setDeletePostModalData(null);
+  }, []);
 
   const deletePost = useCallback(async () => {
     try {
@@ -360,8 +360,6 @@ const ProfilePage = () => {
               postPublicKey={originalPublicKey}
               openTipModal={() => {}}
               openUnlockModal={() => {}}
-              // TODO: User online status handling
-              isOnlineNode
               openDeleteModal={toggleDeleteModal}
             />
           </Suspense>
@@ -386,8 +384,6 @@ const ProfilePage = () => {
             openUnlockModal={() => {}}
             tipCounter={0}
             tipValue={0}
-            // TODO: User online status handling
-            isOnlineNode
             openDeleteModal={toggleDeleteModal}
           />
         </Suspense>

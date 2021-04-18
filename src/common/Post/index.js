@@ -1,12 +1,13 @@
+// @ts-check
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { useSelector } from "react-redux";
 
 import * as Store from "../../store";
+import * as Utils from "../../utils";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
@@ -24,10 +25,11 @@ const Post = ({
   openUnlockModal,
   contentItems = {},
   username,
-  isOnlineNode,
   openDeleteModal = undefined
 }) => {
-  const unlockedContent = useSelector(({ content }) => content.unlockedContent);
+  const unlockedContent = Store.useSelector(
+    ({ content }) => content.unlockedContent
+  );
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
     align: "center"
@@ -39,6 +41,10 @@ const Post = ({
 
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = selfPublicKey === publicKey;
+
+  const isOnlineNode = Utils.isOnline(
+    Store.useSelector(Store.selectUser(publicKey)).lastSeenNode
+  );
 
   const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
@@ -90,6 +96,8 @@ const Post = ({
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
+          hideRibbon={undefined}
+          width={undefined}
         />
       );
     }
@@ -104,6 +112,8 @@ const Post = ({
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
+          hideRibbon={undefined}
+          width={undefined}
         />
       );
     }
@@ -117,6 +127,8 @@ const Post = ({
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
+          hideRibbon={undefined}
+          width={undefined}
         />
       );
     }
@@ -221,6 +233,9 @@ const Post = ({
             className="av"
             to={isOwn ? `/profile` : `/otherUser/${publicKey}`}
             style={{
+              borderWidth: isOnlineNode && !isOwn ? 2 : undefined,
+              borderStyle: isOnlineNode && !isOwn ? "solid" : undefined,
+              borderColor: isOnlineNode && !isOwn ? "#39B54A" : undefined,
               backgroundImage: `url(${avatar})`
             }}
           />

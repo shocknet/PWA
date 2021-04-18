@@ -230,8 +230,6 @@ const OtherUserPage = () => {
               postPublicKey={originalPublicKey}
               openTipModal={toggleTipModal}
               openUnlockModal={toggleUnlockModal}
-              // TODO: User online status handling
-              isOnlineNode
               openDeleteModal={null}
             />
           </Suspense>
@@ -251,8 +249,6 @@ const OtherUserPage = () => {
             openUnlockModal={toggleUnlockModal}
             tipCounter={0}
             tipValue={0}
-            // TODO: User online status handling
-            isOnlineNode
             openDeleteModal={null}
           />
         </Suspense>
