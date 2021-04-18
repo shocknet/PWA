@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
@@ -18,13 +18,16 @@ import Transaction from "./components/Transaction";
 import "./css/index.css";
 import { Http } from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
+import * as Store from "../../store";
 
 const OverviewPage = () => {
   const dispatch = useDispatch();
-  const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
-  const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
-  const publicKey = useSelector(({ node }) => node.publicKey);
-  const recentTransactions = useSelector(
+  const totalBalance = Store.useSelector(
+    ({ wallet }) => wallet.totalBalance ?? "0"
+  );
+  const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
+  const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const recentTransactions = Store.useSelector(
     ({ wallet }) => wallet.recentTransactions
   );
 
