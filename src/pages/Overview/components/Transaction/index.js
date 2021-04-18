@@ -7,12 +7,23 @@ const Transaction = ({
   username = "John Smith",
   message = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
   time,
-  value = "0"
+  value = "0",
+  type
 }) => {
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const sanitizedValue = value.replace(/,/g, "");
   const parsedValue = parseFloat(sanitizedValue);
-  const symbol = parsedValue < 0 ? "-" : parsedValue > 0 ? "+" : "";
+  const symbol = (() => {
+    if (type === "invoice") {
+      return "+";
+    }
+    if (type === "payment") {
+      return "-";
+    }
+    // chain
+
+    return parsedValue < 0 ? "-" : parsedValue > 0 ? "+" : "";
+  })();
   const USDValue = formatNumber(
     convertSatsToUSD(sanitizedValue, USDRate).toFixed(2)
   );

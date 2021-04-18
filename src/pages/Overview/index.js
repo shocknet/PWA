@@ -149,6 +149,7 @@ const OverviewPage = () => {
                 username={capitalizeText(transaction.type)}
                 value={formatNumber(transaction.value)}
                 key={transaction.hash}
+                type={transaction.type}
               />
             ))}
           </>
