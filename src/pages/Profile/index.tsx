@@ -289,6 +289,9 @@ const ProfilePage = () => {
     },
     [deletePostModalData]
   );
+  const closeDeleteModal = useCallback(()=>{
+    setDeletePostModalData(null)
+  },[])
 
   const deletePost = useCallback(async () => {
     try {
@@ -653,7 +656,7 @@ const ProfilePage = () => {
             <div>You sure delete</div>
             <div className="flex-center" style={{ marginTop: "auto" }}>
               <button
-                onClick={toggleDeleteModal}
+                onClick={closeDeleteModal}
                 className="shock-form-button m-1"
               >
                 CANCEL
