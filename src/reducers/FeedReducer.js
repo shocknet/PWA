@@ -1,10 +1,25 @@
+// @ts-check
+/**
+ * @typedef {import('shock-common').Follow} Follow
+ */
+
 import { ACTIONS } from "../actions/FeedActions";
+/**
+ * @typedef {import('../schema').Post} Post
+ * @typedef {import('../schema').SharedPost} SharedPost
+ */
 
 const INITIAL_STATE = {
-  follows: [],
-  posts: {}
+  follows: /** @type {Follow[]} */ ([]),
+  /**
+   * Maps public key to posts/shared posts.
+   */
+  posts: /** @type {Record<string, Array<Post|SharedPost>>} */ ({})
 };
 
+/**
+ * @returns {typeof INITIAL_STATE}
+ */
 const feed = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.RESET_FOLLOWS: {
