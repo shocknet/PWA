@@ -34,6 +34,7 @@ import BuyServiceModal from "../Feed/components/BuyServiceModal";
 import * as Store from "../../store";
 
 import styles from "./css/OtherUser.module.css";
+import FollowBtn from "./components/FollowBtn";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -330,6 +331,8 @@ const OtherUserPage = () => {
             <p className={styles["profile-desc"]}>
               {user.bio || "Shockwallet user"}
             </p>
+
+            <FollowBtn publicKey={userPublicKey} />
           </div>
         </div>
 
