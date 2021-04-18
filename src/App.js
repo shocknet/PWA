@@ -59,6 +59,9 @@ const App = () => {
   const receivedRequests = Store.useSelector(
     ({ chat }) => chat.receivedRequests
   );
+  const followedPublicKeys = Store.useSelector(Store.selectFollows).map(
+    f => f.user
+  );
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -139,6 +142,16 @@ const App = () => {
     sentRequests,
     receivedRequests
   ]);
+
+  useEffect(() => {
+    batch(() => {
+      followedPublicKeys.forEach(pk => {
+        dispatch(subscribeUserProfile(pk));
+        dispatch(FeedActions.subscribeUserPosts(pk));
+        dispatch(FeedActions.subscribeSharedUserPosts(pk));
+      });
+    });
+  }, [followedPublicKeys, authenticated, dispatch]);
 
   return (
     <FullHeight className="ShockWallet">
