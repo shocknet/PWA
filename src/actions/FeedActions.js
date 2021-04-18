@@ -50,11 +50,14 @@ export const loadSharedPost = (
 
 export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
   const { hostIP } = getState().node;
+
   const subscription = await rifle({
     host: hostIP,
     query: `${publicKey}::posts::on`
   });
+
   subscription.on("$shock", posts => {
+    console.debug(`posts from: ${publicKey}: `, posts);
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -103,6 +106,7 @@ export const subscribeSharedUserPosts = publicKey => async (
     query: `${publicKey}::sharedPosts::on`
   });
   subscription.on("$shock", posts => {
+    console.debug(`shared posts from ${publicKey}: `, posts);
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
