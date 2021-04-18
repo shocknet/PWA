@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -95,7 +96,7 @@ const OverviewPage = () => {
   return (
     <div className="page-container overview-page">
       <div className="overview-header">
-        <MainNav absolute />
+        <MainNav absolute pageTitle={undefined} />
         <div className="overview-balance-container">
           <p className="overview-balance-btc">
             {formattedBalance}{" "}
@@ -131,24 +132,26 @@ const OverviewPage = () => {
             return fetchUnifiedTransactions()(dispatch);
           }}
         >
-          {recentTransactions.map(transaction => (
-            <Transaction
-              time={
-                transaction.date
-                  ? DateTime.fromSeconds(
-                      parseInt(transaction.date, 10)
-                    ).toRelative()
-                  : "unknown"
-              }
-              message={
-                transaction.message ||
-                `${capitalizeText(transaction.type)} Transaction`
-              }
-              username={capitalizeText(transaction.type)}
-              value={formatNumber(transaction.value)}
-              key={transaction.hash}
-            />
-          ))}
+          <>
+            {recentTransactions.map(transaction => (
+              <Transaction
+                time={
+                  transaction.date
+                    ? DateTime.fromSeconds(
+                        parseInt(transaction.date, 10)
+                      ).toRelative()
+                    : "unknown"
+                }
+                message={
+                  transaction.message ||
+                  `${capitalizeText(transaction.type)} Transaction`
+                }
+                username={capitalizeText(transaction.type)}
+                value={formatNumber(transaction.value)}
+                key={transaction.hash}
+              />
+            ))}
+          </>
         </PullToRefresh>
       </div>
       <BottomBar />
