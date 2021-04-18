@@ -1,10 +1,7 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
 import { rifle } from "../utils/WebSocket";
-import {
-  subscribeUserProfile,
-  unsubscribeUserProfile
-} from "./UserProfilesActions";
+import { subscribeUserProfile } from "./UserProfilesActions";
 
 export const ACTIONS = {
   RESET_FEED: "feed/reset",
@@ -53,11 +50,14 @@ export const loadSharedPost = (
 
 export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
   const { hostIP } = getState().node;
+
   const subscription = await rifle({
     host: hostIP,
     query: `${publicKey}::posts::on`
   });
+
   subscription.on("$shock", posts => {
+    console.debug(`posts from: ${publicKey}: `, posts);
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -106,6 +106,7 @@ export const subscribeSharedUserPosts = publicKey => async (
     query: `${publicKey}::sharedPosts::on`
   });
   subscription.on("$shock", posts => {
+    console.debug(`shared posts from ${publicKey}: `, posts);
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -154,7 +155,6 @@ export const subscribeFollows = () => async (dispatch, getState) => {
   });
   console.log("subbing follows");
   //-- Subscribe to self, posts and shared posts are merged
-  //dispatch(subscribeUserProfile(publicKey))
   dispatch(subscribeUserPosts(publicKey));
   dispatch(subscribeSharedUserPosts(publicKey));
 
@@ -165,7 +165,6 @@ export const subscribeFollows = () => async (dispatch, getState) => {
     }
 
     if (!follow) {
-      unsubscribeUserProfile(key);
       dispatch(removeFollow(key));
       return;
     }
@@ -176,9 +175,6 @@ export const subscribeFollows = () => async (dispatch, getState) => {
     }
 
     dispatch(addFollow(follow));
-    dispatch(subscribeUserProfile(follow.user));
-    dispatch(subscribeUserPosts(follow.user));
-    dispatch(subscribeSharedUserPosts(follow.user));
   });
 
   return subscription;
