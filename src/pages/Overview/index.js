@@ -75,10 +75,10 @@ const OverviewPage = () => {
       //if something goes wrong just log the error, no need to do anything else
       console.log(err);
     }
-  }, []);
+  }, [dispatch, publicKey]);
   useEffect(() => {
     loadContentInfo();
-  }, []);
+  }, [loadContentInfo]);
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
