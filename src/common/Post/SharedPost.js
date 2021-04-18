@@ -1,3 +1,4 @@
+// @ts-check
 import React, { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
