@@ -1,6 +1,7 @@
 // @ts-check
-import React, { useCallback, useLayoutEffect } from "react";
+import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
+import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip";
 
 import Post from ".";
@@ -9,6 +10,8 @@ import av1 from "../../images/av1.jpg";
 import "../Post/css/index.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
+import * as Store from "../../store";
+import * as Utils from "../../utils";
 /**
  * @typedef {import('../../schema').Post} Post
  */
@@ -18,7 +21,6 @@ const SharedPost = ({
   originalPostProfile,
   originalPost: origPost,
   sharedTimestamp,
-  isOnlineNode,
   postPublicKey,
   openTipModal,
   openUnlockModal,
@@ -40,16 +42,26 @@ const SharedPost = ({
     loadPostMedia();
   }, [loadPostMedia]);
 
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const isOwn = sharerProfile.publicKey === selfPublicKey;
+  const isOnlineNode = Utils.isOnline(
+    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenNode
+  );
+
   return (
     <div className="post shared-post">
       <div className="head">
         <div className="user">
-          <div
+          <Link
+            to={isOwn ? `/profile` : `/otherUser/${sharerProfile.publicKey}`}
             className="av"
             style={{
+              borderWidth: isOnlineNode && !isOwn ? 2 : undefined,
+              borderStyle: isOnlineNode && !isOwn ? "solid" : undefined,
+              borderColor: isOnlineNode && !isOwn ? "#39B54A" : undefined,
               backgroundImage: `url(data:image/jpeg;base64,${sharerProfile?.avatar})`
             }}
-          ></div>
+          ></Link>
           <div className="details">
             <p>{sharerProfile?.displayName}</p>
             <p>
@@ -85,7 +97,6 @@ const SharedPost = ({
             username={
               originalPostProfile.displayName ?? originalPostProfile.alias
             }
-            isOnlineNode={isOnlineNode}
           />
         ) : (
           <Loader text="Loading Post..." />
