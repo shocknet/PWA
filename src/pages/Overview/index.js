@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
 
-
 import {
   fetchWalletBalance,
   fetchUSDRate,
@@ -17,11 +16,10 @@ import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
 import Transaction from "./components/Transaction";
 import "./css/index.css";
-import {Http} from "../../utils"
+import { Http } from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 
 const OverviewPage = () => {
-
   const dispatch = useDispatch();
   const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
@@ -38,50 +36,49 @@ const OverviewPage = () => {
   }, [dispatch]);
 
   //load info about content provider stored into gun
-  const loadContentInfo = useCallback(async ()=>{
-    try{
+  const loadContentInfo = useCallback(async () => {
+    try {
       const { data: serviceProvider } = await Http.get(
         `/api/gun/user/load/seedServiceProviderPubKey`,
         {
-          headers:{
-            "public-key-for-decryption":publicKey
+          headers: {
+            "public-key-for-decryption": publicKey
           }
         }
       );
-      if(
-        serviceProvider && 
-        typeof serviceProvider.data === 'string' && 
-        serviceProvider.data !== ''
-      ){
-        setSeedProviderPub(serviceProvider.data)(dispatch)
+      if (
+        serviceProvider &&
+        typeof serviceProvider.data === "string" &&
+        serviceProvider.data !== ""
+      ) {
+        setSeedProviderPub(serviceProvider.data)(dispatch);
       }
       const { data: seedData } = await Http.get(
         `/api/gun/user/load/seedServiceSeedData`,
         {
-          headers:{
-            "public-key-for-decryption":publicKey
+          headers: {
+            "public-key-for-decryption": publicKey
           }
         }
       );
-      if(
-        seedData && 
-        typeof seedData.data === 'string' && 
-        seedData.data !== ''
-      ){
-        const JObject = JSON.parse(seedData.data)
-        if(JObject && JObject.seedUrl && JObject.seedToken){
-          setSeedInfo(JObject.seedUrl,JObject.seedToken)(dispatch)
+      if (
+        seedData &&
+        typeof seedData.data === "string" &&
+        seedData.data !== ""
+      ) {
+        const JObject = JSON.parse(seedData.data);
+        if (JObject && JObject.seedUrl && JObject.seedToken) {
+          setSeedInfo(JObject.seedUrl, JObject.seedToken)(dispatch);
         }
       }
-    }catch(err){
+    } catch (err) {
       //if something goes wrong just log the error, no need to do anything else
-      console.log(err)
+      console.log(err);
     }
-
-  },[])
-  useEffect(()=>{
-    loadContentInfo()
-  },[])
+  }, []);
+  useEffect(() => {
+    loadContentInfo();
+  }, []);
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
