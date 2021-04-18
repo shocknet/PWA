@@ -7,7 +7,7 @@ const Transaction = ({
   username = "John Smith",
   message = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
   time,
-  value = 0
+  value = "0"
 }) => {
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const sanitizedValue = value.replace(/,/g, "");
