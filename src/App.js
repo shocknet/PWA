@@ -82,22 +82,43 @@ const App = () => {
     setAuthenticated(tokenExpired);
   }, [authToken, dispatch]);
 
-  const subbedUsers = useRef(/** @type {string[]} */ ([]));
-
   useEffect(() => {
-    if (authenticated && dispatch) {
+    if (authenticated) {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
       dispatch(FeedActions.subscribeUserPosts(publicKey));
       dispatch(FeedActions.subscribeSharedUserPosts(publicKey));
+    } else {
+      dispatch(unsubscribeUserProfile(publicKey));
+      dispatch(FeedActions.unsubUserPosts(publicKey));
+      dispatch(FeedActions.unsubUserSharedPosts(publicKey));
     }
+
+    return () => {
+      dispatch(unsubscribeUserProfile(publicKey));
+      dispatch(FeedActions.unsubUserPosts(publicKey));
+      dispatch(FeedActions.unsubUserSharedPosts(publicKey));
+    };
   }, [authenticated, dispatch, publicKey]);
 
   // Keep this effect separate from the one above, as having both together
   // causes an infinite loop due to implicit/explicit dependencies.
+  const subbedUsers = useRef(/** @type {string[]} */ ([]));
   useEffect(() => {
-    if (authenticated && dispatch) {
+    const unsub = () => {
+      const { current: currentlySubbedUsers } = subbedUsers;
+
+      batch(() => {
+        currentlySubbedUsers.forEach(pk => {
+          dispatch(unsubscribeUserProfile(pk));
+        });
+      });
+
+      currentlySubbedUsers.splice(0, currentlySubbedUsers.length);
+    };
+
+    if (authenticated) {
       const contactPKs = contacts.map(c => c.pk);
       const sentReqsPKs = sentRequests.map(r => r.pk);
       const receivedReqsPKs = receivedRequests.map(r => r.pk);
@@ -119,21 +140,11 @@ const App = () => {
           dispatch(subscribeUserProfile(pk));
         });
       });
+    } else {
+      unsub();
     }
 
-    return () => {
-      // https://github.com/facebook/react/issues/15841#issuecomment-500133759
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const { current: currentSubbedUsers } = subbedUsers;
-
-      batch(() => {
-        currentSubbedUsers.forEach(pk => {
-          dispatch(unsubscribeUserProfile(pk));
-        });
-      });
-
-      currentSubbedUsers.splice(0, currentSubbedUsers.length);
-    };
+    return unsub;
   }, [
     authenticated,
     dispatch,
@@ -144,17 +155,48 @@ const App = () => {
   ]);
 
   useEffect(() => {
-    dispatch(FeedActions.subscribeFollows());
+    if (authenticated) {
+      dispatch(FeedActions.subscribeFollows());
+    } else {
+      dispatch(FeedActions.unsubscribeFollows());
+    }
+
+    return () => {
+      dispatch(FeedActions.unsubscribeFollows());
+    };
   }, [authenticated, dispatch]);
 
+  const subbedFollowedKeysRef = useRef(/** @type {string[]} */ ([]));
+
   useEffect(() => {
-    batch(() => {
-      followedPublicKeys.forEach(pk => {
-        dispatch(subscribeUserProfile(pk));
-        dispatch(FeedActions.subscribeUserPosts(pk));
-        dispatch(FeedActions.subscribeSharedUserPosts(pk));
+    const unsub = () => {
+      const { current: currentlySubbedFollowedKeys } = subbedFollowedKeysRef;
+
+      batch(() => {
+        currentlySubbedFollowedKeys.forEach(pk => {
+          dispatch(unsubscribeUserProfile(pk));
+          dispatch(FeedActions.unsubUserPosts(pk));
+          dispatch(FeedActions.unsubUserSharedPosts(pk));
+        });
       });
-    });
+      currentlySubbedFollowedKeys.splice(0, currentlySubbedFollowedKeys.length);
+    };
+
+    if (authenticated) {
+      batch(() => {
+        followedPublicKeys.forEach(pk => {
+          dispatch(subscribeUserProfile(pk));
+          dispatch(FeedActions.subscribeUserPosts(pk));
+          dispatch(FeedActions.subscribeSharedUserPosts(pk));
+        });
+      });
+
+      subbedFollowedKeysRef.current.push(...followedPublicKeys);
+    } else {
+      unsub();
+    }
+
+    return unsub;
   }, [followedPublicKeys, authenticated, dispatch]);
 
   return (
