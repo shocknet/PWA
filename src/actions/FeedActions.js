@@ -154,9 +154,6 @@ export const subscribeFollows = () => async (dispatch, getState) => {
     reconnect: true
   });
   console.log("subbing follows");
-  //-- Subscribe to self, posts and shared posts are merged
-  dispatch(subscribeUserPosts(publicKey));
-  dispatch(subscribeSharedUserPosts(publicKey));
 
   subscription.on("$shock", async (follow, key) => {
     if (typeof key !== "string") {
