@@ -183,8 +183,13 @@ const App = () => {
     };
 
     if (authenticated) {
+      const { current: currentlySubbedFollowedKeys } = subbedFollowedKeysRef;
+      const publicKeysToSub = followedPublicKeys.filter(
+        pk => !currentlySubbedFollowedKeys.includes(pk)
+      );
+
       batch(() => {
-        followedPublicKeys.forEach(pk => {
+        publicKeysToSub.forEach(pk => {
           dispatch(subscribeUserProfile(pk));
           dispatch(FeedActions.subscribeUserPosts(pk));
           dispatch(FeedActions.subscribeSharedUserPosts(pk));
