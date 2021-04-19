@@ -153,7 +153,7 @@ export const subscribeFollows = () => async (dispatch, getState) => {
     query: "$user::follows::map.on",
     reconnect: true
   });
-  console.log("subbing follows");
+  console.debug("subbing follows");
 
   subscription.on("$shock", async (follow, key) => {
     if (typeof key !== "string") {
