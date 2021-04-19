@@ -147,7 +147,7 @@ export const subscribeSharedUserPosts = publicKey => async (
 };
 
 export const subscribeFollows = () => async (dispatch, getState) => {
-  const { hostIP, publicKey } = getState().node;
+  const { hostIP } = getState().node;
   const subscription = await rifle({
     host: hostIP,
     query: "$user::follows::map.on",
