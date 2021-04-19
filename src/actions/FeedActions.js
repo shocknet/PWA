@@ -1,6 +1,7 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
-import { rifle } from "../utils/WebSocket";
+import { rifle, disconnectRifleSocket } from "../utils/WebSocket";
+
 import { subscribeUserProfile } from "./UserProfilesActions";
 
 export const ACTIONS = {
@@ -48,12 +49,14 @@ export const loadSharedPost = (
   });
 };
 
+const USER_POSTS_QUERY_SUFFIX = `::posts::on`;
+
 export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
   const { hostIP } = getState().node;
 
   const subscription = await rifle({
     host: hostIP,
-    query: `${publicKey}::posts::on`
+    query: publicKey + USER_POSTS_QUERY_SUFFIX
   });
 
   subscription.on("$shock", posts => {
@@ -96,6 +99,12 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
   return subscription;
 };
 
+export const unsubUserPosts = publicKey => async () => {
+  disconnectRifleSocket(publicKey + USER_POSTS_QUERY_SUFFIX);
+};
+
+const USER_SHARED_POSTS_QUERY_SUFFIX = `::sharedPosts::on`;
+
 export const subscribeSharedUserPosts = publicKey => async (
   dispatch,
   getState
@@ -103,7 +112,7 @@ export const subscribeSharedUserPosts = publicKey => async (
   const { hostIP } = getState().node;
   const subscription = await rifle({
     host: hostIP,
-    query: `${publicKey}::sharedPosts::on`
+    query: publicKey + USER_SHARED_POSTS_QUERY_SUFFIX
   });
   subscription.on("$shock", posts => {
     console.debug(`shared posts from ${publicKey}: `, posts);
@@ -146,11 +155,17 @@ export const subscribeSharedUserPosts = publicKey => async (
   return subscription;
 };
 
+export const unsubUserSharedPosts = publicKey => () => {
+  disconnectRifleSocket(publicKey + USER_SHARED_POSTS_QUERY_SUFFIX);
+};
+
+const FOLLOWS_QUERY = "$user::follows::map.on";
+
 export const subscribeFollows = () => async (dispatch, getState) => {
   const { hostIP } = getState().node;
   const subscription = await rifle({
     host: hostIP,
-    query: "$user::follows::map.on",
+    query: FOLLOWS_QUERY,
     reconnect: true
   });
   console.debug("subbing follows");
@@ -175,6 +190,11 @@ export const subscribeFollows = () => async (dispatch, getState) => {
   });
 
   return subscription;
+};
+
+export const unsubscribeFollows = () => () => {
+  console.debug("unsubbing follows");
+  disconnectRifleSocket(FOLLOWS_QUERY);
 };
 
 export const sendTipPost = ({
