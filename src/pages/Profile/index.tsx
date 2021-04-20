@@ -93,7 +93,6 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const [newBio, setNewBio] = useState(user.bio);
   const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
@@ -152,29 +151,20 @@ const ProfilePage = () => {
   const handleViewChange = useCallback((view: "posts" | "services") => {
     setSelectedView(view);
   }, []);
-
+  //#region configModal ----------------------------------------------------- //
   const somethingInsideConfigModalChanged =
-    newBio !== user.bio || newWebClientPrefix !== currWebClientPrefix;
+    newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
-    setNewBio(user.bio);
     setNewWebClientPrefix(currWebClientPrefix);
-  }, [setProfileConfigModalOpen, setNewBio, user.bio, currWebClientPrefix]);
+  }, [currWebClientPrefix]);
 
   const onConfigCancel = useCallback(() => {
-    setNewBio(user.bio);
     toggleConfigModal();
-  }, [user.bio, toggleConfigModal]);
+  }, [toggleConfigModal]);
 
   const onConfigSubmit = useCallback(() => {
-    if (newBio !== user.bio) {
-      Utils.Http.put("/api/gun/me", {
-        bio: newBio
-      }).catch(e => {
-        alert(`There was an error setting a new bio: ${e.message}`);
-      });
-    }
     if (newWebClientPrefix !== currWebClientPrefix) {
       Utils.Http.post(`/api/gun/put`, {
         path: "$user>Profile>webClientPrefix",
@@ -186,14 +176,8 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [
-    user.bio,
-    newBio,
-    toggleConfigModal,
-    newWebClientPrefix,
-    currWebClientPrefix
-  ]);
-
+  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  //#endregion configModal -------------------------------------------------- //
   //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
   const [settingHeader, setSettingHeader] = useState<boolean>(false);
@@ -255,7 +239,7 @@ const ProfilePage = () => {
     current.click();
   }, []);
   //#endregion header ------------------------------------------------------- //
-
+  //#region deleteModal------------------------------------------------------ //
   const toggleDeleteModal = useCallback(
     deleteData => {
       console.log(deleteData);
@@ -396,7 +380,7 @@ const ProfilePage = () => {
         );
       });
   };
-
+  //#endregion deleteModal------------------------------------------------------ //
   //#region displayName ----------------------------------------------------- //
   const [dnModalOpen, setDnModalOpen] = useState(false);
   const { displayName } = user;
@@ -445,8 +429,56 @@ const ProfilePage = () => {
   const handleNewDisplayNameChange = ({ target: { value } }) => {
     setNewDisplayName(value);
   };
-
   //#endregion displayName -------------------------------------------------- //
+  //#region bio ------------------------------------------------------------- //
+  const { bio } = user;
+  const [bioModalOpen, setBioModalOpen] = useState(false);
+  // stores the bio input value
+  const [newBio, setNewBio] = useState(bio);
+  // stores the new bio while it's being uploaded
+  const [newBioIfBeingSaved, setNewBioIfBeingSaved] = useState<string | null>(
+    null
+  );
+  const saveNewBio = useCallback((toBeSaved: string) => {
+    if (toBeSaved === "") {
+      return;
+    }
+    setNewBioIfBeingSaved(toBeSaved); // optimistically render new bio
+    Utils.Http.put("/api/gun/me", {
+      bio: toBeSaved
+    }).catch(e => {
+      setNewBioIfBeingSaved(null); // reverts to existing bio
+      alert(`There was an error setting a new bio: ${e.message}`);
+    });
+  }, []);
+  useEffect(() => {
+    // set placeholder bio back to null after getting the round trip
+    // from api
+    if (newBioIfBeingSaved === bio) {
+      console.debug(`Got bio round trip from api.`);
+      setNewBioIfBeingSaved(null);
+    }
+  }, [newBioIfBeingSaved, bio]);
+  const toggleBioModal = useCallback(() => {
+    setNewBio(bio);
+    setBioModalOpen(open => !open);
+  }, [bio]);
+  const handleOkBioChange = useCallback(() => {
+    if (newBio !== bio) {
+      saveNewBio(newBio);
+    }
+    toggleBioModal();
+  }, [bio, newBio, saveNewBio, toggleBioModal]);
+  const bioModalStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: "12px 24px"
+    }),
+    []
+  );
+  const handleNewBioChange = ({ target: { value } }) => {
+    setNewBio(value);
+  };
+  //#endregion bio ---------------------------------------------------------- //
 
   return (
     <>
@@ -483,7 +515,12 @@ const ProfilePage = () => {
               >
                 {newDnIfBeingSaved || displayName}
               </p>
-              <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
+              <p
+                className={c(gStyles.unselectable, "profile-desc")}
+                onClick={toggleBioModal}
+              >
+                {newBioIfBeingSaved || user.bio}
+              </p>
               <div className="config-btn" onClick={toggleConfigModal}>
                 <i className="config-btn-icon icon-solid-spending-rule" />
                 <p className="config-btn-text">Config</p>
@@ -584,17 +621,6 @@ const ProfilePage = () => {
               padding: "2em 2em"
             }}
           >
-            <label htmlFor="newBio">New Bio</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={"New bio"}
-              name="newBio"
-              onChange={({ target: { value } }) => {
-                setNewBio(value);
-              }}
-            />
-
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
             <div className="web-client-prefix-picker">
@@ -742,6 +768,42 @@ const ProfilePage = () => {
 
       {
         //#endregion displayNameModal
+      }
+
+      {
+        //#region bioModal
+      }
+      <Modal
+        contentStyle={bioModalStyle}
+        modalOpen={bioModalOpen}
+        toggleModal={toggleBioModal}
+      >
+        <label htmlFor="newBio">New Bio</label>
+        <input
+          autoCapitalize="none"
+          autoCorrect="off"
+          type="text"
+          className="input-field"
+          placeholder={"New bio"}
+          name="newBio"
+          onChange={handleNewBioChange}
+          value={newBio}
+        />
+        {newBio !== bio && newBio !== "" ? (
+          <button
+            onClick={handleOkBioChange}
+            className="shock-form-button-confirm m-1"
+          >
+            OK
+          </button>
+        ) : (
+          <button onClick={toggleBioModal} className="shock-form-button m-1">
+            GO BACK
+          </button>
+        )}
+      </Modal>
+      {
+        //#endregion bioModal
       }
     </>
   );
