@@ -103,18 +103,7 @@ const GoLive = () => {
         setLoading(false);
       }
     },
-    [
-      paragraph,
-      seedProviderPub,
-      seedUrl,
-      seedToken,
-      setLoading,
-      setStreamToken,
-      setError,
-      setUserToken,
-      setRtmpUri,
-      addStream
-    ]
+    [availableTokens, seedProviderPub, seedToken, seedUrl, dispatch, paragraph]
   );
   const closePrompt = useCallback(() => {
     setPromptInfo(null);
@@ -157,14 +146,21 @@ const GoLive = () => {
         setError("No way found to publish content");
       }
     },
-    [availableTokens, setPromptInfo, setError, onSubmitCb]
+    [
+      userProfiles,
+      seedProviderPub,
+      seedUrl,
+      seedToken,
+      availableTokens,
+      onSubmitCb
+    ]
   );
   const copyToken = useCallback(() => {
     navigator.clipboard.writeText(streamToken);
   }, [streamToken]);
   const copyUri = useCallback(() => {
     navigator.clipboard.writeText(rtmpUri);
-  }, []);
+  }, [rtmpUri]);
   const onInputChange = useCallback(
     e => {
       const { value, name } = e.target;
@@ -186,7 +182,7 @@ const GoLive = () => {
   const stopStream = useCallback(() => {
     removeStream()(dispatch);
     history.push("/profile");
-  }, [history]);
+  }, [dispatch, history]);
 
   const StreamRender = useMemo(() => {
     return (
