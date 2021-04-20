@@ -35,9 +35,9 @@ const GoLive = () => {
   const [selectedSource, setSelectedSource] = useState("obs");
   const [loading, setLoading] = useState(false);
   const [streamToken, setStreamToken] = useState(streamLiveToken);
-  const [userToken, setUserToken] = useState(streamUserToken);
+  const [, setUserToken] = useState(streamUserToken);
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
-  const [isLive, setIsLive] = useState(true);
+  const [isLive] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
@@ -166,7 +166,7 @@ const GoLive = () => {
   }, []);
   const onInputChange = useCallback(
     e => {
-      const { value, name, checked } = e.target;
+      const { value, name } = e.target;
       switch (name) {
         case "paragraph": {
           setParagraph(value);
