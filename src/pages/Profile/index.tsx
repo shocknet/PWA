@@ -428,9 +428,8 @@ const ProfilePage = () => {
   }, [newDnIfBeingSaved, displayName]);
   const toggleDnModal = useCallback(() => {
     setNewDisplayName(displayName);
-
     setDnModalOpen(open => !open);
-  }, [displayName, dnModalOpen, newDisplayName, saveNewDisplayName]);
+  }, [displayName]);
   const handleOkDnChange = useCallback(() => {
     if (newDisplayName !== displayName) {
       saveNewDisplayName(newDisplayName);
