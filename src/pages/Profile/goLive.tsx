@@ -55,11 +55,12 @@ const GoLive = () => {
         });
         const [latestUserToken] = tokens;
         setUserToken(latestUserToken);
-        const {
-          data: streamData
-        } = await Http.post(`${finalSeedUrl}/api/stream/auth`, {
-          token: latestUserToken
-        });
+        const { data: streamData } = await Http.post(
+          `${finalSeedUrl}/api/stream/auth`,
+          {
+            token: latestUserToken
+          }
+        );
         const { token: obsToken } = streamData.data;
         console.log(obsToken);
         const liveToken = `${latestUserToken}?key=${obsToken}`;
