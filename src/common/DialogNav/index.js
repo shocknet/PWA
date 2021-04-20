@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.css";
 
-const DialogNav = ({ pageTitle, drawerVisible }) => {
+const DialogNav = ({ pageTitle, drawerVisible = false }) => {
   const goBack = useCallback(() => {
     window.history.back();
   }, []);
