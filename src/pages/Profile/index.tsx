@@ -570,7 +570,7 @@ const ProfilePage = () => {
             <input
               type="text"
               className="input-field"
-              placeholder={user.displayName || "new bio"}
+              placeholder={"New bio"}
               name="newBio"
               onChange={({ target: { value } }) => {
                 setNewBio(value);
