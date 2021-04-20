@@ -188,14 +188,17 @@ const GoLive = () => {
   }, [history]);
 
   const StreamRender = useMemo(() => {
-    {
-      /*@ts-expect-error */
-    }
     return (
       <Stream
         hideRibbon={true}
         item={{ magnetURI: streamUrl }}
         timeout={1500}
+        id={undefined}
+        index={undefined}
+        postId={undefined}
+        tipCounter={undefined}
+        tipValue={undefined}
+        width={undefined}
       />
     );
   }, [streamUrl]);
