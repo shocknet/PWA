@@ -1,4 +1,6 @@
 .container {
+  /* Expected to be inside <FullScreen /> which has display:flex */
+  flex-grow: 1;
   text-align: center;
 }
 
