@@ -10,6 +10,8 @@ import React, {
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
+import c from "classnames";
+
 import { processDisplayName } from "../../utils/String";
 
 import * as Utils from "../../utils";
@@ -17,6 +19,7 @@ import {
   deleteService,
   subscribeMyServices
 } from "../../actions/OrdersActions";
+import * as gStyles from "../../styles";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -74,10 +77,6 @@ const ProfilePage = () => {
   }, [posts, publicKey]);
   console.debug(posts);
   console.debug(myPosts);
-  const processedDisplayName = useMemo(
-    () => processDisplayName(publicKey, user.displayName),
-    [publicKey, user.displayName]
-  );
 
   useEffect(() => {
     const subscription = subscribeMyServices(hostIP)(dispatch);
@@ -94,8 +93,6 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
-  const [newBio, setNewBio] = useState(user.bio);
   const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
@@ -154,47 +151,20 @@ const ProfilePage = () => {
   const handleViewChange = useCallback((view: "posts" | "services") => {
     setSelectedView(view);
   }, []);
-
+  //#region configModal ----------------------------------------------------- //
   const somethingInsideConfigModalChanged =
-    newDisplayName !== user.displayName ||
-    newBio !== user.bio ||
     newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
-    setNewDisplayName(user.displayName);
-    setNewBio(user.bio);
     setNewWebClientPrefix(currWebClientPrefix);
-  }, [
-    setProfileConfigModalOpen,
-    setNewDisplayName,
-    user.displayName,
-    setNewBio,
-    user.bio,
-    currWebClientPrefix
-  ]);
+  }, [currWebClientPrefix]);
 
   const onConfigCancel = useCallback(() => {
-    setNewDisplayName(user.displayName);
-    setNewBio(user.bio);
     toggleConfigModal();
-  }, [user.displayName, user.bio, toggleConfigModal]);
+  }, [toggleConfigModal]);
 
   const onConfigSubmit = useCallback(() => {
-    if (newDisplayName !== user.displayName) {
-      Utils.Http.put(`/api/gun/me`, {
-        displayName: newDisplayName
-      }).catch(e => {
-        alert(`There was an error setting a new display name: ${e.message}`);
-      });
-    }
-    if (newBio !== user.bio) {
-      Utils.Http.put("/api/gun/me", {
-        bio: newBio
-      }).catch(e => {
-        alert(`There was an error setting a new bio: ${e.message}`);
-      });
-    }
     if (newWebClientPrefix !== currWebClientPrefix) {
       Utils.Http.post(`/api/gun/put`, {
         path: "$user>Profile>webClientPrefix",
@@ -206,18 +176,9 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [
-    newDisplayName,
-    user.displayName,
-    user.bio,
-    newBio,
-    toggleConfigModal,
-    newWebClientPrefix,
-    currWebClientPrefix
-  ]);
-
-  // ------------------------------------------------------------------------ //
-  // HEADER IMAGE SET ------------------------------------------------------- //
+  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  //#endregion configModal -------------------------------------------------- //
+  //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
   const [settingHeader, setSettingHeader] = useState<boolean>(false);
 
@@ -277,8 +238,8 @@ const ProfilePage = () => {
     }
     current.click();
   }, []);
-  // ------------------------------------------------------------------------ //
-
+  //#endregion header ------------------------------------------------------- //
+  //#region deleteModal------------------------------------------------------ //
   const toggleDeleteModal = useCallback(
     deleteData => {
       console.log(deleteData);
@@ -419,6 +380,105 @@ const ProfilePage = () => {
         );
       });
   };
+  //#endregion deleteModal------------------------------------------------------ //
+  //#region displayName ----------------------------------------------------- //
+  const [dnModalOpen, setDnModalOpen] = useState(false);
+  const { displayName } = user;
+  // stores the display name input value
+  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
+  // stores the new display name while it's being uploaded
+  const [newDnIfBeingSaved, setNewDnIfBeingSaved] = useState<string | null>(
+    null
+  );
+  const saveNewDisplayName = useCallback((toBeSaved: string) => {
+    if (toBeSaved === "") {
+      return;
+    }
+    setNewDnIfBeingSaved(toBeSaved); // optimistically render new display name
+    Utils.Http.put("/api/gun/me", {
+      displayName: toBeSaved
+    }).catch(e => {
+      setNewDnIfBeingSaved(null); // reverts to existing display name
+      alert(`There was an error setting a new display name: ${e.message}`);
+    });
+  }, []);
+  useEffect(() => {
+    // set placeholder display name back to null after getting the round trip
+    // from api
+    if (newDnIfBeingSaved === displayName) {
+      console.debug(`Got display name round trip from api.`);
+      setNewDnIfBeingSaved(null);
+    }
+  }, [newDnIfBeingSaved, displayName]);
+  const toggleDnModal = useCallback(() => {
+    setNewDisplayName(displayName);
+    setDnModalOpen(open => !open);
+  }, [displayName]);
+  const handleOkDnChange = useCallback(() => {
+    if (newDisplayName !== displayName) {
+      saveNewDisplayName(newDisplayName);
+    }
+    toggleDnModal();
+  }, [displayName, newDisplayName, saveNewDisplayName, toggleDnModal]);
+  const dnModalStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: "12px 24px"
+    }),
+    []
+  );
+  const handleNewDisplayNameChange = ({ target: { value } }) => {
+    setNewDisplayName(value);
+  };
+  //#endregion displayName -------------------------------------------------- //
+  //#region bio ------------------------------------------------------------- //
+  const { bio } = user;
+  const [bioModalOpen, setBioModalOpen] = useState(false);
+  // stores the bio input value
+  const [newBio, setNewBio] = useState(bio);
+  // stores the new bio while it's being uploaded
+  const [newBioIfBeingSaved, setNewBioIfBeingSaved] = useState<string | null>(
+    null
+  );
+  const saveNewBio = useCallback((toBeSaved: string) => {
+    if (toBeSaved === "") {
+      return;
+    }
+    setNewBioIfBeingSaved(toBeSaved); // optimistically render new bio
+    Utils.Http.put("/api/gun/me", {
+      bio: toBeSaved
+    }).catch(e => {
+      setNewBioIfBeingSaved(null); // reverts to existing bio
+      alert(`There was an error setting a new bio: ${e.message}`);
+    });
+  }, []);
+  useEffect(() => {
+    // set placeholder bio back to null after getting the round trip
+    // from api
+    if (newBioIfBeingSaved === bio) {
+      console.debug(`Got bio round trip from api.`);
+      setNewBioIfBeingSaved(null);
+    }
+  }, [newBioIfBeingSaved, bio]);
+  const toggleBioModal = useCallback(() => {
+    setNewBio(bio);
+    setBioModalOpen(open => !open);
+  }, [bio]);
+  const handleOkBioChange = useCallback(() => {
+    if (newBio !== bio) {
+      saveNewBio(newBio);
+    }
+    toggleBioModal();
+  }, [bio, newBio, saveNewBio, toggleBioModal]);
+  const bioModalStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: "12px 24px"
+    }),
+    []
+  );
+  const handleNewBioChange = ({ target: { value } }) => {
+    setNewBio(value);
+  };
+  //#endregion bio ---------------------------------------------------------- //
 
   return (
     <>
@@ -449,10 +509,18 @@ const ProfilePage = () => {
             </div>
 
             <div className="profile-info">
-              <p className="profile-name" onClick={() => {}}>
-                {processedDisplayName}
+              <p
+                className={c(gStyles.unselectable, "profile-name")}
+                onClick={toggleDnModal}
+              >
+                {newDnIfBeingSaved || displayName}
               </p>
-              <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
+              <p
+                className={c(gStyles.unselectable, "profile-desc")}
+                onClick={toggleBioModal}
+              >
+                {newBioIfBeingSaved || user.bio}
+              </p>
               <div className="config-btn" onClick={toggleConfigModal}>
                 <i className="config-btn-icon icon-solid-spending-rule" />
                 <p className="config-btn-text">Config</p>
@@ -553,30 +621,6 @@ const ProfilePage = () => {
               padding: "2em 2em"
             }}
           >
-            <label htmlFor="newDisplayName">Display Name</label>
-            <input
-              autoCapitalize="none"
-              autoCorrect="off"
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new display name"}
-              name="newDisplayName"
-              onChange={({ target: { value } }) => {
-                setNewDisplayName(value);
-              }}
-            />
-
-            <label htmlFor="newBio">New Bio</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new bio"}
-              name="newBio"
-              onChange={({ target: { value } }) => {
-                setNewBio(value);
-              }}
-            />
-
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
             <div className="web-client-prefix-picker">
@@ -686,6 +730,81 @@ const ProfilePage = () => {
         accept="image/*"
         onChange={onSelectedHeaderFile}
       />
+
+      {
+        //#region displayNameModal
+      }
+
+      <Modal
+        contentStyle={dnModalStyle}
+        modalOpen={dnModalOpen}
+        toggleModal={toggleDnModal}
+      >
+        <label htmlFor="newDisplayName">Display Name</label>
+        <input
+          autoCapitalize="none"
+          autoCorrect="off"
+          type="text"
+          className="input-field"
+          placeholder={"New display name"}
+          name="newDisplayName"
+          onChange={handleNewDisplayNameChange}
+          value={newDisplayName}
+        />
+
+        {newDisplayName !== displayName && newDisplayName !== "" ? (
+          <button
+            onClick={handleOkDnChange}
+            className="shock-form-button-confirm m-1"
+          >
+            OK
+          </button>
+        ) : (
+          <button onClick={toggleDnModal} className="shock-form-button m-1">
+            GO BACK
+          </button>
+        )}
+      </Modal>
+
+      {
+        //#endregion displayNameModal
+      }
+
+      {
+        //#region bioModal
+      }
+      <Modal
+        contentStyle={bioModalStyle}
+        modalOpen={bioModalOpen}
+        toggleModal={toggleBioModal}
+      >
+        <label htmlFor="newBio">New Bio</label>
+        <input
+          autoCapitalize="none"
+          autoCorrect="off"
+          type="text"
+          className="input-field"
+          placeholder={"New bio"}
+          name="newBio"
+          onChange={handleNewBioChange}
+          value={newBio}
+        />
+        {newBio !== bio && newBio !== "" ? (
+          <button
+            onClick={handleOkBioChange}
+            className="shock-form-button-confirm m-1"
+          >
+            OK
+          </button>
+        ) : (
+          <button onClick={toggleBioModal} className="shock-form-button m-1">
+            GO BACK
+          </button>
+        )}
+      </Modal>
+      {
+        //#endregion bioModal
+      }
     </>
   );
 };
