@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { addStream, removeStream } from "../../actions/ContentActions";
 import "./css/index.css";
 import Loader from "../../common/Loader";
@@ -7,7 +7,7 @@ import Http from "../../utils/Http";
 import DialogNav from "../../common/DialogNav";
 import obsLogo from "../../images/obs-2.svg";
 import Stream from "../../common/Post/components/Stream";
-import { EnrollToken, RequestToken } from "../../utils/seed";
+import { RequestToken } from "../../utils/seed";
 import { useHistory } from "react-router";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
