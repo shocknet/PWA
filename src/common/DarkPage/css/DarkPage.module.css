@@ -1,0 +1,13 @@
+.container {
+  text-align: center;
+}
+
+.container > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-scrolls {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
