@@ -10,7 +10,13 @@ import { ACTIONS } from "../actions/FeedActions";
  */
 
 const INITIAL_STATE = {
-  follows: /** @type {Follow[]} */ ([]),
+  follows: /** @type {Follow[]} */ ([
+    {
+      user: "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+      status: 'ok',
+      private: false
+    }
+  ]),
   /**
    * Maps public key to posts/shared posts.
    */
