@@ -53,45 +53,43 @@ export const loadSharedPost = (
 
 export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
   const subscription = await rifle({
-    query: `${publicKey}::posts::on`
-  });
-  console.log("Subscription:", subscription)
-  subscription.onData(posts => {
-    console.log("Subscription onData:", posts)
-    const postEntries = Object.entries(posts);
-    const newPosts = postEntries
-      .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-      .map(([key]) => key);
-    const deletedPosts = postEntries
-      .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
-      .map(([key]) => key);
-
-    newPosts.map(async id => {
-      const { data: post } = await Http.get(
-        `/api/gun/otheruser/${publicKey}/load/posts>${id}`
-      );
-
-      dispatch({
-        type: ACTIONS.ADD_USER_POST,
-        data: {
-          ...post.data,
-          id,
-          authorId: publicKey,
-          type: "post"
-        }
+    query: `${publicKey}::posts::on`,
+    onData: posts => {
+      const postEntries = Object.entries(posts);
+      const newPosts = postEntries
+        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
+        .map(([key]) => key);
+      const deletedPosts = postEntries
+        .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
+        .map(([key]) => key);
+  
+      newPosts.map(async id => {
+        const { data: post } = await Http.get(
+          `/api/gun/otheruser/${publicKey}/load/posts>${id}`
+        );
+  
+        dispatch({
+          type: ACTIONS.ADD_USER_POST,
+          data: {
+            ...post.data,
+            id,
+            authorId: publicKey,
+            type: "post"
+          }
+        });
       });
-    });
-
-    deletedPosts.map(id =>
-      dispatch({
-        type: ACTIONS.DELETE_USER_POST,
-        data: {
-          id,
-          authorId: publicKey,
-          type: "post"
-        }
-      })
-    );
+  
+      deletedPosts.map(id =>
+        dispatch({
+          type: ACTIONS.DELETE_USER_POST,
+          data: {
+            id,
+            authorId: publicKey,
+            type: "post"
+          }
+        })
+      );
+    }
   });
   return subscription;
 };
@@ -103,44 +101,44 @@ export const subscribeSharedUserPosts = publicKey => async (
   const { hostIP } = getState().node;
   const subscription = await rifle({
     host: hostIP,
-    query: `${publicKey}::sharedPosts::on`
-  });
-  subscription.onData(posts => {
-    const postEntries = Object.entries(posts);
-    const newPosts = postEntries
-      .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-      .map(([key]) => key);
-    const deletedPosts = postEntries
-      .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
-      .map(([key]) => key);
-
-    newPosts.map(async id => {
-      const { data: post } = await Http.get(
-        `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
-      );
-
-      dispatch({
-        type: ACTIONS.ADD_USER_POST,
-        data: {
-          ...post.data,
-          id,
-          authorId: publicKey,
-          type: "shared"
-        }
+    query: `${publicKey}::sharedPosts::on`,
+    onData: posts => {
+      const postEntries = Object.entries(posts);
+      const newPosts = postEntries
+        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
+        .map(([key]) => key);
+      const deletedPosts = postEntries
+        .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
+        .map(([key]) => key);
+  
+      newPosts.map(async id => {
+        const { data: post } = await Http.get(
+          `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
+        );
+  
+        dispatch({
+          type: ACTIONS.ADD_USER_POST,
+          data: {
+            ...post.data,
+            id,
+            authorId: publicKey,
+            type: "shared"
+          }
+        });
+  
+        await loadSharedPost(id, post.data.originalAuthor, publicKey)(dispatch);
       });
-
-      await loadSharedPost(id, post.data.originalAuthor, publicKey)(dispatch);
-    });
-
-    deletedPosts.map(id =>
-      dispatch({
-        type: ACTIONS.DELETE_USER_POST,
-        data: {
-          id,
-          authorId: publicKey
-        }
-      })
-    );
+  
+      deletedPosts.map(id =>
+        dispatch({
+          type: ACTIONS.DELETE_USER_POST,
+          data: {
+            id,
+            authorId: publicKey
+          }
+        })
+      );
+    }
   });
   return subscription;
 };
@@ -150,36 +148,35 @@ export const subscribeFollows = () => async (dispatch, getState) => {
   const subscription = await rifle({
     host: hostIP,
     query: "$user::follows::map.on",
-    reconnect: true
+    reconnect: true,
+    onData: async (follow, key) => {
+      if (typeof key !== "string") {
+        console.warn(`Invalid follow key received: ${key}`);
+        return;
+      }
+  
+      if (!follow) {
+        unsubscribeUserProfile(key);
+        dispatch(removeFollow(key));
+        return;
+      }
+  
+      if (typeof follow.user !== "string") {
+        console.warn(`Invalid follow user received (${follow.user})`);
+        return;
+      }
+  
+      dispatch(addFollow(follow));
+      dispatch(subscribeUserProfile(follow.user));
+      dispatch(subscribeUserPosts(follow.user));
+      dispatch(subscribeSharedUserPosts(follow.user));
+    }
   });
   console.log("subbing follows");
   //-- Subscribe to self, posts and shared posts are merged
   //dispatch(subscribeUserProfile(publicKey))
   dispatch(subscribeUserPosts(publicKey));
   dispatch(subscribeSharedUserPosts(publicKey));
-
-  subscription.onData(async (follow, key) => {
-    if (typeof key !== "string") {
-      console.warn(`Invalid follow key received: ${key}`);
-      return;
-    }
-
-    if (!follow) {
-      unsubscribeUserProfile(key);
-      dispatch(removeFollow(key));
-      return;
-    }
-
-    if (typeof follow.user !== "string") {
-      console.warn(`Invalid follow user received (${follow.user})`);
-      return;
-    }
-
-    dispatch(addFollow(follow));
-    dispatch(subscribeUserProfile(follow.user));
-    dispatch(subscribeUserPosts(follow.user));
-    dispatch(subscribeSharedUserPosts(follow.user));
-  });
 
   return subscription;
 };

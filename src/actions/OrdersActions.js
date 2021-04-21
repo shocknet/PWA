@@ -2,7 +2,7 @@ import Http from "../utils/Http";
 import {
   rifle,
   rifleSocketExists,
-  unsubscribeRifleQuery
+  unsubscribeRifleById
 } from "../utils/WebSocket";
 export const ACTIONS = {
   ADD_MY_SERVICE: "service/add",
@@ -64,35 +64,36 @@ export const subscribeMyServices = hostIP => async dispatch => {
     host: hostIP,
     query,
     publicKey: "",
-    reconnect: false
-  });
-  subscription.onData(async services => {
-    const servicesEntries = Object.entries(services);
-    console.log(servicesEntries);
-
-    servicesEntries.forEach(async ([id]) => {
-      if (id === "_") {
-        return;
-      }
-      const { data: service } = await Http.get(
-        `/api/gun/user/load/offeredServices>${id}`
-      );
-      console.log(service.data);
-      if (service.data === null) {
+    reconnect: false,
+    onData: async services => {
+      const servicesEntries = Object.entries(services);
+      console.log(servicesEntries);
+  
+      servicesEntries.forEach(async ([id]) => {
+        if (id === "_") {
+          return;
+        }
+        const { data: service } = await Http.get(
+          `/api/gun/user/load/offeredServices>${id}`
+        );
+        console.log(service.data);
+        if (service.data === null) {
+          dispatch({
+            type: ACTIONS.REMOVE_MY_SERVICE,
+            data: id
+          });
+          return;
+        }
         dispatch({
-          type: ACTIONS.REMOVE_MY_SERVICE,
-          data: id
+          type: ACTIONS.ADD_MY_SERVICE,
+          data: { id, serviceInfo: service.data }
         });
-        return;
-      }
-      dispatch({
-        type: ACTIONS.ADD_MY_SERVICE,
-        data: { id, serviceInfo: service.data }
       });
-    });
+    }
   });
+  
   return () => {
-    unsubscribeRifleQuery(query);
+    subscription.off();
   };
 };
 

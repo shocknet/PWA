@@ -29,7 +29,7 @@ import ContentHostInput from "../../common/ContentHostInput";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle, unsubscribeRifleQuery } from "../../utils/WebSocket";
+import { rifle, unsubscribeRifleById } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
@@ -121,29 +121,27 @@ const ProfilePage = () => {
 
     (async () => {
       const socket = await rifle({
-        query
-      });
-
-      socket.onData((webClientPrefixReceived: unknown) => {
-        if (typeof webClientPrefixReceived === "string") {
-          setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
-        } else {
-          Utils.Http.post(`/api/gun/put`, {
-            path: "$user>Profile>webClientPrefix",
-            value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
-          }).catch(e => {
-            alert(`Error setting default web client prefix: ${e.message}`);
-          });
+        query,
+        onData: (webClientPrefixReceived: unknown) => {
+          if (typeof webClientPrefixReceived === "string") {
+            setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
+          } else {
+            Utils.Http.post(`/api/gun/put`, {
+              path: "$user>Profile>webClientPrefix",
+              value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
+            }).catch(e => {
+              alert(`Error setting default web client prefix: ${e.message}`);
+            });
+          }
+        },
+        onError: (errorMessage: string) => {
+          alert(`There was an error fetching web client prefix: ${errorMessage}`);
         }
-      });
-
-      socket.onError((errorMessage: string) => {
-        alert(`There was an error fetching web client prefix: ${errorMessage}`);
       });
     })();
 
     return () => {
-      unsubscribeRifleQuery(query);
+      unsubscribeRifleById(query);
     };
   }, [hostIP, publicKey /* handles alias switch */]);
 

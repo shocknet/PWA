@@ -16,22 +16,20 @@ export const useStory = (publicKey: string) => {
 
   const subscribeStory = React.useCallback(async () => {
     const sub = await rifle({
-      query: `${publicKey}::story::open`
-    });
-
-    sub.onData((pictures: unknown) => {
-      if (typeof pictures !== "object" || pictures === null) {
-        return;
+      query: `${publicKey}::story::open`,
+      onData: (pictures: unknown) => {
+        if (typeof pictures !== "object" || pictures === null) {
+          return;
+        }
+  
+        setPics(
+          Object.values(pictures).filter(p => typeof p === "object" && p !== null)
+        );
+      },
+      onError: (err: unknown) => {
+        console.log(`Error inside story sub:`);
+        console.log(err);
       }
-
-      setPics(
-        Object.values(pictures).filter(p => typeof p === "object" && p !== null)
-      );
-    });
-
-    sub.onError("error", (err: unknown) => {
-      console.log(`Error inside story sub:`);
-      console.log(err);
     });
 
     return () => {

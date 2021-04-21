@@ -1,7 +1,7 @@
 import * as Common from "shock-common";
 
 import * as Utils from "../utils";
-import { unsubscribeRifleQuery, rifle } from "../utils/WebSocket";
+import { unsubscribeRifleById, rifle } from "../utils/WebSocket";
 
 import { setAuthenticated } from "./AuthActions";
 
@@ -35,63 +35,60 @@ export const subscribeUserProfile = (publicKey: string) => async (
   const [subscription, binarySub] = await Promise.all([
     rifle({
       query: `${publicKey}::Profile::on`,
-      reconnect: true
+      reconnect: true,
+      onData: profile => {
+        const { [publicKey]: existingUser } = getState().userProfiles;
+    
+        if (existingUser) {
+          dispatch({
+            type: ACTIONS.UPDATE_USER_PROFILE,
+            data: { publicKey, profile }
+          });
+          return profile;
+        }
+    
+        dispatch({
+          type: ACTIONS.LOAD_USER_PROFILE,
+          data: { publicKey, profile }
+        });
+      }
     }),
     rifle({
       query: `${publicKey}::profileBinary::map.on`,
-      reconnect: true
+      reconnect: true,
+      onData: (data, key: string) => {
+        if (key === "avatar") {
+          if (typeof data !== "string" && data !== null) {
+            Utils.logger.error(
+              `Expected avatar data to be string or null, instead got: ${typeof data}. Public key: ${publicKey}`
+            );
+            return;
+          }
+          dispatch(
+            updateUserProfile(publicKey, {
+              avatar: data
+            })
+          );
+        } else if (key === "header") {
+          if (typeof data !== "string" && data !== null) {
+            Utils.logger.error(
+              `Expected header data to be string or null, instead got: ${typeof data}. Public key: ${publicKey}`
+            );
+            return;
+          }
+          dispatch(
+            updateUserProfile(publicKey, {
+              header: data
+            })
+          );
+        } else {
+          Utils.logger.error(
+            `Unknown key: ${key} for user binary profile data gun RPC socket`
+          );
+        }
+      }
     })
   ]);
-
-  binarySub.onData((data, key: string) => {
-    console.log("BINARY SOCKET")
-    if (key === "avatar") {
-      if (typeof data !== "string" && data !== null) {
-        Utils.logger.error(
-          `Expected avatar data to be string or null, instead got: ${typeof data}. Public key: ${publicKey}`
-        );
-        return;
-      }
-      dispatch(
-        updateUserProfile(publicKey, {
-          avatar: data
-        })
-      );
-    } else if (key === "header") {
-      if (typeof data !== "string" && data !== null) {
-        Utils.logger.error(
-          `Expected header data to be string or null, instead got: ${typeof data}. Public key: ${publicKey}`
-        );
-        return;
-      }
-      dispatch(
-        updateUserProfile(publicKey, {
-          header: data
-        })
-      );
-    } else {
-      Utils.logger.error(
-        `Unknown key: ${key} for user binary profile data gun RPC socket`
-      );
-    }
-  });
-
-  subscription.onData(profile => {
-    const { [publicKey]: existingUser } = getState().userProfiles;
-
-    if (existingUser) {
-      dispatch({
-        type: ACTIONS.UPDATE_USER_PROFILE,
-        data: { publicKey, profile }
-      });
-      return profile;
-    }
-
-    dispatch({
-      type: ACTIONS.LOAD_USER_PROFILE,
-      data: { publicKey, profile }
-    });
-  });
 
   return () => {
     binarySub.off();
@@ -100,6 +97,6 @@ export const subscribeUserProfile = (publicKey: string) => async (
 };
 
 export const unsubscribeUserProfile = (publicKey: string) => async () => {
-  unsubscribeRifleQuery(`${publicKey}::Profile::on`);
-  unsubscribeRifleQuery(`${publicKey}::profileBinary::map.on`);
+  unsubscribeRifleById(`${publicKey}::Profile::on`);
+  unsubscribeRifleById(`${publicKey}::profileBinary::map.on`);
 };
