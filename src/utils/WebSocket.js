@@ -2,7 +2,6 @@ import SocketIO from "socket.io-client";
 import binaryParser from "socket.io-msgpack-parser";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
-import FieldError from "./FieldError";
 /**
  * @typedef {import('../schema').Contact} Contact
  */
