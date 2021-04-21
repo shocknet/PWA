@@ -54,7 +54,9 @@ const ProfilePage = () => {
   const [deletePostModalData, setDeletePostModalData] = useState(null);
 
   const posts = Store.useSelector(({ feed }) => feed.posts);
+  console.log("before reading pub")
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  console.log("after reading pub")
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
