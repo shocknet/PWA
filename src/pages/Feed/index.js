@@ -132,8 +132,6 @@ const FeedPage = () => {
                   postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
                   openUnlockModal={toggleUnlockModal}
-                  // TODO: User online status handling
-                  isOnlineNode
                 />
               </Suspense>
             );
