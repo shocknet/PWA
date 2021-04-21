@@ -1,6 +1,6 @@
 import { ACTIONS } from "../actions/ContentActions";
 const INITIAL_STATE = {
-  seedProviderPub:'test',
+  seedProviderPub:'qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg',
   streamUserToken:'',
   streamLiveToken:'',
   streamUrl:'',

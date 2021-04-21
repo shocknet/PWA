@@ -1,5 +1,7 @@
-import React, { useCallback, useLayoutEffect } from "react";
+// @ts-check
+import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
+import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip";
 
 import Post from ".";
@@ -8,42 +10,58 @@ import av1 from "../../images/av1.jpg";
 import "../Post/css/index.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
+import * as Store from "../../store";
+import * as Utils from "../../utils";
+/**
+ * @typedef {import('../../schema').Post} Post
+ */
 
 const SharedPost = ({
   sharerProfile,
   originalPostProfile,
-  originalPost,
+  originalPost: origPost,
   sharedTimestamp,
-  isOnlineNode,
   postPublicKey,
   openTipModal,
   openUnlockModal,
-  openDeleteModal
+  openDeleteModal = undefined
 }) => {
+  /** @type {Post} */
+  const originalPost = origPost;
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
       attachMedia([originalPost], false);
     }
   }, [originalPost]);
-  const deletePost = useCallback(()=>{
-    openDeleteModal({id:originalPost.id,shared:true});
-  },[originalPost,openDeleteModal])
+  const deletePost = useCallback(() => {
+    openDeleteModal({ id: originalPost.id, shared: true });
+  }, [originalPost, openDeleteModal]);
 
   useLayoutEffect(() => {
     Tooltip.rebuild();
     loadPostMedia();
   }, [loadPostMedia]);
 
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const isOwn = sharerProfile.publicKey === selfPublicKey;
+  const isOnlineNode = Utils.isOnline(
+    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenApp
+  );
+
   return (
     <div className="post shared-post">
       <div className="head">
         <div className="user">
-          <div
+          <Link
+            to={isOwn ? `/profile` : `/otherUser/${sharerProfile.publicKey}`}
             className="av"
             style={{
+              borderWidth: isOnlineNode && !isOwn ? 2 : undefined,
+              borderStyle: isOnlineNode && !isOwn ? "solid" : undefined,
+              borderColor: isOnlineNode && !isOwn ? "#39B54A" : undefined,
               backgroundImage: `url(data:image/jpeg;base64,${sharerProfile?.avatar})`
             }}
-          ></div>
+          ></Link>
           <div className="details">
             <p>{sharerProfile?.displayName}</p>
             <p>
@@ -53,7 +71,9 @@ const SharedPost = ({
             </p>
           </div>
         </div>
-        {openDeleteModal && <i className="fas fa-trash" onClick={deletePost}></i>}
+        {openDeleteModal && (
+          <i className="fas fa-trash" onClick={deletePost}></i>
+        )}
       </div>
 
       <div className="shared-content">
@@ -66,8 +86,10 @@ const SharedPost = ({
                 ? `data:image/jpeg;base64,${originalPostProfile.avatar}`
                 : av1
             }
-            tipCounter={originalPost.tipCounter}
-            tipValue={originalPost.tipValue}
+            // @ts-expect-error tipCounter not wired right now I think
+            tipCounter={originalPost.tipCounter || 0}
+            // @ts-expect-error tipValue ??
+            tipValue={originalPost.tipValue || 0}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}
@@ -75,7 +97,6 @@ const SharedPost = ({
             username={
               originalPostProfile.displayName ?? originalPostProfile.alias
             }
-            isOnlineNode={isOnlineNode}
           />
         ) : (
           <Loader text="Loading Post..." />

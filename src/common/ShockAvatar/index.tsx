@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
+import c from "classnames";
 
 import * as Store from "../../store";
 import Pad from "../Pad";
@@ -34,7 +35,7 @@ export interface ShockAvatarProps {
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
   height,
   publicKey,
-  // disableOnlineRing,
+  disableOnlineRing,
   nameAtBottom,
   onPress: onPressProp,
   setsAvatar,
@@ -47,7 +48,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const { avatar: image, displayName } = Store.useSelector(
+  const { avatar: image, displayName, lastSeenApp } = Store.useSelector(
     Store.selectUser(publicKey)
   );
   const story = Hooks.useStory(publicKey);
@@ -70,9 +71,17 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     objectFit: "cover"
   };
 
-  // if (!isOwn && Utils.isOnline(lastSeenApp)) {
-  //   avatarStyle.borderWidth = 2;
-  // }
+  if (greyBorder) {
+    avatarStyle.borderWidth = "2px";
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "grey";
+  }
+
+  if (!isSelf && !disableOnlineRing && Utils.isOnline(lastSeenApp)) {
+    avatarStyle.borderWidth = 2;
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "#39B54A";
+  }
 
   // const showStoryRing = story.length && !onPressProp && !setsAvatar;
 
@@ -81,12 +90,6 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   //   avatarStyle.borderStyle = "dotted";
   //   avatarStyle.borderColor = "#39B54A"
   // }
-
-  if (greyBorder) {
-    avatarStyle.borderWidth = "2px";
-    avatarStyle.borderStyle = "solid";
-    avatarStyle.borderColor = "grey";
-  }
 
   const onSelectedAvatarFile: InputHTMLAttributes<{}>["onChange"] = async e => {
     try {

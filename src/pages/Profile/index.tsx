@@ -10,14 +10,17 @@ import React, {
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
+import c from "classnames";
+import * as Common from "shock-common";
+
 import { processDisplayName } from "../../utils/String";
 
 import * as Utils from "../../utils";
-import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 import {
   deleteService,
   subscribeMyServices
 } from "../../actions/OrdersActions";
+import * as gStyles from "../../styles";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -25,6 +28,8 @@ import Modal from "../../common/Modal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ContentHostInput from "../../common/ContentHostInput";
+import ProfileDivider from "../../common/ProfileDivider";
+import Pad from "../../common/Pad";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -33,6 +38,7 @@ import { rifle, unsubscribeRifleById } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
+import { isSharedPost } from "../../schema";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -54,27 +60,24 @@ const ProfilePage = () => {
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
-  const availableTokens = Store.useSelector(
-    ({ content }) => content.availableTokens
+  const [selectedView, setSelectedView] = useState<"posts" | "services">(
+    "posts"
   );
-  const availableStreamTokens = Store.useSelector(
-    ({ content }) => content.availableStreamTokens
-  );
-  const [selectedView, setSelectedView] = useState("posts");
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => b.date - a.date);
+      const myP = posts[publicKey].sort((a, b) => {
+        const alpha = isSharedPost(a) ? a.shareDate : a.date;
+        const beta = isSharedPost(b) ? b.shareDate : b.date;
+
+        return beta - alpha;
+      });
       return myP;
     }
     return [];
   }, [posts, publicKey]);
-  console.log(posts);
-  console.log(myPosts);
-  const processedDisplayName = useMemo(
-    () => processDisplayName(publicKey, user.displayName),
-    [publicKey, user.displayName]
-  );
+  console.debug(posts);
+  console.debug(myPosts);
 
   useEffect(() => {
     const subscription = subscribeMyServices(hostIP)(dispatch);
@@ -91,8 +94,6 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
-  const [newBio, setNewBio] = useState(user.bio);
   const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
     AVAILABLE_WEB_CLIENT_PREFIXES[0]
   );
@@ -116,87 +117,56 @@ const ProfilePage = () => {
     }
   }, [newWebClientPrefix, publicKey]);
 
-  useEffect(() => {
+  const subscribeClientPrefix = useCallback(async () => {
     const query = `$user::Profile>webClientPrefix::on`;
 
-    (async () => {
-      const socket = await rifle({
-        query,
-        onData: (webClientPrefixReceived: unknown) => {
-          if (typeof webClientPrefixReceived === "string") {
-            setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
-          } else {
-            Utils.Http.post(`/api/gun/put`, {
-              path: "$user>Profile>webClientPrefix",
-              value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
-            }).catch(e => {
-              alert(`Error setting default web client prefix: ${e.message}`);
-            });
-          }
-        },
-        onError: (errorMessage: string) => {
-          alert(`There was an error fetching web client prefix: ${errorMessage}`);
+    const socket = await rifle({
+      query,
+      onData: (webClientPrefixReceived: unknown) => {
+        if (typeof webClientPrefixReceived === "string") {
+          setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
+        } else {
+          Utils.Http.post(`/api/gun/put`, {
+            path: "$user>Profile>webClientPrefix",
+            value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
+          }).catch(e => {
+            alert(`Error setting default web client prefix: ${e.message}`);
+          });
         }
-      });
-    })();
+      },
+      onError: (errorMessage: string) => {
+        alert(`There was an error fetching web client prefix: ${errorMessage}`);
+      }
+    });
 
-    return () => {
-      unsubscribeRifleById(query);
-    };
+    return socket;
   }, [hostIP, publicKey /* handles alias switch */]);
 
-  const onInputChange = (e: { target: { name: string; value: any } }) => {
-    const { value, name } = e.target;
-    switch (name) {
-      case "selectedView": {
-        setSelectedView(value);
-        return;
-      }
-      default:
-        return;
-    }
-  };
+  useEffect(() => {
+    const subscription = subscribeClientPrefix();
 
+    return () => {
+      subscription.then(query => query.off?.());
+    };
+  }, [subscribeClientPrefix]);
+
+  const handleViewChange = useCallback((view: "posts" | "services") => {
+    setSelectedView(view);
+  }, []);
+  //#region configModal ----------------------------------------------------- //
   const somethingInsideConfigModalChanged =
-    newDisplayName !== user.displayName ||
-    newBio !== user.bio ||
     newWebClientPrefix !== currWebClientPrefix;
 
   const toggleConfigModal = useCallback(() => {
     setProfileConfigModalOpen(open => !open);
-    setNewDisplayName(user.displayName);
-    setNewBio(user.bio);
     setNewWebClientPrefix(currWebClientPrefix);
-  }, [
-    setProfileConfigModalOpen,
-    setNewDisplayName,
-    user.displayName,
-    setNewBio,
-    user.bio,
-    currWebClientPrefix
-  ]);
+  }, [currWebClientPrefix]);
 
   const onConfigCancel = useCallback(() => {
-    setNewDisplayName(user.displayName);
-    setNewBio(user.bio);
     toggleConfigModal();
-  }, [user.displayName, user.bio, toggleConfigModal]);
+  }, [toggleConfigModal]);
 
   const onConfigSubmit = useCallback(() => {
-    if (newDisplayName !== user.displayName) {
-      Utils.Http.put(`/api/gun/me`, {
-        displayName: newDisplayName
-      }).catch(e => {
-        alert(`There was an error setting a new display name: ${e.message}`);
-      });
-    }
-    if (newBio !== user.bio) {
-      Utils.Http.put("/api/gun/me", {
-        bio: newBio
-      }).catch(e => {
-        alert(`There was an error setting a new bio: ${e.message}`);
-      });
-    }
     if (newWebClientPrefix !== currWebClientPrefix) {
       Utils.Http.post(`/api/gun/put`, {
         path: "$user>Profile>webClientPrefix",
@@ -208,19 +178,9 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [
-    dispatch,
-    newDisplayName,
-    user.displayName,
-    user.bio,
-    newBio,
-    toggleConfigModal,
-    newWebClientPrefix,
-    currWebClientPrefix
-  ]);
-
-  // ------------------------------------------------------------------------ //
-  // HEADER IMAGE SET ------------------------------------------------------- //
+  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  //#endregion configModal -------------------------------------------------- //
+  //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
   const [settingHeader, setSettingHeader] = useState<boolean>(false);
 
@@ -280,8 +240,8 @@ const ProfilePage = () => {
     }
     current.click();
   }, []);
-  // ------------------------------------------------------------------------ //
-
+  //#endregion header ------------------------------------------------------- //
+  //#region deleteModal------------------------------------------------------ //
   const toggleDeleteModal = useCallback(
     deleteData => {
       console.log(deleteData);
@@ -292,24 +252,35 @@ const ProfilePage = () => {
     },
     [deletePostModalData]
   );
+  const closeDeleteModal = useCallback(() => {
+    setDeletePostModalData(null);
+  }, []);
 
   const deletePost = useCallback(async () => {
-    if (!deletePostModalData || !deletePostModalData.id) {
-      return;
+    try {
+      if (!deletePostModalData || !deletePostModalData.id) {
+        return;
+      }
+      console.log("deleting:");
+      console.log(deletePostModalData);
+      const key = deletePostModalData.shared ? "sharedPosts" : "posts";
+      await Utils.Http.post("/api/gun/put", {
+        path: `$user>${key}>${deletePostModalData.id}`,
+        value: null
+      });
+      dispatch(
+        deleteUserPost({
+          id: deletePostModalData.id,
+          authorId: publicKey
+        })
+      );
+      toggleDeleteModal(null);
+    } catch (e) {
+      console.log(`Error when deleting post:`);
+      console.log(e);
+      alert(`Could not delete post: ${e.message}`);
     }
-    console.log("deleting:");
-    console.log(deletePostModalData);
-    const key = deletePostModalData.shared ? "sharedPosts" : "posts";
-    await Utils.Http.post("/api/gun/put", {
-      path: `$user>${key}>${deletePostModalData.id}`,
-      value: null
-    });
-    deleteUserPost({
-      id: deletePostModalData.id,
-      authorId: publicKey
-    });
-    toggleDeleteModal(null);
-  }, [deletePostModalData]);
+  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -335,30 +306,38 @@ const ProfilePage = () => {
 
   const renderPosts = () => {
     return myPosts.map((post, index) => {
-      const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
+        // TODO: ensure users reducer receives sharer profiles
+        const sharerProfile =
+          userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
         const originalPublicKey = post.originalAuthor;
-        const originalProfile = userProfiles[originalPublicKey];
+        const originalProfile =
+          userProfiles[originalPublicKey] ||
+          Common.createEmptyUser(originalPublicKey);
         return (
-          <Suspense fallback={<Loader />} key={index}>
+          <Suspense
+            fallback={<Loader />}
+            key={post.sharerId + post.originalPost.id}
+          >
             <SharedPost
               originalPost={post.originalPost}
               originalPostProfile={originalProfile}
               sharedTimestamp={post.shareDate}
-              sharerProfile={profile}
+              sharerProfile={sharerProfile}
               postPublicKey={originalPublicKey}
               openTipModal={() => {}}
               openUnlockModal={() => {}}
-              // TODO: User online status handling
-              isOnlineNode
               openDeleteModal={toggleDeleteModal}
             />
           </Suspense>
         );
       }
 
+      const profile =
+        userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
+
       return (
-        <Suspense fallback={<Loader />} key={index}>
+        <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
             timestamp={post.date}
@@ -373,8 +352,6 @@ const ProfilePage = () => {
             openUnlockModal={() => {}}
             tipCounter={0}
             tipValue={0}
-            // TODO: User online status handling
-            isOnlineNode
             openDeleteModal={toggleDeleteModal}
           />
         </Suspense>
@@ -410,51 +387,106 @@ const ProfilePage = () => {
         );
       });
   };
-  const tokensView = useMemo(() => {
-    return Object.entries(availableTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
+  //#endregion deleteModal------------------------------------------------------ //
+  //#region displayName ----------------------------------------------------- //
+  const [dnModalOpen, setDnModalOpen] = useState(false);
+  const { displayName } = user;
+  // stores the display name input value
+  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
+  // stores the new display name while it's being uploaded
+  const [newDnIfBeingSaved, setNewDnIfBeingSaved] = useState<string | null>(
+    null
+  );
+  const saveNewDisplayName = useCallback((toBeSaved: string) => {
+    if (toBeSaved === "") {
+      return;
+    }
+    setNewDnIfBeingSaved(toBeSaved); // optimistically render new display name
+    Utils.Http.put("/api/gun/me", {
+      displayName: toBeSaved
+    }).catch(e => {
+      setNewDnIfBeingSaved(null); // reverts to existing display name
+      alert(`There was an error setting a new display name: ${e.message}`);
     });
-  }, [availableTokens]);
+  }, []);
+  useEffect(() => {
+    // set placeholder display name back to null after getting the round trip
+    // from api
+    if (newDnIfBeingSaved === displayName) {
+      console.debug(`Got display name round trip from api.`);
+      setNewDnIfBeingSaved(null);
+    }
+  }, [newDnIfBeingSaved, displayName]);
+  const toggleDnModal = useCallback(() => {
+    setNewDisplayName(displayName);
+    setDnModalOpen(open => !open);
+  }, [displayName]);
+  const handleOkDnChange = useCallback(() => {
+    if (newDisplayName !== displayName) {
+      saveNewDisplayName(newDisplayName);
+    }
+    toggleDnModal();
+  }, [displayName, newDisplayName, saveNewDisplayName, toggleDnModal]);
+  const dnModalStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: "12px 24px"
+    }),
+    []
+  );
+  const handleNewDisplayNameChange = ({ target: { value } }) => {
+    setNewDisplayName(value);
+  };
+  //#endregion displayName -------------------------------------------------- //
+  //#region bio ------------------------------------------------------------- //
+  const { bio } = user;
+  const [bioModalOpen, setBioModalOpen] = useState(false);
+  // stores the bio input value
+  const [newBio, setNewBio] = useState(bio);
+  // stores the new bio while it's being uploaded
+  const [newBioIfBeingSaved, setNewBioIfBeingSaved] = useState<string | null>(
+    null
+  );
+  const saveNewBio = useCallback((toBeSaved: string) => {
+    if (toBeSaved === "") {
+      return;
+    }
+    setNewBioIfBeingSaved(toBeSaved); // optimistically render new bio
+    Utils.Http.put("/api/gun/me", {
+      bio: toBeSaved
+    }).catch(e => {
+      setNewBioIfBeingSaved(null); // reverts to existing bio
+      alert(`There was an error setting a new bio: ${e.message}`);
+    });
+  }, []);
+  useEffect(() => {
+    // set placeholder bio back to null after getting the round trip
+    // from api
+    if (newBioIfBeingSaved === bio) {
+      console.debug(`Got bio round trip from api.`);
+      setNewBioIfBeingSaved(null);
+    }
+  }, [newBioIfBeingSaved, bio]);
+  const toggleBioModal = useCallback(() => {
+    setNewBio(bio);
+    setBioModalOpen(open => !open);
+  }, [bio]);
+  const handleOkBioChange = useCallback(() => {
+    if (newBio !== bio) {
+      saveNewBio(newBio);
+    }
+    toggleBioModal();
+  }, [bio, newBio, saveNewBio, toggleBioModal]);
+  const bioModalStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: "12px 24px"
+    }),
+    []
+  );
+  const handleNewBioChange = ({ target: { value } }) => {
+    setNewBio(value);
+  };
+  //#endregion bio ---------------------------------------------------------- //
 
-  const streamTokensView = useMemo(() => {
-    return Object.entries(availableStreamTokens).map(([seedUrl, tokens]) => {
-      return (
-        <div key={`${seedUrl}`}>
-          URL: {seedUrl}
-          {
-            // @ts-expect-error
-            tokens.map((token, index) => {
-              return (
-                <div
-                  key={`${index}-${seedUrl}`}
-                  style={{ paddingLeft: "1rem" }}
-                >
-                  <p>{token}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-      );
-    });
-  }, [availableStreamTokens]);
   return (
     <>
       <div className="page-container profile-page">
@@ -484,10 +516,18 @@ const ProfilePage = () => {
             </div>
 
             <div className="profile-info">
-              <p className="profile-name" onClick={() => {}}>
-                {processedDisplayName}
+              <p
+                className={c(gStyles.unselectable, "profile-name")}
+                onClick={toggleDnModal}
+              >
+                {newDnIfBeingSaved || displayName}
               </p>
-              <p className="profile-desc">{user.bio || "Shockwallet user"}</p>
+              <p
+                className={c(gStyles.unselectable, "profile-desc")}
+                onClick={toggleBioModal}
+              >
+                {newBioIfBeingSaved || user.bio}
+              </p>
               <div className="config-btn" onClick={toggleConfigModal}>
                 <i className="config-btn-icon icon-solid-spending-rule" />
                 <p className="config-btn-text">Config</p>
@@ -531,18 +571,16 @@ const ProfilePage = () => {
               <p className="profile-choice-text">Offer a Service</p>
             </Link>
           </div>
+
+          <ProfileDivider onChange={handleViewChange} selected={selectedView} />
           <div className="">
-            <select
-              value={selectedView}
-              name="selectedView"
-              onChange={onInputChange}
-            >
-              <option value="posts">POSTS</option>
-              <option value="services">SERVICES</option>
-            </select>
             {selectedView === "posts" && renderPosts()}
             {selectedView === "services" && renderServices()}
           </div>
+
+          {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
+          <Pad amt={200} />
+
           <Modal
             toggleModal={toggleModal}
             modalOpen={profileModalOpen}
@@ -590,30 +628,6 @@ const ProfilePage = () => {
               padding: "2em 2em"
             }}
           >
-            <label htmlFor="newDisplayName">Display Name</label>
-            <input
-              autoCapitalize="none"
-              autoCorrect="off"
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new display name"}
-              name="newDisplayName"
-              onChange={({ target: { value } }) => {
-                setNewDisplayName(value);
-              }}
-            />
-
-            <label htmlFor="newBio">New Bio</label>
-            <input
-              type="text"
-              className="input-field"
-              placeholder={user.displayName || "new bio"}
-              name="newBio"
-              onChange={({ target: { value } }) => {
-                setNewBio(value);
-              }}
-            />
-
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
             <div className="web-client-prefix-picker">
@@ -689,7 +703,7 @@ const ProfilePage = () => {
             <div>You sure delete</div>
             <div className="flex-center" style={{ marginTop: "auto" }}>
               <button
-                onClick={toggleDeleteModal}
+                onClick={closeDeleteModal}
                 className="shock-form-button m-1"
               >
                 CANCEL
@@ -723,6 +737,81 @@ const ProfilePage = () => {
         accept="image/*"
         onChange={onSelectedHeaderFile}
       />
+
+      {
+        //#region displayNameModal
+      }
+
+      <Modal
+        contentStyle={dnModalStyle}
+        modalOpen={dnModalOpen}
+        toggleModal={toggleDnModal}
+      >
+        <label htmlFor="newDisplayName">Display Name</label>
+        <input
+          autoCapitalize="none"
+          autoCorrect="off"
+          type="text"
+          className="input-field"
+          placeholder={"New display name"}
+          name="newDisplayName"
+          onChange={handleNewDisplayNameChange}
+          value={newDisplayName}
+        />
+
+        {newDisplayName !== displayName && newDisplayName !== "" ? (
+          <button
+            onClick={handleOkDnChange}
+            className="shock-form-button-confirm m-1"
+          >
+            OK
+          </button>
+        ) : (
+          <button onClick={toggleDnModal} className="shock-form-button m-1">
+            GO BACK
+          </button>
+        )}
+      </Modal>
+
+      {
+        //#endregion displayNameModal
+      }
+
+      {
+        //#region bioModal
+      }
+      <Modal
+        contentStyle={bioModalStyle}
+        modalOpen={bioModalOpen}
+        toggleModal={toggleBioModal}
+      >
+        <label htmlFor="newBio">New Bio</label>
+        <input
+          autoCapitalize="none"
+          autoCorrect="off"
+          type="text"
+          className="input-field"
+          placeholder={"New bio"}
+          name="newBio"
+          onChange={handleNewBioChange}
+          value={newBio}
+        />
+        {newBio !== bio && newBio !== "" ? (
+          <button
+            onClick={handleOkBioChange}
+            className="shock-form-button-confirm m-1"
+          >
+            OK
+          </button>
+        ) : (
+          <button onClick={toggleBioModal} className="shock-form-button m-1">
+            GO BACK
+          </button>
+        )}
+      </Modal>
+      {
+        //#endregion bioModal
+      }
     </>
   );
 };

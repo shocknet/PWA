@@ -10,15 +10,33 @@ export const ACTIONS = {
   ADD_BOUGHT_SERVICE: "service/add/bought"
 };
 
-export const createService = (clear, encrypted) => async dispatch => {
-  const { data } = await Http.post("/api/gun/set", {
-    path: "$user>offeredServices",
-    value: clear
-  });
-  const { ok, id } = data;
-  if (!ok) {
-    return "";
+export const createService = (
+  clear,
+  encrypted,
+  serviceID
+) => async dispatch => {
+  let id = serviceID;
+  if (serviceID) {
+    const { data } = await Http.post("/api/gun/put", {
+      path: `$user>offeredServices>${id}`,
+      value: clear
+    });
+    const { ok } = data;
+    if (!ok) {
+      return "";
+    }
+  } else {
+    const { data } = await Http.post("/api/gun/set", {
+      path: "$user>offeredServices",
+      value: clear
+    });
+    const { ok, id: newID } = data;
+    if (!ok) {
+      return "";
+    }
+    id = newID;
   }
+
   const all = Object.entries(encrypted).map(([name, value]) => {
     if (!value) {
       return;
@@ -68,7 +86,7 @@ export const subscribeMyServices = hostIP => async dispatch => {
     onData: async services => {
       const servicesEntries = Object.entries(services);
       console.log(servicesEntries);
-  
+
       servicesEntries.forEach(async ([id]) => {
         if (id === "_") {
           return;
@@ -91,7 +109,7 @@ export const subscribeMyServices = hostIP => async dispatch => {
       });
     }
   });
-  
+
   return () => {
     subscription.off();
   };

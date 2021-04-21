@@ -167,7 +167,7 @@ const GoLive = () => {
   },[streamUrl])
   return <div className="h-100 m-1">
     {loading ? (
-      <Loader overlay fullScreen text="" />
+      <Loader overlay fullScreen text="Creating stream..." />
     ) : null}
     <DialogNav  drawerVisible={false} pageTitle="GO LIVE" />
     

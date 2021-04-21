@@ -4,12 +4,14 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
     "Embla",
+    "Millis",
     "Reqs",
     "SHOCKWALLET",
     "Sats",
     "Unmount",
     "autocorrect",
     "callout",
+    "endregion",
     "healthz",
     "immer",
     "luxon",
@@ -22,6 +24,8 @@
     "serv",
     "shockping",
     "unselectable",
+    "unsub",
+    "unsubbing",
     "uuidv",
     "videojs",
     "youtube"

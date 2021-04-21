@@ -1,10 +1,8 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
-import { rifle } from "../utils/WebSocket";
-import {
-  subscribeUserProfile,
-  unsubscribeUserProfile
-} from "./UserProfilesActions";
+import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
+
+import { subscribeUserProfile } from "./UserProfilesActions";
 
 export const ACTIONS = {
   RESET_FEED: "feed/reset",
@@ -51,10 +49,13 @@ export const loadSharedPost = (
   });
 };
 
-export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
+const USER_POSTS_QUERY_SUFFIX = `::posts::on`;
+
+export const subscribeUserPosts = publicKey => async dispatch => {
   const subscription = await rifle({
-    query: `${publicKey}::posts::on`,
+    query: publicKey + USER_POSTS_QUERY_SUFFIX,
     onData: posts => {
+      console.debug(`posts from: ${publicKey}: `, posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -62,12 +63,12 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
       const deletedPosts = postEntries
         .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
-  
+
       newPosts.map(async id => {
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${publicKey}/load/posts>${id}`
         );
-  
+
         dispatch({
           type: ACTIONS.ADD_USER_POST,
           data: {
@@ -77,32 +78,34 @@ export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
             type: "post"
           }
         });
+
+        deletedPosts.map(id =>
+          dispatch({
+            type: ACTIONS.DELETE_USER_POST,
+            data: {
+              id,
+              authorId: publicKey,
+              type: "post"
+            }
+          })
+        );
       });
-  
-      deletedPosts.map(id =>
-        dispatch({
-          type: ACTIONS.DELETE_USER_POST,
-          data: {
-            id,
-            authorId: publicKey,
-            type: "post"
-          }
-        })
-      );
     }
   });
   return subscription;
 };
 
-export const subscribeSharedUserPosts = publicKey => async (
-  dispatch,
-  getState
-) => {
-  const { hostIP } = getState().node;
+export const unsubUserPosts = publicKey => async () => {
+  unsubscribeRifleByQuery(publicKey + USER_POSTS_QUERY_SUFFIX);
+};
+
+const USER_SHARED_POSTS_QUERY_SUFFIX = `::sharedPosts::on`;
+
+export const subscribeSharedUserPosts = publicKey => async dispatch => {
   const subscription = await rifle({
-    host: hostIP,
-    query: `${publicKey}::sharedPosts::on`,
+    query: publicKey + USER_SHARED_POSTS_QUERY_SUFFIX,
     onData: posts => {
+      console.debug(`shared posts from ${publicKey}: `, posts);
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -110,12 +113,12 @@ export const subscribeSharedUserPosts = publicKey => async (
       const deletedPosts = postEntries
         .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
-  
+
       newPosts.map(async id => {
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
         );
-  
+
         dispatch({
           type: ACTIONS.ADD_USER_POST,
           data: {
@@ -125,60 +128,60 @@ export const subscribeSharedUserPosts = publicKey => async (
             type: "shared"
           }
         });
-  
-        await loadSharedPost(id, post.data.originalAuthor, publicKey)(dispatch);
+
+        deletedPosts.map(id =>
+          dispatch({
+            type: ACTIONS.DELETE_USER_POST,
+            data: {
+              id,
+              authorId: publicKey
+            }
+          })
+        );
       });
-  
-      deletedPosts.map(id =>
-        dispatch({
-          type: ACTIONS.DELETE_USER_POST,
-          data: {
-            id,
-            authorId: publicKey
-          }
-        })
-      );
     }
   });
   return subscription;
 };
 
-export const subscribeFollows = () => async (dispatch, getState) => {
-  const { hostIP, publicKey } = getState().node;
+export const unsubUserSharedPosts = publicKey => () => {
+  unsubscribeRifleByQuery(publicKey + USER_SHARED_POSTS_QUERY_SUFFIX);
+};
+
+const FOLLOWS_QUERY = "$user::follows::map.on";
+
+export const subscribeFollows = () => async dispatch => {
   const subscription = await rifle({
-    host: hostIP,
-    query: "$user::follows::map.on",
+    query: FOLLOWS_QUERY,
     reconnect: true,
     onData: async (follow, key) => {
       if (typeof key !== "string") {
         console.warn(`Invalid follow key received: ${key}`);
         return;
       }
-  
+
       if (!follow) {
-        unsubscribeUserProfile(key);
         dispatch(removeFollow(key));
         return;
       }
-  
+
       if (typeof follow.user !== "string") {
         console.warn(`Invalid follow user received (${follow.user})`);
         return;
       }
-  
+
       dispatch(addFollow(follow));
-      dispatch(subscribeUserProfile(follow.user));
-      dispatch(subscribeUserPosts(follow.user));
-      dispatch(subscribeSharedUserPosts(follow.user));
     }
   });
-  console.log("subbing follows");
-  //-- Subscribe to self, posts and shared posts are merged
-  //dispatch(subscribeUserProfile(publicKey))
-  dispatch(subscribeUserPosts(publicKey));
-  dispatch(subscribeSharedUserPosts(publicKey));
+
+  console.debug("subbing follows");
 
   return subscription;
+};
+
+export const unsubscribeFollows = () => () => {
+  console.debug("unsubbing follows");
+  unsubscribeRifleByQuery(FOLLOWS_QUERY);
 };
 
 export const sendTipPost = ({
@@ -205,12 +208,10 @@ export const sendTipPost = ({
   });
 };
 
-export const deleteUserPost = ({ id, authorId }) => dispatch => {
-  dispatch({
-    type: ACTIONS.DELETE_USER_POST,
-    data: {
-      id,
-      authorId
-    }
-  });
-};
+export const deleteUserPost = ({ id, authorId }) => ({
+  type: ACTIONS.DELETE_USER_POST,
+  data: {
+    id,
+    authorId
+  }
+});

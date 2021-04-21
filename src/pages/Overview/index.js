@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// @ts-check
+import { useCallback, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
@@ -16,13 +17,18 @@ import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
 import Transaction from "./components/Transaction";
 import "./css/index.css";
+import { Http } from "../../utils";
+import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
+import * as Store from "../../store";
 
 const OverviewPage = () => {
-
   const dispatch = useDispatch();
-  const totalBalance = useSelector(({ wallet }) => wallet.totalBalance ?? "0");
-  const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
-  const recentTransactions = useSelector(
+  const totalBalance = Store.useSelector(
+    ({ wallet }) => wallet.totalBalance ?? "0"
+  );
+  const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
+  const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const recentTransactions = Store.useSelector(
     ({ wallet }) => wallet.recentTransactions
   );
 
@@ -32,6 +38,51 @@ const OverviewPage = () => {
     fetchWalletBalance()(dispatch);
     fetchUnifiedTransactions()(dispatch);
   }, [dispatch]);
+
+  //load info about content provider stored into gun
+  const loadContentInfo = useCallback(async () => {
+    try {
+      const { data: serviceProvider } = await Http.get(
+        `/api/gun/user/load/seedServiceProviderPubKey`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        serviceProvider &&
+        typeof serviceProvider.data === "string" &&
+        serviceProvider.data !== ""
+      ) {
+        setSeedProviderPub(serviceProvider.data)(dispatch);
+      }
+      const { data: seedData } = await Http.get(
+        `/api/gun/user/load/seedServiceSeedData`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        seedData &&
+        typeof seedData.data === "string" &&
+        seedData.data !== ""
+      ) {
+        const JObject = JSON.parse(seedData.data);
+        if (JObject && JObject.seedUrl && JObject.seedToken) {
+          setSeedInfo(JObject.seedUrl, JObject.seedToken)(dispatch);
+        }
+      }
+    } catch (err) {
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err);
+    }
+  }, [dispatch, publicKey]);
+  useEffect(() => {
+    loadContentInfo();
+  }, [loadContentInfo]);
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
@@ -45,7 +96,7 @@ const OverviewPage = () => {
   return (
     <div className="page-container overview-page">
       <div className="overview-header">
-        <MainNav absolute />
+        <MainNav absolute pageTitle={undefined} />
         <div className="overview-balance-container">
           <p className="overview-balance-btc">
             {formattedBalance}{" "}
@@ -81,24 +132,27 @@ const OverviewPage = () => {
             return fetchUnifiedTransactions()(dispatch);
           }}
         >
-          {recentTransactions.map(transaction => (
-            <Transaction
-              time={
-                transaction.date
-                  ? DateTime.fromSeconds(
-                      parseInt(transaction.date, 10)
-                    ).toRelative()
-                  : "unknown"
-              }
-              message={
-                transaction.message ||
-                `${capitalizeText(transaction.type)} Transaction`
-              }
-              username={capitalizeText(transaction.type)}
-              value={formatNumber(transaction.value)}
-              key={transaction.hash}
-            />
-          ))}
+          <>
+            {recentTransactions.map(transaction => (
+              <Transaction
+                time={
+                  transaction.date
+                    ? DateTime.fromSeconds(
+                        parseInt(transaction.date, 10)
+                      ).toRelative()
+                    : "unknown"
+                }
+                message={
+                  transaction.message ||
+                  `${capitalizeText(transaction.type)} Transaction`
+                }
+                username={capitalizeText(transaction.type)}
+                value={formatNumber(transaction.value)}
+                key={transaction.hash}
+                type={transaction.type}
+              />
+            ))}
+          </>
         </PullToRefresh>
       </div>
       <BottomBar />

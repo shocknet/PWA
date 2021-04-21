@@ -2,12 +2,10 @@
 import React, {
   Suspense,
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState
 } from "react";
-import { useDispatch } from "react-redux";
 import * as Common from "shock-common";
 
 import { processDisplayName } from "../../utils/String";
@@ -18,7 +16,7 @@ import UserIcon from "./components/UserIcon";
 import SendTipModal from "./components/SendTipModal";
 import Loader from "../../common/Loader";
 
-import { subscribeFollows } from "../../actions/FeedActions";
+import { isSharedPost } from "../../schema";
 
 import "./css/index.css";
 import UnlockModal from "./components/UnlockModal";
@@ -27,8 +25,7 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
-  const dispatch = useDispatch();
-  const follows = Store.useSelector(({ feed }) => feed.follows);
+  const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
@@ -39,13 +36,24 @@ const FeedPage = () => {
     if (posts) {
       const feed = Object.values(posts)
         .reduce((posts, userPosts) => [...posts, ...userPosts], [])
-        .sort((a, b) => b.date - a.date);
+        .filter(p => {
+          if (isSharedPost(p)) {
+            return !!follows.find(f => f.user === p.sharerId);
+          }
+          return !!follows.find(f => f.user === p.authorId);
+        })
+        .sort((a, b) => {
+          const alpha = isSharedPost(a) ? a.shareDate : a.date;
+          const beta = isSharedPost(b) ? b.shareDate : b.date;
+
+          return beta - alpha;
+        });
 
       return feed;
     }
 
     return [];
-  }, [posts]);
+  }, [follows, posts]);
 
   const toggleTipModal = useCallback(
     tipData => {
@@ -69,16 +77,6 @@ const FeedPage = () => {
     },
     [unlockModalData]
   );
-
-  const startFollowsSubscription = useCallback(async () => {
-    const subscription = await dispatch(subscribeFollows());
-
-    return subscription;
-  }, [dispatch]);
-
-  useEffect(() => {
-    startFollowsSubscription();
-  }, [dispatch, startFollowsSubscription]);
 
   useLayoutEffect(() => {
     attachMedia(
@@ -120,27 +118,32 @@ const FeedPage = () => {
       </div>
       <div className="posts-holder">
         {followedPosts.map((post, index) => {
-          const profile = userProfiles[post.authorId];
-
           if (post.type === "shared") {
+            const sharerProfile =
+              userProfiles[post.sharerId] ||
+              Common.createEmptyUser(post.sharerId);
             const originalPublicKey = post.originalAuthor;
-            const originalProfile = userProfiles[originalPublicKey];
+            const originalProfile =
+              userProfiles[originalPublicKey] ||
+              Common.createEmptyUser(originalPublicKey);
             return (
               <Suspense fallback={<Loader />} key={index}>
                 <SharedPost
                   originalPost={post.originalPost}
                   originalPostProfile={originalProfile}
                   sharedTimestamp={post.shareDate}
-                  sharerProfile={profile}
+                  sharerProfile={sharerProfile}
                   postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
                   openUnlockModal={toggleUnlockModal}
-                  // TODO: User online status handling
-                  isOnlineNode
                 />
               </Suspense>
             );
           }
+
+          const profile =
+            userProfiles[post.authorId] ||
+            Common.createEmptyUser(post.authorId);
 
           return (
             <Suspense fallback={<Loader />} key={index}>
@@ -156,8 +159,6 @@ const FeedPage = () => {
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}
-                // TODO: User online status handling
-                isOnlineNode
                 tipCounter={undefined}
                 tipValue={undefined}
               />

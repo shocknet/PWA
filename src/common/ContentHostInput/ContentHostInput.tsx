@@ -9,7 +9,7 @@ import {
 
 import ContentHostInputView, { IHost } from "./components/ContentHostInputView";
 import { Http } from "../../utils";
-import {setSeedInfo,setSeedProviderPub} from '../../actions/ContentActions'
+import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 
 const ContentHostInput = () => {
   const dispatch = useDispatch();
@@ -21,97 +21,117 @@ const ContentHostInput = () => {
     ({ content }) => content.seedInfo
   );
   const [hosts, setHosts] = useState<IHost[]>([]);
+  const [providerProfile,setProviderProfile] = useState(null)
+  const [providedService,setProvidedService] = useState('')
+  //effect for user profile
   useEffect(()=>{
-    let pair = null
-    if(seedUrl && seedToken){
-      pair = {
-        URI:seedUrl,
-        token:seedToken,
-        price:0,
-        isBeingAddedOrDeleted:false,
-        dateAdded:Date.now(),
-        isDefault:true,
-        error:null,
-        publicKey:null
+    const provProfile = userProfiles[seedProviderPub]
+    if(!provProfile){
+      setProviderProfile(null)
+      return
+    }
+    if(!providerProfile){
+      setProviderProfile(provProfile)
+      return
+    }
+    if(provProfile.avatar !== providerProfile.avatar){
+      setProviderProfile(provProfile)
+      return
+    }
+    // @ts-expect-error
+    if(provProfile.SeedServiceProvided !== providerProfile.SeedServiceProvided){
+      setProviderProfile(provProfile)
+      return
+    }
+  },[userProfiles,seedProviderPub,providerProfile,setProviderProfile])
+  //effect to check provided service
+  useEffect(()=>{
+    if(!providerProfile){
+      return
+    }
+    const {SeedServiceProvided} = providerProfile
+    if(SeedServiceProvided !== providedService){
+      setProvidedService(SeedServiceProvided)
+    }
+  },[providerProfile,providedService,setProvidedService])
+  //effect to populate the hosts
+  useEffect(() => {
+    let toSet = [];
+    if (seedUrl && seedToken) {
+      toSet.push({
+        URI: seedUrl,
+        token: seedToken,
+        price: 0,
+        isBeingAddedOrDeleted: false,
+        dateAdded: Date.now(),
+        isDefault: true,
+        error: null,
+        publicKey: null
+      });
+    }
+    if (seedProviderPub && providerProfile) {
+      toSet.push({
+        dateAdded: Date.now(),
+        isBeingAddedOrDeleted: true,
+        isDefault: true,
+        publicKey: seedProviderPub,
+        price: 0,
+        URI: null,
+        token: null,
+        error: null
+      })
+    }
+    setHosts(toSet)
+  }, [seedUrl, seedToken, seedProviderPub,providerProfile, setHosts]);
+//effect to fetch provided service
+  useEffect(()=>{
+    if(!providedService){
+    return
+  }
+  Http.get(
+    `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${providedService}`
+  )
+  .then(({ data }) => {
+    const { data: service } = data;
+    const tmpHosts = [...hosts]
+    const providerIndex = tmpHosts.findIndex(host => !host.URI)
+    if(providerIndex === -1){
+      return
+    }
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
+    tmpHosts[providerIndex].price = service.servicePrice
+
+    setHosts(tmpHosts);
+  })
+  .catch(e => {
+    const tmpHosts = [...hosts]
+    const providerIndex = tmpHosts.findIndex(host => !host.URI)
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
+    tmpHosts[providerIndex].error = e.message || e
+    setHosts(tmpHosts);
+  });
+},[providedService,hosts,setHosts])
+  const addHost = useCallback(
+    (publicKeyOrURI, token) => {
+      if (publicKeyOrURI.startsWith("http")) {
+        setSeedInfo(publicKeyOrURI, token)(dispatch);
+      } else {
+        setSeedProviderPub(publicKeyOrURI)(dispatch);
       }
-      setHosts([pair])
-    }
-    console.log(userProfiles)
-    if(seedProviderPub && !userProfiles[seedProviderPub]){
-      setHosts([pair,{
-        dateAdded:Date.now(),
-        isBeingAddedOrDeleted:true,
-        isDefault:true,
-        publicKey:seedProviderPub,
-        price:0,
-        URI:null,
-        token:null,
-        error:null
-      }])
-    }
+    },
+    [setSeedInfo, setSeedProviderPub]
+  );
 
-
-    if(seedProviderPub && userProfiles[seedProviderPub]){
-      //@ts-expect-error
-      const {SeedServiceProvided} = userProfiles[seedProviderPub]
-      if(SeedServiceProvided){
-        setHosts([pair,{
-          dateAdded:Date.now(),
-          isBeingAddedOrDeleted:true,
-          isDefault:true,
-          publicKey:seedProviderPub,
-          price:0,
-          URI:null,
-          token:null,
-          error:null
-        }])
-        Http.get(
-          `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${SeedServiceProvided}`
-        ).then(({data})=>{
-          const {data:service} = data
-          console.log(service)
-          setHosts([pair,{
-            dateAdded:Date.now(),
-            isBeingAddedOrDeleted:false,
-            isDefault:true,
-            publicKey:seedProviderPub,
-            price:service.servicePrice,
-            URI:null,
-            token:null,
-            error:null
-          }])
-        })
-        .catch(e => {
-          setHosts([pair,{
-            dateAdded:Date.now(),
-            isBeingAddedOrDeleted:false,
-            isDefault:true,
-            publicKey:seedProviderPub,
-            price:0,
-            URI:null,
-            token:null,
-            error:e.message || e
-          }])
-        })
+  const removeHost = useCallback(
+    publicKeyOrURI => {
+      if (publicKeyOrURI.startsWith("http")) {
+        setSeedInfo("", "")(dispatch);
+      } else {
+        setSeedProviderPub("")(dispatch);
       }
-    }
-  },[seedUrl,seedToken,seedProviderPub,setHosts])
-  
-  const addHost = useCallback((publicKeyOrURI, token)=>{
-    if(publicKeyOrURI.startsWith("http")){
-      setSeedInfo(publicKeyOrURI,token)(dispatch)
-    } else {
-      setSeedProviderPub(publicKeyOrURI)(dispatch)
-    }
-  },[setSeedInfo,setSeedProviderPub])
-
-  const removeHost = useCallback((publicKeyOrURI) => {
-    if(publicKeyOrURI.startsWith("http")){
-      setSeedInfo("","")(dispatch)
-    } else {
-      setSeedProviderPub("")(dispatch)
-    }
-  },[setSeedInfo,setSeedProviderPub])
+    },
+    [setSeedInfo, setSeedProviderPub]
+  );
   const subbedUsers = useMemo<string[]>(() => [], []);
 
   useEffect(() => {
@@ -120,15 +140,15 @@ const ContentHostInput = () => {
       dispatch(unsubscribeUserProfile(seedProviderPub));
     };
   }, [seedProviderPub, dispatch]);
-  const filteredHosts = useMemo(()=>{
-    return hosts.filter(h => h)
-  },[hosts])
+  const filteredHosts = useMemo(() => {
+    return hosts.filter(h => h);
+  }, [hosts]);
   return (
     <ContentHostInputView
       hosts={filteredHosts}
       onAddHost={addHost}
       onRemoveHost={removeHost}
-      onRetryHost={()=>{}}
+      onRetryHost={() => {}}
     />
   );
 };
