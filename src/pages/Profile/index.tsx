@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import c from "classnames";
+import * as Common from "shock-common";
 
 import { processDisplayName } from "../../utils/String";
 
@@ -307,9 +308,13 @@ const ProfilePage = () => {
   const renderPosts = () => {
     return myPosts.map((post, index) => {
       if (post.type === "shared") {
-        const sharerProfile = userProfiles[post.sharerId];
+        // TODO: ensure users reducer receives sharer profiles
+        const sharerProfile =
+          userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
         const originalPublicKey = post.originalAuthor;
-        const originalProfile = userProfiles[originalPublicKey];
+        const originalProfile =
+          userProfiles[originalPublicKey] ||
+          Common.createEmptyUser(originalPublicKey);
         return (
           <Suspense
             fallback={<Loader />}
@@ -329,7 +334,8 @@ const ProfilePage = () => {
         );
       }
 
-      const profile = userProfiles[post.authorId];
+      const profile =
+        userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
 
       return (
         <Suspense fallback={<Loader />} key={post.id}>

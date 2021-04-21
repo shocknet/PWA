@@ -119,9 +119,13 @@ const FeedPage = () => {
       <div className="posts-holder">
         {followedPosts.map((post, index) => {
           if (post.type === "shared") {
-            const sharerProfile = userProfiles[post.sharerId];
+            const sharerProfile =
+              userProfiles[post.sharerId] ||
+              Common.createEmptyUser(post.sharerId);
             const originalPublicKey = post.originalAuthor;
-            const originalProfile = userProfiles[originalPublicKey];
+            const originalProfile =
+              userProfiles[originalPublicKey] ||
+              Common.createEmptyUser(originalPublicKey);
             return (
               <Suspense fallback={<Loader />} key={index}>
                 <SharedPost
@@ -137,7 +141,9 @@ const FeedPage = () => {
             );
           }
 
-          const profile = userProfiles[post.authorId];
+          const profile =
+            userProfiles[post.authorId] ||
+            Common.createEmptyUser(post.authorId);
 
           return (
             <Suspense fallback={<Loader />} key={index}>
