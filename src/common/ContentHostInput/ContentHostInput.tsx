@@ -21,10 +21,44 @@ const ContentHostInput = () => {
     ({ content }) => content.seedInfo
   );
   const [hosts, setHosts] = useState<IHost[]>([]);
+  const [providerProfile,setProviderProfile] = useState(null)
+  const [providedService,setProvidedService] = useState('')
+  //effect for user profile
+  useEffect(()=>{
+    const provProfile = userProfiles[seedProviderPub]
+    if(!provProfile){
+      setProviderProfile(null)
+      return
+    }
+    if(!providerProfile){
+      setProviderProfile(provProfile)
+      return
+    }
+    if(provProfile.avatar !== providerProfile.avatar){
+      setProviderProfile(provProfile)
+      return
+    }
+    // @ts-expect-error
+    if(provProfile.SeedServiceProvided !== providerProfile.SeedServiceProvided){
+      setProviderProfile(provProfile)
+      return
+    }
+  },[userProfiles,seedProviderPub,providerProfile,setProviderProfile])
+  //effect to check provided service
+  useEffect(()=>{
+    if(!providerProfile){
+      return
+    }
+    const {SeedServiceProvided} = providerProfile
+    if(SeedServiceProvided !== providedService){
+      setProvidedService(SeedServiceProvided)
+    }
+  },[providerProfile,providedService,setProvidedService])
+  //effect to populate the hosts
   useEffect(() => {
-    let pair = null;
+    let toSet = [];
     if (seedUrl && seedToken) {
-      pair = {
+      toSet.push({
         URI: seedUrl,
         token: seedToken,
         price: 0,
@@ -33,81 +67,50 @@ const ContentHostInput = () => {
         isDefault: true,
         error: null,
         publicKey: null
-      };
-      setHosts([pair]);
+      });
     }
-    if (seedProviderPub && !userProfiles[seedProviderPub]) {
-      setHosts([
-        pair,
-        {
-          dateAdded: Date.now(),
-          isBeingAddedOrDeleted: true,
-          isDefault: true,
-          publicKey: seedProviderPub,
-          price: 0,
-          URI: null,
-          token: null,
-          error: null
-        }
-      ]);
+    if (seedProviderPub && providerProfile) {
+      toSet.push({
+        dateAdded: Date.now(),
+        isBeingAddedOrDeleted: true,
+        isDefault: true,
+        publicKey: seedProviderPub,
+        price: 0,
+        URI: null,
+        token: null,
+        error: null
+      })
     }
+    setHosts(toSet)
+  }, [seedUrl, seedToken, seedProviderPub,providerProfile, setHosts]);
+//effect to fetch provided service
+  useEffect(()=>{
+    if(!providedService){
+    return
+  }
+  Http.get(
+    `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${providedService}`
+  )
+  .then(({ data }) => {
+    const { data: service } = data;
+    const tmpHosts = [...hosts]
+    const providerIndex = tmpHosts.findIndex(host => !host.URI)
+    if(providerIndex === -1){
+      return
+    }
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
+    tmpHosts[providerIndex].price = service.servicePrice
 
-    if (seedProviderPub && userProfiles[seedProviderPub]) {
-      //@ts-expect-error
-      const { SeedServiceProvided } = userProfiles[seedProviderPub];
-      if (SeedServiceProvided) {
-        setHosts([
-          pair,
-          {
-            dateAdded: Date.now(),
-            isBeingAddedOrDeleted: true,
-            isDefault: true,
-            publicKey: seedProviderPub,
-            price: 0,
-            URI: null,
-            token: null,
-            error: null
-          }
-        ]);
-        Http.get(
-          `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${SeedServiceProvided}`
-        )
-          .then(({ data }) => {
-            const { data: service } = data;
-            console.log(service);
-            setHosts([
-              pair,
-              {
-                dateAdded: Date.now(),
-                isBeingAddedOrDeleted: false,
-                isDefault: true,
-                publicKey: seedProviderPub,
-                price: service.servicePrice,
-                URI: null,
-                token: null,
-                error: null
-              }
-            ]);
-          })
-          .catch(e => {
-            setHosts([
-              pair,
-              {
-                dateAdded: Date.now(),
-                isBeingAddedOrDeleted: false,
-                isDefault: true,
-                publicKey: seedProviderPub,
-                price: 0,
-                URI: null,
-                token: null,
-                error: e.message || e
-              }
-            ]);
-          });
-      }
-    }
-  }, [seedUrl, seedToken, seedProviderPub, setHosts]);
-
+    setHosts(tmpHosts);
+  })
+  .catch(e => {
+    const tmpHosts = [...hosts]
+    const providerIndex = tmpHosts.findIndex(host => !host.URI)
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
+    tmpHosts[providerIndex].error = e.message || e
+    setHosts(tmpHosts);
+  });
+},[providedService,hosts,setHosts])
   const addHost = useCallback(
     (publicKeyOrURI, token) => {
       if (publicKeyOrURI.startsWith("http")) {
