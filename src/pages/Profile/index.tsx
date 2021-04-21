@@ -29,7 +29,7 @@ import ContentHostInput from "../../common/ContentHostInput";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
+import { rifle, unsubscribeRifleQuery } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
@@ -46,7 +46,7 @@ export type WebClientPrefix =
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [deletePostModalData,setDeletePostModalData] = useState(null)
+  const [deletePostModalData, setDeletePostModalData] = useState(null);
 
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
@@ -121,11 +121,10 @@ const ProfilePage = () => {
 
     (async () => {
       const socket = await rifle({
-        host: hostIP,
         query
       });
 
-      socket.on("$shock", (webClientPrefixReceived: unknown) => {
+      socket.onData((webClientPrefixReceived: unknown) => {
         if (typeof webClientPrefixReceived === "string") {
           setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
         } else {
@@ -138,13 +137,13 @@ const ProfilePage = () => {
         }
       });
 
-      socket.on("$error", (errorMessage: string) => {
+      socket.onError((errorMessage: string) => {
         alert(`There was an error fetching web client prefix: ${errorMessage}`);
       });
     })();
 
     return () => {
-      disconnectRifleSocket(query);
+      unsubscribeRifleQuery(query);
     };
   }, [hostIP, publicKey /* handles alias switch */]);
 
@@ -296,23 +295,23 @@ const ProfilePage = () => {
     [deletePostModalData]
   );
 
-  const deletePost = useCallback(async ()=>{
-    if(!deletePostModalData || !deletePostModalData.id){
-      return
+  const deletePost = useCallback(async () => {
+    if (!deletePostModalData || !deletePostModalData.id) {
+      return;
     }
-    console.log("deleting:")
-    console.log(deletePostModalData)
-    const key = deletePostModalData.shared ? "sharedPosts" :"posts"
-    await Utils.Http.post('/api/gun/put',{
-      path:`$user>${key}>${deletePostModalData.id}`,
-      value:null
-    })
+    console.log("deleting:");
+    console.log(deletePostModalData);
+    const key = deletePostModalData.shared ? "sharedPosts" : "posts";
+    await Utils.Http.post("/api/gun/put", {
+      path: `$user>${key}>${deletePostModalData.id}`,
+      value: null
+    });
     deleteUserPost({
-      id:deletePostModalData.id,
-      authorId:publicKey
-    })
-    toggleDeleteModal(null)
-  },[deletePostModalData])
+      id: deletePostModalData.id,
+      authorId: publicKey
+    });
+    toggleDeleteModal(null);
+  }, [deletePostModalData]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -685,7 +684,6 @@ const ProfilePage = () => {
           <Modal
             toggleModal={toggleDeleteModal}
             modalOpen={deletePostModalData}
-            
             contentStyle={{
               padding: "2em 2em"
             }}

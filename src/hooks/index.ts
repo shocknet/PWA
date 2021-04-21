@@ -16,11 +16,10 @@ export const useStory = (publicKey: string) => {
 
   const subscribeStory = React.useCallback(async () => {
     const sub = await rifle({
-      host: hostIP,
       query: `${publicKey}::story::open`
     });
 
-    sub.on("$shock", (pictures: unknown) => {
+    sub.onData((pictures: unknown) => {
       if (typeof pictures !== "object" || pictures === null) {
         return;
       }
@@ -30,19 +29,13 @@ export const useStory = (publicKey: string) => {
       );
     });
 
-    sub.on("error", (err: unknown) => {
+    sub.onError("error", (err: unknown) => {
       console.log(`Error inside story sub:`);
       console.log(err);
     });
 
-    sub.on("NOT_AUTH", () => {
-      console.warn(`NOT_AUTH inside story sub.`);
-      // TODO: dispatch token invalidation
-    });
-
     return () => {
-      sub.off("$shock");
-      sub.close();
+      sub.off();
     };
   }, [hostIP, publicKey]);
 

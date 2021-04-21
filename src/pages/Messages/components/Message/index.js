@@ -38,7 +38,7 @@ const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
     return () => {
       console.log("Closing Subscription...", publicKey);
       // @ts-expect-error
-      messagesListener?.close();
+      messagesListener?.off();
     };
   }, [messagesListener, subscribeMessages, publicKey, chatLoaded]);
 

@@ -1,7 +1,7 @@
 import * as Common from "shock-common";
 
 import * as Utils from "../utils";
-import { disconnectRifleSocket, rifle } from "../utils/WebSocket";
+import { unsubscribeRifleQuery, rifle } from "../utils/WebSocket";
 
 import { setAuthenticated } from "./AuthActions";
 
@@ -29,25 +29,22 @@ export const updateUserProfile = (
 export const subscribeUserProfile = (publicKey: string) => async (
   dispatch: (action: object) => void,
   getState: () => {
-    node: { hostIP: string };
     userProfiles: Record<string, Common.User>;
   }
 ) => {
-  const { hostIP } = getState().node;
   const [subscription, binarySub] = await Promise.all([
     rifle({
-      host: hostIP,
       query: `${publicKey}::Profile::on`,
       reconnect: true
     }),
     rifle({
-      host: hostIP,
       query: `${publicKey}::profileBinary::map.on`,
       reconnect: true
     })
   ]);
 
-  binarySub.on("$shock", (data, key: string) => {
+  binarySub.onData((data, key: string) => {
+    console.log("BINARY SOCKET")
     if (key === "avatar") {
       if (typeof data !== "string" && data !== null) {
         Utils.logger.error(
@@ -79,7 +76,7 @@ export const subscribeUserProfile = (publicKey: string) => async (
     }
   });
 
-  subscription.on("$shock", profile => {
+  subscription.onData(profile => {
     const { [publicKey]: existingUser } = getState().userProfiles;
 
     if (existingUser) {
@@ -96,36 +93,13 @@ export const subscribeUserProfile = (publicKey: string) => async (
     });
   });
 
-  const onError = (err: unknown) => {
-    if (err === Common.NOT_AUTH) {
-      dispatch(setAuthenticated(false));
-      return;
-    }
-
-    Utils.logger.error(
-      `Error inside user profile subscription ( ${publicKey} )`
-    );
-    Utils.logger.error(err);
-  };
-
-  const onNotAuth = () => {
-    dispatch(setAuthenticated(false));
-  };
-
-  binarySub.on("$error", onError);
-  subscription.on("$error", onError);
-  binarySub.on(Common.NOT_AUTH, onNotAuth);
-  subscription.on(Common.NOT_AUTH, onNotAuth);
-
   return () => {
-    binarySub.off("*");
-    binarySub.close();
-    subscription.off("*");
-    subscription.close();
+    binarySub.off();
+    subscription.off();
   };
 };
 
-export const unsubscribeUserProfile = publicKey => async () => {
-  disconnectRifleSocket(`${publicKey}::Profile::on`);
-  disconnectRifleSocket(`${publicKey}::profileBinary::map.on`);
+export const unsubscribeUserProfile = (publicKey: string) => async () => {
+  unsubscribeRifleQuery(`${publicKey}::Profile::on`);
+  unsubscribeRifleQuery(`${publicKey}::profileBinary::map.on`);
 };

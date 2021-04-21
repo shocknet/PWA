@@ -14,15 +14,31 @@ const options = {
   withCredentials: true
 };
 
-const rifleSockets = new Map();
+const rifleSubscriptions = new Map();
 
 export let GunSocket = null;
 
 export let LNDSocket = null;
 
-export const connectSocket = url => {
-  GunSocket = SocketIO.connect(`${url}/gun`, options);
-  LNDSocket = SocketIO.connect(`${url}/lndstreaming`, options);
+export const connectSocket = async (host = "", reconnect = false) => {
+  if (GunSocket && LNDSocket && !reconnect) {
+    return { GunSocket, LNDSocket };
+  }
+
+  if (GunSocket && LNDSocket && reconnect) {
+    disconnectSocket(GunSocket);
+    disconnectSocket(LNDSocket);
+  }
+
+  const { store } = await import("../store");
+  const socketOptions = {
+    ...options,
+    auth: {
+      encryptionId: store.getState().encryption.deviceId
+    }
+  };
+  GunSocket = SocketIO.connect(`${host}/gun`, socketOptions);
+  LNDSocket = SocketIO.connect(`${host}/lndstreaming`, socketOptions);
   return { GunSocket, LNDSocket };
 };
 
@@ -62,13 +78,14 @@ const decryptEventCallback = async ({ err, data, callback, privateKey }) => {
 };
 
 const encryptedEmit = socket => async (eventName, message, callback) => {
+  console.log("Emitting event:", eventName, message);
   // TODO: remove circular dep
   const { store } = await import("../store");
   const { hostKeys, userKeys } = store.getState().encryption;
   const { hostId } = store.getState().node;
 
-  if (!Encryption.isNonEncrypted(eventName)) {
-    socket.on(eventName, callback);
+  if (Encryption.isNonEncrypted(eventName)) {
+    socket.emit(eventName, message, callback);
     return;
   }
 
@@ -84,7 +101,7 @@ const encryptedEmit = socket => async (eventName, message, callback) => {
   const encryptedData = await (message
     ? Encryption.encryptMessage({
         publicKey: remotePublicKey,
-        message
+        message: JSON.stringify(message)
       })
     : null);
 
@@ -140,55 +157,36 @@ const encryptedOn = socket => async (eventName, callback) => {
   });
 };
 
-const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
+const subscribeSocket = ({ eventName, callback }) =>
   new Promise((resolve, reject) => {
     try {
       import("../store").then(({ store }) => {
-        const { encryption } = store.getState();
-        const DataSocket = SocketIO.connect(`${hostIP}/${namespace}`, {
-          ...options,
-          auth: {
-            token: authToken,
-            encryptionId: encryption.deviceId
-          }
-        });
-        const on = encryptedOn(DataSocket);
+        const on = encryptedOn(GunSocket);
+        const emit = encryptedEmit(GunSocket);
 
-        on("$shock", async data => {
+        console.log("Emitting:", `subscribe:${eventName}`);
+        emit(
+          `subscribe:${eventName}`,
+          {
+            token: store.getState().node.authToken
+          },
+          (err, data) => {
+            console.log(`subscribe:${eventName}`, err, data);
+            if (err) {
+              console.error(err);
+              reject(err);
+              return;
+            }
+          }
+        );
+
+        on(eventName, data => {
+          console.log(`subscribe:${eventName}`, data);
           if (callback) {
             callback(null, data);
             return;
           }
           resolve(data);
-        });
-
-        on("$error", async error => {
-          if (callback) {
-            callback(error);
-            return;
-          }
-          disconnectSocket(DataSocket);
-          reject(
-            new FieldError({
-              field: "socket",
-              message: error
-            })
-          );
-        });
-
-        on("error", error => {
-          console.error(error);
-          if (callback) {
-            callback(error);
-            return;
-          }
-          disconnectSocket(DataSocket);
-          reject(
-            new FieldError({
-              field: "socket",
-              message: error
-            })
-          );
         });
       });
     } catch (err) {
@@ -196,32 +194,36 @@ const fetchSocket = ({ hostIP, authToken, namespace, callback }) =>
     }
   });
 
-export const disconnectRifleSocket = query => {
-  const cachedSocket = rifleSockets.get(query);
+export const unsubscribeRifleQuery = query => {
+  const cachedSocket = rifleSubscriptions.get(query);
 
   if (cachedSocket) {
-    cachedSocket.off("*");
-    cachedSocket.close();
-    rifleSockets.delete(query);
+    cachedSocket.unsubscribe?.();
+    rifleSubscriptions.delete(query);
   }
 };
 
+export const unsubscribeEvent = (subscriptionId) => {
+  const emit = encryptedEmit(GunSocket);
+  emit("unsubscribe", {
+    subscriptionId
+  })
+}
+
 export const rifleSocketExists = query => {
-  const cachedSocket = rifleSockets.get(query);
+  const cachedSocket = rifleSubscriptions.get(query);
   return !!cachedSocket;
 };
 
 /**
  * @typedef {object} RifleParams
- * @prop {string} host
  * @prop {string} query
- * @prop {string=} publicKeyForDecryption
  * @prop {string=} publicKey Alias for publicKeyForDecryption
  * @prop {boolean=} reconnect
  */
 
 /**
- * Returns a socket wired up to the given query. Use `.on('$shock')` for values.
+ * Returns a socket wired up to the given query. Use `.onData(callback)` for values.
  * Please do not forget to listen to the NOT_AUTH event and react accordingly.
  * Query example:
  * ```js
@@ -232,7 +234,7 @@ export const rifleSocketExists = query => {
  * const pk = '....'
  * rifle(`${pk}::Profile::map.once`)
  * // results in:
- * gun.user(pk).get('Profile').get('displayName').map()once(...)
+ * gun.user(pk).get('Profile').get('displayName').map().once(...)
  *
  * rifle(`$gun::handshakeNodes::on`)
  * // results in:
@@ -241,53 +243,60 @@ export const rifleSocketExists = query => {
  * @param {RifleParams} args
  * @returns {Promise<SocketIOClient.Socket>}
  */
-export const rifle = async ({ host, query, publicKey, reconnect }) => {
-  // TODO: remove circular dep
-  const { store } = await import("../store");
-  const opts = {
-    ...options,
-    auth: {
-      encryptionId: store.getState().encryption.deviceId,
-      $shock: query,
-      publicKeyForDecryption: publicKey ?? ""
-    }
-  };
+export const rifle = ({ query, publicKey, reconnect }) =>
+  new Promise((resolve, reject) => {
+    import("../store").then(({ store }) => {
+      const subscribed = rifleSubscriptions.get(query);
 
-  const cachedSocket = rifleSockets.get(query);
+      if (reconnect && subscribed) {
+        unsubscribeRifleQuery(query);
+      }
 
-  if (reconnect && cachedSocket) {
-    disconnectRifleSocket(query);
-  }
+      if (!subscribed || reconnect) {
+        const on = encryptedOn(GunSocket);
+        const emit = encryptedEmit(GunSocket);
 
-  if (!cachedSocket || reconnect) {
-    const socket = SocketIO(`${host}/gun`, opts);
-    rifleSockets.set(query, socket);
-    const on = encryptedOn(socket);
-    const emit = encryptedEmit(socket);
+        emit(
+          "subscribe:query",
+          {
+            $shock: query,
+            token: store.getState().node.authToken,
+            publicKey
+          },
+          (err, data) => {
+            console.log("Gun rifle response:", err, data);
+            if (err) {
+              console.error(`Gun rifle error (${query})`);
+              console.error(err);
+              reject(err);
+              return;
+            }
+          }
+        );
 
-    on("$error", err => {
-      console.error(`Gun rifle error (${query})`);
-
-      console.error(err);
+        resolve({
+          onData: callback => {
+            console.log(`Subscribing query: query:${query}:data`)
+            on(`query:${query}:data`, (...args) => {
+              console.log("Received event:", `query:${query}:data`, args)
+              callback(...args)
+            });
+          },
+          onError: callback => {
+            on(`query:${query}:error`, callback);
+          },
+          off: () => unsubscribeRifleQuery(query)
+        });
+      }
     });
-
-    return {
-      on,
-      emit,
-      off: () => socket.off(),
-      close: () => socket.close()
-    };
-  }
-
-  return cachedSocket;
-};
+  });
 
 /**
  * @returns {{ messages: any , contacts: Contact[]}}
  */
-export const getChats = async ({ hostIP, authToken }) => {
+export const getChats = async ({ authToken }) => {
   try {
-    const chats = await fetchSocket({ hostIP, authToken, namespace: "chats" });
+    const chats = await subscribeSocket({ authToken, eventName: "chats" });
 
     const contacts = chats.map(chat => ({
       pk: chat.recipientPublicKey,
@@ -322,10 +331,10 @@ export const getChats = async ({ hostIP, authToken }) => {
 
 export const getSentRequests = async ({ hostIP, authToken }, callback) => {
   try {
-    const sentRequests = await fetchSocket({
+    const sentRequests = await subscribeSocket({
       hostIP,
       authToken,
-      namespace: "sentReqs",
+      eventName: "sentRequests",
       callback
     });
 
@@ -337,10 +346,10 @@ export const getSentRequests = async ({ hostIP, authToken }, callback) => {
 
 export const getReceivedRequests = async ({ hostIP, authToken }, callback) => {
   try {
-    const receivedRequests = await fetchSocket({
+    const receivedRequests = await subscribeSocket({
       hostIP,
       authToken,
-      namespace: "receivedReqs",
+      eventName: "receivedRequests",
       callback
     });
 

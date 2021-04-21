@@ -20,7 +20,6 @@ const ScanStep = () => {
         const { withProtocolHostIP } = await connectHost(
           `${noProtocolHostIP}:${walletPort}`
         )(dispatch);
-        connectSocket(withProtocolHostIP);
         return true;
       } catch (error) {
         return false;

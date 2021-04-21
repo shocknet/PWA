@@ -1,6 +1,6 @@
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
-import { disconnectRifleSocket, rifle } from "../utils/WebSocket";
+import { rifle } from "../utils/WebSocket";
 import {
   subscribeUserProfile,
   unsubscribeUserProfile
@@ -52,12 +52,12 @@ export const loadSharedPost = (
 };
 
 export const subscribeUserPosts = publicKey => async (dispatch, getState) => {
-  const { hostIP } = getState().node;
   const subscription = await rifle({
-    host: hostIP,
     query: `${publicKey}::posts::on`
   });
-  subscription.on("$shock", posts => {
+  console.log("Subscription:", subscription)
+  subscription.onData(posts => {
+    console.log("Subscription onData:", posts)
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -105,7 +105,7 @@ export const subscribeSharedUserPosts = publicKey => async (
     host: hostIP,
     query: `${publicKey}::sharedPosts::on`
   });
-  subscription.on("$shock", posts => {
+  subscription.onData(posts => {
     const postEntries = Object.entries(posts);
     const newPosts = postEntries
       .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -158,7 +158,7 @@ export const subscribeFollows = () => async (dispatch, getState) => {
   dispatch(subscribeUserPosts(publicKey));
   dispatch(subscribeSharedUserPosts(publicKey));
 
-  subscription.on("$shock", async (follow, key) => {
+  subscription.onData(async (follow, key) => {
     if (typeof key !== "string") {
       console.warn(`Invalid follow key received: ${key}`);
       return;
@@ -208,11 +208,12 @@ export const sendTipPost = ({
   });
 };
 
-export const deleteUserPost = ({id,authorId}) => dispatch => {
+export const deleteUserPost = ({ id, authorId }) => dispatch => {
   dispatch({
-    type:ACTIONS.DELETE_USER_POST,
-    data:{
-      id,authorId
+    type: ACTIONS.DELETE_USER_POST,
+    data: {
+      id,
+      authorId
     }
-  })
-}
+  });
+};

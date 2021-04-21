@@ -2,7 +2,6 @@ import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
-import { connectSocket } from "../../../../utils/WebSocket";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 
 const HostStep = () => {
@@ -35,7 +34,6 @@ const HostStep = () => {
       const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
         dispatch
       );
-      connectSocket(withProtocolHostIP);
     } catch (error) {
       setConnecting(false);
       setError("Unable to connect to host");

@@ -161,12 +161,11 @@ export const subscribeChatMessages = (
   }
 
   const incomingMessages = await rifle({
-    host: hostIP,
     query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
     publicKey: recipientPublicKey
   });
 
-  incomingMessages.on("$shock", (message, id) => {
+  incomingMessages.onData((message, id) => {
     if (!message.body || message.body === initialMessagePrefix) {
       return;
     }

@@ -15,7 +15,7 @@ import {
 import {
   rifle,
   rifleSocketExists,
-  disconnectRifleSocket
+  unsubscribeRifleQuery
 } from "../../utils/WebSocket";
 
 import BottomBar from "../../common/BottomBar";
@@ -63,12 +63,10 @@ const OtherUserPage = () => {
   const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = await rifle({
-      host: hostIP,
       query,
-      publicKey: "",
       reconnect: false
     });
-    subscription.on("$shock", async posts => {
+    subscription.onData(async posts => {
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -93,12 +91,10 @@ const OtherUserPage = () => {
     const query = `${userPublicKey}::sharedPosts::on`;
     const socketExists = rifleSocketExists(query);
     const subscription = await rifle({
-      host: hostIP,
       query,
-      publicKey: "",
       reconnect: false
     });
-    subscription.on("$shock", async posts => {
+    subscription.onData(async posts => {
       const postEntries = Object.entries(posts);
       const newPosts = postEntries
         .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
@@ -127,7 +123,7 @@ const OtherUserPage = () => {
     });
     if (!socketExists) {
       return () => {
-        disconnectRifleSocket(query);
+        unsubscribeRifleQuery(query);
       };
     }
   }, [hostIP, userPublicKey]);
