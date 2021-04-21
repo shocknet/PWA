@@ -3,9 +3,7 @@ import { ACTIONS } from "../actions/AuthActions";
 const INITIAL_STATE = {
   authenticated: false,
   authStep: "host",
-  authMethod: null,
-  userSessionKey: null,
-  APISessionKey: null
+  authMethod: null
 };
 
 const defaultSteps = {

@@ -40,33 +40,24 @@ const Story: React.FC<StoryProps> = ({
   const { hostIP } = Store.useSelector(state => state.node);
   const subscribeStory = React.useCallback(async () => {
     const sub = await rifle({
-      host: hostIP,
-      query: `${publicKey}::story::open`
-    });
-
-    sub.on("$shock", (pictures: unknown) => {
-      if (typeof pictures !== "object" || pictures === null) {
-        return;
+      query: `${publicKey}::story::open`,
+      onData: (pictures: unknown) => {
+        if (typeof pictures !== "object" || pictures === null) {
+          return;
+        }
+  
+        setPics(
+          Object.values(pictures).filter(p => typeof p === "object" && p !== null)
+        );
+      },
+      onError: err => {
+        console.log(`Error inside story sub:`);
+        console.log(err);
       }
-
-      setPics(
-        Object.values(pictures).filter(p => typeof p === "object" && p !== null)
-      );
-    });
-
-    sub.on("error", err => {
-      console.log(`Error inside story sub:`);
-      console.log(err);
-    });
-
-    sub.on("NOT_AUTH", () => {
-      console.warn(`NOT_AUTH inside story sub.`);
-      // TODO: dispatch token invalidation
     });
 
     return () => {
-      sub.off("$shock");
-      sub.close();
+      sub.off();
     };
   }, [hostIP, publicKey]);
 

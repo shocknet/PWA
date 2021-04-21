@@ -34,7 +34,7 @@ import Pad from "../../common/Pad";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle, disconnectRifleSocket } from "../../utils/WebSocket";
+import { rifle, unsubscribeRifleById } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
@@ -117,16 +117,12 @@ const ProfilePage = () => {
     }
   }, [newWebClientPrefix, publicKey]);
 
-  useEffect(() => {
+  const subscribeClientPrefix = useCallback(async () => {
     const query = `$user::Profile>webClientPrefix::on`;
 
-    (async () => {
-      const socket = await rifle({
-        host: hostIP,
-        query
-      });
-
-      socket.on("$shock", (webClientPrefixReceived: unknown) => {
+    const socket = await rifle({
+      query,
+      onData: (webClientPrefixReceived: unknown) => {
         if (typeof webClientPrefixReceived === "string") {
           setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
         } else {
@@ -137,17 +133,22 @@ const ProfilePage = () => {
             alert(`Error setting default web client prefix: ${e.message}`);
           });
         }
-      });
-
-      socket.on("$error", (errorMessage: string) => {
+      },
+      onError: (errorMessage: string) => {
         alert(`There was an error fetching web client prefix: ${errorMessage}`);
-      });
-    })();
+      }
+    });
+
+    return socket;
+  }, [hostIP, publicKey /* handles alias switch */]);
+
+  useEffect(() => {
+    const subscription = subscribeClientPrefix();
 
     return () => {
-      disconnectRifleSocket(query);
+      subscription.then(query => query.off?.());
     };
-  }, [hostIP, publicKey /* handles alias switch */]);
+  }, [subscribeClientPrefix]);
 
   const handleViewChange = useCallback((view: "posts" | "services") => {
     setSelectedView(view);

@@ -15,7 +15,7 @@ import {
 import {
   rifle,
   rifleSocketExists,
-  disconnectRifleSocket
+  unsubscribeRifleById
 } from "../../utils/WebSocket";
 
 import BottomBar from "../../common/BottomBar";
@@ -64,73 +64,71 @@ const OtherUserPage = () => {
   const subscribeUserPosts = useCallback(async () => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = await rifle({
-      host: hostIP,
       query,
-      publicKey: "",
-      reconnect: false
+      reconnect: false,
+      onData: async posts => {
+        const postEntries = Object.entries(posts);
+        const newPosts = postEntries
+          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
+          .map(([key]) => key);
+  
+        const proms = newPosts.map(async id => {
+          const { data: post } = await Http.get(
+            `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
+          );
+          return { ...post.data, id, authorId: userPublicKey };
+        });
+        const postsAlmostReady = await Promise.allSettled(proms);
+        const postsReady = postsAlmostReady
+          .filter(maybeOk => maybeOk.status === "fulfilled")
+          //@ts-expect-error
+          .map(res => res.value);
+        setUserPosts(postsReady);
+      }
     });
-    subscription.on("$shock", async posts => {
-      const postEntries = Object.entries(posts);
-      const newPosts = postEntries
-        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
 
-      const proms = newPosts.map(async id => {
-        const { data: post } = await Http.get(
-          `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
-        );
-        return { ...post.data, id, authorId: userPublicKey };
-      });
-      const postsAlmostReady = await Promise.allSettled(proms);
-      const postsReady = postsAlmostReady
-        .filter(maybeOk => maybeOk.status === "fulfilled")
-        //@ts-expect-error
-        .map(res => res.value);
-      setUserPosts(postsReady);
-    });
-  }, [hostIP, userPublicKey]);
+    return () => {
+      subscription.off()
+    }
+  }, [userPublicKey]);
 
   const subscribeSharedPosts = useCallback(async () => {
     const query = `${userPublicKey}::sharedPosts::on`;
-    const socketExists = rifleSocketExists(query);
     const subscription = await rifle({
-      host: hostIP,
       query,
-      publicKey: "",
-      reconnect: false
+      reconnect: false,
+      onData: async posts => {
+        const postEntries = Object.entries(posts);
+        const newPosts = postEntries
+          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
+          .map(([key]) => key);
+  
+        const proms = newPosts.map(async id => {
+          const { data: shared } = await Http.get(
+            `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
+          );
+          const { data: post } = await Http.get(
+            `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
+          );
+          return {
+            ...shared.data,
+            originalPost: { ...post.data, id },
+            authorId: userPublicKey,
+            type: "shared"
+          };
+        });
+        const postsAlmostReady = await Promise.allSettled(proms);
+        const postsReady = postsAlmostReady
+          .filter(maybeOk => maybeOk.status === "fulfilled")
+          // @ts-expect-error
+          .map(res => res.value);
+        setUserSharedPosts(postsReady);
+      }
     });
-    subscription.on("$shock", async posts => {
-      const postEntries = Object.entries(posts);
-      const newPosts = postEntries
-        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
 
-      const proms = newPosts.map(async id => {
-        const { data: shared } = await Http.get(
-          `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
-        );
-        const { data: post } = await Http.get(
-          `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
-        );
-        return {
-          ...shared.data,
-          originalPost: { ...post.data, id },
-          authorId: userPublicKey,
-          type: "shared"
-        };
-      });
-      const postsAlmostReady = await Promise.allSettled(proms);
-      const postsReady = postsAlmostReady
-        .filter(maybeOk => maybeOk.status === "fulfilled")
-        // @ts-expect-error
-        .map(res => res.value);
-      setUserSharedPosts(postsReady);
-    });
-    if (!socketExists) {
-      return () => {
-        disconnectRifleSocket(query);
-      };
-    }
+    return () => {
+      subscription.off();
+    };
   }, [hostIP, userPublicKey]);
 
   //effect for user profile

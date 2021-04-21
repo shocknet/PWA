@@ -123,7 +123,7 @@ const ChatPage = () => {
       const resolvedSubscription = await subscription;
       // @ts-expect-error Until thunks are better typed and also dispatch is
       // this will throw
-      resolvedSubscription?.close();
+      resolvedSubscription?.off();
     };
   }, [dispatch, gunPublicKey, recipientPublicKey]);
 

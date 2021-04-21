@@ -4,6 +4,7 @@ import Http from "axios";
 import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
 import { parseError } from "../utils/Error";
 import { throttledExchangeKeyPair } from "./EncryptionActions";
+import { connectSocket } from "../utils/WebSocket";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
@@ -126,6 +127,8 @@ export const connectHost = (
       dispatch(fetchNodeUnlockStatus()),
       dispatch(throttledExchangeKeyPair())
     ]);
+
+    connectSocket(host, true);
   };
 
   let nodeHealthHttps;

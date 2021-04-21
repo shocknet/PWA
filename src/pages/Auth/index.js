@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DateTime } from "luxon";
-import { connectSocket } from "../../utils/WebSocket";
 import Http from "../../utils/Http";
 import { connectHost } from "../../actions/NodeActions";
 import { setAuthenticated, setAuthStep } from "../../actions/AuthActions";
@@ -87,7 +86,6 @@ const AuthPage = () => {
             console.log(walletStatus);
           }
           setAuthStep("unlockWallet");
-          connectSocket(cachedHostIP);
           setLoading(false);
           dispatch(setAuthenticated(authenticated.data));
           return;

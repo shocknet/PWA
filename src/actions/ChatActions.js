@@ -161,36 +161,34 @@ export const subscribeChatMessages = (
   }
 
   const incomingMessages = await rifle({
-    host: hostIP,
     query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
-    publicKey: recipientPublicKey
-  });
-
-  incomingMessages.on("$shock", (message, id) => {
-    if (!message.body || message.body === initialMessagePrefix) {
-      return;
+    publicKey: recipientPublicKey,
+    onData: (message, id) => {
+      if (!message.body || message.body === initialMessagePrefix) {
+        return;
+      }
+      /** @type {RawMessage} */
+      const rawMsg = message;
+  
+      /** @type {ChatMessage} */
+      const msg = {
+        body: rawMsg.body,
+        id,
+        localId: id,
+        outgoing: false,
+        recipientPublicKey,
+        status: Schema.CHAT_MESSAGE_STATUS.SENT,
+        timestamp: rawMsg.timestamp
+      };
+  
+      /** @type {ReceivedMessageAction} */
+      const action = {
+        type: ACTIONS.RECEIVED_MESSAGE,
+        data: msg
+      };
+  
+      dispatch(action);
     }
-    /** @type {RawMessage} */
-    const rawMsg = message;
-
-    /** @type {ChatMessage} */
-    const msg = {
-      body: rawMsg.body,
-      id,
-      localId: id,
-      outgoing: false,
-      recipientPublicKey,
-      status: Schema.CHAT_MESSAGE_STATUS.SENT,
-      timestamp: rawMsg.timestamp
-    };
-
-    /** @type {ReceivedMessageAction} */
-    const action = {
-      type: ACTIONS.RECEIVED_MESSAGE,
-      data: msg
-    };
-
-    dispatch(action);
   });
 
   return incomingMessages;
