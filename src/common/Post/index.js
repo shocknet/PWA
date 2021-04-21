@@ -42,9 +42,9 @@ const Post = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = selfPublicKey === publicKey;
 
-  const isOnlineNode = Utils.isOnline(
+  const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
-  );
+  );*/false
 
   const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
