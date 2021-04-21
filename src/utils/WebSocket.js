@@ -186,7 +186,7 @@ const subscribeSocket = ({ eventName, callback }) =>
           {
             token: store.getState().node.authToken
           },
-          (err, data) => {
+          (err) => {
             if (err) {
               console.error(err);
               reject(err);
@@ -298,6 +298,7 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
             reject(err);
             return;
           }
+          
           rifleSubscriptions.set(data.subscriptionId, { 
             onData, 
             onError,
