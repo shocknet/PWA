@@ -28,7 +28,8 @@ const DarkPage: R.FC<DarkPageProps> = ({
 
   return (
     <div
-      className={c(styles.container, scrolls && styles["container-scrolls"], {
+      className={c(styles.container, {
+        [styles["container-scrolls"]]: !!scrolls,
         [gStyles.col]: !!justify,
         [gStyles.centerJustify]: justify === "center"
       })}
