@@ -79,9 +79,11 @@ const feed = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.ADD_USER_POST: {
       const { data } = action;
-      const authorId = data.authorId;
+      /** @type {SharedPost} */
+      const receivedPost = data;
+      const authorId = receivedPost.authorId;
       const userPosts = state.posts[authorId] ?? [];
-      const existingPost = userPosts.find(post => data.id === post.id);
+      const existingPost = userPosts.find(post => receivedPost.id === post.id);
 
       if (existingPost) {
         return state;
@@ -91,7 +93,7 @@ const feed = (state = INITIAL_STATE, action) => {
         ...state,
         posts: {
           ...state.posts,
-          [authorId]: [...userPosts, data]
+          [authorId]: [...userPosts, receivedPost]
         }
       };
     }
