@@ -10,7 +10,8 @@ const options = {
   reconnection: true,
   rejectUnauthorized: false,
   parser: binaryParser,
-  withCredentials: true
+  withCredentials: true,
+  transports: ["websocket"]
 };
 
 const rifleSubscriptions = new Map();
@@ -39,24 +40,24 @@ export const connectSocket = async (host = "", reconnect = false) => {
   GunSocket = SocketIO.connect(`${host}/gun`, socketOptions);
   LNDSocket = SocketIO.connect(`${host}/lndstreaming`, socketOptions);
 
-  const GunOn = encryptedOn(GunSocket)
+  const GunOn = encryptedOn(GunSocket);
 
   // Subscribe to Rifle query events as soon as the socket is connected
-  GunOn("query:data", (event) => {
-    const subscription = rifleSubscriptions.get(event.subscriptionId)
-    
-    if (subscription) {
-      subscription.onData?.(event.response.data, event.response.key)
-    }
-  })
+  GunOn("query:data", event => {
+    const subscription = rifleSubscriptions.get(event.subscriptionId);
 
-  GunOn("query:error", (event) => {
-    const subscription = rifleSubscriptions.get(event.subscriptionId)
-    
     if (subscription) {
-      subscription.onError?.(event.response.data, event.response.key)
+      subscription.onData?.(event.response.data, event.response.key);
     }
-  })
+  });
+
+  GunOn("query:error", event => {
+    const subscription = rifleSubscriptions.get(event.subscriptionId);
+
+    if (subscription) {
+      subscription.onError?.(event.response.data, event.response.key);
+    }
+  });
   return { GunSocket, LNDSocket };
 };
 
@@ -186,7 +187,7 @@ const subscribeSocket = ({ eventName, callback }) =>
           {
             token: store.getState().node.authToken
           },
-          (err) => {
+          err => {
             if (err) {
               console.error(err);
               reject(err);
@@ -212,7 +213,7 @@ export const unsubscribeRifleById = subscriptionId => {
   const cachedSocket = rifleSubscriptions.get(subscriptionId);
 
   if (cachedSocket) {
-    unsubscribeEvent(subscriptionId)
+    unsubscribeEvent(subscriptionId);
     rifleSubscriptions.delete(subscriptionId);
   }
 };
@@ -222,23 +223,30 @@ export const unsubscribeRifleByQuery = query => {
 
   subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
-      unsubscribeRifleById(id)
-      return true
+      unsubscribeRifleById(id);
+      return true;
     }
 
-    return false
-  })
+    return false;
+  });
 };
 
-export const unsubscribeEvent = (subscriptionId) => new Promise((resolve) => {
-  const emit = encryptedEmit(GunSocket);
-  emit("unsubscribe", {
-    subscriptionId
-  }, () => {
-    console.debug(`[SOCKET] Unsubscribed from event successfully! (${subscriptionId})`)
-    resolve(true)
-  })
-})
+export const unsubscribeEvent = subscriptionId =>
+  new Promise(resolve => {
+    const emit = encryptedEmit(GunSocket);
+    emit(
+      "unsubscribe",
+      {
+        subscriptionId
+      },
+      () => {
+        console.debug(
+          `[SOCKET] Unsubscribed from event successfully! (${subscriptionId})`
+        );
+        resolve(true);
+      }
+    );
+  });
 
 export const rifleSocketExists = query => {
   const cachedSocket = rifleSubscriptions.get(query);
@@ -279,8 +287,8 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   new Promise((resolve, reject) => {
     import("../store").then(({ store }) => {
       if (reconnect) {
-        unsubscribeRifleByQuery(query)
-      }      
+        unsubscribeRifleByQuery(query);
+      }
 
       const emit = encryptedEmit(GunSocket);
 
@@ -298,12 +306,12 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
             reject(err);
             return;
           }
-          
-          rifleSubscriptions.set(data.subscriptionId, { 
-            onData, 
+
+          rifleSubscriptions.set(data.subscriptionId, {
+            onData,
             onError,
             query
-          })
+          });
 
           resolve({
             off: () => unsubscribeRifleById(data.subscriptionId)
