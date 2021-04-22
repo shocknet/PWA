@@ -36,7 +36,7 @@ const offerServicePage = React.lazy(() =>
   import("./pages/Profile/offerService")
 );
 const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
-const GoLivePage = React.lazy(() => import("./pages/Profile/goLive"));
+const GoLivePage = React.lazy(() => import("./pages/Profile/GoLive/GoLive"));
 const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
 const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
