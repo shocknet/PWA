@@ -1,3 +1,4 @@
+// @ts-check
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
@@ -29,22 +30,22 @@ export const addFollow = follow => dispatch =>
   });
 
 export const loadSharedPost = (
-  postId,
-  publicKey,
+  originalPostId,
+  originalPublicKey,
   sharerPublicKey
 ) => async dispatch => {
   const { data: post } = await Http.get(
-    `/api/gun/otheruser/${publicKey}/load/posts>${postId}`
+    `/api/gun/otheruser/${originalPublicKey}/load/posts>${originalPostId}`
   );
-  dispatch(subscribeUserProfile(publicKey));
+  dispatch(subscribeUserProfile(originalPublicKey));
 
   dispatch({
     type: ACTIONS.LOAD_SHARED_POST,
     data: {
       ...post.data,
-      authorId: publicKey,
+      authorId: originalPublicKey,
       sharerId: sharerPublicKey,
-      id: postId
+      id: originalPostId
     }
   });
 };
@@ -115,30 +116,41 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
         .map(([key]) => key);
 
       newPosts.map(async id => {
-        const { data: post } = await Http.get(
+        const res = await Http.get(
           `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
         );
 
+        /** @type {import('shock-common').SharedPostRaw} */
+        const post = res.data.data;
+
+        /** @type {import('../schema').SharedPost} */
+        const processedPost = {
+          authorId: publicKey,
+          id,
+          originalAuthor: post.originalAuthor,
+          shareDate: post.shareDate,
+          sharerId: publicKey,
+          originalPost: undefined,
+          type: "shared"
+        };
         dispatch({
           type: ACTIONS.ADD_USER_POST,
-          data: {
-            ...post.data,
-            id,
-            authorId: publicKey,
-            type: "shared"
-          }
+          data: processedPost
         });
 
-        deletedPosts.map(id =>
-          dispatch({
-            type: ACTIONS.DELETE_USER_POST,
-            data: {
-              id,
-              authorId: publicKey
-            }
-          })
-        );
+        console.debug("dispatching shared post load");
+        dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
       });
+
+      deletedPosts.map(id =>
+        dispatch({
+          type: ACTIONS.DELETE_USER_POST,
+          data: {
+            id,
+            authorId: publicKey
+          }
+        })
+      );
     }
   });
   return subscription;

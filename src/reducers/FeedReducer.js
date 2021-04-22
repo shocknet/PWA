@@ -12,8 +12,9 @@ import { ACTIONS } from "../actions/FeedActions";
 const INITIAL_STATE = {
   follows: /** @type {Follow[]} */ ([
     {
-      user: "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
-      status: 'ok',
+      user:
+        "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+      status: "ok",
       private: false
     }
   ]),
@@ -79,9 +80,11 @@ const feed = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.ADD_USER_POST: {
       const { data } = action;
-      const authorId = data.authorId;
+      /** @type {SharedPost} */
+      const receivedPost = data;
+      const authorId = receivedPost.authorId;
       const userPosts = state.posts[authorId] ?? [];
-      const existingPost = userPosts.find(post => data.id === post.id);
+      const existingPost = userPosts.find(post => receivedPost.id === post.id);
 
       if (existingPost) {
         return state;
@@ -91,7 +94,7 @@ const feed = (state = INITIAL_STATE, action) => {
         ...state,
         posts: {
           ...state.posts,
-          [authorId]: [...userPosts, data]
+          [authorId]: [...userPosts, receivedPost]
         }
       };
     }
