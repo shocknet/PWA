@@ -89,7 +89,7 @@
 
 /* -------------------------------------------------------------------------- */
 
-@value PAD_H: 24px;
+@value PAD_H: 1em;
 
 /**
  * The most common horizontal padding in app. Only applied to the left.
@@ -365,6 +365,10 @@
 
 .opacity-three-quarters {
   opacity: 0.75;
+}
+
+.display-none {
+  display: none;
 }
 
 /* -------------------------------------------------------------------------- */

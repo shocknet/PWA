@@ -204,6 +204,10 @@ button {
   background-color: rgba(0, 0, 0, 0);
 }
 
+.shock-form-button:disabled {
+  opacity: 0.5;
+}
+
 p.shock-form-button-text {
   line-height: 1;
   font-weight: 500;
@@ -219,6 +223,10 @@ p.shock-form-button-text {
   background-color: var(--main-blue);
   color: white;
   border: 1px solid white;
+}
+
+.shock-form-button-confirm:disabled {
+  opacity: 0.5;
 }
 
 .h-100 {

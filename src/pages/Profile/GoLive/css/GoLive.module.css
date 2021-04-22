@@ -1,0 +1,14 @@
+.stream-type-btn {
+  padding: 24px 0px;
+  flex-grow: 1;
+}
+
+.stream-type-btn-icon {
+  font-size: 2em;
+  color: white;
+}
+
+.obs-logo {
+  width: 2em;
+  height: 2em;
+}
