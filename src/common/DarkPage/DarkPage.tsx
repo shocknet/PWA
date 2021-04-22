@@ -9,6 +9,7 @@ import styles from "./css/DarkPage.module.css";
 
 export interface DarkPageProps {
   justify?: "start" | "center";
+  padding?: boolean;
   pageTitle?: string;
   scrolls?: boolean;
 }
@@ -16,6 +17,7 @@ export interface DarkPageProps {
 const DarkPage: R.FC<DarkPageProps> = ({
   children,
   justify,
+  padding,
   pageTitle,
   scrolls
 }) => {
@@ -31,7 +33,8 @@ const DarkPage: R.FC<DarkPageProps> = ({
       className={c(styles.container, {
         [styles["container-scrolls"]]: !!scrolls,
         [gStyles.col]: !!justify,
-        [gStyles.centerJustify]: justify === "center"
+        [gStyles.centerJustify]: justify === "center",
+        [gStyles.commonPaddingH]: !!padding
       })}
     >
       <DialogNav pageTitle={pageTitle || ""} onHeight={setHeaderHeight} />
