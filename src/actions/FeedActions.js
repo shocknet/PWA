@@ -1,3 +1,4 @@
+// @ts-check
 import { GUN_PROPS } from "../utils/Gun";
 import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
