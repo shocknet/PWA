@@ -57,7 +57,10 @@ export interface SharedPost extends Common.SharedPostRaw {
   sharerId: string;
   id: string;
   type: "shared";
-  originalPost: Post;
+  /**
+   * Undefined when loading it.
+   */
+  originalPost?: Post;
 }
 
 export const isSharedPost = (post: any): post is SharedPost => {

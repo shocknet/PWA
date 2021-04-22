@@ -26,7 +26,7 @@ const SharedPost = ({
   openUnlockModal,
   openDeleteModal = undefined
 }) => {
-  /** @type {Post} */
+  /** @type {Post|undefined} */
   const originalPost = origPost;
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
