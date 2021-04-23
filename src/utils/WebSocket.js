@@ -1,6 +1,6 @@
 import SocketIO from "socket.io-client";
 import binaryParser from "socket.io-msgpack-parser";
-import Common from "shock-common";
+import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
 import { setAuthenticated } from "../actions/AuthActions";
