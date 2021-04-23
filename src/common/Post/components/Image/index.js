@@ -62,7 +62,7 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width 
           onLoad={() => {
             setZoomLoaded(true);
           }}
-          style={{ opacity: zoomLoaded ? 1 : 0 }}
+          style={{ opacity: zoomLoaded ? 1 : 0, display:zoomLoaded ? 'block' : 'none' }}
           src={contentURL}
         />
         {!hideRibbon && <TipRibbon
