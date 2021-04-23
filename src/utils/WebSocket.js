@@ -1,7 +1,9 @@
 import SocketIO from "socket.io-client";
 import binaryParser from "socket.io-msgpack-parser";
+import Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
+import { setAuthenticated } from "../actions/AuthActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  */
@@ -58,6 +60,11 @@ export const connectSocket = async (host = "", reconnect = false) => {
       subscription.onError?.(event.response.data, event.response.key);
     }
   });
+
+  GunSocket.on(Common.NOT_AUTH, () => {
+    store.dispatch(setAuthenticated(false));
+  });
+
   return { GunSocket, LNDSocket };
 };
 
