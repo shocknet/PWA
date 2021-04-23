@@ -23,7 +23,7 @@ const encryptRequest = async config => {
 
   const remotePublicKey = hostKeys[hostId];
 
-  if (process.env.SHOCK_ENCRYPTION === "false") {
+  if (process.env.REACT_APP_SHOCK_ENCRYPTION_ECC === "false") {
     return config;
   }
 
