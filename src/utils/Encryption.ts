@@ -136,7 +136,8 @@ export const isEncryptedMessage = (message: any) =>
   message?.ciphertext && message?.iv && message?.mac && message?.ephemPublicKey;
 
 export const isNonEncrypted = (eventName: string) =>
-  nonEncryptedEvents.includes(eventName);
+  nonEncryptedEvents.includes(eventName) ||
+  process.env.SHOCK_ENCRYPTION === "false";
 
 export const generateKeyPair = () => {
   const privateKey: Uint8Array = ECCrypto.generatePrivate();

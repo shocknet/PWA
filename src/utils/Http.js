@@ -23,6 +23,10 @@ const encryptRequest = async config => {
 
   const remotePublicKey = hostKeys[hostId];
 
+  if (process.env.SHOCK_ENCRYPTION === "false") {
+    return config;
+  }
+
   if (!remotePublicKey) {
     console.warn(
       "[ENCRYPTION] Unable to retrieve key for specified Host ID:",
