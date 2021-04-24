@@ -69,7 +69,8 @@ export const subscribeUserPosts = publicKey => async dispatch => {
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${publicKey}/load/posts>${id}`
         );
-
+        console.info(`processing post: ${id} from ${publicKey}`)
+        console.info(post)
         dispatch({
           type: ACTIONS.ADD_USER_POST,
           data: {
@@ -167,6 +168,8 @@ export const subscribeFollows = () => async dispatch => {
     query: FOLLOWS_QUERY,
     reconnect: true,
     onData: async (follow, key) => {
+      console.info(`processing follow`)
+      console.info(follow)
       if (typeof key !== "string") {
         console.warn(`Invalid follow key received: ${key}`);
         return;
