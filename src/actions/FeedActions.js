@@ -65,7 +65,7 @@ export const subscribeUserPosts = publicKey => async dispatch => {
         .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
 
-      newPosts.map(async id => {
+      newPosts.forEach(async id => {
         const { data: post } = await Http.get(
           `/api/gun/otheruser/${publicKey}/load/posts>${id}`
         );
@@ -81,7 +81,7 @@ export const subscribeUserPosts = publicKey => async dispatch => {
         });
       });
 
-      deletedPosts.map(id =>
+      deletedPosts.forEach(id =>
         dispatch({
           type: ACTIONS.DELETE_USER_POST,
           data: {
