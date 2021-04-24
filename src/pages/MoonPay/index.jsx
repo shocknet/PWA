@@ -38,7 +38,12 @@ const MoonPay = () => {
   return (
     <div className="moonPayContainer">
       <MainNav pageTitle="MOONPAY" enableBackButton={true} />
-      <iframe width="100%" height="100%" src={src}></iframe>
+      <iframe
+        title="moonpay-iframe"
+        width="100%"
+        height="100%"
+        src={src}
+      ></iframe>
     </div>
   );
 };
