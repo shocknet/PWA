@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
-import InputGroup from "../../../../common/InputGroup";
 import { unlockContent } from "../../../../actions/ContentActions";
 import Loader from "../../../../common/Loader";
 import "./css/index.css";
