@@ -75,8 +75,6 @@ export const fetchTransactions = ({
     type: reset ? ACTIONS.LOAD_TRANSACTIONS : ACTIONS.LOAD_MORE_TRANSACTIONS,
     data
   });
-
-  return data;
 };
 
 export const fetchChannels = () => async dispatch => {
