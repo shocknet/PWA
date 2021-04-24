@@ -38,15 +38,19 @@ export const fetchWalletBalance = () => async dispatch => {
 };
 
 export const fetchUSDRate = () => async dispatch => {
-  const { data } = await Http.get(
-    "https://api.coinbase.com/v2/prices/spot?currency=USD"
-  );
-  const exchangeRate = data.data.amount.replace(/,/g, "");
+  try {
+    const { data } = await Http.get(
+      "https://api.coinbase.com/v2/prices/spot?currency=USD"
+    );
+    const exchangeRate = data.data.amount.replace(/,/g, "");
 
-  dispatch({
-    type: ACTIONS.LOAD_USD_RATE,
-    data: exchangeRate
-  });
+    dispatch({
+      type: ACTIONS.LOAD_USD_RATE,
+      data: exchangeRate
+    });
+  } catch (e) {
+    console.error(`An error happened when trying to fetch the USD rate:`, e);
+  }
 };
 
 export const fetchTransactions = ({
