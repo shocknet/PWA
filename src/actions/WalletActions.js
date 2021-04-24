@@ -175,8 +175,6 @@ export const fetchPayments = ({
     type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
     data
   });
-
-  return data;
 };
 
 export const fetchUnifiedTransactions = () => async dispatch => {
