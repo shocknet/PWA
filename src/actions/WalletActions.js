@@ -94,8 +94,6 @@ export const fetchChannels = () => async dispatch => {
     type: ACTIONS.LOAD_CHANNELS,
     data: data.channels
   });
-
-  return data;
 };
 
 export const fetchPeers = () => async dispatch => {
@@ -215,9 +213,7 @@ export const openChannel = ({
       satPerByte: feeRates[rate]
     });
 
-    const data = await fetchChannels()(dispatch);
-
-    return data.channels;
+    dispatch(fetchChannels());
   } catch (err) {
     console.error(err);
     throw err?.response?.data ?? err;
