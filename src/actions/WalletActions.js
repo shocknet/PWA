@@ -144,8 +144,6 @@ export const fetchInvoices = ({
     type: reset ? ACTIONS.LOAD_INVOICES : ACTIONS.LOAD_MORE_INVOICES,
     data
   });
-
-  return data;
 };
 
 export const fetchPayments = ({
