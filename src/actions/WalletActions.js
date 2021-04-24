@@ -104,14 +104,22 @@ export const fetchChannels = () => async dispatch => {
 };
 
 export const fetchPeers = () => async dispatch => {
-  const { data } = await Http.get("/api/lnd/listpeers");
+  try {
+    const { data } = await Http.get("/api/lnd/listpeers");
 
-  dispatch({
-    type: ACTIONS.LOAD_PEERS,
-    data: data.peers
-  });
+    dispatch({
+      type: ACTIONS.LOAD_PEERS,
+      data: data.peers
+    });
 
-  return data;
+    return data;
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching peers (fetchPeers()) (will be re-thrown):`,
+      e
+    );
+    throw e;
+  }
 };
 
 export const fetchInvoices = ({
