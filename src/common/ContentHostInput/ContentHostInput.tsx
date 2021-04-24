@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import produce from "immer";
 import { useDispatch } from "react-redux";
 import * as Store from "../../store";
 import {
@@ -21,39 +20,41 @@ const ContentHostInput = () => {
     ({ content }) => content.seedInfo
   );
   const [hosts, setHosts] = useState<IHost[]>([]);
-  const [providerProfile,setProviderProfile] = useState(null)
-  const [providedService,setProvidedService] = useState('')
+  const [providerProfile, setProviderProfile] = useState(null);
+  const [providedService, setProvidedService] = useState("");
   //effect for user profile
-  useEffect(()=>{
-    const provProfile = userProfiles[seedProviderPub]
-    if(!provProfile){
-      setProviderProfile(null)
-      return
+  useEffect(() => {
+    const provProfile = userProfiles[seedProviderPub];
+    if (!provProfile) {
+      setProviderProfile(null);
+      return;
     }
-    if(!providerProfile){
-      setProviderProfile(provProfile)
-      return
+    if (!providerProfile) {
+      setProviderProfile(provProfile);
+      return;
     }
-    if(provProfile.avatar !== providerProfile.avatar){
-      setProviderProfile(provProfile)
-      return
+    if (provProfile.avatar !== providerProfile.avatar) {
+      setProviderProfile(provProfile);
+      return;
     }
-    // @ts-expect-error
-    if(provProfile.SeedServiceProvided !== providerProfile.SeedServiceProvided){
-      setProviderProfile(provProfile)
-      return
+    if (
+      // @ts-expect-error
+      provProfile.SeedServiceProvided !== providerProfile.SeedServiceProvided
+    ) {
+      setProviderProfile(provProfile);
+      return;
     }
-  },[userProfiles,seedProviderPub,providerProfile,setProviderProfile])
+  }, [userProfiles, seedProviderPub, providerProfile, setProviderProfile]);
   //effect to check provided service
-  useEffect(()=>{
-    if(!providerProfile){
-      return
+  useEffect(() => {
+    if (!providerProfile) {
+      return;
     }
-    const {SeedServiceProvided} = providerProfile
-    if(SeedServiceProvided !== providedService){
-      setProvidedService(SeedServiceProvided)
+    const { SeedServiceProvided } = providerProfile;
+    if (SeedServiceProvided !== providedService) {
+      setProvidedService(SeedServiceProvided);
     }
-  },[providerProfile,providedService,setProvidedService])
+  }, [providerProfile, providedService, setProvidedService]);
   //effect to populate the hosts
   useEffect(() => {
     let toSet = [];
@@ -79,38 +80,38 @@ const ContentHostInput = () => {
         URI: null,
         token: null,
         error: null
-      })
+      });
     }
-    setHosts(toSet)
-  }, [seedUrl, seedToken, seedProviderPub,providerProfile, setHosts]);
-//effect to fetch provided service
-  useEffect(()=>{
-    if(!providedService){
-    return
-  }
-  Http.get(
-    `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${providedService}`
-  )
-  .then(({ data }) => {
-    const { data: service } = data;
-    const tmpHosts = [...hosts]
-    const providerIndex = tmpHosts.findIndex(host => !host.URI)
-    if(providerIndex === -1){
-      return
+    setHosts(toSet);
+  }, [seedUrl, seedToken, seedProviderPub, providerProfile, setHosts]);
+  //effect to fetch provided service
+  useEffect(() => {
+    if (!providedService) {
+      return;
     }
-    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
-    tmpHosts[providerIndex].price = service.servicePrice
+    Http.get(
+      `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${providedService}`
+    )
+      .then(({ data }) => {
+        const { data: service } = data;
+        const tmpHosts = [...hosts];
+        const providerIndex = tmpHosts.findIndex(host => !host.URI);
+        if (providerIndex === -1) {
+          return;
+        }
+        tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
+        tmpHosts[providerIndex].price = service.servicePrice;
 
-    setHosts(tmpHosts);
-  })
-  .catch(e => {
-    const tmpHosts = [...hosts]
-    const providerIndex = tmpHosts.findIndex(host => !host.URI)
-    tmpHosts[providerIndex].isBeingAddedOrDeleted = false
-    tmpHosts[providerIndex].error = e.message || e
-    setHosts(tmpHosts);
-  });
-},[providedService,hosts,setHosts])
+        setHosts(tmpHosts);
+      })
+      .catch(e => {
+        const tmpHosts = [...hosts];
+        const providerIndex = tmpHosts.findIndex(host => !host.URI);
+        tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
+        tmpHosts[providerIndex].error = e.message || e;
+        setHosts(tmpHosts);
+      });
+  }, [providedService, hosts, setHosts, seedProviderPub]);
   const addHost = useCallback(
     (publicKeyOrURI, token) => {
       if (publicKeyOrURI.startsWith("http")) {
@@ -119,7 +120,7 @@ const ContentHostInput = () => {
         setSeedProviderPub(publicKeyOrURI)(dispatch);
       }
     },
-    [setSeedInfo, setSeedProviderPub]
+    [dispatch]
   );
 
   const removeHost = useCallback(
@@ -130,9 +131,8 @@ const ContentHostInput = () => {
         setSeedProviderPub("")(dispatch);
       }
     },
-    [setSeedInfo, setSeedProviderPub]
+    [dispatch]
   );
-  const subbedUsers = useMemo<string[]>(() => [], []);
 
   useEffect(() => {
     dispatch(subscribeUserProfile(seedProviderPub));

@@ -15,6 +15,7 @@
     "healthz",
     "immer",
     "luxon",
+    "newaddress",
     "otheruser",
     "pendingchannels",
     "persistor",
@@ -29,6 +30,7 @@
     "unsubbing",
     "uuidv",
     "videojs",
+    "webclient",
     "youtube"
   ]
 }

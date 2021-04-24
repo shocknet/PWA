@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+// @ts-check
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
-import InputGroup from "../../../../common/InputGroup";
 import { unlockContent } from "../../../../actions/ContentActions";
 import Loader from "../../../../common/Loader";
 import "./css/index.css";
@@ -13,13 +13,16 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
   const [loading, setLoading] = useState(false);
   const [unlockSuccess, setUnlockSuccess] = useState(false);
 
-
   const submitUnlock = useCallback(
     async e => {
       e.preventDefault();
       try {
         setLoading(true);
-        await unlockContent(100,unlockData.publicKey,unlockData.postID)(dispatch)
+        await unlockContent(
+          100,
+          unlockData.publicKey,
+          unlockData.postID
+        )(dispatch);
         setUnlockSuccess(true);
       } catch (err) {
         console.error(err);
@@ -45,7 +48,11 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
   }, [unlockData]);
 
   return (
-    <Modal toggleModal={toggleOpen} modalOpen={!!unlockData} modalTitle="Unlock content">
+    <Modal
+      toggleModal={toggleOpen}
+      modalOpen={!!unlockData}
+      modalTitle="Unlock content"
+    >
       {unlockSuccess ? (
         <div className="tip-modal-success">
           <i className="tip-success-icon fas fa-check-circle"></i>

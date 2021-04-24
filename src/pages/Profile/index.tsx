@@ -34,7 +34,7 @@ import Pad from "../../common/Pad";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle, unsubscribeRifleById } from "../../utils/WebSocket";
+import { rifle } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
@@ -118,6 +118,11 @@ const ProfilePage = () => {
   }, [newWebClientPrefix, publicKey]);
 
   const subscribeClientPrefix = useCallback(async () => {
+    // Extraneous logs but helps us not having eslint complain about these
+    // "unnecessary" dependencies below without disabling the
+    console.debug(
+      `Subbing to webclient prefix on hostIP --| ${hostIP} |-- and public key --| ${publicKey} |--`
+    );
     const query = `$user::Profile>webClientPrefix::on`;
 
     const socket = await rifle({
@@ -140,7 +145,7 @@ const ProfilePage = () => {
     });
 
     return socket;
-  }, [hostIP, publicKey /* handles alias switch */]);
+  }, [hostIP, publicKey /* handles alias/hostIP switch */]);
 
   useEffect(() => {
     const subscription = subscribeClientPrefix();
