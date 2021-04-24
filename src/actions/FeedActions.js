@@ -142,7 +142,7 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
         dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
       });
 
-      deletedPosts.map(id =>
+      deletedPosts.forEach(id =>
         dispatch({
           type: ACTIONS.DELETE_USER_POST,
           data: {
