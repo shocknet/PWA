@@ -34,7 +34,7 @@ import Pad from "../../common/Pad";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle, unsubscribeRifleById } from "../../utils/WebSocket";
+import { rifle } from "../../utils/WebSocket";
 
 import "./css/index.css";
 import { deleteUserPost } from "../../actions/FeedActions";
