@@ -127,23 +127,30 @@ export const fetchInvoices = ({
   itemsPerPage = 10,
   reset = false
 }) => async (dispatch, getState) => {
-  const { invoices } = getState().wallet;
+  try {
+    const { invoices } = getState().wallet;
 
-  if ((invoices.page >= page && !reset) || invoices.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/invoices", {
-    params: {
-      page,
-      itemsPerPage
+    if ((invoices.page >= page && !reset) || invoices.totalPages < page) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_INVOICES : ACTIONS.LOAD_MORE_INVOICES,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/invoices", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
+
+    dispatch({
+      type: reset ? ACTIONS.LOAD_INVOICES : ACTIONS.LOAD_MORE_INVOICES,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching invoices (fetchInvoices()):`,
+      e
+    );
+  }
 };
 
 export const fetchPayments = ({
