@@ -32,11 +32,14 @@ export const subscribeUserProfile = (publicKey: string) => async (
     userProfiles: Record<string, Common.User>;
   }
 ) => {
+  console.info("subbing user..."+publicKey)
   const [subscription, binarySub] = await Promise.all([
     rifle({
       query: `${publicKey}::Profile::on`,
       reconnect: true,
       onData: profile => {
+        console.log("up on profile")
+        console.log(profile)
         const { [publicKey]: existingUser } = getState().userProfiles;
     
         if (existingUser) {

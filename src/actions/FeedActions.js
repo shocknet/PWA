@@ -53,6 +53,7 @@ export const loadSharedPost = (
 const USER_POSTS_QUERY_SUFFIX = `::posts::on`;
 
 export const subscribeUserPosts = publicKey => async dispatch => {
+  console.info('subbing to posts from:'+publicKey)
   const subscription = await rifle({
     query: publicKey + USER_POSTS_QUERY_SUFFIX,
     onData: posts => {
@@ -106,6 +107,7 @@ export const subscribeUserPosts = publicKey => async dispatch => {
 };
 
 export const unsubUserPosts = publicKey => async () => {
+  console.info('unsubbing to posts from:'+publicKey)
   unsubscribeRifleByQuery(publicKey + USER_POSTS_QUERY_SUFFIX);
 };
 
