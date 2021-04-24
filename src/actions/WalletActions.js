@@ -18,16 +18,23 @@ export const ACTIONS = {
 };
 
 export const fetchWalletBalance = () => async dispatch => {
-  const { data } = await Http.get(`/api/lnd/balance`);
+  try {
+    const { data } = await Http.get(`/api/lnd/balance`);
 
-  dispatch({
-    type: ACTIONS.LOAD_BALANCE,
-    data: {
-      channelBalance: data.channel_balance,
-      confirmedBalance: data.confirmed_balance,
-      pendingChannelBalance: data.pending_channel_balance
-    }
-  });
+    dispatch({
+      type: ACTIONS.LOAD_BALANCE,
+      data: {
+        channelBalance: data.channel_balance,
+        confirmedBalance: data.confirmed_balance,
+        pendingChannelBalance: data.pending_channel_balance
+      }
+    });
+  } catch (e) {
+    console.error(
+      `When trying to fetch the balance for the wallet, an error ocurred:`,
+      e
+    );
+  }
 };
 
 export const fetchUSDRate = () => async dispatch => {
