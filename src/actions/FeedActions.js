@@ -79,18 +79,18 @@ export const subscribeUserPosts = publicKey => async dispatch => {
             type: "post"
           }
         });
-
-        deletedPosts.map(id =>
-          dispatch({
-            type: ACTIONS.DELETE_USER_POST,
-            data: {
-              id,
-              authorId: publicKey,
-              type: "post"
-            }
-          })
-        );
       });
+
+      deletedPosts.map(id =>
+        dispatch({
+          type: ACTIONS.DELETE_USER_POST,
+          data: {
+            id,
+            authorId: publicKey,
+            type: "post"
+          }
+        })
+      );
     }
   });
   return subscription;
