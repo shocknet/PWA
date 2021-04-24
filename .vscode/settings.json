@@ -15,6 +15,7 @@
     "healthz",
     "immer",
     "luxon",
+    "newaddress",
     "otheruser",
     "pendingchannels",
     "persistor",
