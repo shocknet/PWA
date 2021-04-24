@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Modal from "../../../../common/Modal";
