@@ -97,7 +97,7 @@ export const fetchChannels = () => async dispatch => {
     });
   } catch (e) {
     console.error(
-      `An ocurred ocurring when fetching channels (fetchChannels()):`,
+      `An ocurred ocurred when fetching channels (fetchChannels()):`,
       e
     );
   }
