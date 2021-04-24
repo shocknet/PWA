@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import produce from "immer";
 import { useDispatch } from "react-redux";
 import * as Store from "../../store";
 import {
@@ -134,7 +133,6 @@ const ContentHostInput = () => {
     },
     [setSeedInfo, setSeedProviderPub]
   );
-  const subbedUsers = useMemo<string[]>(() => [], []);
 
   useEffect(() => {
     dispatch(subscribeUserProfile(seedProviderPub));
