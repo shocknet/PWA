@@ -111,7 +111,7 @@ const ContentHostInput = () => {
         tmpHosts[providerIndex].error = e.message || e;
         setHosts(tmpHosts);
       });
-  }, [providedService, hosts, setHosts]);
+  }, [providedService, hosts, setHosts, seedProviderPub]);
   const addHost = useCallback(
     (publicKeyOrURI, token) => {
       if (publicKeyOrURI.startsWith("http")) {
@@ -120,7 +120,7 @@ const ContentHostInput = () => {
         setSeedProviderPub(publicKeyOrURI)(dispatch);
       }
     },
-    [setSeedInfo, setSeedProviderPub]
+    [dispatch]
   );
 
   const removeHost = useCallback(
@@ -131,7 +131,7 @@ const ContentHostInput = () => {
         setSeedProviderPub("")(dispatch);
       }
     },
-    [setSeedInfo, setSeedProviderPub]
+    [dispatch]
   );
 
   useEffect(() => {
