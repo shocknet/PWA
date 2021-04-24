@@ -118,6 +118,9 @@ const ProfilePage = () => {
   }, [newWebClientPrefix, publicKey]);
 
   const subscribeClientPrefix = useCallback(async () => {
+    console.debug(
+      `Subbing to webclient prefix on hostIP --| ${hostIP} |-- and public key --| ${publicKey} |--`
+    );
     const query = `$user::Profile>webClientPrefix::on`;
 
     const socket = await rifle({
@@ -140,7 +143,7 @@ const ProfilePage = () => {
     });
 
     return socket;
-  }, [hostIP, publicKey /* handles alias switch */]);
+  }, [hostIP, publicKey /* handles alias/hostIP switch */]);
 
   useEffect(() => {
     const subscription = subscribeClientPrefix();
