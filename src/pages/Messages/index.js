@@ -14,8 +14,10 @@ import FieldError from "../../utils/FieldError";
 import "./css/index.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
+import * as Utils from "../../utils";
 
 const MessagesPage = () => {
+  const isMounted = Utils.useIsMounted();
   const dispatch = useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -30,8 +32,10 @@ const MessagesPage = () => {
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
-    setChatLoaded(true);
-  }, [dispatch]);
+    if (isMounted.current) {
+      setChatLoaded(true);
+    }
+  }, [dispatch, isMounted]);
 
   useEffect(() => {
     loadChat();
@@ -73,21 +77,27 @@ const MessagesPage = () => {
 
         await dispatch(sendHandshakeRequest(shockUser));
 
-        setAddModalOpen(false);
-        return;
-      } catch (err) {
-        if (err instanceof FieldError) {
-          setSendError(err.message);
-          return;
+        if (isMounted.current) {
+          setAddModalOpen(false);
         }
+      } catch (err) {
+        const errMsg =
+          err instanceof FieldError
+            ? err.message
+            : "An unknown error has occurred";
 
         console.error(err);
-        setSendError("An unknown error has occurred");
+
+        if (isMounted.current) {
+          setSendError(errMsg);
+        }
       } finally {
-        setSendRequestLoading(false);
+        if (isMounted.current) {
+          setSendRequestLoading(false);
+        }
       }
     },
-    [dispatch]
+    [dispatch, isMounted]
   );
 
   const sendRequestClipboard = useCallback(async () => {
