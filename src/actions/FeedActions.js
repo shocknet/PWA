@@ -65,20 +65,27 @@ export const subscribeUserPosts = publicKey => async dispatch => {
         .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
 
-      newPosts.forEach(async id => {
-        const { data: post } = await Http.get(
-          `/api/gun/otheruser/${publicKey}/load/posts>${id}`
-        );
+      newPosts.forEach(async function fetchAndDispatchPost(id) {
+        try {
+          const { data: post } = await Http.get(
+            `/api/gun/otheruser/${publicKey}/load/posts>${id}`
+          );
 
-        dispatch({
-          type: ACTIONS.ADD_USER_POST,
-          data: {
-            ...post.data,
-            id,
-            authorId: publicKey,
-            type: "post"
-          }
-        });
+          dispatch({
+            type: ACTIONS.ADD_USER_POST,
+            data: {
+              ...post.data,
+              id,
+              authorId: publicKey,
+              type: "post"
+            }
+          });
+        } catch (e) {
+          console.error(
+            `When subscribed to posts from public key --| ${publicKey} |-- and trying to download the post with id: --| ${id} |-- an error ocurred:`,
+            e
+          );
+        }
       });
 
       deletedPosts.forEach(id =>
