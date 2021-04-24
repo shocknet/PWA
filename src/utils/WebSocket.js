@@ -288,7 +288,7 @@ export const rifleSocketExists = query => {
  * gun.get('handshakeNodes').on(...)
  * ```
  * @param {RifleParams} args
- * @returns {Promise<SocketIOClient.Socket>}
+ * @returns {Promise<import('socket.io-client').Socket>}
  */
 export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   new Promise((resolve, reject) => {
