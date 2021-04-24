@@ -47,8 +47,6 @@ export const fetchUSDRate = () => async dispatch => {
     type: ACTIONS.LOAD_USD_RATE,
     data: exchangeRate
   });
-
-  return exchangeRate;
 };
 
 export const fetchTransactions = ({
