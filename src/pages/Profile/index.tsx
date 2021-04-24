@@ -118,6 +118,8 @@ const ProfilePage = () => {
   }, [newWebClientPrefix, publicKey]);
 
   const subscribeClientPrefix = useCallback(async () => {
+    // Extraneous logs but helps us not having eslint complain about these
+    // "unnecessary" dependencies below without disabling the
     console.debug(
       `Subbing to webclient prefix on hostIP --| ${hostIP} |-- and public key --| ${publicKey} |--`
     );
