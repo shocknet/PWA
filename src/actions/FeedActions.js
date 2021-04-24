@@ -115,31 +115,38 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
         .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
         .map(([key]) => key);
 
-      newPosts.map(async id => {
-        const res = await Http.get(
-          `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
-        );
+      newPosts.forEach(async function fetchAndDispatchSharedPost(id) {
+        try {
+          const res = await Http.get(
+            `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
+          );
 
-        /** @type {import('shock-common').SharedPostRaw} */
-        const post = res.data.data;
+          /** @type {import('shock-common').SharedPostRaw} */
+          const post = res.data.data;
 
-        /** @type {import('../schema').SharedPost} */
-        const processedPost = {
-          authorId: publicKey,
-          id,
-          originalAuthor: post.originalAuthor,
-          shareDate: post.shareDate,
-          sharerId: publicKey,
-          originalPost: undefined,
-          type: "shared"
-        };
-        dispatch({
-          type: ACTIONS.ADD_USER_POST,
-          data: processedPost
-        });
+          /** @type {import('../schema').SharedPost} */
+          const processedPost = {
+            authorId: publicKey,
+            id,
+            originalAuthor: post.originalAuthor,
+            shareDate: post.shareDate,
+            sharerId: publicKey,
+            originalPost: undefined,
+            type: "shared"
+          };
+          dispatch({
+            type: ACTIONS.ADD_USER_POST,
+            data: processedPost
+          });
 
-        console.debug("dispatching shared post load");
-        dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
+          console.debug("dispatching shared post load");
+          dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
+        } catch (e) {
+          console.error(
+            `When subscribed to shared posts from public key --| ${publicKey} |-- and trying to download the shared post with id: --| ${id} |-- an error ocurred:`,
+            e
+          );
+        }
       });
 
       deletedPosts.forEach(id =>
