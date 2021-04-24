@@ -28,8 +28,6 @@ export const fetchWalletBalance = () => async dispatch => {
       pendingChannelBalance: data.pending_channel_balance
     }
   });
-
-  return data;
 };
 
 export const fetchUSDRate = () => async dispatch => {
