@@ -58,23 +58,33 @@ export const fetchTransactions = ({
   itemsPerPage = 10,
   reset = false
 }) => async (dispatch, getState) => {
-  const { transactions } = getState().wallet;
+  try {
+    const { transactions } = getState().wallet;
 
-  if ((transactions.page >= page && !reset) || transactions.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/transactions", {
-    params: {
-      page,
-      itemsPerPage
+    if (
+      (transactions.page >= page && !reset) ||
+      transactions.totalPages < page
+    ) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_TRANSACTIONS : ACTIONS.LOAD_MORE_TRANSACTIONS,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/transactions", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
+
+    dispatch({
+      type: reset ? ACTIONS.LOAD_TRANSACTIONS : ACTIONS.LOAD_MORE_TRANSACTIONS,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred when fetching transactions (fetchTransactions()):`,
+      e
+    );
+  }
 };
 
 export const fetchChannels = () => async dispatch => {
