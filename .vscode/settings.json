@@ -15,6 +15,7 @@
     "healthz",
     "immer",
     "listchannels",
+    "listpeers",
     "luxon",
     "newaddress",
     "otheruser",
