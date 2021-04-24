@@ -88,12 +88,19 @@ export const fetchTransactions = ({
 };
 
 export const fetchChannels = () => async dispatch => {
-  const { data } = await Http.get("/api/lnd/listchannels");
+  try {
+    const { data } = await Http.get("/api/lnd/listchannels");
 
-  dispatch({
-    type: ACTIONS.LOAD_CHANNELS,
-    data: data.channels
-  });
+    dispatch({
+      type: ACTIONS.LOAD_CHANNELS,
+      data: data.channels
+    });
+  } catch (e) {
+    console.error(
+      `An ocurred ocurring when fetching channels (fetchChannels()):`,
+      e
+    );
+  }
 };
 
 export const fetchPeers = () => async dispatch => {
