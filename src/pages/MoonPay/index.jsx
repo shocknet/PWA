@@ -5,7 +5,7 @@ import Http from "../../utils/Http";
 const signingServiceUrl = "https://moon-sign.shock.network/sign";
 const apiPubKey = "pk_test_C8jSPDtsKQqXwP7nkScpqZI5tsaOiQPH";
 
-const ProfilePage = () => {
+const MoonPay = () => {
   const [src, setSrc] = useState("");
 
   useEffect(() => {
@@ -43,4 +43,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default MoonPay;
