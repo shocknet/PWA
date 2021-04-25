@@ -95,6 +95,7 @@ const MessagesPage = () => {
       const clipboardText = await navigator.clipboard.readText();
       return sendRequest(clipboardText);
     } catch (e) {
+      console.error(e)
       alert(e.message);
     }
   }, [sendRequest]);
