@@ -521,6 +521,7 @@ const ProfilePage = () => {
                 publicKey={publicKey}
                 setsAvatar
                 greyBorder
+                disableOnlineRing
               />
             </div>
 

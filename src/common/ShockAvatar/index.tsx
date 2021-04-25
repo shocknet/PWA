@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
-import c from "classnames";
 
 import * as Store from "../../store";
 import Pad from "../Pad";
@@ -48,15 +47,18 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const { avatar: image, displayName, lastSeenApp } = Store.useSelector(
-    Store.selectUser(publicKey)
-  );
+  const {
+    avatar: image,
+    displayName,
+    lastSeenApp,
+    lastSeenNode
+  } = Store.useSelector(Store.selectUser(publicKey));
   const story = Hooks.useStory(publicKey);
 
   React.useEffect(() => {
     const intervalID = setInterval(() => {
       forceUpdate();
-    }, Common.SET_LAST_SEEN_APP_INTERVAL * 2);
+    }, Math.min(Common.LAST_SEEN_APP_INTERVAL, Common.LAST_SEEN_NODE_INTERVAL));
 
     return () => {
       clearInterval(intervalID);
@@ -77,7 +79,13 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     avatarStyle.borderColor = "grey";
   }
 
-  if (!isSelf && !disableOnlineRing && Utils.isOnline(lastSeenApp)) {
+  if (!disableOnlineRing && Common.isNodeOnline(lastSeenNode)) {
+    avatarStyle.borderWidth = 2;
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "#AD5C00";
+  }
+  // green ring takes precedence over amber ring
+  if (!disableOnlineRing && Common.isAppOnline(lastSeenApp)) {
     avatarStyle.borderWidth = 2;
     avatarStyle.borderStyle = "solid";
     avatarStyle.borderColor = "#39B54A";

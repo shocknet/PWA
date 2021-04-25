@@ -3,6 +3,7 @@ import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip";
+import * as Common from "shock-common";
 
 import Post from ".";
 
@@ -44,7 +45,7 @@ const SharedPost = ({
 
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = sharerProfile.publicKey === selfPublicKey;
-  const isOnlineNode = Utils.isOnline(
+  const isAppOnline = Common.isAppOnline(
     Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenApp
   );
 
@@ -56,9 +57,9 @@ const SharedPost = ({
             to={isOwn ? `/profile` : `/otherUser/${sharerProfile.publicKey}`}
             className="av"
             style={{
-              borderWidth: isOnlineNode && !isOwn ? 2 : undefined,
-              borderStyle: isOnlineNode && !isOwn ? "solid" : undefined,
-              borderColor: isOnlineNode && !isOwn ? "#39B54A" : undefined,
+              borderWidth: isAppOnline && !isOwn ? 2 : undefined,
+              borderStyle: isAppOnline && !isOwn ? "solid" : undefined,
+              borderColor: isAppOnline && !isOwn ? "#39B54A" : undefined,
               backgroundImage: `url(data:image/jpeg;base64,${sharerProfile?.avatar})`
             }}
           ></Link>
