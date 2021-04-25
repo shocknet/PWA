@@ -87,12 +87,13 @@ const RequestPage = () => {
           </div>
         ) : null}
         <div className="request-page-indicators">
-          {steps.map((step, key) => (
+          {steps.map((_, key) => (
             <div
               className={classNames({
                 "request-page-indicator": true,
                 "request-page-indicator-active": key === activeStep
               })}
+              key={key}
             ></div>
           ))}
         </div>
