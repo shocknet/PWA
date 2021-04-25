@@ -158,23 +158,30 @@ export const fetchPayments = ({
   itemsPerPage = 10,
   reset = false
 }) => async (dispatch, getState) => {
-  const { payments } = getState().wallet;
+  try {
+    const { payments } = getState().wallet;
 
-  if ((payments.page >= page && !reset) || payments.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/payments", {
-    params: {
-      page,
-      itemsPerPage
+    if ((payments.page >= page && !reset) || payments.totalPages < page) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/payments", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
+
+    dispatch({
+      type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching payments (fetchPayments()):`,
+      e
+    );
+  }
 };
 
 export const fetchUnifiedTransactions = () => async dispatch => {
