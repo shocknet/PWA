@@ -216,7 +216,10 @@ export const connectPeer = ({ publicKey, host }) => async dispatch => {
       data: newPeer
     });
   } catch (err) {
-    console.error(err);
+    console.error(
+      `An error ocurred while connecting peer --| ${host} |-- with public key --| ${publicKey} |-- in connectPeer()`,
+      err
+    );
     throw err?.response?.data ?? err;
   }
 };
