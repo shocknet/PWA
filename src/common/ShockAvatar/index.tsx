@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
-import c from "classnames";
 
 import * as Store from "../../store";
 import Pad from "../Pad";
