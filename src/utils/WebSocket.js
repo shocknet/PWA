@@ -228,7 +228,7 @@ export const unsubscribeRifleById = subscriptionId => {
 export const unsubscribeRifleByQuery = query => {
   const subscriptionEntries = Array.from(rifleSubscriptions.entries());
 
-  const unsubscriptions = subscriptionEntries.map(([id, subscription]) => {
+  subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
       console.log("Unsubscribing by query:", subscription)
       unsubscribeRifleById(id);
@@ -237,12 +237,6 @@ export const unsubscribeRifleByQuery = query => {
 
     return false;
   });
-
-  const unsubscribed = unsubscriptions.find(unsubscribed => unsubscribed)
-
-  if (!unsubscribed) {
-    console.error("Couldn't unsubscribe from:", query, subscriptionEntries.map(([id, subscription]) => subscription))
-  }
 };
 
 export const unsubscribeEvent = subscriptionId =>
