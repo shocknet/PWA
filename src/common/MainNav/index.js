@@ -59,7 +59,7 @@ const MainNav = ({
           <i className="icon icon-thin-back"></i>
         </div>
       ) : (
-        <ShockAvatar disableOnlineRing height={40} publicKey={gunPublicKey} />
+        <ShockAvatar height={40} publicKey={gunPublicKey} />
       )}
       <p className="main-nav-title unselectable">{pageTitle}</p>
       <div className="main-nav-menu-btn" onClick={open}>
