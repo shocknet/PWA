@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
-import {  useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
 import "./css/index.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
-import {sendMessage} from '../../../../actions/ChatActions'
+import { sendMessage } from "../../../../actions/ChatActions";
 import { useHistory } from "react-router";
 
 const InvoiceStep = ({
@@ -18,7 +18,7 @@ const InvoiceStep = ({
   prevStep
 }) => {
   const dispatch = useDispatch();
-  const history = useHistory()
+  const history = useHistory();
   const [paymentRequest, setPaymentRequest] = useState("");
   const [address, setAddress] = useState("");
   const [QRLoading, setQRLoading] = useState(false);
@@ -93,9 +93,12 @@ const InvoiceStep = ({
     if (contact) {
       try {
         setLoading(true);
-        await sendMessage({publicKey:contact.pk,message:"$$__SHOCKWALLET__INVOICE__" + paymentRequest})(dispatch)
+        await sendMessage({
+          publicKey: contact.pk,
+          message: "$$__SHOCKWALLET__INVOICE__" + paymentRequest
+        })(dispatch);
         setLoading(false);
-        history.push("/overview")
+        history.push("/overview");
       } catch (err) {
         setError(
           err?.response?.data.errorMessage ??
@@ -105,7 +108,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest,history]);
+  }, [contact, paymentRequest, history]);
 
   return (
     <div className="request-form-container">
@@ -174,7 +177,7 @@ const InvoiceStep = ({
           <p className="invoice-detail-value">{description}</p>
         </div>
       </div>
-      {(lightningMode && contact) ? (
+      {lightningMode && contact ? (
         <SlidePay
           wrapperStyle={{
             padding: 0,
