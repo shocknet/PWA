@@ -215,8 +215,6 @@ export const connectPeer = ({ publicKey, host }) => async dispatch => {
       type: ACTIONS.ADD_PEER,
       data: newPeer
     });
-
-    return newPeer;
   } catch (err) {
     console.error(err);
     throw err?.response?.data ?? err;
