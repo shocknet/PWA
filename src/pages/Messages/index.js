@@ -15,10 +15,8 @@ import FieldError from "../../utils/FieldError";
 import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
-import * as Utils from "../../utils";
 
 const MessagesPage = () => {
-  const isMounted = Utils.useIsMounted();
   const dispatch = useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
@@ -33,10 +31,8 @@ const MessagesPage = () => {
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
-    if (isMounted.current) {
-      setChatLoaded(true);
-    }
-  }, [dispatch, isMounted]);
+    setChatLoaded(true);
+  }, [dispatch]);
 
   useEffect(() => {
     loadChat();
@@ -91,9 +87,7 @@ const MessagesPage = () => {
 
         await dispatch(sendHandshakeRequest(shockUser));
 
-        if (isMounted.current) {
-          setAddModalOpen(false);
-        }
+        setAddModalOpen(false);
       } catch (err) {
         const errMsg =
           err instanceof FieldError
@@ -102,16 +96,12 @@ const MessagesPage = () => {
 
         console.error(err);
 
-        if (isMounted.current) {
-          setSendError(errMsg);
-        }
+        setSendError(errMsg);
       } finally {
-        if (isMounted.current) {
-          setSendRequestLoading(false);
-        }
+        setSendRequestLoading(false);
       }
     },
-    [dispatch, isMounted]
+    [dispatch]
   );
 
   const sendRequestClipboard = useCallback(async () => {
