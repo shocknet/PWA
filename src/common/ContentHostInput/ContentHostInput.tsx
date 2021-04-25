@@ -22,6 +22,8 @@ const ContentHostInput = () => {
   const [hosts, setHosts] = useState<IHost[]>([]);
   const [providerProfile, setProviderProfile] = useState(null);
   const [providedService, setProvidedService] = useState("");
+  const [priceToUpdate, setPriceToUpdate] = useState(0);
+  const [providerError, setProviderError] = useState("");
   //effect for user profile
   useEffect(() => {
     const provProfile = userProfiles[seedProviderPub];
@@ -94,24 +96,36 @@ const ContentHostInput = () => {
     )
       .then(({ data }) => {
         const { data: service } = data;
-        const tmpHosts = [...hosts];
-        const providerIndex = tmpHosts.findIndex(host => !host.URI);
-        if (providerIndex === -1) {
-          return;
-        }
-        tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
-        tmpHosts[providerIndex].price = service.servicePrice;
-
-        setHosts(tmpHosts);
+        setPriceToUpdate(service.servicePrice)
       })
       .catch(e => {
-        const tmpHosts = [...hosts];
-        const providerIndex = tmpHosts.findIndex(host => !host.URI);
-        tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
-        tmpHosts[providerIndex].error = e.message || e;
-        setHosts(tmpHosts);
+        setProviderError(e)
       });
-  }, [providedService, hosts, setHosts, seedProviderPub]);
+  }, [providedService, seedProviderPub,setPriceToUpdate,setProviderError]);
+  //effect to update service 
+  useEffect(() => {
+    const tmpHosts = [...hosts];
+    const providerIndex = tmpHosts.findIndex(host => !host.URI);
+    if (providerIndex === -1 || tmpHosts[providerIndex].price === priceToUpdate) {
+      return;
+    }
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
+    tmpHosts[providerIndex].price = priceToUpdate;
+    setHosts(tmpHosts);
+  },[priceToUpdate,setPriceToUpdate,hosts,setHosts])
+  //effect to update error
+  useEffect(() =>{
+    //@ts-expect-error
+    const err = providerError.message || providerError;
+    const tmpHosts = [...hosts];
+    const providerIndex = tmpHosts.findIndex(host => !host.URI);
+    if(providerIndex === -1 || err === tmpHosts[providerIndex].error){
+      return
+    }
+    tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
+    tmpHosts[providerIndex].error = err
+    setHosts(tmpHosts);
+  },[providerError,setProviderError,hosts,setHosts])
   const addHost = useCallback(
     (publicKeyOrURI, token) => {
       if (publicKeyOrURI.startsWith("http")) {
