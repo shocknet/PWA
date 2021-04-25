@@ -47,15 +47,18 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const { avatar: image, displayName, lastSeenApp } = Store.useSelector(
-    Store.selectUser(publicKey)
-  );
+  const {
+    avatar: image,
+    displayName,
+    lastSeenApp,
+    lastSeenNode
+  } = Store.useSelector(Store.selectUser(publicKey));
   const story = Hooks.useStory(publicKey);
 
   React.useEffect(() => {
     const intervalID = setInterval(() => {
       forceUpdate();
-    }, Common.LAST_SEEN_APP_INTERVAL);
+    }, Math.min(Common.LAST_SEEN_APP_INTERVAL, Common.LAST_SEEN_NODE_INTERVAL));
 
     return () => {
       clearInterval(intervalID);
@@ -76,6 +79,12 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     avatarStyle.borderColor = "grey";
   }
 
+  if (!disableOnlineRing && Common.isNodeOnline(lastSeenNode)) {
+    avatarStyle.borderWidth = 2;
+    avatarStyle.borderStyle = "solid";
+    avatarStyle.borderColor = "#AD5C00";
+  }
+  // green ring takes precedence over amber ring
   if (!disableOnlineRing && Common.isAppOnline(lastSeenApp)) {
     avatarStyle.borderWidth = 2;
     avatarStyle.borderStyle = "solid";
