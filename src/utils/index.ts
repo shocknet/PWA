@@ -187,14 +187,3 @@ export const getContact = (
 ) => contacts.filter(contact => contact.pk === publicKey)[0];
 
 export const EMPTY_FN: (...args: any[]) => void = () => {};
-
-export const useIsMounted = () => {
-  const isMounted = useRef(false);
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-  return isMounted;
-};

@@ -22,7 +22,6 @@ const InvoiceStep = ({
   unit = "",
   prevStep
 }) => {
-  const isMounted = Utils.useIsMounted();
   const dispatch = useDispatch();
   const history = useHistory();
   const [paymentRequest, setPaymentRequest] = useState("");
@@ -42,19 +41,15 @@ const InvoiceStep = ({
         expiry: 100
       });
 
-      if (isMounted.current) {
-        setPaymentRequest(invoice.payment_request);
-      }
+      setPaymentRequest(invoice.payment_request);
     } catch (err) {
       setError(
         err?.response?.data.errorMessage ?? "An unknown error has occurred"
       );
     } finally {
-      if (isMounted.current) {
-        setQRLoading(false);
-      }
+      setQRLoading(false);
     }
-  }, [amount, description, isMounted]);
+  }, [amount, description]);
 
   const generateAddress = useCallback(async () => {
     try {
@@ -63,19 +58,15 @@ const InvoiceStep = ({
         type: "p2wkh"
       });
 
-      if (isMounted.current) {
-        setAddress(data.address);
-      }
+      setAddress(data.address);
     } catch (err) {
       setError(
         err?.response?.data.errorMessage ?? "An unknown error has occurred"
       );
     } finally {
-      if (isMounted.current) {
-        setQRLoading(false);
-      }
+      setQRLoading(false);
     }
-  }, [isMounted]);
+  }, []);
 
   const selectContact = useCallback(async contact => {
     setContact(contact);
