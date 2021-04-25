@@ -195,31 +195,45 @@ const InvoiceStep = ({
         />
       )}
 
-      <div className="invoice-details">
-        <p className="invoice-details-change" onClick={prevStep}>
-          Change
-        </p>
-        <div className="invoice-detail">
-          <p className="invoice-detail-title">Amount</p>
-          <p className="invoice-detail-value">
-            {amount} {unit.toUpperCase()}
-          </p>
-        </div>
-        <div className="invoice-detail">
-          <p className="invoice-detail-title">Description</p>
-          <p className="invoice-detail-value">{description}</p>
-        </div>
-      </div>
-      {lightningMode && contact ? (
-        <SlidePay
-          wrapperStyle={{
-            padding: 0,
-            marginTop: 23
-          }}
-          slideText="SLIDE TO SEND"
-          onSuccess={sendInvoice}
-        />
-      ) : null}
+      {error ? (
+        <>
+          <span>{error}</span>
+
+          <br />
+
+          <span className="inline-link" onClick={setError.bind(null, "")}>
+            Dismiss
+          </span>
+        </>
+      ) : (
+        <>
+          <div className="invoice-details">
+            <p className="invoice-details-change" onClick={prevStep}>
+              Change
+            </p>
+            <div className="invoice-detail">
+              <p className="invoice-detail-title">Amount</p>
+              <p className="invoice-detail-value">
+                {amount} {unit.toUpperCase()}
+              </p>
+            </div>
+            <div className="invoice-detail">
+              <p className="invoice-detail-title">Description</p>
+              <p className="invoice-detail-value">{description}</p>
+            </div>
+          </div>
+          {lightningMode && contact ? (
+            <SlidePay
+              wrapperStyle={{
+                padding: 0,
+                marginTop: 23
+              }}
+              slideText="SLIDE TO SEND"
+              onSuccess={sendInvoice}
+            />
+          ) : null}
+        </>
+      )}
     </div>
   );
 };
