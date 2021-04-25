@@ -2,7 +2,7 @@ import * as React from "react";
 
 import * as Store from "../store";
 
-import { rifle } from "../utils/WebSocket";
+import { rifle, rifleCleanup } from "../utils/WebSocket";
 
 export interface Pic {
   id: string;
@@ -14,8 +14,8 @@ export const useStory = (publicKey: string) => {
   const [pics, setPics] = React.useState<readonly Pic[]>([]);
   const { hostIP } = Store.useSelector(state => state.node);
 
-  const subscribeStory = React.useCallback(async () => {
-    const sub = await rifle({
+  const subscribeStory = React.useCallback(() => {
+    const sub = rifle({
       query: `${publicKey}::story::open`,
       onData: (pictures: unknown) => {
         if (typeof pictures !== "object" || pictures === null) {
@@ -32,13 +32,13 @@ export const useStory = (publicKey: string) => {
       }
     });
 
-    return () => {
-      sub.off();
-    };
+    return rifleCleanup(sub);
   }, [hostIP, publicKey]);
 
   React.useEffect(() => {
-    subscribeStory();
+    const unsubscribe = subscribeStory();
+
+    return unsubscribe
   }, [subscribeStory]);
 
   return pics;

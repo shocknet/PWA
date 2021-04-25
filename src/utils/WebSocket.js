@@ -228,14 +228,21 @@ export const unsubscribeRifleById = subscriptionId => {
 export const unsubscribeRifleByQuery = query => {
   const subscriptionEntries = Array.from(rifleSubscriptions.entries());
 
-  subscriptionEntries.map(([id, subscription]) => {
+  const unsubscriptions = subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
+      console.log("Unsubscribing by query:", subscription)
       unsubscribeRifleById(id);
       return true;
     }
 
     return false;
   });
+
+  const unsubscribed = unsubscriptions.find(unsubscribed => unsubscribed)
+
+  if (!unsubscribed) {
+    console.error("Couldn't unsubscribe from:", query, subscriptionEntries.map(([id, subscription]) => subscription))
+  }
 };
 
 export const unsubscribeEvent = subscriptionId =>
@@ -255,8 +262,8 @@ export const unsubscribeEvent = subscriptionId =>
     );
   });
 
-export const rifleSocketExists = query => {
-  const cachedSocket = rifleSubscriptions.get(query);
+export const rifleSocketExists = subscriptionId => {
+  const cachedSocket = rifleSubscriptions.get(subscriptionId);
   return !!cachedSocket;
 };
 
@@ -288,7 +295,7 @@ export const rifleSocketExists = query => {
  * gun.get('handshakeNodes').on(...)
  * ```
  * @param {RifleParams} args
- * @returns {Promise<import('socket.io-client').Socket>}
+ * @returns {Promise<{ off: () => void }>}
  */
 export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   new Promise((resolve, reject) => {
@@ -327,6 +334,18 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
       );
     });
   });
+
+/**
+ *
+ * @param {Promise<() => void>} subscription
+ */
+export const rifleCleanup = (...subscriptions) => () => {
+  subscriptions.map(subscription =>
+    subscription.then(unsubscribe => {
+      unsubscribe.off();
+    })
+  );
+};
 
 /**
  * @returns {{ messages: any , contacts: Contact[]}}

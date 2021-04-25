@@ -18,6 +18,7 @@ import {
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.css";
 import * as Store from "../../store";
+import { rifleCleanup } from "../../utils/WebSocket";
 import { getContact } from "../../utils";
 import * as gStyles from "../../styles";
 /**
@@ -119,20 +120,13 @@ const ChatPage = () => {
       subscribeChatMessages(gunPublicKey, recipientPublicKey)
     );
 
-    return async () => {
-      const resolvedSubscription = await subscription;
-      // @ts-expect-error Until thunks are better typed and also dispatch is
-      // this will throw
-      resolvedSubscription?.off();
-    };
+    return rifleCleanup(subscription);
   }, [dispatch, gunPublicKey, recipientPublicKey]);
 
   useEffect(() => {
     const unsubscribe = subscribeIncomingMessages();
 
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, [subscribeIncomingMessages]);
 
   // ------------------------------------------------------------------------ //

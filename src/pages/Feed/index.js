@@ -21,11 +21,16 @@ import { isSharedPost } from "../../schema";
 
 import "./css/index.css";
 import UnlockModal from "./components/UnlockModal";
+import { useDispatch } from "react-redux";
+import { subscribeSharedUserPosts, subscribeUserPosts } from "../../actions/FeedActions";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
+import { rifleCleanup } from "../../utils/WebSocket";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
+  const dispatch = useDispatch();
   const follows = Store.useSelector(Store.selectFollows);
   useEffect(()=>{
     console.info("follows in feed just updated:")
@@ -97,6 +102,23 @@ const FeedPage = () => {
       false
     );
   }, [followedPosts]);
+
+  useEffect(() => {
+    const subscriptions = follows.map(follow => {
+      const profileSubscription = dispatch(subscribeUserProfile(follow.user))
+      const postsSubscription = dispatch(subscribeUserPosts(follow.user))
+      const sharedPostsSubscription = dispatch(subscribeSharedUserPosts(follow.user))
+
+      return () => {
+        // @ts-ignore
+        profileSubscription()
+        rifleCleanup(postsSubscription, sharedPostsSubscription)();}
+    });
+
+    return () => {
+      subscriptions.map(unsubscribe => unsubscribe());
+    }
+  }, [follows, dispatch])
 
   return (
     <div className="page-container feed-page">
