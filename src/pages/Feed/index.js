@@ -43,7 +43,9 @@ const FeedPage = () => {
   }, [userProfiles]);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
-  const { avatar } = Store.useSelector(Store.selectSelfUser);
+  const { avatar, publicKey: selfPublicKey } = Store.useSelector(
+    Store.selectSelfUser
+  );
 
   const followedPosts = useMemo(() => {
     if (posts) {
@@ -107,6 +109,7 @@ const FeedPage = () => {
           main
           avatar={avatar ? `data:image/jpeg;base64,${avatar}` : null}
           username={null}
+          publicKey={selfPublicKey}
         />
         <div className="following-bar-list">
           {follows?.map(follow => {
@@ -121,6 +124,7 @@ const FeedPage = () => {
                 username={processDisplayName(publicKey, profile.displayName)}
                 avatar={`data:image/jpeg;base64,${profile.avatar}`}
                 key={publicKey}
+                publicKey={follow.user}
               />
             );
           })}
