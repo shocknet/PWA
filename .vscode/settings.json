@@ -19,6 +19,7 @@
     "listpeers",
     "luxon",
     "newaddress",
+    "openchannel",
     "otheruser",
     "pendingchannels",
     "persistor",
