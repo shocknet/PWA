@@ -1,3 +1,4 @@
+// @ts-check
 import classNames from "classnames";
 import "./css/index.css";
 
