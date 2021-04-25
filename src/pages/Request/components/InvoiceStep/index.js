@@ -3,15 +3,18 @@ import { useHistory } from "react-router";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
 import { useDispatch } from "react-redux";
+
+import * as Utils from "../../../../utils";
+
 import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
-import "./css/index.css";
-
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
 import { sendMessage } from "../../../../actions/ChatActions";
 import * as gStyles from "../../../../styles";
+
+import "./css/index.css";
 
 const InvoiceStep = ({
   amount = 0,
@@ -19,6 +22,7 @@ const InvoiceStep = ({
   unit = "",
   prevStep
 }) => {
+  const isMounted = Utils.useIsMounted();
   const dispatch = useDispatch();
   const history = useHistory();
   const [paymentRequest, setPaymentRequest] = useState("");
@@ -38,15 +42,19 @@ const InvoiceStep = ({
         expiry: 100
       });
 
-      setPaymentRequest(invoice.payment_request);
+      if (isMounted.current) {
+        setPaymentRequest(invoice.payment_request);
+      }
     } catch (err) {
       setError(
         err?.response?.data.errorMessage ?? "An unknown error has occurred"
       );
     } finally {
-      setQRLoading(false);
+      if (isMounted.current) {
+        setQRLoading(false);
+      }
     }
-  }, [amount, description]);
+  }, [amount, description, isMounted]);
 
   const generateAddress = useCallback(async () => {
     try {
@@ -55,15 +63,19 @@ const InvoiceStep = ({
         type: "p2wkh"
       });
 
-      setAddress(data.address);
+      if (isMounted.current) {
+        setAddress(data.address);
+      }
     } catch (err) {
       setError(
         err?.response?.data.errorMessage ?? "An unknown error has occurred"
       );
     } finally {
-      setQRLoading(false);
+      if (isMounted.current) {
+        setQRLoading(false);
+      }
     }
-  }, []);
+  }, [isMounted]);
 
   const selectContact = useCallback(async contact => {
     setContact(contact);
