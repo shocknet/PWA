@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
-import c from "classnames";
 
 import * as Store from "../../store";
 import Pad from "../Pad";
@@ -56,7 +55,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   React.useEffect(() => {
     const intervalID = setInterval(() => {
       forceUpdate();
-    }, Common.SET_LAST_SEEN_APP_INTERVAL * 2);
+    }, Common.LAST_SEEN_APP_INTERVAL);
 
     return () => {
       clearInterval(intervalID);
@@ -77,7 +76,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     avatarStyle.borderColor = "grey";
   }
 
-  if (!disableOnlineRing && Utils.isOnline(lastSeenApp)) {
+  if (!disableOnlineRing && Common.isAppOnline(lastSeenApp)) {
     avatarStyle.borderWidth = 2;
     avatarStyle.borderStyle = "solid";
     avatarStyle.borderColor = "#39B54A";
