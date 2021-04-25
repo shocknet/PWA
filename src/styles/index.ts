@@ -167,3 +167,5 @@ export const displayNone = styles["display-none"];
 /* -------------------------------------------------------------------------- */
 
 export const unselectable = styles["unselectable"];
+
+export const hiddenInput = styles["hidden-input"];
