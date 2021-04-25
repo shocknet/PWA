@@ -83,7 +83,8 @@ const App = () => {
   }, [authToken, dispatch]);
 
   useEffect(() => {
-    if (authenticated) {
+    // ensure public key exists before subbing
+    if (authenticated && publicKey) {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       dispatch(subscribeUserProfile(publicKey));
@@ -96,9 +97,11 @@ const App = () => {
     }
 
     return () => {
-      dispatch(unsubscribeUserProfile(publicKey));
-      dispatch(FeedActions.unsubUserPosts(publicKey));
-      dispatch(FeedActions.unsubUserSharedPosts(publicKey));
+      if (publicKey) {
+        dispatch(unsubscribeUserProfile(publicKey));
+        dispatch(FeedActions.unsubUserPosts(publicKey));
+        dispatch(FeedActions.unsubUserSharedPosts(publicKey));
+      }
     };
   }, [authenticated, dispatch, publicKey]);
 

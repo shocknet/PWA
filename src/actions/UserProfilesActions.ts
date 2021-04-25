@@ -32,16 +32,21 @@ export const subscribeUserProfile = (publicKey: string) => async (
     userProfiles: Record<string, Common.User>;
   }
 ) => {
-  console.info("subbing user..."+publicKey)
+  if (!publicKey) {
+    throw new TypeError(
+      `Falsy public key provided to subscribeUserProfile(): --| ${publicKey} |--`
+    );
+  }
+  console.info("subbing user..." + publicKey);
   const [subscription, binarySub] = await Promise.all([
     rifle({
       query: `${publicKey}::Profile::on`,
       reconnect: true,
       onData: profile => {
-        console.log("up on profile")
-        console.log(profile)
+        console.log("up on profile");
+        console.log(profile);
         const { [publicKey]: existingUser } = getState().userProfiles;
-    
+
         if (existingUser) {
           dispatch({
             type: ACTIONS.UPDATE_USER_PROFILE,
@@ -49,7 +54,7 @@ export const subscribeUserProfile = (publicKey: string) => async (
           });
           return profile;
         }
-    
+
         dispatch({
           type: ACTIONS.LOAD_USER_PROFILE,
           data: { publicKey, profile }
