@@ -46,7 +46,7 @@ const GoLive = () => {
   const [streamToken, setStreamToken] = useState(streamLiveToken);
   const [, setUserToken] = useState(streamUserToken);
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
-  const [isLive] = useState(false);
+  const [isLive] = useState(!!streamUrl);
   const [error, setError] = useState<string | null>(null);
   const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
@@ -231,9 +231,9 @@ const GoLive = () => {
   return (
     <>
       <DarkPage pageTitle="GO LIVE" scrolls>
-        {isLive && <div>{StreamRender}</div>}
-
-        {!isLive && selectedSource === "camera" ? <CamFeed /> : <Static />}
+        {(isLive || streamUrl) && <div>{StreamRender}</div>}
+        {/*hide for now since it's not implemented and causes a duplication*/ }
+        {/*!isLive && selectedSource === "camera" ? <CamFeed /> : <Static /> */}
 
         <div className={c(gStyles.rowCentered, gStyles.width100)}>
           <div

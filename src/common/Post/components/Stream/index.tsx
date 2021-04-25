@@ -45,8 +45,8 @@ const Stream = ({
           src: item.magnetURI,
           type: "application/x-mpegURL"
         });
-        /*listen for 404s from the player
-        player.tech().on('retryplaylist', () => {
+        //listen for 404s from the player
+        /*player.tech().on('retryplaylist', () => {
           console.log('retryplaylist');
         });*/
         player.play();

@@ -36,7 +36,7 @@ const content = (state = INITIAL_STATE, action) => {
       return {...state, streamLiveToken:data.liveToken,streamUserToken:data.seedToken,streamUrl:data.streamUrl}
     }
     case ACTIONS.REMOVE_STREAM:{
-      return {...state, streamLiveToken:'',streamUserToken:''}
+      return {...state, streamLiveToken:'',streamUserToken:'',streamUrl:''}
     }
     case ACTIONS.SET_SEED_INFO:{
       const {data} = action
