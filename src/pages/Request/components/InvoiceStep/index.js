@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useHistory } from "react-router";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
 import { useDispatch } from "react-redux";
@@ -6,10 +7,11 @@ import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
 import "./css/index.css";
+
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
 import { sendMessage } from "../../../../actions/ChatActions";
-import { useHistory } from "react-router";
+import * as gStyles from "../../../../styles";
 
 const InvoiceStep = ({
   amount = 0,
@@ -80,13 +82,33 @@ const InvoiceStep = ({
     setLightningMode(!lightningMode);
   }, [lightningMode]);
 
-  const copyClipboard = useCallback(() => {
-    if (lightningMode) {
-      navigator.clipboard.writeText(paymentRequest);
-      return;
-    }
+  /** @type {import('react').MutableRefObject<HTMLInputElement|null>} */
+  const placeholderInputRef = useRef();
 
-    navigator.clipboard.writeText(address);
+  const copyClipboard = useCallback(() => {
+    try {
+      const txtToCopy = lightningMode ? paymentRequest : address;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txtToCopy);
+      } else {
+        const { current: el } = placeholderInputRef;
+        if (!el) {
+          throw new ReferenceError(
+            `When trying to access the ref for the placeholder input to copy, the ref was null.`
+          );
+        }
+
+        el.style.display = "block";
+        el.select();
+        document.execCommand("copy");
+        el.blur();
+        el.style.display = "none";
+      }
+    } catch (e) {
+      console.error(e);
+      setError(e.message);
+    }
   }, [lightningMode, paymentRequest, address]);
 
   const sendInvoice = useCallback(async () => {
@@ -162,6 +184,17 @@ const InvoiceStep = ({
         <i className="fas fa-copy"></i>
         <p className="copy-clipboard-btn-text">Copy to Clipboard</p>
       </div>
+
+      {navigator.clipboard && (
+        <input
+          className={gStyles.hiddenInput}
+          readOnly
+          ref={placeholderInputRef}
+          type="text"
+          value={lightningMode ? paymentRequest : address}
+        />
+      )}
+
       <div className="invoice-details">
         <p className="invoice-details-change" onClick={prevStep}>
           Change
