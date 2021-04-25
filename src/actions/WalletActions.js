@@ -153,11 +153,10 @@ export const fetchInvoices = ({
   }
 };
 
-export const fetchPayments = ({
-  page,
-  itemsPerPage = 10,
-  reset = false
-}) => async (dispatch, getState) => {
+const fetchPayments = ({ page, itemsPerPage = 10, reset = false }) => async (
+  dispatch,
+  getState
+) => {
   try {
     const { payments } = getState().wallet;
 
