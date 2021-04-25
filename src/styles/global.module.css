@@ -391,3 +391,9 @@
   -ms-user-select: none;
   user-select: none;
 }
+
+.hidden-input {
+  position: relative;
+  left: -10000px;
+  display: none;
+}
