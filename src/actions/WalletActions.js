@@ -240,7 +240,10 @@ export const openChannel = ({
 
     dispatch(fetchChannels());
   } catch (err) {
-    console.error(err);
+    console.error(
+      `An error ocurred while opening a channel (openChannel()) with public key --| ${publicKey} |--, channel capacity: --| ${channelCapacity} |-- and push amount: --| ${pushAmount} |--:`,
+      err
+    );
     throw err?.response?.data ?? err;
   }
 };
