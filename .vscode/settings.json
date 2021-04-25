@@ -11,6 +11,7 @@
     "Unmount",
     "autocorrect",
     "callout",
+    "connectpeer",
     "endregion",
     "healthz",
     "immer",
