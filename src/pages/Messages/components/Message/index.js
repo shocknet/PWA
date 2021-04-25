@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -9,38 +9,28 @@ import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 import * as Store from "../../../../store";
 
 import "./css/index.css";
+import { rifleCleanup } from "../../../../utils/WebSocket";
 
 const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
   const dispatch = useDispatch();
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const user = Store.useSelector(Store.selectUser(publicKey));
 
-  // TODO: use a ref
-  const [messagesListener, setMessagesListener] = useState();
-
-  const subscribeMessages = useCallback(async () => {
-    try {
-      const subscription = await dispatch(
-        subscribeChatMessages(gunPublicKey, publicKey)
-      );
-      // @ts-expect-error
-      setMessagesListener(subscription);
-    } catch (err) {
-      console.warn(err);
-    }
+  const subscribeMessages = useCallback(() => {
+    const subscription = dispatch(
+      subscribeChatMessages(gunPublicKey, publicKey)
+    );
+    
+    return rifleCleanup(subscription);
   }, [dispatch, gunPublicKey, publicKey]);
 
   useEffect(() => {
-    if (!messagesListener && chatLoaded) {
-      subscribeMessages();
+    if (chatLoaded) {
+      const unsubscribe = subscribeMessages();
+  
+      return unsubscribe;
     }
-
-    return () => {
-      console.log("Closing Subscription...", publicKey);
-      // @ts-expect-error
-      messagesListener?.off();
-    };
-  }, [messagesListener, subscribeMessages, publicKey, chatLoaded]);
+  }, [subscribeMessages, publicKey, chatLoaded]);
 
   return (
     <Link to={`/chat/${publicKey}`} className="message-container">

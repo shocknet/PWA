@@ -67,8 +67,8 @@ export const ACTIONS = {
  */
 
 export const loadChatData = () => async (dispatch, getState) => {
-  const { hostIP, authToken } = getState().node;
-  const data = await getChats({ hostIP, authToken });
+  const { authToken } = getState().node;
+  const data = await getChats({ authToken });
   console.log("LOAD_CHAT_DATA:", data);
 
   dispatch({
@@ -144,8 +144,7 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 export const subscribeChatMessages = (
   userPublicKey,
   recipientPublicKey
-) => async (dispatch, getState) => {
-  const { hostIP } = getState().node;
+) => async (dispatch) => {
   const { data: incomingId } = await Http.get(
     `/api/gun/user/once/userToIncoming>${recipientPublicKey}`,
     {

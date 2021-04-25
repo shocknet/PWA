@@ -12,11 +12,7 @@ import {
   subscribeUserProfile,
   unsubscribeUserProfile
 } from "../../actions/UserProfilesActions";
-import {
-  rifle,
-  rifleSocketExists,
-  unsubscribeRifleById
-} from "../../utils/WebSocket";
+import { rifle, rifleCleanup } from "../../utils/WebSocket";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -46,8 +42,6 @@ const OtherUserPage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
-  const hostIP = useSelector(({ node }) => node.hostIP);
-  //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
   const user = Store.useSelector(Store.selectUser(userPublicKey));
@@ -61,9 +55,9 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
-  const subscribeUserPosts = useCallback(async () => {
+  const subscribeUserPosts = useCallback(() => {
     const query = `${userPublicKey}::posts::on`;
-    const subscription = await rifle({
+    const subscription = rifle({
       query,
       reconnect: false,
       onData: async posts => {
@@ -87,14 +81,12 @@ const OtherUserPage = () => {
       }
     });
 
-    return () => {
-      subscription.off()
-    }
+    return rifleCleanup(subscription);
   }, [userPublicKey]);
 
-  const subscribeSharedPosts = useCallback(async () => {
+  const subscribeSharedPosts = useCallback(() => {
     const query = `${userPublicKey}::sharedPosts::on`;
-    const subscription = await rifle({
+    const subscription = rifle({
       query,
       reconnect: false,
       onData: async posts => {
@@ -126,25 +118,27 @@ const OtherUserPage = () => {
       }
     });
 
-    return () => {
-      subscription.off();
-    };
-  }, [hostIP, userPublicKey]);
+    return rifleCleanup(subscription);
+  }, [userPublicKey]);
 
-  //effect for user profile
+  // effect for user profile
+  // @ts-ignore
   useEffect(() => {
-    dispatch(subscribeUserProfile(userPublicKey));
-    return () => {
-      dispatch(unsubscribeUserProfile(userPublicKey));
-    };
+    const unsubscribe = dispatch(subscribeUserProfile(userPublicKey));
+    
+    return unsubscribe;
   }, [dispatch, userPublicKey]);
   //effect for user posts
   useEffect(() => {
-    subscribeUserPosts();
+    const unsubscribe = subscribeUserPosts();
+
+    return unsubscribe;
   }, [subscribeUserPosts]);
   //effect for shared posts
   useEffect(() => {
-    subscribeSharedPosts();
+    const unsubscribe = subscribeSharedPosts();
+
+    return unsubscribe;
   }, [subscribeSharedPosts]);
   //effect for merge posts and shared posts
   useEffect(() => {

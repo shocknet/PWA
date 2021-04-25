@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
 import Request from "./components/Request";
@@ -36,6 +37,15 @@ const MessagesPage = () => {
   useEffect(() => {
     loadChat();
   }, [loadChat]);
+
+  useEffect(() => {
+    const subscriptions = [...contacts, ...sentRequests, ...receivedRequests].map(entry => dispatch(subscribeUserProfile(entry.pk)))
+
+    return () => {
+      // @ts-ignore
+      subscriptions.map(unsubscribe => unsubscribe())
+    }
+  }, [contacts, sentRequests, receivedRequests, dispatch])
 
   const toggleModal = useCallback(() => {
     setAddModalOpen(!addModalOpen);

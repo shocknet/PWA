@@ -34,10 +34,10 @@ import Pad from "../../common/Pad";
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
-import { rifle } from "../../utils/WebSocket";
+import { rifle, rifleCleanup } from "../../utils/WebSocket";
 
 import "./css/index.css";
-import { deleteUserPost } from "../../actions/FeedActions";
+import { deleteUserPost, subscribeSharedUserPosts, subscribeUserPosts } from "../../actions/FeedActions";
 import { isSharedPost } from "../../schema";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -80,12 +80,18 @@ const ProfilePage = () => {
   console.debug(myPosts);
 
   useEffect(() => {
-    const subscription = subscribeMyServices(hostIP)(dispatch);
+    const subscription = subscribeMyServices()(dispatch);
 
-    return () => {
-      subscription.then(cancel => cancel());
-    };
-  }, [hostIP, dispatch]);
+    return rifleCleanup(subscription);
+  }, [dispatch]);
+
+  useEffect(() => {
+    const postSubscription = dispatch(subscribeUserPosts(publicKey))
+    const sharedPostSubscription = dispatch(subscribeSharedUserPosts(publicKey))
+
+    return rifleCleanup(postSubscription, sharedPostSubscription)
+  }, [publicKey]);
+
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
   }, [profileModalOpen]);
@@ -117,7 +123,7 @@ const ProfilePage = () => {
     }
   }, [newWebClientPrefix, publicKey]);
 
-  const subscribeClientPrefix = useCallback(async () => {
+  const subscribeClientPrefix = useCallback(() => {
     // Extraneous logs but helps us not having eslint complain about these
     // "unnecessary" dependencies below without disabling the
     console.debug(
@@ -125,7 +131,7 @@ const ProfilePage = () => {
     );
     const query = `$user::Profile>webClientPrefix::on`;
 
-    const socket = await rifle({
+    const socket = rifle({
       query,
       onData: (webClientPrefixReceived: unknown) => {
         if (typeof webClientPrefixReceived === "string") {
@@ -144,15 +150,13 @@ const ProfilePage = () => {
       }
     });
 
-    return socket;
+    return rifleCleanup(socket);
   }, [hostIP, publicKey /* handles alias/hostIP switch */]);
 
   useEffect(() => {
-    const subscription = subscribeClientPrefix();
+    const unsubscribe = subscribeClientPrefix();
 
-    return () => {
-      subscription.then(query => query.off?.());
-    };
+    return unsubscribe;
   }, [subscribeClientPrefix]);
 
   const handleViewChange = useCallback((view: "posts" | "services") => {

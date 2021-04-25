@@ -134,11 +134,11 @@ const ContentHostInput = () => {
     [dispatch]
   );
 
+  // @ts-ignore
   useEffect(() => {
-    dispatch(subscribeUserProfile(seedProviderPub));
-    return () => {
-      dispatch(unsubscribeUserProfile(seedProviderPub));
-    };
+    const unsubscribe = dispatch(subscribeUserProfile(seedProviderPub));
+
+    return unsubscribe;
   }, [seedProviderPub, dispatch]);
   const filteredHosts = useMemo(() => {
     return hosts.filter(h => h);

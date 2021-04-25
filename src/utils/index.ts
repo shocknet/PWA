@@ -151,7 +151,7 @@ export const retryOperation = <T>(
   });
 
 /**
- * Returns an empty string if the string provided is not an url.
+ * Returns an empty string if the string provided is not a url.
  */
 export const normalizeURL = (_url: string): string => {
   let url = _url;

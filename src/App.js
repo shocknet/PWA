@@ -84,125 +84,17 @@ const App = () => {
 
   useEffect(() => {
     if (authenticated) {
+      // TODO: Move to messages screen
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
-      dispatch(subscribeUserProfile(publicKey));
-      dispatch(FeedActions.subscribeUserPosts(publicKey));
-      dispatch(FeedActions.subscribeSharedUserPosts(publicKey));
+      // Get current user's profile on login
+      dispatch(subscribeUserProfile(publicKey))
     } else {
-      dispatch(unsubscribeUserProfile(publicKey));
-      dispatch(FeedActions.unsubUserPosts(publicKey));
-      dispatch(FeedActions.unsubUserSharedPosts(publicKey));
+      dispatch(unsubscribeUserProfile(publicKey))
     }
-
-    return () => {
-      dispatch(unsubscribeUserProfile(publicKey));
-      dispatch(FeedActions.unsubUserPosts(publicKey));
-      dispatch(FeedActions.unsubUserSharedPosts(publicKey));
-    };
   }, [authenticated, dispatch, publicKey]);
 
-  // Keep this effect separate from the one above, as having both together
-  // causes an infinite loop due to implicit/explicit dependencies.
-  const subbedUsers = useRef(/** @type {string[]} */ ([]));
-  useEffect(() => {
-    const unsub = () => {
-      const { current: currentlySubbedUsers } = subbedUsers;
 
-      batch(() => {
-        currentlySubbedUsers.forEach(pk => {
-          dispatch(unsubscribeUserProfile(pk));
-        });
-      });
-
-      currentlySubbedUsers.splice(0, currentlySubbedUsers.length);
-    };
-
-    if (authenticated) {
-      const contactPKs = contacts.map(c => c.pk);
-      const sentReqsPKs = sentRequests.map(r => r.pk);
-      const receivedReqsPKs = receivedRequests.map(r => r.pk);
-
-      const publicKeysToSub = uniq(
-        /** @type {string[]} */ ([
-          ...contactPKs,
-          ...sentReqsPKs,
-          ...receivedReqsPKs
-        ])
-      ).filter(pk => !subbedUsers.current.includes(pk));
-
-      publicKeysToSub.forEach(pk => {
-        subbedUsers.current.push(pk);
-      });
-
-      batch(() => {
-        publicKeysToSub.forEach(pk => {
-          dispatch(subscribeUserProfile(pk));
-        });
-      });
-    } else {
-      unsub();
-    }
-
-    return unsub;
-  }, [
-    authenticated,
-    dispatch,
-    publicKey,
-    contacts,
-    sentRequests,
-    receivedRequests
-  ]);
-
-  useEffect(() => {
-    if (authenticated) {
-      dispatch(FeedActions.subscribeFollows());
-    } else {
-      dispatch(FeedActions.unsubscribeFollows());
-    }
-
-    return () => {
-      dispatch(FeedActions.unsubscribeFollows());
-    };
-  }, [authenticated, dispatch]);
-
-  const subbedFollowedKeysRef = useRef(/** @type {string[]} */ ([]));
-
-  useEffect(() => {
-    const unsub = () => {
-      const { current: currentlySubbedFollowedKeys } = subbedFollowedKeysRef;
-
-      batch(() => {
-        currentlySubbedFollowedKeys.forEach(pk => {
-          dispatch(unsubscribeUserProfile(pk));
-          dispatch(FeedActions.unsubUserPosts(pk));
-          dispatch(FeedActions.unsubUserSharedPosts(pk));
-        });
-      });
-      currentlySubbedFollowedKeys.splice(0, currentlySubbedFollowedKeys.length);
-    };
-
-    if (authenticated) {
-      const { current: currentlySubbedFollowedKeys } = subbedFollowedKeysRef;
-      const publicKeysToSub = followedPublicKeys.filter(
-        pk => !currentlySubbedFollowedKeys.includes(pk)
-      );
-
-      batch(() => {
-        publicKeysToSub.forEach(pk => {
-          dispatch(subscribeUserProfile(pk));
-          dispatch(FeedActions.subscribeUserPosts(pk));
-          dispatch(FeedActions.subscribeSharedUserPosts(pk));
-        });
-      });
-
-      subbedFollowedKeysRef.current.push(...followedPublicKeys);
-    } else {
-      unsub();
-    }
-
-    return unsub;
-  }, [followedPublicKeys, authenticated, dispatch]);
 
   return (
     <FullHeight className="ShockWallet">
