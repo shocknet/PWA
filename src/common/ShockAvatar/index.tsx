@@ -77,7 +77,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     avatarStyle.borderColor = "grey";
   }
 
-  if (!isSelf && !disableOnlineRing && Utils.isOnline(lastSeenApp)) {
+  if (!disableOnlineRing && Utils.isOnline(lastSeenApp)) {
     avatarStyle.borderWidth = 2;
     avatarStyle.borderStyle = "solid";
     avatarStyle.borderColor = "#39B54A";
