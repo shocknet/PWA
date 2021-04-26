@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
-import { connectHost, SetAttemptsDone } from "../../../../actions/NodeActions";
+import { connectHost } from "../../../../actions/NodeActions";
 import { connectSocket } from "../../../../utils/WebSocket";
 import Http from "../../../../utils/Http";
 import Loader from "../../../../common/Loader";
@@ -11,9 +11,6 @@ const HOSTING_SERVER = "pool.shock.network";
 
 const InviteStep = () => {
   const dispatch = useDispatch();
-  const hostingAttemptsDone = useSelector(
-    ({ node }) => node.hostingAttemptsDone
-  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -69,22 +66,17 @@ const InviteStep = () => {
         const nodeURL = response.data.address;
         const tunnelURI = await getTunnelURI(nodeURL);
         const noProtocolHostIP = tunnelURI.replace(/^http(s)?:\/\//gi, "");
-        const retries = hostingAttemptsDone ? 0 : 4;
         const { withProtocolHostIP } = await connectHost(
           noProtocolHostIP,
-          true,
-          retries
+          true
         )(dispatch);
-        if (hostingAttemptsDone) {
-          SetAttemptsDone()(dispatch);
-        }
         connectSocket(withProtocolHostIP);
       } catch (error) {
         setLoading(false);
         setError("Unable to connect to host");
       }
     },
-    [dispatch, SetAttemptsDone, hostingAttemptsDone, inviteCode]
+    [dispatch, inviteCode]
   );
 
   const chooseAnotherMethod = useCallback(() => {
