@@ -12,8 +12,7 @@ export const ACTIONS = {
   SET_HOST_ID: "node/hostId",
   SET_AUTHENTICATED_USER: "node/authenticatedUser",
   SET_CONNECTION_STATUS: "node/connectionStatus",
-  SET_NODE_HEALTH: "node/health",
-  SET_ATTEMPTS_DONE: "node/attemptsDone"
+  SET_NODE_HEALTH: "node/health"
 };
 
 export const resetNodeInfo = () => dispatch => {
@@ -31,38 +30,14 @@ export const setHostId = hostId => dispatch => {
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-const retryOperation = (operation, delay, retries) =>
-  new Promise((resolve, reject) => {
-    return operation()
-      .then(resolve)
-      .catch(reason => {
-        if (retries > 0) {
-          return wait(delay)
-            .then(
-              retryOperation.bind(null, operation, delay * retries, retries - 1)
-            )
-            .then(resolve)
-            .catch(reject);
-        }
-        return reject(reason);
-      });
-  });
-
-export const fetchNodeHealth = (hostIP, retries) => async dispatch => {
+export const fetchNodeHealth = hostIP => async dispatch => {
   try {
-    const { data } = await retryOperation(
-      async () => {
-        const { data } = await Http.get(`${hostIP}/healthz`);
-        if (!data) {
-          throw new Error(
-            `NodeActions->fetchNodeHealth()->No data obtained from healthz endpoint`
-          );
-        }
-        return { data };
-      },
-      1000,
-      retries
-    );
+    const { data } = await Http.get(`${hostIP}/healthz`);
+    if (!data) {
+      throw new Error(
+        `NodeActions->fetchNodeHealth()->No data obtained from healthz endpoint`
+      );
+    }
 
     if (data.APIStatus?.message) {
       dispatch({
@@ -102,11 +77,7 @@ export const fetchNodeUnlockStatus = () => async dispatch => {
   return "createWallet";
 };
 
-export const connectHost = (
-  hostIP,
-  resetData = true,
-  retries = 0
-) => async dispatch => {
+export const connectHost = (hostIP, resetData = true) => async dispatch => {
   if (resetData) {
     dispatch({
       type: ACTIONS.RESET_NODE_INFO
@@ -134,10 +105,9 @@ export const connectHost = (
   let nodeHealthHttps;
   const sanitizedHostIP = hostIP.replace(/^http(s)?:\/\//, "");
   try {
-    nodeHealthHttps = await fetchNodeHealth(
-      `https://${sanitizedHostIP}`,
-      retries
-    )(dispatch);
+    nodeHealthHttps = await fetchNodeHealth(`https://${sanitizedHostIP}`)(
+      dispatch
+    );
     if (nodeHealthHttps) {
       nodeHealthHttps.withProtocolHostIP = `https://${sanitizedHostIP}`;
       await done(`https://${sanitizedHostIP}`, nodeHealthHttps);
@@ -148,10 +118,9 @@ export const connectHost = (
   }
 
   console.error("cannot establish https connection, will try http");
-  const nodeHealth = await fetchNodeHealth(
-    `http://${sanitizedHostIP}`,
-    retries
-  )(dispatch);
+  const nodeHealth = await fetchNodeHealth(`http://${sanitizedHostIP}`)(
+    dispatch
+  );
   nodeHealth.withProtocolHostIP = `http://${sanitizedHostIP}`;
   await done(`http://${sanitizedHostIP}`, nodeHealth);
   return nodeHealthHttps || nodeHealth;
@@ -247,10 +216,4 @@ export const createWallet = ({ alias, password }) => async dispatch => {
     dispatch(setAuthenticated(false));
     throw parseError(err);
   }
-};
-
-export const SetAttemptsDone = () => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_ATTEMPTS_DONE
-  });
 };
