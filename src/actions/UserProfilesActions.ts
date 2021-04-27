@@ -1,7 +1,11 @@
 import * as Common from "shock-common";
 
 import * as Utils from "../utils";
-import { rifle, rifleCleanup, unsubscribeRifleByQuery } from "../utils/WebSocket";
+import {
+  rifle,
+  rifleCleanup,
+  unsubscribeRifleByQuery
+} from "../utils/WebSocket";
 
 export const ACTIONS = {
   RESET_USER_PROFILES: "userProfiles/profiles/reset",
@@ -33,18 +37,18 @@ export const subscribeUserProfile = (publicKey: string) => (
   }
 ) => {
   if (subscribedProfiles.has(publicKey)) {
-    return () => {}
+    return () => {};
   }
 
-  console.info("subbing user..."+publicKey)
-  subscribedProfiles.add(publicKey)
+  console.info("subbing user..." + publicKey);
+  subscribedProfiles.add(publicKey);
 
   const subscription = rifle({
     query: `${publicKey}::Profile::on`,
     reconnect: true,
     onData: profile => {
       const { [publicKey]: existingUser } = getState().userProfiles;
-  
+
       if (existingUser) {
         dispatch({
           type: ACTIONS.UPDATE_USER_PROFILE,
@@ -52,7 +56,7 @@ export const subscribeUserProfile = (publicKey: string) => (
         });
         return profile;
       }
-  
+
       dispatch({
         type: ACTIONS.LOAD_USER_PROFILE,
         data: { publicKey, profile }

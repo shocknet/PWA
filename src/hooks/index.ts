@@ -21,9 +21,11 @@ export const useStory = (publicKey: string) => {
         if (typeof pictures !== "object" || pictures === null) {
           return;
         }
-  
+
         setPics(
-          Object.values(pictures).filter(p => typeof p === "object" && p !== null)
+          Object.values(pictures).filter(
+            p => typeof p === "object" && p !== null
+          )
         );
       },
       onError: (err: unknown) => {
@@ -38,7 +40,7 @@ export const useStory = (publicKey: string) => {
   React.useEffect(() => {
     const unsubscribe = subscribeStory();
 
-    return unsubscribe
+    return unsubscribe;
   }, [subscribeStory]);
 
   return pics;

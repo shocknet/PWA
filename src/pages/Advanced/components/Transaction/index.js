@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import "./css/index.css";
 
-const Transaction = ({ hash, value, date,unconfirmed }) => {
+const Transaction = ({ hash, value, date, unconfirmed }) => {
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const sanitizedValue = value.replace(/,/g, "");
   const USDValue = formatNumber(
@@ -20,9 +20,14 @@ const Transaction = ({ hash, value, date,unconfirmed }) => {
         <div className="advanced-transaction-avatar"></div>
         <div className="advanced-transaction-author">
           <p className="advanced-transaction-author-name">{hash}</p>
-          <div style={{display:'flex'}}>
+          <div style={{ display: "flex" }}>
             <p className="advanced-transaction-type">Payment</p>
-            {unconfirmed && <i className="far fa-clock" style={{marginLeft:'0.5rem',color:'red'}}></i>}
+            {unconfirmed && (
+              <i
+                className="far fa-clock"
+                style={{ marginLeft: "0.5rem", color: "red" }}
+              ></i>
+            )}
           </div>
         </div>
       </div>

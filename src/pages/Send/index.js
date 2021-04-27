@@ -1,5 +1,5 @@
-import React, { useCallback, useState,useEffect } from "react";
-import {  useHistory, useLocation } from "react-router";
+import React, { useCallback, useState, useEffect } from "react";
+import { useHistory, useLocation } from "react-router";
 import Http from "../../utils/Http";
 import SlidePay from "../../common/SlidePay";
 import InputGroup from "../../common/InputGroup";
@@ -10,9 +10,9 @@ import Loader from "../../common/Loader";
 import "./css/index.css";
 
 const SendPage = () => {
-  const location = useLocation()
-  const history = useHistory()
-  
+  const location = useLocation();
+  const history = useHistory();
+
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [unit, setUnit] = useState("sats");
@@ -56,42 +56,42 @@ const SendPage = () => {
     setLoading(false);
   }, []);
   //effect for incoming redirects with data
-  useEffect(()=>{
-    const {state:routerState} = location
-    
-    if(routerState && routerState.data && routerState.data.type){
-      const {data} = routerState
+  useEffect(() => {
+    const { state: routerState } = location;
+
+    if (routerState && routerState.data && routerState.data.type) {
+      const { data } = routerState;
       switch (data.type) {
-        case 'btc':{
+        case "btc": {
           selectContact({
-            type:"btc",
-            address:data.address
-          })
-          if(data.amount){
-            setAmount(data.amount)
+            type: "btc",
+            address: data.address
+          });
+          if (data.amount) {
+            setAmount(data.amount);
           }
-          break
+          break;
         }
-        case 'ln':{
+        case "ln": {
           selectContact({
-            type:"invoice",
-            paymentRequest:data.request
-          })
-          break
+            type: "invoice",
+            paymentRequest: data.request
+          });
+          break;
         }
-        case 'keysend':{
+        case "keysend": {
           selectContact({
-            type:"keysend",
-            dest:data.address
-          })
-          break
+            type: "keysend",
+            dest: data.address
+          });
+          break;
         }
         default:
           break;
       }
-      location.state = {}
+      location.state = {};
     }
-  },[location,selectContact,setAmount])
+  }, [location, selectContact, setAmount]);
   const sendBTCPayment = useCallback(async () => {
     if (contact) {
       const { data: payment } = await Http.post("/api/lnd/sendcoins", {
@@ -142,7 +142,7 @@ const SendPage = () => {
       if (contact?.type === "contact") {
         await sendGunPayment();
       }
-      history.push("/overview")
+      history.push("/overview");
       setPaymentLoading(false);
     } catch (err) {
       console.error(err);
@@ -150,7 +150,7 @@ const SendPage = () => {
       setPaymentLoading(false);
       throw err;
     }
-  }, [contact,history, sendBTCPayment, sendGunPayment, sendLightningPayment]);
+  }, [contact, history, sendBTCPayment, sendGunPayment, sendLightningPayment]);
 
   return (
     <DialogPageContainer containerClassName="send-page" title="SEND">

@@ -22,7 +22,12 @@ import { isSharedPost } from "../../schema";
 import "./css/index.css";
 import UnlockModal from "./components/UnlockModal";
 import { useDispatch } from "react-redux";
-import { subscribeFollows, subscribeSharedUserPosts, subscribeUserPosts, unsubscribeFollows } from "../../actions/FeedActions";
+import {
+  subscribeFollows,
+  subscribeSharedUserPosts,
+  subscribeUserPosts,
+  unsubscribeFollows
+} from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import { rifleCleanup } from "../../utils/WebSocket";
 
@@ -99,20 +104,23 @@ const FeedPage = () => {
 
   useEffect(() => {
     const subscriptions = follows.map(follow => {
-      const profileSubscription = dispatch(subscribeUserProfile(follow.user))
-      const postsSubscription = dispatch(subscribeUserPosts(follow.user))
-      const sharedPostsSubscription = dispatch(subscribeSharedUserPosts(follow.user))
+      const profileSubscription = dispatch(subscribeUserProfile(follow.user));
+      const postsSubscription = dispatch(subscribeUserPosts(follow.user));
+      const sharedPostsSubscription = dispatch(
+        subscribeSharedUserPosts(follow.user)
+      );
 
       return () => {
         // @ts-ignore
-        profileSubscription()
-        rifleCleanup(postsSubscription, sharedPostsSubscription)();}
+        profileSubscription();
+        rifleCleanup(postsSubscription, sharedPostsSubscription)();
+      };
     });
 
     return () => {
       subscriptions.map(unsubscribe => unsubscribe());
-    }
-  }, [follows, dispatch])
+    };
+  }, [follows, dispatch]);
 
   return (
     <div className="page-container feed-page">
@@ -128,8 +136,8 @@ const FeedPage = () => {
           {follows?.map(follow => {
             const publicKey = follow.user;
             const profile =
-            userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
-            
+              userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
+
             return (
               <UserIcon
                 username={processDisplayName(publicKey, profile.displayName)}

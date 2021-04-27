@@ -6,7 +6,16 @@ import "./css/index.css";
 
 const IMAGE_TRANSITION_MS = 200;
 
-const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width }) => {
+const Image = ({
+  id,
+  item,
+  index,
+  postId,
+  tipValue,
+  tipCounter,
+  hideRibbon,
+  width
+}) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomLoaded, setZoomLoaded] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -34,9 +43,9 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width 
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
   );
-  const mainImageStyle = { opacity: previewVisible ? 1 : 0 }
-  if(width){
-    mainImageStyle.width = width
+  const mainImageStyle = { opacity: previewVisible ? 1 : 0 };
+  if (width) {
+    mainImageStyle.width = width;
   }
 
   return (
@@ -62,14 +71,19 @@ const Image = ({ id, item, index, postId, tipValue, tipCounter,hideRibbon,width 
           onLoad={() => {
             setZoomLoaded(true);
           }}
-          style={{ opacity: zoomLoaded ? 1 : 0, display:zoomLoaded ? 'block' : 'none' }}
+          style={{
+            opacity: zoomLoaded ? 1 : 0,
+            display: zoomLoaded ? "block" : "none"
+          }}
           src={contentURL}
         />
-        {!hideRibbon && <TipRibbon
-          tipCounter={tipCounter}
-          tipValue={tipValue}
-          zoomed={zoomed}
-        />}
+        {!hideRibbon && (
+          <TipRibbon
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            zoomed={zoomed}
+          />
+        )}
       </ControlledZoom>
     </div>
   );

@@ -12,7 +12,8 @@ const Loader = ({
 }) => {
   const height = use100vh() ?? "100vh";
   // Fixes cutoff loading overlay in PWA mode
-  const standaloneMode = window.matchMedia("(display-mode: standalone)").matches
+  const standaloneMode = window.matchMedia("(display-mode: standalone)")
+    .matches;
   const fullScreenStyles = fullScreen
     ? { height: standaloneMode ? "100%" : height, marginBottom: 0 }
     : {};

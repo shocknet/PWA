@@ -39,13 +39,17 @@ const MessagesPage = () => {
   }, [loadChat]);
 
   useEffect(() => {
-    const subscriptions = [...contacts, ...sentRequests, ...receivedRequests].map(entry => dispatch(subscribeUserProfile(entry.pk)))
+    const subscriptions = [
+      ...contacts,
+      ...sentRequests,
+      ...receivedRequests
+    ].map(entry => dispatch(subscribeUserProfile(entry.pk)));
 
     return () => {
       // @ts-ignore
-      subscriptions.map(unsubscribe => unsubscribe())
-    }
-  }, [contacts, sentRequests, receivedRequests, dispatch])
+      subscriptions.map(unsubscribe => unsubscribe());
+    };
+  }, [contacts, sentRequests, receivedRequests, dispatch]);
 
   const toggleModal = useCallback(() => {
     setAddModalOpen(!addModalOpen);

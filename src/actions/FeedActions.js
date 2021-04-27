@@ -53,7 +53,7 @@ export const loadSharedPost = (
 const USER_POSTS_QUERY_SUFFIX = `::posts::on`;
 
 export const subscribeUserPosts = publicKey => async dispatch => {
-  console.info('subbing to posts from:'+publicKey)
+  console.info("subbing to posts from:" + publicKey);
   const subscription = await rifle({
     query: publicKey + USER_POSTS_QUERY_SUFFIX,
     onData: posts => {
@@ -71,8 +71,8 @@ export const subscribeUserPosts = publicKey => async dispatch => {
           const { data: post } = await Http.get(
             `/api/gun/otheruser/${publicKey}/load/posts>${id}`
           );
-          console.info(`processing post: ${id} from ${publicKey}`)
-          console.info(post)
+          console.info(`processing post: ${id} from ${publicKey}`);
+          console.info(post);
 
           dispatch({
             type: ACTIONS.ADD_USER_POST,
@@ -107,7 +107,7 @@ export const subscribeUserPosts = publicKey => async dispatch => {
 };
 
 export const unsubUserPosts = publicKey => async () => {
-  console.info('unsubbing to posts from:'+publicKey)
+  console.info("unsubbing to posts from:" + publicKey);
   unsubscribeRifleByQuery(publicKey + USER_POSTS_QUERY_SUFFIX);
 };
 
@@ -185,8 +185,8 @@ export const subscribeFollows = () => async dispatch => {
     query: FOLLOWS_QUERY,
     reconnect: true,
     onData: async (follow, key) => {
-      console.info(`processing follow`)
-      console.info(follow)
+      console.info(`processing follow`);
+      console.info(follow);
       if (typeof key !== "string") {
         console.warn(`Invalid follow key received: ${key}`);
         return;

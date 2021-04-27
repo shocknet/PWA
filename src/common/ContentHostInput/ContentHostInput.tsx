@@ -96,36 +96,39 @@ const ContentHostInput = () => {
     )
       .then(({ data }) => {
         const { data: service } = data;
-        setPriceToUpdate(service.servicePrice)
+        setPriceToUpdate(service.servicePrice);
       })
       .catch(e => {
-        setProviderError(e)
+        setProviderError(e);
       });
-  }, [providedService, seedProviderPub,setPriceToUpdate,setProviderError]);
-  //effect to update service 
+  }, [providedService, seedProviderPub, setPriceToUpdate, setProviderError]);
+  //effect to update service
   useEffect(() => {
     const tmpHosts = [...hosts];
     const providerIndex = tmpHosts.findIndex(host => !host.URI);
-    if (providerIndex === -1 || tmpHosts[providerIndex].price === priceToUpdate) {
+    if (
+      providerIndex === -1 ||
+      tmpHosts[providerIndex].price === priceToUpdate
+    ) {
       return;
     }
     tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
     tmpHosts[providerIndex].price = priceToUpdate;
     setHosts(tmpHosts);
-  },[priceToUpdate,setPriceToUpdate,hosts,setHosts])
+  }, [priceToUpdate, setPriceToUpdate, hosts, setHosts]);
   //effect to update error
-  useEffect(() =>{
+  useEffect(() => {
     //@ts-expect-error
     const err = providerError.message || providerError;
     const tmpHosts = [...hosts];
     const providerIndex = tmpHosts.findIndex(host => !host.URI);
-    if(providerIndex === -1 || err === tmpHosts[providerIndex].error){
-      return
+    if (providerIndex === -1 || err === tmpHosts[providerIndex].error) {
+      return;
     }
     tmpHosts[providerIndex].isBeingAddedOrDeleted = false;
-    tmpHosts[providerIndex].error = err
+    tmpHosts[providerIndex].error = err;
     setHosts(tmpHosts);
-  },[providerError,setProviderError,hosts,setHosts])
+  }, [providerError, setProviderError, hosts, setHosts]);
   const addHost = useCallback(
     (publicKeyOrURI, token) => {
       if (publicKeyOrURI.startsWith("http")) {
