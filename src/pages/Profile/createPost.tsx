@@ -14,8 +14,8 @@ import { useHistory } from "react-router";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  //@ts-expect-error
   const publishedContent = useSelector(
+    //@ts-expect-error
     ({ content }) => content.publishedContent
   );
   //@ts-expect-error
