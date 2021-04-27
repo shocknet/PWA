@@ -25,7 +25,7 @@ export const formatNumber = (value = "") => {
 };
 
 export const convertSatsToUSD = (sats, USDRate = "0") => {
-  console.debug(`Converting ${sats} Sats to USD (${USDRate})`);
+  //console.debug(`Converting ${sats} Sats to USD (${USDRate})`);
   const confirmedBalanceBTC = Big(sats).div(SAT_DENOMINATION).toString();
 
   return Big(USDRate?.toString() || "0").times(confirmedBalanceBTC);

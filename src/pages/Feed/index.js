@@ -32,20 +32,8 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 const FeedPage = () => {
   const dispatch = useDispatch();
   const follows = Store.useSelector(Store.selectFollows);
-  useEffect(()=>{
-    console.info("follows in feed just updated:")
-    console.info(follows)
-  },[follows])
   const posts = Store.useSelector(({ feed }) => feed.posts);
-  useEffect(()=>{
-    console.info("posts in feed just updated:")
-    console.info(posts)
-  },[posts])
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
-  useEffect(()=>{
-    console.info("userProfiles in feed just updated:")
-    console.info(userProfiles)
-  },[userProfiles])
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const { avatar } = Store.useSelector(Store.selectSelfUser);
@@ -136,8 +124,6 @@ const FeedPage = () => {
             const profile =
             userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
             
-            console.log(publicKey)
-            console.log(profile.displayName)
             return (
               <UserIcon
                 username={processDisplayName(publicKey, profile.displayName)}

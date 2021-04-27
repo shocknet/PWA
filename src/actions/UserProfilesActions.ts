@@ -43,8 +43,6 @@ export const subscribeUserProfile = (publicKey: string) => (
     query: `${publicKey}::Profile::on`,
     reconnect: true,
     onData: profile => {
-      console.log("up on profile:")
-      console.log(profile)
       const { [publicKey]: existingUser } = getState().userProfiles;
   
       if (existingUser) {

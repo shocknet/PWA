@@ -76,8 +76,6 @@ const ProfilePage = () => {
     }
     return [];
   }, [posts, publicKey]);
-  console.debug(posts);
-  console.debug(myPosts);
 
   useEffect(() => {
     const subscription = subscribeMyServices()(dispatch);
