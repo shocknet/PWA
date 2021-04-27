@@ -84,14 +84,16 @@ const feed = (state = INITIAL_STATE, action) => {
       const receivedPost = data;
       const authorId = receivedPost.authorId;
       const userPosts = state.posts[authorId] ?? [];
-      const existingPostIndex = userPosts.findIndex(post => receivedPost.id === post.id);
+      const existingPostIndex = userPosts.findIndex(
+        post => receivedPost.id === post.id
+      );
 
-      const tmp = [...userPosts]
+      const tmp = [...userPosts];
 
-      if(existingPostIndex !== -1){
-        tmp[existingPostIndex] = receivedPost
+      if (existingPostIndex !== -1) {
+        tmp[existingPostIndex] = receivedPost;
       } else {
-        tmp.push(receivedPost)
+        tmp.push(receivedPost);
       }
       return {
         ...state,

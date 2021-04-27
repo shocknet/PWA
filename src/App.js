@@ -88,13 +88,11 @@ const App = () => {
       dispatch(loadSentRequests());
       dispatch(loadReceivedRequests());
       // Get current user's profile on login
-      dispatch(subscribeUserProfile(publicKey))
+      dispatch(subscribeUserProfile(publicKey));
     } else {
-      dispatch(unsubscribeUserProfile(publicKey))
+      dispatch(unsubscribeUserProfile(publicKey));
     }
   }, [authenticated, dispatch, publicKey]);
-
-
 
   return (
     <FullHeight className="ShockWallet">

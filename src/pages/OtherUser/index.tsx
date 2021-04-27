@@ -31,6 +31,10 @@ import * as Store from "../../store";
 
 import styles from "./css/OtherUser.module.css";
 import FollowBtn from "./components/FollowBtn";
+import {
+  subscribeFollows,
+  unsubscribeFollows
+} from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -55,6 +59,13 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
+  // Effect to sub follows
+  useEffect(() => {
+    subscribeFollows()(dispatch);
+    return () => {
+      unsubscribeFollows();
+    };
+  }, []);
   const subscribeUserPosts = useCallback(() => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = rifle({
@@ -65,7 +76,7 @@ const OtherUserPage = () => {
         const newPosts = postEntries
           .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
           .map(([key]) => key);
-  
+
         const proms = newPosts.map(async id => {
           const { data: post } = await Http.get(
             `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
@@ -94,7 +105,7 @@ const OtherUserPage = () => {
         const newPosts = postEntries
           .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
           .map(([key]) => key);
-  
+
         const proms = newPosts.map(async id => {
           const { data: shared } = await Http.get(
             `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
@@ -125,7 +136,7 @@ const OtherUserPage = () => {
   // @ts-ignore
   useEffect(() => {
     const unsubscribe = dispatch(subscribeUserProfile(userPublicKey));
-    
+
     return unsubscribe;
   }, [dispatch, userPublicKey]);
   //effect for user posts

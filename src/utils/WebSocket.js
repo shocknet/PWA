@@ -230,7 +230,7 @@ export const unsubscribeRifleByQuery = query => {
 
   subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
-      console.log("Unsubscribing by query:", subscription)
+      console.log("Unsubscribing by query:", subscription);
       unsubscribeRifleById(id);
       return true;
     }

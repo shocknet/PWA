@@ -45,9 +45,11 @@ const Story: React.FC<StoryProps> = ({
         if (typeof pictures !== "object" || pictures === null) {
           return;
         }
-  
+
         setPics(
-          Object.values(pictures).filter(p => typeof p === "object" && p !== null)
+          Object.values(pictures).filter(
+            p => typeof p === "object" && p !== null
+          )
         );
       },
       onError: err => {

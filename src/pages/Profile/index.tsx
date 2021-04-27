@@ -37,7 +37,11 @@ import * as Store from "../../store";
 import { rifle, rifleCleanup } from "../../utils/WebSocket";
 
 import "./css/index.css";
-import { deleteUserPost, subscribeSharedUserPosts, subscribeUserPosts } from "../../actions/FeedActions";
+import {
+  deleteUserPost,
+  subscribeSharedUserPosts,
+  subscribeUserPosts
+} from "../../actions/FeedActions";
 import { isSharedPost } from "../../schema";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -84,10 +88,12 @@ const ProfilePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const postSubscription = dispatch(subscribeUserPosts(publicKey))
-    const sharedPostSubscription = dispatch(subscribeSharedUserPosts(publicKey))
+    const postSubscription = dispatch(subscribeUserPosts(publicKey));
+    const sharedPostSubscription = dispatch(
+      subscribeSharedUserPosts(publicKey)
+    );
 
-    return rifleCleanup(postSubscription, sharedPostSubscription)
+    return rifleCleanup(postSubscription, sharedPostSubscription);
   }, [publicKey]);
 
   const toggleModal = useCallback(() => {

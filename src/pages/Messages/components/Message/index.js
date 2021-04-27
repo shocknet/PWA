@@ -20,14 +20,14 @@ const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
     const subscription = dispatch(
       subscribeChatMessages(gunPublicKey, publicKey)
     );
-    
+
     return rifleCleanup(subscription);
   }, [dispatch, gunPublicKey, publicKey]);
 
   useEffect(() => {
     if (chatLoaded) {
       const unsubscribe = subscribeMessages();
-  
+
       return unsubscribe;
     }
   }, [subscribeMessages, publicKey, chatLoaded]);

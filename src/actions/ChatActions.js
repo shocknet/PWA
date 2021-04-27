@@ -144,7 +144,7 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 export const subscribeChatMessages = (
   userPublicKey,
   recipientPublicKey
-) => async (dispatch) => {
+) => async dispatch => {
   const { data: incomingId } = await Http.get(
     `/api/gun/user/once/userToIncoming>${recipientPublicKey}`,
     {
@@ -168,7 +168,7 @@ export const subscribeChatMessages = (
       }
       /** @type {RawMessage} */
       const rawMsg = message;
-  
+
       /** @type {ChatMessage} */
       const msg = {
         body: rawMsg.body,
@@ -179,13 +179,13 @@ export const subscribeChatMessages = (
         status: Schema.CHAT_MESSAGE_STATUS.SENT,
         timestamp: rawMsg.timestamp
       };
-  
+
       /** @type {ReceivedMessageAction} */
       const action = {
         type: ACTIONS.RECEIVED_MESSAGE,
         data: msg
       };
-  
+
       dispatch(action);
     }
   });
