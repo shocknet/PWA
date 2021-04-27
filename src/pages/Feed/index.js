@@ -22,7 +22,7 @@ import { isSharedPost } from "../../schema";
 import "./css/index.css";
 import UnlockModal from "./components/UnlockModal";
 import { useDispatch } from "react-redux";
-import { subscribeSharedUserPosts, subscribeUserPosts } from "../../actions/FeedActions";
+import { subscribeFollows, subscribeSharedUserPosts, subscribeUserPosts, unsubscribeFollows } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import { rifleCleanup } from "../../utils/WebSocket";
 
@@ -37,7 +37,13 @@ const FeedPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const { avatar } = Store.useSelector(Store.selectSelfUser);
-
+  // Effect to sub follows
+  useEffect(() => {
+    subscribeFollows()(dispatch);
+    return () => {
+      unsubscribeFollows();
+    };
+  }, []);
   const followedPosts = useMemo(() => {
     if (posts) {
       const feed = Object.values(posts)

@@ -31,6 +31,7 @@ import * as Store from "../../store";
 
 import styles from "./css/OtherUser.module.css";
 import FollowBtn from "./components/FollowBtn";
+import { subscribeFollows, unsubscribeFollows } from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -55,6 +56,13 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
+  // Effect to sub follows
+  useEffect(() => {
+    subscribeFollows()(dispatch);
+    return () => {
+      unsubscribeFollows();
+    };
+  }, []);
   const subscribeUserPosts = useCallback(() => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = rifle({
