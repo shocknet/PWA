@@ -37,7 +37,14 @@ const Image = ({
         setPreviewVisible(false);
       }
     },
-    [animationTimer, zoomLoaded]
+    [
+      animationTimer,
+      zoomLoaded,
+      setZoomed,
+      setZoomLoaded,
+      setPreviewVisible,
+      setAnimationTimer
+    ]
   );
 
   const contentURL = decodeURIComponent(
@@ -72,8 +79,8 @@ const Image = ({
             setZoomLoaded(true);
           }}
           style={{
-            opacity: zoomLoaded ? 1 : 0,
-            display: zoomLoaded ? "block" : "none"
+            opacity: zoomed ? 1 : 0,
+            display: zoomed ? "block" : "none"
           }}
           src={contentURL}
         />
