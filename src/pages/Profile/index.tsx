@@ -320,6 +320,9 @@ const ProfilePage = () => {
   const renderPosts = () => {
     return myPosts.map((post, index) => {
       if (post.type === "shared") {
+        if(!post.originalPost){
+          return null
+        }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
           userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
