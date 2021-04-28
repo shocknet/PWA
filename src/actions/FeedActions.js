@@ -131,7 +131,10 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
           const res = await Http.get(
             `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
           );
-
+          const {data:shared} = res
+          if(!shared.data || !shared.data.originalAuthor){
+            throw new Error(`invalid shared post provided for user ${publicKey}`)
+          }
           /** @type {import('shock-common').SharedPostRaw} */
           const post = res.data.data;
 
@@ -154,7 +157,7 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
           dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
         } catch (e) {
           console.error(
-            `When subscribed to shared posts from public key --| ${publicKey} |-- and trying to download the shared post with id: --| ${id} |-- an error ocurred:`,
+            `User: ${publicKey}\npostID: ${id}\n error:`,
             e
           );
         }

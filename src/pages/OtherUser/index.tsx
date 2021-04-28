@@ -110,6 +110,9 @@ const OtherUserPage = () => {
           const { data: shared } = await Http.get(
             `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
           );
+          if(!shared.data || !shared.data.originalAuthor){
+            throw new Error("invalid shared post provided for user "+userPublicKey)
+          }
           const { data: post } = await Http.get(
             `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
           );
