@@ -15,12 +15,12 @@
   z-index: 100;
 }
 
-.modal-open {
+.open {
   opacity: 1;
   visibility: visible;
 }
 
-.modal-backdrop {
+.backdrop {
   position: absolute;
   top: 0;
   left: 0;
@@ -30,18 +30,18 @@
   z-index: 0;
 }
 
-.modal-open .modal-container {
+.open .container {
   transform: translateY(0%);
   opacity: 0.9;
 }
 
-.modal-container {
+.container {
   display: flex;
   flex-direction: column;
   position: relative;
   width: 90%;
   max-height: 90%;
-  background-color: var(--modal-body-bg);
+  background-color: var(--body-bg);
   border-radius: 15px;
   transform: translateY(100%);
   opacity: 0;
@@ -49,20 +49,20 @@
   transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
-.modal-form {
+.form {
   width: 100%;
   padding-top: 15px;
 }
 
-.modal-form .group {
+.form .group {
   padding: 17px 25px;
 }
 
-.modal-submit-container {
+.submit-container {
   margin-top: 15px;
 }
 
-.modal-submit-btn {
+.submit-btn {
   width: 100%;
   border-radius: 0 0 10px 10px;
   border: 0;
@@ -77,15 +77,15 @@
   transition: all 0.25s ease;
 }
 
-.modal-submit-btn:hover {
+.submit-btn:hover {
   background-color: var(--hovered-blue);
 }
 
-.modal-submit-btn:active {
+.submit-btn:active {
   opacity: 0.7;
 }
 
-.modal-form .form-error {
+.form .form-error {
   margin: 0 25px;
   margin-bottom: 5px;
 }

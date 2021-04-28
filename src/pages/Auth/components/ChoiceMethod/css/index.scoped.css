@@ -1,4 +1,4 @@
-.choice-container {
+.container {
   display: flex;
   width: 100%;
   border-radius: 15px;
@@ -10,12 +10,12 @@
   cursor: pointer;
 }
 
-.choice-container:hover .choice-icon-container {
+.container:hover .icon-container {
   background-color: var(--main-blue);
   color: var(--white-smoke);
 }
 
-.choice-icon-container {
+.icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,7 +28,7 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-p.choice-info {
+p.info {
   display: flex;
   flex: 1;
   align-items: center;

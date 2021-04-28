@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import React from "react";
 import { useSelector } from "react-redux";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Transaction = ({ hash, value, date, unconfirmed }) => {
   const USDRate = useSelector(({ wallet }) => wallet.USDRate ?? "0");

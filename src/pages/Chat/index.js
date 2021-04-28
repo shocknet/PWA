@@ -16,7 +16,7 @@ import {
   subscribeChatMessages
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import * as Store from "../../store";
 import { rifleCleanup } from "../../utils/WebSocket";
 import { getContact } from "../../utils";

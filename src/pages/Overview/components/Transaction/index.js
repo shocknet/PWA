@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Transaction = ({
   username = "John Smith",

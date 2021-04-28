@@ -237,6 +237,14 @@ p.shock-form-button-text {
   width: 50%;
 }
 
+.m-1 {
+  margin: 1em;
+}
+
+.m-b-1 {
+  margin-bottom: 1em;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
@@ -252,6 +260,30 @@ p.shock-form-button-text {
 .screen-max {
   width: 100%;
   height: 100%;
+}
+
+[data-rmiz-wrap="visible"],
+[data-rmiz-wrap="hidden"] {
+  width: 100%;
+  max-width: 700px;
+  max-height: 700px;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.25s ease;
+}
+
+[data-rmiz-wrap="hidden"] {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+[data-rmiz-modal-content] {
+  background-color: #171c23;
+}
+
+[data-rmiz-modal-content] .torrent-img {
+  display: none;
 }
 
 @media (display-mode: standalone) {

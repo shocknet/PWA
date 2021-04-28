@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import classNames from "classnames";
 import ModalContent from "./components/ModalContent";
 import ModalTitle from "./components/ModalTitle";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Modal = ({
   modalOpen = false,
@@ -16,9 +16,9 @@ const Modal = ({
     toggleModal();
   }, [toggleModal]);
   return (
-    <div className={classNames({ modal: true, "modal-open": modalOpen })}>
-      <div className="modal-backdrop" onClick={closeModal} />
-      <div className="modal-container">
+    <div className={classNames({ modal: true, "open": modalOpen })}>
+      <div className="backdrop" onClick={closeModal} />
+      <div className="container">
         <ModalTitle title={modalTitle} toggleModal={closeModal} />
         <ModalContent style={contentStyle}>{children}</ModalContent>
       </div>

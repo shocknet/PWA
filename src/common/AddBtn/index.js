@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import classNames from "classnames";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const AddBtn = ({
   label = null,

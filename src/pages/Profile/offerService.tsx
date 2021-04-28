@@ -5,6 +5,7 @@ import Loader from "../../common/Loader";
 import InputGroup from "../../common/InputGroup";
 import { createService } from "../../actions/OrdersActions";
 import { useHistory } from "react-router";
+import "./css/index.scoped.css";
 
 const OfferService = () => {
   const dispatch = useDispatch();

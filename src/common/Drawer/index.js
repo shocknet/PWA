@@ -1,7 +1,7 @@
 // @ts-check
 import { useCallback } from "react";
 import classNames from "classnames";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../actions/AuthActions";

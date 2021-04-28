@@ -44,15 +44,3 @@
   margin-top: 6px;
   font-size: 13px;
 }
-
-.following-bar-container {
-  display: flex;
-  width: 100%;
-}
-
-.following-bar-list {
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  flex: 1;
-}

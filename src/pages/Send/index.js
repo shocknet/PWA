@@ -7,7 +7,7 @@ import ContactSearch from "../../common/ContactsSearch";
 import DialogPageContainer from "../../common/DialogPageContainer";
 import Suggestion from "../../common/ContactsSearch/components/Suggestion";
 import Loader from "../../common/Loader";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const SendPage = () => {
   const location = useLocation();

@@ -4,7 +4,7 @@ import { useCallback } from "react";
  * @typedef {import('react').RefCallback<HTMLElement>} DivRefCallback
  */
 import classNames from "classnames";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import { useDispatch } from "react-redux";
 
 import * as Utils from "../../utils";

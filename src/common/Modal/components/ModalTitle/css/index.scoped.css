@@ -1,14 +1,15 @@
-.modal-head {
+.head {
   position: relative;
   display: flex;
   justify-content: center;
   padding: 15px 20px;
   border-radius: 15px 15px 0 0;
   border-bottom: 1px solid rgba(var(--white-rgb), 0.15);
-  background-color: var(--modal-head-bg);
+  background-color: var(--head-bg);
+  flex-shrink: 0;
 }
 
-.modal-head-close {
+.head-close {
   position: absolute;
   right: 0;
   top: 0;
@@ -23,7 +24,7 @@
   cursor: pointer;
 }
 
-p.modal-head-title {
+p.head-title {
   font-weight: bold;
   color: rgba(var(--white-rgb), 0.85);
 }

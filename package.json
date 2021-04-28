@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.1.2",
     "@reduxjs/toolkit": "^1.5.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.2.6",
@@ -16,6 +17,7 @@
     "browser-file-storage": "^1.0.7",
     "buffer": "^5.7.1",
     "classnames": "^2.2.6",
+    "craco-plugin-scoped-css": "^1.1.1",
     "eccrypto": "^1.1.6",
     "embla-carousel": "^4.2.0",
     "gun": "0.2020.520",
@@ -74,9 +76,9 @@
     "workbox-streams": "^6.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "format": "prettier --write ./src/**/*.*"
   },

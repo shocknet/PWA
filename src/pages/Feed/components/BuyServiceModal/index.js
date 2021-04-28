@@ -8,7 +8,7 @@ import {
   addStreamToken
 } from "../../../../actions/ContentActions";
 import Loader from "../../../../common/Loader";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const BuyServiceModal = ({ service, toggleOpen }) => {
   const dispatch = useDispatch();

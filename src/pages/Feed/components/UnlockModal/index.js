@@ -5,7 +5,7 @@ import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import { unlockContent } from "../../../../actions/ContentActions";
 import Loader from "../../../../common/Loader";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const UnlockModal = ({ unlockData, toggleOpen }) => {
   const dispatch = useDispatch();

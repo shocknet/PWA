@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import classNames from "classnames";
 import DialogPageContainer from "../../common/DialogPageContainer";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import FormStep from "./components/FormStep";
 import InvoiceStep from "./components/InvoiceStep";
 
@@ -68,30 +68,29 @@ const RequestPage = () => {
   return (
     <DialogPageContainer
       containerClassName="request-page"
-      contentClassName="request-page-content"
       title="REQUEST"
     >
       {renderStep()}
-      <div className="request-page-footer">
+      <div className="footer">
         {!lastStep ? (
-          <div className="request-page-controls">
-            <div className="request-page-control" onClick={nextStep}>
+          <div className="controls">
+            <div className="control" onClick={nextStep}>
               Skip
             </div>
             <div
-              className="request-page-control request-page-next"
+              className="control next"
               onClick={nextStep}
             >
               Next
             </div>
           </div>
         ) : null}
-        <div className="request-page-indicators">
+        <div className="indicators">
           {steps.map((step, key) => (
             <div
               className={classNames({
-                "request-page-indicator": true,
-                "request-page-indicator-active": key === activeStep
+                "indicator": true,
+                "indicator-active": key === activeStep
               })}
             ></div>
           ))}

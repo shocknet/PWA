@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const UserIcon = ({
   username,

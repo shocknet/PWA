@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import useOutsideClick from "use-onclickoutside";
 import { processDisplayName } from "../../utils/String";
 import Suggestion from "./components/Suggestion";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const ContactsSearch = ({
   features = ["btc", "invoice", "contact"],

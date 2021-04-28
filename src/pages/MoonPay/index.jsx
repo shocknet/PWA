@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MainNav from "../../common/MainNav";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import Http from "../../utils/Http";
 const signingServiceUrl = "https://moon-sign.shock.network/sign";
 const apiPubKey = "pk_test_C8jSPDtsKQqXwP7nkScpqZI5tsaOiQPH";

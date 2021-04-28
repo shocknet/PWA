@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 import Loader from "../../common/Loader";
 import DialogNav from "../../common/DialogNav";

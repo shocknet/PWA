@@ -8,7 +8,7 @@ import * as Common from "shock-common";
 import Post from ".";
 
 import av1 from "../../images/av1.jpg";
-import "../Post/css/index.css";
+import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
 import * as Store from "../../store";

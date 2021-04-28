@@ -59,7 +59,3 @@ p.transaction-value-usd {
   text-align: right;
   font-weight: 600;
 }
-
-.recent-activity-entries {
-  background-color: var(--background);
-}

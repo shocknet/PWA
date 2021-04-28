@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
 import { sendMessage } from "../../../../actions/ChatActions";
@@ -111,7 +111,7 @@ const InvoiceStep = ({
   }, [contact, paymentRequest, history]);
 
   return (
-    <div className="request-form-container">
+    <div className="container">
       {loading ? <Loader overlay text="Sending Invoice..." /> : null}
       {lightningMode ? (
         contact ? (
@@ -142,39 +142,35 @@ const InvoiceStep = ({
         </div>
         <div
           className={classNames({
-            "qr-code-mode": true,
+            mode: true,
             "lightning-active": lightningMode
           })}
           onClick={toggleLightningMode}
         >
-          <p className="qr-code-switch-name qr-code-on-chain-switch">
-            On-Chain
-          </p>
-          <div className="qr-code-switch">
-            <div className="qr-code-switch-handle" />
+          <p className="switch-name on-chain-switch">On-Chain</p>
+          <div className="switch">
+            <div className="switch-handle" />
           </div>
-          <p className="qr-code-switch-name qr-code-lightning-switch">
-            Lightning
-          </p>
+          <p className="switch-name lightning-switch">Lightning</p>
         </div>
       </div>
       <div className="copy-clipboard-btn" onClick={copyClipboard}>
         <i className="fas fa-copy"></i>
         <p className="copy-clipboard-btn-text">Copy to Clipboard</p>
       </div>
-      <div className="invoice-details">
-        <p className="invoice-details-change" onClick={prevStep}>
+      <div className="details">
+        <p className="details-change" onClick={prevStep}>
           Change
         </p>
-        <div className="invoice-detail">
-          <p className="invoice-detail-title">Amount</p>
-          <p className="invoice-detail-value">
+        <div className="detail">
+          <p className="detail-title">Amount</p>
+          <p className="detail-value">
             {amount} {unit.toUpperCase()}
           </p>
         </div>
-        <div className="invoice-detail">
-          <p className="invoice-detail-title">Description</p>
-          <p className="invoice-detail-value">{description}</p>
+        <div className="detail">
+          <p className="detail-title">Description</p>
+          <p className="detail-value">{description}</p>
         </div>
       </div>
       {lightningMode && contact ? (

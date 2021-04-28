@@ -19,7 +19,7 @@ import Loader from "../../common/Loader";
 
 import { isSharedPost } from "../../schema";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 import UnlockModal from "./components/UnlockModal";
 import { useDispatch } from "react-redux";
 import {

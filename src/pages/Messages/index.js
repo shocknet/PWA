@@ -12,7 +12,7 @@ import MainNav from "../../common/MainNav";
 import AddBtn from "../../common/AddBtn";
 import Loader from "../../common/Loader";
 import FieldError from "../../utils/FieldError";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
 

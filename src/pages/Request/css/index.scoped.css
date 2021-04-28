@@ -1,14 +1,10 @@
-.request-form-container {
-  padding: 0 50px;
-}
-
 .request-step-container {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.request-page-controls {
+.controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,7 +12,7 @@
   justify-self: flex-end;
 }
 
-.request-page-control {
+.control {
   width: calc(50% - 7.5px);
   text-align: center;
   padding: 15px 0;
@@ -27,20 +23,20 @@
   color: var(--main-blue);
 }
 
-.request-page-control.request-page-next {
+.control.next {
   background-color: var(--main-blue);
   color: white;
   border-color: white;
 }
 
-.request-page-indicators {
+.indicators {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 50px 0;
 }
 
-.request-page-indicator {
+.indicator {
   width: 11px;
   height: 11px;
   background-color: #d1d1d1;
@@ -48,10 +44,10 @@
   margin-right: 10px;
 }
 
-.request-page-indicator.request-page-indicator-active {
+.indicator.indicator-active {
   background-color: var(--main-blue);
 }
 
-.request-page-indicators .request-page-indicator:last-of-type {
+.indicators .indicator:last-of-type {
   margin-right: 0;
 }

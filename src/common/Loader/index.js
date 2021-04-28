@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { use100vh } from "react-div-100vh";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Loader = ({
   text = "Loading...",

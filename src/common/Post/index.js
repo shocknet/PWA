@@ -12,7 +12,7 @@ import * as Utils from "../../utils";
 import Video from "./components/Video";
 import Image from "./components/Image";
 import Stream from "./components/Stream";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Post = ({
   id,

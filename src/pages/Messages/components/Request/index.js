@@ -5,7 +5,7 @@ import * as Store from "../../../../store";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Request = ({ publicKey = "", time, sent }) => {
   const user = Store.useSelector(Store.selectUser(publicKey));

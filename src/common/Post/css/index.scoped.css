@@ -49,19 +49,19 @@
   margin-bottom: 25px;
 }
 
-.post .head {
+.head {
   display: flex;
   justify-content: space-between;
   width: 100%;
 }
 
-.post .head .user {
+.head .user {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.post .head .user .av {
+.head .user .av {
   width: 50px;
   height: 50px;
   border-radius: 50px;
@@ -70,43 +70,31 @@
   margin-right: 10px;
 }
 
-.post .head .user .details p:first-of-type,
-.post .head .user .details a {
+.head .user .details p:first-of-type,
+.head .user .details a {
   font-size: 20px;
   margin-bottom: 0px;
   text-decoration: none;
   color: white;
 }
 
-.post .head .user .details p:last-of-type {
+.head .user .details p:last-of-type {
   font-size: 14px;
   opacity: 0.6;
 }
 
-.post .content {
+.content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.post .content p {
+.content p {
   opacity: 0.7;
   margin-bottom: 20px;
 }
 
-.post .content img {
-  width: 100%;
-  max-width: 700px;
-  max-height: 700px;
-  border-radius: 8px;
-  object-fit: contain;
-  object-position: center;
-  border-radius: 6px;
-  background-color: #171c23;
-  transition: all 0.25s ease;
-}
-
-.post .actions {
+.actions {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -132,35 +120,9 @@
   color: #54a3e0;
 }
 
-.video-container {
-  display: flex;
-  position: relative;
-  border-radius: 8px;
-  max-width: 700px;
-  max-height: 700px;
-  background-color: #171c23;
-  overflow: hidden;
-}
-
-.torrent-video {
-  width: 100%;
-  height: 100%;
-  max-width: 700px;
-  max-height: 700px;
-  min-width: 400px;
-  min-height: 250px;
-}
-
 .tip-btn-container:hover {
   background-color: #f2a90087;
   border: 2px solid #ad8220;
-}
-
-.content img {
-  width: 100%;
-  max-width: 700px;
-  border-radius: 8px;
-  object-fit: contain;
 }
 
 .video-play-button {
@@ -230,12 +192,6 @@ i.fas.fa-play {
 
 .post.shared-post > .head {
   opacity: 0.8;
-}
-
-.media-content-container .media-container {
-  padding-left: 10px;
-  min-width: 100%;
-  position: relative;
 }
 
 .media-carousel-controls-container {
@@ -310,15 +266,15 @@ i.fas.fa-play {
     border-right: 0;
   }
 
-  .post .head {
+  .head {
     padding: 0 20px;
   }
 
-  .post .content p {
+  .content p {
     padding: 0 20px;
   }
 
-  .post .actions {
+  .actions {
     padding: 0 20px;
   }
 
