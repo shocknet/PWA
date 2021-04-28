@@ -67,7 +67,6 @@ const RequestPage = () => {
 
   return (
     <DialogPageContainer
-      containerClassName="request-page"
       title="REQUEST"
     >
       {renderStep()}
