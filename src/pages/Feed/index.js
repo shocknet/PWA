@@ -157,6 +157,9 @@ const FeedPage = () => {
       <div className="posts-holder">
         {followedPosts.map((post, index) => {
           if (post.type === "shared") {
+            if(!post.originalPost){
+              return null
+            }
             const sharerProfile =
               userProfiles[post.sharerId] ||
               Common.createEmptyUser(post.sharerId);

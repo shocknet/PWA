@@ -224,6 +224,9 @@ const OtherUserPage = () => {
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
+        if(!post.originalPost){
+          return null
+        }
         const originalPublicKey = post.originalAuthor;
         const originalProfile = userProfiles[originalPublicKey];
         return (
