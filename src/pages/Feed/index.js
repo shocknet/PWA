@@ -157,8 +157,8 @@ const FeedPage = () => {
       <div className="posts-holder">
         {followedPosts.map((post, index) => {
           if (post.type === "shared") {
-            if(!post.originalPost){
-              return null
+            if (!post.originalPost) {
+              return null;
             }
             const sharerProfile =
               userProfiles[post.sharerId] ||
@@ -200,8 +200,10 @@ const FeedPage = () => {
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}
-                tipCounter={undefined}
-                tipValue={undefined}
+                //@ts-expect-error
+                tipCounter={post.tipCounter || 0}
+                //@ts-expect-error
+                tipValue={post.tipValue || 0}
               />
             </Suspense>
           );

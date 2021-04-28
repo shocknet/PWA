@@ -81,7 +81,21 @@ const OtherUserPage = () => {
           const { data: post } = await Http.get(
             `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
           );
-          return { ...post.data, id, authorId: userPublicKey };
+          const tipSet = post.data.tipsSet
+            ? Object.values(post.data.tipsSet)
+            : [];
+          const lenSet = tipSet.length;
+          const tot =
+            lenSet > 0
+              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
+              : 0;
+          return {
+            ...post.data,
+            id,
+            authorId: userPublicKey,
+            tipCounter: lenSet,
+            tipValue: tot
+          };
         });
         const postsAlmostReady = await Promise.allSettled(proms);
         const postsReady = postsAlmostReady
@@ -110,15 +124,30 @@ const OtherUserPage = () => {
           const { data: shared } = await Http.get(
             `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
           );
-          if(!shared.data || !shared.data.originalAuthor){
-            throw new Error("invalid shared post provided for user "+userPublicKey)
+          if (!shared.data || !shared.data.originalAuthor) {
+            throw new Error(
+              "invalid shared post provided for user " + userPublicKey
+            );
           }
           const { data: post } = await Http.get(
             `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
           );
+          const tipSet = post.data.tipsSet
+            ? Object.values(post.data.tipsSet)
+            : [];
+          const lenSet = tipSet.length;
+          const tot =
+            lenSet > 0
+              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
+              : 0;
           return {
             ...shared.data,
-            originalPost: { ...post.data, id },
+            originalPost: {
+              ...post.data,
+              id,
+              tipCounter: lenSet,
+              tipValue: tot
+            },
             authorId: userPublicKey,
             type: "shared"
           };
@@ -224,8 +253,8 @@ const OtherUserPage = () => {
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
-        if(!post.originalPost){
-          return null
+        if (!post.originalPost) {
+          return null;
         }
         const originalPublicKey = post.originalAuthor;
         const originalProfile = userProfiles[originalPublicKey];
@@ -256,8 +285,8 @@ const OtherUserPage = () => {
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}
-            tipCounter={0}
-            tipValue={0}
+            tipCounter={post.tipCounter || 0}
+            tipValue={post.tipValue || 0}
             openDeleteModal={null}
           />
         </Suspense>

@@ -38,14 +38,19 @@ export const loadSharedPost = (
     `/api/gun/otheruser/${originalPublicKey}/load/posts>${originalPostId}`
   );
   dispatch(subscribeUserProfile(originalPublicKey));
-
+  const tipSet = post.data.tipsSet ? Object.values(post.data.tipsSet) : [];
+  const lenSet = tipSet.length;
+  const tot =
+    lenSet > 0 ? tipSet.reduce((acc, val) => Number(val) + Number(acc)) : 0;
   dispatch({
     type: ACTIONS.LOAD_SHARED_POST,
     data: {
       ...post.data,
       authorId: originalPublicKey,
       sharerId: sharerPublicKey,
-      id: originalPostId
+      id: originalPostId,
+      tipCounter: lenSet,
+      tipValue: tot
     }
   });
 };
@@ -72,15 +77,23 @@ export const subscribeUserPosts = publicKey => async dispatch => {
             `/api/gun/otheruser/${publicKey}/load/posts>${id}`
           );
           console.info(`processing post: ${id} from ${publicKey}`);
-          console.info(post);
-
+          const tipSet = post.data.tipsSet
+            ? Object.values(post.data.tipsSet)
+            : [];
+          const lenSet = tipSet.length;
+          const tot =
+            lenSet > 0
+              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
+              : 0;
           dispatch({
             type: ACTIONS.ADD_USER_POST,
             data: {
               ...post.data,
               id,
               authorId: publicKey,
-              type: "post"
+              type: "post",
+              tipCounter: lenSet,
+              tipValue: tot
             }
           });
         } catch (e) {
@@ -131,9 +144,11 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
           const res = await Http.get(
             `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
           );
-          const {data:shared} = res
-          if(!shared.data || !shared.data.originalAuthor){
-            throw new Error(`invalid shared post provided for user ${publicKey}`)
+          const { data: shared } = res;
+          if (!shared.data || !shared.data.originalAuthor) {
+            throw new Error(
+              `invalid shared post provided for user ${publicKey}`
+            );
           }
           /** @type {import('shock-common').SharedPostRaw} */
           const post = res.data.data;
@@ -156,10 +171,7 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
           console.debug("dispatching shared post load");
           dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
         } catch (e) {
-          console.error(
-            `User: ${publicKey}\npostID: ${id}\n error:`,
-            e
-          );
+          console.error(`User: ${publicKey}\npostID: ${id}\n error:`, e);
         }
       });
 
