@@ -66,9 +66,7 @@ const RequestPage = () => {
   const steps = Array.from({ length: MAX_STEPS });
 
   return (
-    <DialogPageContainer
-      title="REQUEST"
-    >
+    <DialogPageContainer title="REQUEST">
       {renderStep()}
       <div className="footer">
         {!lastStep ? (
