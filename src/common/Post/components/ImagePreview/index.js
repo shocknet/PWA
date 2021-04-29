@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import TipRibbon from "../TipRibbon";
 import "react-medium-image-zoom/dist/styles.css";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const IMAGE_TRANSITION_MS = 200;
 
@@ -26,7 +26,7 @@ const ImagePreview = ({
     if (selected !== id) {
       updateSelection(id);
     }
-  }, [id, updateSelection]);
+  }, [id, updateSelection, selected]);
 
   return (
     <div
@@ -35,7 +35,7 @@ const ImagePreview = ({
       style={{ position: "relative" }}
     >
       <img
-        className={`torrent-img torrent-img-${postId}-${id}`}
+        className={`image torrent-img torrent-img-${postId}-${id}`}
         alt="Post Media"
         data-torrent={item.magnetURI}
         data-file-key={index}

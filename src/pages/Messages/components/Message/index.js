@@ -8,7 +8,7 @@ import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 import * as Store from "../../../../store";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 import { rifleCleanup } from "../../../../utils/WebSocket";
 
 const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {

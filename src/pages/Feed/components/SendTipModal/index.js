@@ -5,7 +5,7 @@ import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import InputGroup from "../../../../common/InputGroup";
 import { sendTipPost } from "../../../../actions/FeedActions";
 import Loader from "../../../../common/Loader";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const SendTipModal = ({ tipData, toggleOpen }) => {
   const dispatch = useDispatch();

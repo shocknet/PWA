@@ -1,6 +1,6 @@
 import QRScanner from "react-qr-scanner";
 import { isDesktop } from "../../utils/Platform";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 type ScannerMode = "wizard" | "invoice";
 interface Props {

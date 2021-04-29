@@ -1,5 +1,5 @@
 import React from "react";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const TipRibbon = ({ tipCounter, tipValue, zoomed }) =>
   tipValue > 0 ? (

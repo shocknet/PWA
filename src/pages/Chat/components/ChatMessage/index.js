@@ -13,7 +13,7 @@ import ShockAvatar from "../../../../common/ShockAvatar";
 import * as gStyles from "../../../../styles";
 import * as Utils from "../../../../utils";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 /** @type {IntersectionOptions} */
 const USE_IN_VIEW_OPTS = {

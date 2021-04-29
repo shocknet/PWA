@@ -1,7 +1,8 @@
 import InputGroup from "../../../../common/InputGroup";
+import "./css/index.scoped.css"
 
 const FormStep = ({ onInputChange, amount, description }) => (
-  <div className="request-form-container">
+  <div className="container">
     <div className="inputs-group">
       <InputGroup
         name="amount"

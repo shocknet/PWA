@@ -1,8 +1,9 @@
-.request-form-container {
+.container {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 50px;
 }
 
 .qr-code-container {
@@ -27,7 +28,7 @@
   overflow: hidden;
 }
 
-.qr-code-mode {
+.mode {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,20 +36,20 @@
   cursor: pointer;
 }
 
-.qr-code-switch-name {
+.switch-name {
   font-size: 15px;
   font-weight: 500;
 }
 
-.qr-code-on-chain-switch {
+.on-chain-switch {
   color: var(--main-blue);
 }
 
-.qr-code-lightning-switch {
+.lightning-switch {
   color: var(--yellow);
 }
 
-.qr-code-switch {
+.switch {
   position: relative;
   margin: 0 21px;
   width: 43px;
@@ -59,7 +60,7 @@
   transition: all 0.2s ease;
 }
 
-.qr-code-switch-handle {
+.switch-handle {
   --handle-radius: 24px;
   position: absolute;
   top: -50%;
@@ -73,11 +74,11 @@
   transition: all 0.2s ease;
 }
 
-.qr-code-mode.lightning-active .qr-code-switch-handle {
+.mode.lightning-active .switch-handle {
   right: calc(0% - 12px);
 }
 
-.qr-code-mode.lightning-active .qr-code-switch {
+.mode.lightning-active .switch {
   background-color: var(--yellow);
 }
 
@@ -117,13 +118,13 @@
   font-size: 20px;
 }
 
-.invoice-details {
+.details {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.invoice-details-change {
+.details-change {
   width: 100%;
   text-align: right;
   color: var(--main-blue);
@@ -131,7 +132,7 @@
   font-size: 15px;
 }
 
-.invoice-detail {
+.detail {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -139,18 +140,18 @@
   border-bottom: 1px solid var(--main-blue);
 }
 
-.invoice-detail-title {
+.detail-title {
   line-height: 1;
   font-weight: bold;
   font-size: 15px;
 }
 
-.invoice-detail-value {
+.detail-value {
   font-size: 16px;
   line-height: 1;
   font-weight: 500;
 }
 
-.invoice-details .invoice-detail:last-of-type {
+.details .detail:last-of-type {
   border-bottom: 0;
 }

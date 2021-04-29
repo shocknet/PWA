@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import ChoiceMethod from "../ChoiceMethod";
 import { setAuthMethod } from "../../../../actions/AuthActions";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const ChoicesStep = () => {
   const dispatch = useDispatch();

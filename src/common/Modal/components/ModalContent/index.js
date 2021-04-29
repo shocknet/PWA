@@ -1,8 +1,8 @@
 // @ts-check
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const ModalContent = ({ children, style }) => (
-  <div className="modal-content" style={style}>
+  <div className="content" style={style}>
     {children}
   </div>
 );

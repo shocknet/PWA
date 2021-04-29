@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { setAuthMethod } from "../../../../actions/AuthActions";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const ChoiceMethod = ({ icon, details, method }) => {
   const dispatch = useDispatch();
@@ -10,11 +10,11 @@ const ChoiceMethod = ({ icon, details, method }) => {
   }, [dispatch, method]);
 
   return (
-    <div className="choice-container" onClick={chooseMethod}>
-      <div className="choice-icon-container">
-        <i className={`choice-icon fas fa-${icon}`} />
+    <div className="container" onClick={chooseMethod}>
+      <div className="icon-container">
+        <i className={`icon fas fa-${icon}`} />
       </div>
-      <p className="choice-info">{details}</p>
+      <p className="info">{details}</p>
     </div>
   );
 };

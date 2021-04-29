@@ -1,6 +1,6 @@
 import React from "react";
 import shockLogo from "../../../../images/shocklogo-dark.png";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const LogoSection = () => (
   <div className="auth-logo-header">

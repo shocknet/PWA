@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import TipRibbon from "../TipRibbon";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import videojs from "video.js";
 import Http from "../../../../utils/Http";
 

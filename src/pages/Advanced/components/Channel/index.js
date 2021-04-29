@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import classNames from "classnames";
 import { formatNumber } from "../../../../utils/Number";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Channel = ({
   address,

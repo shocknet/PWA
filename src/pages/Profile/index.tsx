@@ -36,7 +36,7 @@ import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
 import { rifle, rifleCleanup } from "../../utils/WebSocket";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 import {
   deleteUserPost,
   subscribeSharedUserPosts,

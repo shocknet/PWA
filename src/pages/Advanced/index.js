@@ -21,8 +21,8 @@ import Peer from "./components/Peer";
 import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
 import Http from "../../utils/Http";
-import "./css/index.css";
 import * as Store from "../../store";
+import "./css/index.scoped.css";
 
 /**
  * @typedef {Channel & { pendingStatus: string , ip: string }} PendingChannel

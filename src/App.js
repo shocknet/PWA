@@ -11,13 +11,13 @@ import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
-import "./styles/App.css";
 import {
   subscribeUserProfile,
   unsubscribeUserProfile
 } from "./actions/UserProfilesActions";
 import * as FeedActions from "./actions/FeedActions";
 import * as Store from "./store";
+import "./styles/App.global.css";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));

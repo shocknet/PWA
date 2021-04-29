@@ -7,7 +7,7 @@ import classNames from "classnames";
 
 import * as Utils from "../../utils";
 
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 export const DIALOG_NAV_MIN_HEIGHT_PX = 73;
 /** @type {import('react').CSSProperties} */

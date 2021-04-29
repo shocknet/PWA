@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Swipe } from "react-swipe-component";
 import classNames from "classnames";
 import bitcoinLightning from "../../images/bitcoin-lightning.svg";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const HANDLE_RADIUS = 80;
 const HANDLE_POSITION_OFFSET = -3;

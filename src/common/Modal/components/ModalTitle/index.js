@@ -1,11 +1,11 @@
 import React from "react";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const ModalTitle = ({ title, toggleModal }) =>
   title ? (
-    <div className="modal-head">
-      <p className="modal-head-title">{title}</p>
-      <div className="modal-head-close" onClick={toggleModal}>
+    <div className="head">
+      <p className="head-title">{title}</p>
+      <div className="head-close" onClick={toggleModal}>
         <i className="fas fa-times"></i>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import { DateTime } from "luxon";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import * as Store from "../../../../store";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Invoice = ({ value, date, paymentRequest, message }) => {
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import Modal from "../../../../common/Modal";
 import InputGroup from "../../../../common/InputGroup";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import { connectPeer, openChannel } from "../../../../actions/WalletActions";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../../common/Loader";

@@ -16,7 +16,7 @@ import BottomBar from "../../common/BottomBar";
 import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
 import Transaction from "./components/Transaction";
-import "./css/index.css";
+import "./css/index.scoped.css";
 import { Http } from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
 import * as Store from "../../store";

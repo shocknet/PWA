@@ -1,6 +1,6 @@
 import React from "react";
 import { formatNumber } from "../../../../utils/Number";
-import "./css/index.css";
+import "./css/index.scoped.css";
 
 const Peer = ({ sent, received, address, publicKey }) => {
   const formattedSent = formatNumber(sent.toString());

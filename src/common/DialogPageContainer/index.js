@@ -3,8 +3,7 @@ import classNames from "classnames";
 import DialogNav from "../../common/DialogNav";
 import * as gStyles from "../../styles";
 
-import "./css/index.css";
-import styles from "./css/DialogPageContainer.module.css";
+import "./css/index.scoped.css";
 
 const DialogPageContainer = ({
   containerClassName = "",
@@ -27,7 +26,7 @@ const DialogPageContainer = ({
       }
     >
       {showBackBtn && (
-        <div className={styles["back-btn"]} onClick={onBack}>
+        <div className="back-btn" onClick={onBack}>
           <i
             className={classNames("icon icon-thin-back", gStyles.fontSize18)}
           />

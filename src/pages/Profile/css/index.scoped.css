@@ -140,22 +140,16 @@ p.profile-clipboard-text {
   display: flex;
   flex-direction: column;
 }
+
 .publish-content-title {
   margin-left: 1.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
+
 .publish-content-icon {
   font-size: 3em;
   margin-left: 1em;
-}
-
-.m-1 {
-  margin: 1em;
-}
-
-.m-b-1 {
-  margin-bottom: 1em;
 }
 
 .line {

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
-import "../css/index.css";
+import "../css/index.scoped.css";
 import { addStream, removeStream } from "../../../actions/ContentActions";
 import Loader from "../../../common/Loader";
 import Http from "../../../utils/Http";

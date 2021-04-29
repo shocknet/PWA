@@ -56,6 +56,10 @@ a.bottom-nav-btn.active-nav-btn {
   overflow: hidden auto !important;
 }
 
+.recent-activity-entries {
+  background-color: var(--background);
+}
+
 .inputs-group {
   display: flex;
   align-items: flex-end;
@@ -96,6 +100,19 @@ a.bottom-nav-btn.active-nav-btn {
   font-weight: 600;
   text-decoration: underline;
   margin-top: 20px;
+}
+
+.slide-pay-container {
+  width: 100%;
+  margin-top: 50px;
+  padding: 30px 50px;
+}
+
+.slide-pay-container.slide-disabled {
+  opacity: 0.6;
+  backdrop-filter: blur(8px);
+  filter: grayscale(0.4);
+  pointer-events: none;
 }
 
 @media (display-mode: standalone) {
