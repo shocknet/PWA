@@ -41,7 +41,7 @@
   position: relative;
   width: 90%;
   max-height: 90%;
-  background-color: var(--body-bg);
+  background-color: var(--modal-body-bg);
   border-radius: 15px;
   transform: translateY(100%);
   opacity: 0;
