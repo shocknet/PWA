@@ -108,7 +108,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest, dispatch, history]);
+  }, [contact, paymentRequest, history]);
 
   return (
     <div className="container">
