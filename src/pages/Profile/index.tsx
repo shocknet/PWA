@@ -410,7 +410,9 @@ const ProfilePage = () => {
   const [dnModalOpen, setDnModalOpen] = useState(false);
   const { displayName } = user;
   // stores the display name input value
-  const [newDisplayName, setNewDisplayName] = useState(user.displayName);
+  const [newDisplayName, setNewDisplayName] = useState(
+    user.displayName || "Anon"
+  );
   // stores the new display name while it's being uploaded
   const [newDnIfBeingSaved, setNewDnIfBeingSaved] = useState<string | null>(
     null
@@ -459,7 +461,7 @@ const ProfilePage = () => {
   const { bio } = user;
   const [bioModalOpen, setBioModalOpen] = useState(false);
   // stores the bio input value
-  const [newBio, setNewBio] = useState(bio);
+  const [newBio, setNewBio] = useState(bio || "bio");
   // stores the new bio while it's being uploaded
   const [newBioIfBeingSaved, setNewBioIfBeingSaved] = useState<string | null>(
     null
