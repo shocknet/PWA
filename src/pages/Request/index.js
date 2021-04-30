@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import classNames from "classnames";
 import DialogPageContainer from "../../common/DialogPageContainer";
 import "./css/index.scoped.css";
@@ -74,19 +74,16 @@ const RequestPage = () => {
             <div className="control" onClick={nextStep}>
               Skip
             </div>
-            <div
-              className="control next"
-              onClick={nextStep}
-            >
+            <div className="control next" onClick={nextStep}>
               Next
             </div>
           </div>
         ) : null}
         <div className="indicators">
-          {steps.map((step, key) => (
+          {steps.map((_, key) => (
             <div
               className={classNames({
-                "indicator": true,
+                indicator: true,
                 "indicator-active": key === activeStep
               })}
             ></div>
