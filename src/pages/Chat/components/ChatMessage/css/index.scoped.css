@@ -20,7 +20,7 @@
   padding: 4px;
   font-weight: bold;
   word-break: break-word;
-  max-width: 80%;
+  max-width: 69vw;
 }
 
 .message-content::before {
