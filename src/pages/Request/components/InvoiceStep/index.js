@@ -26,7 +26,7 @@ const InvoiceStep = ({
   const [QRLoading, setQRLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [contact, setContact] = useState();
-  const [, setError] = useState("");
+  const [error, setError] = useState("");
   const [lightningMode, setLightningMode] = useState(false);
 
   const addInvoice = useCallback(async () => {
@@ -191,32 +191,46 @@ const InvoiceStep = ({
         />
       )}
 
-      <div className="details">
-        <p className="details-change" onClick={prevStep}>
-          Change
-        </p>
-        <div className="detail">
-          <p className="detail-title">Amount</p>
-          <p className="detail-value">
-            {amount} {unit.toUpperCase()}
-          </p>
-        </div>
-        <div className="detail">
-          <p className="detail-title">Description</p>
-          <p className="detail-value">{description}</p>
-        </div>
-      </div>
+      {error ? (
+        <>
+          <span>{error}</span>
 
-      {lightningMode && contact ? (
-        <SlidePay
-          wrapperStyle={{
-            padding: 0,
-            marginTop: 23
-          }}
-          slideText="SLIDE TO SEND"
-          onSuccess={sendInvoice}
-        />
-      ) : null}
+          <br />
+
+          <span className="inline-link" onClick={setError.bind(null, "")}>
+            Dismiss
+          </span>
+        </>
+      ) : (
+        <>
+          <div className="details">
+            <p className="details-change" onClick={prevStep}>
+              Change
+            </p>
+            <div className="detail">
+              <p className="detail-title">Amount</p>
+              <p className="detail-value">
+                {amount} {unit.toUpperCase()}
+              </p>
+            </div>
+            <div className="detail">
+              <p className="detail-title">Description</p>
+              <p className="detail-value">{description}</p>
+            </div>
+          </div>
+
+          {lightningMode && contact ? (
+            <SlidePay
+              wrapperStyle={{
+                padding: 0,
+                marginTop: 23
+              }}
+              slideText="SLIDE TO SEND"
+              onSuccess={sendInvoice}
+            />
+          ) : null}
+        </>
+      )}
     </div>
   );
 };
