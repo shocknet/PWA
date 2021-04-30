@@ -1,11 +1,10 @@
 // @ts-check
-import React, { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { batch, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import FullHeight from "react-div-100vh";
-import uniq from "lodash/uniq";
 
 import { setAuthenticated } from "./actions/AuthActions";
 import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
@@ -15,7 +14,6 @@ import {
   subscribeUserProfile,
   unsubscribeUserProfile
 } from "./actions/UserProfilesActions";
-import * as FeedActions from "./actions/FeedActions";
 import * as Store from "./store";
 import "./styles/App.global.css";
 
