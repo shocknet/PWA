@@ -33,18 +33,18 @@ const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
   }, [subscribeMessages, publicKey, chatLoaded]);
 
   return (
-    <Link to={`/chat/${publicKey}`} className="message-container">
-      <div className="message-author-container">
-        <div className="message-author-avatar" style={AVATAR_CONTAINER_STYLE}>
+    <Link to={`/chat/${publicKey}`} className="container">
+      <div className="author-container">
+        <div className="author-avatar" style={AVATAR_CONTAINER_STYLE}>
           <ShockAvatar publicKey={publicKey} height={AVATAR_SIZE} />
         </div>
 
-        <div className="message-author-details">
-          <p className="message-author-username">{user.displayName}</p>
-          <p className="message-author-text">{subtitle}</p>
+        <div className="author-details">
+          <p className="author-username">{user.displayName}</p>
+          <p className="author-text">{subtitle}</p>
         </div>
       </div>
-      <p className="message-timestamp">{time}</p>
+      <p className="timestamp">{time}</p>
     </Link>
   );
 };

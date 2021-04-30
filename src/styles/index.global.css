@@ -139,6 +139,8 @@
   --mist-blue-rgb: 39, 69, 92;
   --failure-red: #e23e3e;
   --failure-red-rgb: 226, 62, 62;
+
+  --message-timestamp-safe-area: 50px;
 }
 
 html,

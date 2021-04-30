@@ -16,9 +16,19 @@
   flex-direction: column;
 }
 
+.start-align {
+  composes: flex;
+  align-items: flex-start;
+}
+
 .center-align {
   composes: flex;
   align-items: center;
+}
+
+.end-align {
+  composes: flex;
+  align-items: flex-end;
 }
 
 .center-justify {

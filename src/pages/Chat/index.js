@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
-import debounce from "lodash/debounce";
 import { DateTime } from "luxon";
 import produce, { enableMapSet } from "immer";
 
@@ -53,17 +52,17 @@ const ChatPage = () => {
     (/** @type {number} */ height) => {
       setHeaderHeight(height);
     },
-    [setHeaderHeight]
+    []
   );
 
-  const handleScroll = debounce(() => {
+  const handleScroll = useCallback(() => {
     if (!shouldShowDateBubble) {
       setShouldShowDateBubble(true);
       setTimeout(() => {
         setShouldShowDateBubble(false);
       }, 1500);
     }
-  });
+  }, [shouldShowDateBubble]);
   /* ------------------------------------------------------------------------ */
 
   const messages = Store.useSelector(
