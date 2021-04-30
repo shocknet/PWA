@@ -1,5 +1,5 @@
 // @ts-check
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import * as Common from "shock-common";
@@ -10,7 +10,6 @@ import { useInView } from "react-intersection-observer";
 
 import Pad from "../../../../common/Pad";
 import ShockAvatar from "../../../../common/ShockAvatar";
-import * as gStyles from "../../../../styles";
 import * as Utils from "../../../../utils";
 
 import "./css/index.scoped.css";
@@ -39,10 +38,23 @@ const ChatMessage = ({
     }
   }, [id, inView, onInView, onOutView]);
 
+  const parsedTimestamp = useMemo(() => {
+    try {
+      const normalizedTimestamp = Common.normalizeTimestampToMs(timestamp);
+      const dateTime = DateTime.fromMillis(normalizedTimestamp);
+      const dateTxt = dateTime.toLocaleString(DateTime.TIME_SIMPLE);
+
+      return dateTxt;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }, [timestamp])
+
   return (
     <div
       className={classNames({
-        "message": true,
+        message: true,
         "message-received": receivedMessage
       })}
       ref={ref}
@@ -56,29 +68,10 @@ const ChatMessage = ({
       )}
 
       <div className="message-content">
-        <p className="message-text">
-          {text}
-        </p>
-        {(() => {
-          try {
-            const normalizedTimestamp = Common.normalizeTimestampToMs(
-              timestamp
-            );
-
-            const dateTime = DateTime.fromMillis(normalizedTimestamp);
-
-            const dateTxt = dateTime.toLocaleString(DateTime.TIME_SIMPLE);
-
-            return (
-              <div className="timestamp">
-                <p className="timestamp-text">{dateTxt}</p>
-              </div>
-            );
-          } catch (e) {
-            console.log(e);
-            return null;
-          }
-        })()}
+        <p className="message-text">{text}</p>
+        <div className="timestamp">
+          <p className="timestamp-text">{parsedTimestamp}</p>
+        </div>
       </div>
     </div>
   );
