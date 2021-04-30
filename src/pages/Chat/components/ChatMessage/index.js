@@ -61,7 +61,7 @@ const ChatMessage = ({
     >
       {receivedMessage && (
         <>
-          <ShockAvatar height={48} publicKey={publicKey} />
+          <ShockAvatar height={48} publicKey={publicKey} alignment="end" />
 
           <Pad amt={16} insideRow />
         </>

@@ -6,7 +6,11 @@ export const row = styles["row"];
 
 export const col = styles["col"];
 
+export const startAlign = styles["start-align"];
+
 export const centerAlign = styles["center-align"];
+
+export const endAlign = styles["end-align"];
 
 export const centerJustify = styles["center-justify"];
 
