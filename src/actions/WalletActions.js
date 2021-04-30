@@ -18,32 +18,39 @@ export const ACTIONS = {
 };
 
 export const fetchWalletBalance = () => async dispatch => {
-  const { data } = await Http.get(`/api/lnd/balance`);
+  try {
+    const { data } = await Http.get(`/api/lnd/balance`);
 
-  dispatch({
-    type: ACTIONS.LOAD_BALANCE,
-    data: {
-      channelBalance: data.channel_balance,
-      confirmedBalance: data.confirmed_balance,
-      pendingChannelBalance: data.pending_channel_balance
-    }
-  });
-
-  return data;
+    dispatch({
+      type: ACTIONS.LOAD_BALANCE,
+      data: {
+        channelBalance: data.channel_balance,
+        confirmedBalance: data.confirmed_balance,
+        pendingChannelBalance: data.pending_channel_balance
+      }
+    });
+  } catch (e) {
+    console.error(
+      `When trying to fetch the balance for the wallet, an error ocurred:`,
+      e
+    );
+  }
 };
 
 export const fetchUSDRate = () => async dispatch => {
-  const { data } = await Http.get(
-    "https://api.coinbase.com/v2/prices/spot?currency=USD"
-  );
-  const exchangeRate = data.data.amount.replace(/,/g, "");
+  try {
+    const { data } = await Http.get(
+      "https://api.coinbase.com/v2/prices/spot?currency=USD"
+    );
+    const exchangeRate = data.data.amount.replace(/,/g, "");
 
-  dispatch({
-    type: ACTIONS.LOAD_USD_RATE,
-    data: exchangeRate
-  });
-
-  return exchangeRate;
+    dispatch({
+      type: ACTIONS.LOAD_USD_RATE,
+      data: exchangeRate
+    });
+  } catch (e) {
+    console.error(`An error happened when trying to fetch the USD rate:`, e);
+  }
 };
 
 export const fetchTransactions = ({
@@ -51,47 +58,68 @@ export const fetchTransactions = ({
   itemsPerPage = 10,
   reset = false
 }) => async (dispatch, getState) => {
-  const { transactions } = getState().wallet;
+  try {
+    const { transactions } = getState().wallet;
 
-  if ((transactions.page >= page && !reset) || transactions.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/transactions", {
-    params: {
-      page,
-      itemsPerPage
+    if (
+      (transactions.page >= page && !reset) ||
+      transactions.totalPages < page
+    ) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_TRANSACTIONS : ACTIONS.LOAD_MORE_TRANSACTIONS,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/transactions", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
 
-  return data;
+    dispatch({
+      type: reset ? ACTIONS.LOAD_TRANSACTIONS : ACTIONS.LOAD_MORE_TRANSACTIONS,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred when fetching transactions (fetchTransactions()):`,
+      e
+    );
+  }
 };
 
 export const fetchChannels = () => async dispatch => {
-  const { data } = await Http.get("/api/lnd/listchannels");
+  try {
+    const { data } = await Http.get("/api/lnd/listchannels");
 
-  dispatch({
-    type: ACTIONS.LOAD_CHANNELS,
-    data: data.channels
-  });
-
-  return data;
+    dispatch({
+      type: ACTIONS.LOAD_CHANNELS,
+      data: data.channels
+    });
+  } catch (e) {
+    console.error(
+      `An ocurred ocurred when fetching channels (fetchChannels()):`,
+      e
+    );
+  }
 };
 
 export const fetchPeers = () => async dispatch => {
-  const { data } = await Http.get("/api/lnd/listpeers");
+  try {
+    const { data } = await Http.get("/api/lnd/listpeers");
 
-  dispatch({
-    type: ACTIONS.LOAD_PEERS,
-    data: data.peers
-  });
+    dispatch({
+      type: ACTIONS.LOAD_PEERS,
+      data: data.peers
+    });
 
-  return data;
+    return data;
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching peers (fetchPeers()) (will be re-thrown):`,
+      e
+    );
+    throw e;
+  }
 };
 
 export const fetchInvoices = ({
@@ -99,51 +127,60 @@ export const fetchInvoices = ({
   itemsPerPage = 10,
   reset = false
 }) => async (dispatch, getState) => {
-  const { invoices } = getState().wallet;
+  try {
+    const { invoices } = getState().wallet;
 
-  if ((invoices.page >= page && !reset) || invoices.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/invoices", {
-    params: {
-      page,
-      itemsPerPage
+    if ((invoices.page >= page && !reset) || invoices.totalPages < page) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_INVOICES : ACTIONS.LOAD_MORE_INVOICES,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/invoices", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
 
-  return data;
+    dispatch({
+      type: reset ? ACTIONS.LOAD_INVOICES : ACTIONS.LOAD_MORE_INVOICES,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching invoices (fetchInvoices()):`,
+      e
+    );
+  }
 };
 
-export const fetchPayments = ({
-  page,
-  itemsPerPage = 10,
-  reset = false
-}) => async (dispatch, getState) => {
-  const { payments } = getState().wallet;
+const fetchPayments = ({ page, itemsPerPage = 10, reset = false }) => async (
+  dispatch,
+  getState
+) => {
+  try {
+    const { payments } = getState().wallet;
 
-  if ((payments.page >= page && !reset) || payments.totalPages < page) {
-    return;
-  }
-
-  const { data } = await Http.get("/api/lnd/payments", {
-    params: {
-      page,
-      itemsPerPage
+    if ((payments.page >= page && !reset) || payments.totalPages < page) {
+      return;
     }
-  });
 
-  dispatch({
-    type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
-    data
-  });
+    const { data } = await Http.get("/api/lnd/payments", {
+      params: {
+        page,
+        itemsPerPage
+      }
+    });
 
-  return data;
+    dispatch({
+      type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
+      data
+    });
+  } catch (e) {
+    console.error(
+      `An error ocurred while fetching payments (fetchPayments()):`,
+      e
+    );
+  }
 };
 
 export const fetchUnifiedTransactions = () => async dispatch => {
@@ -178,10 +215,11 @@ export const connectPeer = ({ publicKey, host }) => async dispatch => {
       type: ACTIONS.ADD_PEER,
       data: newPeer
     });
-
-    return newPeer;
   } catch (err) {
-    console.error(err);
+    console.error(
+      `An error ocurred while connecting peer --| ${host} |-- with public key --| ${publicKey} |-- in connectPeer()`,
+      err
+    );
     throw err?.response?.data ?? err;
   }
 };
@@ -200,11 +238,12 @@ export const openChannel = ({
       satPerByte: feeRates[rate]
     });
 
-    const data = await fetchChannels()(dispatch);
-
-    return data.channels;
+    dispatch(fetchChannels());
   } catch (err) {
-    console.error(err);
+    console.error(
+      `An error ocurred while opening a channel (openChannel()) with public key --| ${publicKey} |--, channel capacity: --| ${channelCapacity} |-- and push amount: --| ${pushAmount} |--:`,
+      err
+    );
     throw err?.response?.data ?? err;
   }
 };

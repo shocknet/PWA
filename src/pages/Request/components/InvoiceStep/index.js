@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useHistory } from "react-router";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
 import { useDispatch } from "react-redux";
@@ -9,7 +10,8 @@ import "./css/index.scoped.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
 import { sendMessage } from "../../../../actions/ChatActions";
-import { useHistory } from "react-router";
+
+import * as gStyles from "../../../../styles";
 
 const InvoiceStep = ({
   amount = 0,
@@ -80,13 +82,33 @@ const InvoiceStep = ({
     setLightningMode(!lightningMode);
   }, [lightningMode]);
 
-  const copyClipboard = useCallback(() => {
-    if (lightningMode) {
-      navigator.clipboard.writeText(paymentRequest);
-      return;
-    }
+  /** @type {import('react').MutableRefObject<HTMLInputElement|null>} */
+  const placeholderInputRef = useRef();
 
-    navigator.clipboard.writeText(address);
+  const copyClipboard = useCallback(() => {
+    try {
+      const txtToCopy = lightningMode ? paymentRequest : address;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txtToCopy);
+      } else {
+        const { current: el } = placeholderInputRef;
+        if (!el) {
+          throw new ReferenceError(
+            `When trying to access the ref for the placeholder input to copy, the ref was null.`
+          );
+        }
+
+        el.style.display = "block";
+        el.select();
+        document.execCommand("copy");
+        el.blur();
+        el.style.display = "none";
+      }
+    } catch (e) {
+      console.error(e);
+      setError(e.message);
+    }
   }, [lightningMode, paymentRequest, address]);
 
   const sendInvoice = useCallback(async () => {
@@ -108,7 +130,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest, history]);
+  }, [contact, paymentRequest, dispatch, history]);
 
   return (
     <div className="container">
@@ -158,31 +180,57 @@ const InvoiceStep = ({
         <i className="fas fa-copy"></i>
         <p className="copy-clipboard-btn-text">Copy to Clipboard</p>
       </div>
-      <div className="details">
-        <p className="details-change" onClick={prevStep}>
-          Change
-        </p>
-        <div className="detail">
-          <p className="detail-title">Amount</p>
-          <p className="detail-value">
-            {amount} {unit.toUpperCase()}
-          </p>
-        </div>
-        <div className="detail">
-          <p className="detail-title">Description</p>
-          <p className="detail-value">{description}</p>
-        </div>
-      </div>
-      {lightningMode && contact ? (
-        <SlidePay
-          wrapperStyle={{
-            padding: 0,
-            marginTop: 23
-          }}
-          slideText="SLIDE TO SEND"
-          onSuccess={sendInvoice}
+
+      {!navigator.clipboard && (
+        <input
+          className={gStyles.hiddenInput}
+          readOnly
+          ref={placeholderInputRef}
+          type="text"
+          value={lightningMode ? paymentRequest : address}
         />
-      ) : null}
+      )}
+
+      {error ? (
+        <>
+          <span>{error}</span>
+
+          <br />
+
+          <span className="inline-link" onClick={setError.bind(null, "")}>
+            Dismiss
+          </span>
+        </>
+      ) : (
+        <>
+          <div className="details">
+            <p className="details-change" onClick={prevStep}>
+              Change
+            </p>
+            <div className="detail">
+              <p className="detail-title">Amount</p>
+              <p className="detail-value">
+                {amount} {unit.toUpperCase()}
+              </p>
+            </div>
+            <div className="detail">
+              <p className="detail-title">Description</p>
+              <p className="detail-value">{description}</p>
+            </div>
+          </div>
+
+          {lightningMode && contact ? (
+            <SlidePay
+              wrapperStyle={{
+                padding: 0,
+                marginTop: 23
+              }}
+              slideText="SLIDE TO SEND"
+              onSuccess={sendInvoice}
+            />
+          ) : null}
+        </>
+      )}
     </div>
   );
 };

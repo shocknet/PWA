@@ -88,15 +88,15 @@ const MessagesPage = () => {
         await dispatch(sendHandshakeRequest(shockUser));
 
         setAddModalOpen(false);
-        return;
       } catch (err) {
-        if (err instanceof FieldError) {
-          setSendError(err.message);
-          return;
-        }
+        const errMsg =
+          err instanceof FieldError
+            ? err.message
+            : "An unknown error has occurred";
 
         console.error(err);
-        setSendError("An unknown error has occurred");
+
+        setSendError(errMsg);
       } finally {
         setSendRequestLoading(false);
       }

@@ -1,4 +1,5 @@
 import * as Common from "shock-common";
+import { useEffect, useRef } from "react";
 
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
 
