@@ -42,8 +42,8 @@ const ChatMessage = ({
   return (
     <div
       className={classNames({
-        "chat-message": true,
-        "chat-message-received": receivedMessage
+        "message": true,
+        "message-received": receivedMessage
       })}
       ref={ref}
     >
@@ -55,28 +55,31 @@ const ChatMessage = ({
         </>
       )}
 
-      <p className="chat-message-text">{text}</p>
+      <div className="message-content">
+        <p className="message-text">
+          {text}
+        </p>
+        {(() => {
+          try {
+            const normalizedTimestamp = Common.normalizeTimestampToMs(
+              timestamp
+            );
 
-      <Pad amt={8} insideRow />
+            const dateTime = DateTime.fromMillis(normalizedTimestamp);
 
-      {(() => {
-        try {
-          const normalizedTimestamp = Common.normalizeTimestampToMs(timestamp);
+            const dateTxt = dateTime.toLocaleString(DateTime.TIME_SIMPLE);
 
-          const dateTime = DateTime.fromMillis(normalizedTimestamp);
-
-          const dateTxt = dateTime.toLocaleString(DateTime.TIME_SIMPLE);
-
-          return (
-            <div className={classNames(gStyles.rowCentered)}>
-              <p className={gStyles.fontSize12}>{dateTxt}</p>
-            </div>
-          );
-        } catch (e) {
-          console.log(e);
-          return null;
-        }
-      })()}
+            return (
+              <div className="timestamp">
+                <p className="timestamp-text">{dateTxt}</p>
+              </div>
+            );
+          } catch (e) {
+            console.log(e);
+            return null;
+          }
+        })()}
+      </div>
     </div>
   );
 };
