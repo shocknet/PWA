@@ -320,8 +320,8 @@ const ProfilePage = () => {
   const renderPosts = () => {
     return myPosts.map((post, index) => {
       if (post.type === "shared") {
-        if(!post.originalPost){
-          return null
+        if (!post.originalPost) {
+          return null;
         }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
@@ -366,8 +366,10 @@ const ProfilePage = () => {
             publicKey={post.authorId}
             openTipModal={() => {}}
             openUnlockModal={() => {}}
-            tipCounter={0}
-            tipValue={0}
+            //@ts-expect-error
+            tipCounter={post.tipCounter || 0}
+            //@ts-expect-error
+            tipValue={post.tipValue || 0}
             openDeleteModal={toggleDeleteModal}
           />
         </Suspense>
