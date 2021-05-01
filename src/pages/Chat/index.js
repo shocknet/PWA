@@ -88,7 +88,7 @@ const ChatPage = () => {
         history.goBack();
       })
       .catch(e => {
-        Utils.logger.error(`Error when trying to disconnect public key: `);
+        Utils.logger.error(`Error when trying to disconnect public key:`, e);
         alert(e.message);
       })
       .finally(toggleIsDisconnecting);
