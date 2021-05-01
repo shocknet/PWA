@@ -2,6 +2,7 @@
 /**
  * @format
  */
+import produce from "immer";
 /**
  * @typedef {import('redux').AnyAction} AnyAction
  */
@@ -216,6 +217,16 @@ const chat = (state = INITIAL_STATE, action) => {
         data,
         status: Schema.CHAT_MESSAGE_STATUS.RECEIVED,
         state
+      });
+    }
+    case ACTIONS.CHAT_WAS_DELETED: {
+      const {
+        data: { publicKey }
+      } = action;
+      return produce(state, draft => {
+        const idx = draft.contacts.findIndex(c => c.pk === publicKey);
+        idx > -1 && draft.contacts.splice(idx, 1);
+        delete draft.messages[publicKey];
       });
     }
     default:
