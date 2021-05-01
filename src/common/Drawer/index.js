@@ -57,12 +57,12 @@ const Drawer = () => {
             </div>
             <p className="drawer-item-title unselectable">Advanced Lightning</p>
           </NavLink>
-          <div className="drawer-item">
+          <NavLink to="/Backups" className="drawer-item" onClick={close}>
             <div className="drawer-item-icon">
               <i className="icon-solid-key"></i>
             </div>
             <p className="drawer-item-title unselectable">Seed Backup</p>
-          </div>
+          </NavLink>
         </div>
         <div className="drawer-bottom-section">
           <NavLink className="drawer-item" to="/moonpay" onClick={close}>

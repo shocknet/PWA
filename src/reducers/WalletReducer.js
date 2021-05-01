@@ -24,7 +24,8 @@ const INITIAL_STATE = {
   peers: [],
   // Includes transactions, payments and invoices combined with a unified schema
   // and sorted by date
-  recentTransactions: []
+  recentTransactions: [],
+  lightningInfo:{},
 };
 
 const _getUnifiedTransactionDate = item =>
@@ -214,6 +215,13 @@ const wallet = (state = INITIAL_STATE, action) => {
         ...state,
         recentTransactions: []
       };
+    }
+    case ACTIONS.LOAD_LIGHTNING_INFO:{
+      const {data}  = action
+      return {
+        ...state,
+        lightningInfo:data
+      }
     }
     default:
       return state;
