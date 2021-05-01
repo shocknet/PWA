@@ -323,6 +323,11 @@ const ProfilePage = () => {
         if (!post.originalPost) {
           return null;
         }
+        const streamItem = Object.values(post.originalPost.contentItems).find(item => item.type === 'stream/embedded')
+        // @ts-expect-error
+        if(streamItem && (!streamItem.liveStatus || streamItem.liveStatus === 'waiting') ){
+          return
+        }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
           userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
@@ -348,7 +353,11 @@ const ProfilePage = () => {
           </Suspense>
         );
       }
-
+      const streamItem = Object.values(post.contentItems).find(item => item.type === 'stream/embedded')
+      // @ts-expect-error
+      if(streamItem && (!streamItem.liveStatus || streamItem.liveStatus === 'waiting') ){
+        return
+      }
       const profile =
         userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
 

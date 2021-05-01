@@ -39,6 +39,12 @@ const GoLive = () => {
   const availableTokens = Store.useSelector(
     ({ content }) => content.availableTokens
   );
+  const streamPostId = Store.useSelector(
+    ({ content }) => content.streamPostId
+  );
+  const streamContentId = Store.useSelector(
+    ({ content }) => content.streamContentId
+  );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
@@ -46,7 +52,7 @@ const GoLive = () => {
   const [streamToken, setStreamToken] = useState(streamLiveToken);
   const [, setUserToken] = useState(streamUserToken);
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
-  const [isLive] = useState(false);
+  const [isLive] = useState(!!streamUrl);
   const [error, setError] = useState<string | null>(null);
   const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
@@ -78,7 +84,7 @@ const GoLive = () => {
         const streamPlaybackUrl = `${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`;
         const rtmp = finalSeedUrl.replace("https", "rtmp");
         setRtmpUri(`${rtmp}/live`);
-        addStream(latestUserToken, liveToken, streamPlaybackUrl)(dispatch);
+        
         let contentItems = [];
         if (paragraph !== "") {
           contentItems.push({
@@ -93,7 +99,9 @@ const GoLive = () => {
           magnetURI: streamPlaybackUrl,
           isPreview: false,
           isPrivate: false,
-          userToken: latestUserToken
+          userToken: latestUserToken,
+          liveStatus:'waiting',
+          statusUrl: `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
         });
         const res = await Http.post(`/api/gun/wall`, {
           tags: [],
@@ -101,6 +109,22 @@ const GoLive = () => {
           contentItems
         });
         if (res.status === 200) {
+          const {data} = res
+          const [postId,newPost] = data
+          console.log(newPost.contentItems)
+          //@ts-expect-error
+          const [contentId] = Object.entries(newPost.contentItems).find(([_,item]) => item.magnetURI === streamPlaybackUrl)
+          addStream({
+            seedToken:latestUserToken, 
+            liveToken, 
+            streamUrl:streamPlaybackUrl,
+            streamPostId:postId,
+            streamContentId:contentId})(dispatch);
+          await Http.post(`/api/listenStream`,{
+            postId,
+            contentId,
+            statusUrl: `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
+          })
           console.log("post created successfully");
           setLoading(false);
         } else {
@@ -201,9 +225,21 @@ const GoLive = () => {
     [setParagraph, setSelectedSource]
   );
   const stopStream = useCallback(() => {
+    Http.post("/api/gun/put", {
+      path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>liveStatus`,
+      value: 'wasLive'
+    });
     removeStream()(dispatch);
+    console.info("doing it!!")
+    console.info(streamUserToken)
+    fetch(`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`,{method: 'HEAD'})
+    .then(r => {
+      console.info("r.headers")
+      console.info(r.headers)
+    })
+    .catch(e => console.log(e))
     history.push("/profile");
-  }, [dispatch, history]);
+  }, [dispatch, history,streamUserToken]);
 
   const StreamRender = useMemo(() => {
     return (
@@ -231,9 +267,9 @@ const GoLive = () => {
   return (
     <>
       <DarkPage pageTitle="GO LIVE" scrolls>
-        {isLive && <div>{StreamRender}</div>}
-
-        {!isLive && selectedSource === "camera" ? <CamFeed /> : <Static />}
+      {(isLive || streamUrl) && <div>{StreamRender}</div>}
+        {/*hide for now since it's not implemented and causes a duplication*/ }
+        {/*!isLive && selectedSource === "camera" ? <CamFeed /> : <Static /> */}
 
         <div className={c(gStyles.rowCentered, gStyles.width100)}>
           <div
