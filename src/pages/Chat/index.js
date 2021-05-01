@@ -48,12 +48,9 @@ const ChatPage = () => {
     [headerHeight]
   );
 
-  const handleHeaderHeight = useCallback(
-    (/** @type {number} */ height) => {
-      setHeaderHeight(height);
-    },
-    []
-  );
+  const handleHeaderHeight = useCallback((/** @type {number} */ height) => {
+    setHeaderHeight(height);
+  }, []);
 
   const handleScroll = useCallback(() => {
     if (!shouldShowDateBubble) {
