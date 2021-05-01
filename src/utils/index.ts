@@ -1,5 +1,5 @@
 import * as Common from "shock-common";
-import { useEffect, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
 
@@ -188,3 +188,12 @@ export const getContact = (
 ) => contacts.filter(contact => contact.pk === publicKey)[0];
 
 export const EMPTY_FN: (...args: any[]) => void = () => {};
+
+export const useBooleanState = (initialState: boolean) => {
+  const [state, setState] = useState<boolean>(initialState);
+  const toggle = useCallback(() => {
+    setState(_state => !_state);
+  }, []);
+
+  return [state, toggle] as const;
+};
