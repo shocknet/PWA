@@ -14,7 +14,8 @@ export const ACTIONS = {
   ADD_PEER: "wallet/peers/add",
   REMOVE_PEER: "wallet/peers/remove",
   LOAD_RECENT_TRANSACTIONS: "wallet/recentTransactions/load",
-  RESET_RECENT_TRANSACTIONS: "wallet/recentTransactions/reset"
+  RESET_RECENT_TRANSACTIONS: "wallet/recentTransactions/reset",
+  LOAD_LIGHTNING_INFO: "wallet/lightningInfo/load",
 };
 
 export const fetchWalletBalance = () => async dispatch => {
@@ -247,3 +248,17 @@ export const openChannel = ({
     throw err?.response?.data ?? err;
   }
 };
+
+export const FetchLightningInfo = () =>async dispatch => {
+  
+  try{
+    const {data}= await Http.get("/api/lnd/getinfo");
+    dispatch({
+      type:ACTIONS.LOAD_LIGHTNING_INFO,
+      data
+    })
+  }catch (err) {
+    console.error(err);
+    throw err?.response?.data ?? err;
+  }
+}
