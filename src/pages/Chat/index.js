@@ -25,6 +25,7 @@ import * as Utils from "../../utils";
 import * as gStyles from "../../styles";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
+ * @typedef {import('../../schema').Contact} Contact
  */
 
 enableMapSet();
@@ -104,9 +105,10 @@ const ChatPage = () => {
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
   );
-  const contact = Store.useSelector(({ chat }) =>
+
+  const contact = /** @type {Contact} */ (Store.useSelector(({ chat }) =>
     Utils.getContact(chat.contacts, recipientPublicKey)
-  );
+  ));
   const sentRequest = Store.useSelector(({ chat }) =>
     Utils.getContact(chat.sentRequests, recipientPublicKey)
   );
@@ -352,6 +354,13 @@ const ChatPage = () => {
           <p className="chat-permission-bar-text unselectable">
             Once {contactName} accepts the request, you'll be able to chat with
             them
+          </p>
+        </div>
+      ) : contact.didDisconnect ? (
+        <div className="chat-permission-bar">
+          <p className="chat-permission-bar-title">Other user disconnected</p>
+          <p className="chat-permission-bar-text unselectable">
+            Delete this chat?
           </p>
         </div>
       ) : (
