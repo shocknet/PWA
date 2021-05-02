@@ -47,6 +47,8 @@ const userProfiles = (state = INITIAL_STATE, action) => {
         return state;
       }
 
+      // update anyways why not?
+
       return {
         ...state,
         [publicKey]: {
@@ -67,7 +69,7 @@ const userProfiles = (state = INITIAL_STATE, action) => {
       const { publicKey, profile: newProfile } = action.data;
       const oldProfile = state[publicKey];
 
-      if (!oldProfile || !newProfile) {
+      if (!publicKey || !newProfile) {
         return state;
       }
 
