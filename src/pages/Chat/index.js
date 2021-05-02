@@ -28,6 +28,8 @@ import * as gStyles from "../../styles";
  * @typedef {import('../../schema').Contact} Contact
  */
 
+import ChatBottomBar from "./components/ChatActionBar";
+
 enableMapSet();
 
 /**
@@ -325,45 +327,33 @@ const ChatPage = () => {
         </span>
       </div>
 
-      {pendingReceivedRequest ? (
-        <div className="chat-permission-bar">
-          <p className="chat-permission-bar-title unselectable">
-            {contactName} has sent you a chat request!
-          </p>
-          <p className="chat-permission-bar-text">
-            Once you accept the request, you'll be able to chat and send
-            invoices to {contactName}
-          </p>
-          <div className="chat-permission-bar-actions unselectable">
-            <div
-              className="chat-permission-bar-action chat-permission-bar-action-accept"
-              onClick={acceptRequest}
-            >
-              Accept
-            </div>
-            <div className="chat-permission-bar-action chat-permission-bar-action-decline">
-              Decline
-            </div>
-          </div>
-        </div>
-      ) : pendingSentRequest ? (
-        <div className="chat-permission-bar">
-          <p className="chat-permission-bar-title">
-            Your request has been sent to {contactName} successfully
-          </p>
-          <p className="chat-permission-bar-text unselectable">
-            Once {contactName} accepts the request, you'll be able to chat with
-            them
-          </p>
-        </div>
-      ) : contact.didDisconnect ? (
-        <div className="chat-permission-bar">
-          <p className="chat-permission-bar-title">Other user disconnected</p>
-          <p className="chat-permission-bar-text unselectable">
-            Delete this chat?
-          </p>
-        </div>
-      ) : (
+      {pendingReceivedRequest && (
+        <ChatBottomBar
+          text={`Once you accept the request, you'll be able to chat and send
+         invoices to ${contactName}`}
+          title={`${contactName} has sent you a chat request!`}
+          onAccept={acceptRequest}
+        />
+      )}
+
+      {pendingSentRequest && (
+        <ChatBottomBar
+          text={`Once ${contactName} accepts the request, you'll be able to chat with
+        them`}
+          title={`Your request has been sent to ${contactName} successfully`}
+        />
+      )}
+
+      {contact && contact.didDisconnect && (
+        <ChatBottomBar
+          acceptLabel="Delete"
+          text="Delete this chat?"
+          title="Other user disconnected"
+          onAccept={handleDisconnect}
+        />
+      )}
+
+      {contact && !contact.didDisconnect && (
         <WithHeight
           className="chat-bottom-bar"
           onHeight={setBottomBarHeight}
