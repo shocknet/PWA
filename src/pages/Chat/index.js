@@ -1,6 +1,6 @@
 // @ts-check
 import { useCallback, useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
@@ -8,21 +8,27 @@ import { DateTime } from "luxon";
 import produce, { enableMapSet } from "immer";
 
 import MainNav from "../../common/MainNav";
+import WithHeight from "../../common/WithHeight";
 import ChatMessage from "./components/ChatMessage";
+import Loader from "../../common/Loader";
 import {
   acceptHandshakeRequest,
   sendMessage,
-  subscribeChatMessages
+  subscribeChatMessages,
+  chatWasDeleted
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
 import { rifleCleanup } from "../../utils/WebSocket";
-import { getContact } from "../../utils";
+import * as Utils from "../../utils";
 import * as gStyles from "../../styles";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
+ * @typedef {import('../../schema').Contact} Contact
  */
+
+import ChatBottomBar from "./components/ChatActionBar";
 
 enableMapSet();
 
@@ -32,13 +38,15 @@ enableMapSet();
  */
 
 const ChatPage = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { publicKey: recipientPublicKey } = params;
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
+  const [bottomBarHeight, setBottomBarHeight] = useState(20);
   /* ------------------------------------------------------------------------ */
-  // Date Bubble
+  //#region dateBubble
   const [shouldShowDateBubble, setShouldShowDateBubble] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(-1);
   const chatDateBubbleContainerStyle = useMemo(
@@ -48,12 +56,9 @@ const ChatPage = () => {
     [headerHeight]
   );
 
-  const handleHeaderHeight = useCallback(
-    (/** @type {number} */ height) => {
-      setHeaderHeight(height);
-    },
-    []
-  );
+  const handleHeaderHeight = useCallback((/** @type {number} */ height) => {
+    setHeaderHeight(height);
+  }, []);
 
   const handleScroll = useCallback(() => {
     if (!shouldShowDateBubble) {
@@ -63,19 +68,54 @@ const ChatPage = () => {
       }, 1500);
     }
   }, [shouldShowDateBubble]);
+  //#endregion dateBubble
+  /* ------------------------------------------------------------------------ */
+  //#region actionMenu
+  const [actionMenuOpen, toggleActionMenu] = Utils.useBooleanState(false);
+
+  const actionMenuStyle = useMemo(
+    () => ({
+      bottom: bottomBarHeight
+    }),
+    [bottomBarHeight]
+  );
+
+  const [isDisconnecting, toggleIsDisconnecting] = Utils.useBooleanState(false);
+  const handleDisconnect = useCallback(() => {
+    toggleActionMenu();
+    toggleIsDisconnecting();
+    Utils.Http.delete(`/api/gun/chats/${recipientPublicKey}`)
+      .then(() => {
+        dispatch(chatWasDeleted(recipientPublicKey));
+        history.goBack();
+      })
+      .catch(e => {
+        Utils.logger.error(`Error when trying to disconnect public key:`, e);
+        alert(e.message);
+      })
+      .finally(toggleIsDisconnecting);
+  }, [
+    dispatch,
+    history,
+    recipientPublicKey,
+    toggleActionMenu,
+    toggleIsDisconnecting
+  ]);
+  //#endregion actionMenu
   /* ------------------------------------------------------------------------ */
 
   const messages = Store.useSelector(
     ({ chat }) => chat.messages[recipientPublicKey]
   );
-  const contact = Store.useSelector(({ chat }) =>
-    getContact(chat.contacts, recipientPublicKey)
-  );
+
+  const contact = /** @type {Contact} */ (Store.useSelector(({ chat }) =>
+    Utils.getContact(chat.contacts, recipientPublicKey)
+  ));
   const sentRequest = Store.useSelector(({ chat }) =>
-    getContact(chat.sentRequests, recipientPublicKey)
+    Utils.getContact(chat.sentRequests, recipientPublicKey)
   );
   const receivedRequest = /** @type {ReceivedRequest} */ (Store.useSelector(
-    ({ chat }) => getContact(chat.receivedRequests, recipientPublicKey)
+    ({ chat }) => Utils.getContact(chat.receivedRequests, recipientPublicKey)
   ));
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const pendingSentRequest = !contact && sentRequest;
@@ -182,7 +222,11 @@ const ChatPage = () => {
         onHeight={handleHeaderHeight}
       />
 
-      <div className="chat-messages-container" onScroll={handleScroll}>
+      <div
+        className="chat-messages-container"
+        onClick={actionMenuOpen ? toggleActionMenu : undefined}
+        onScroll={handleScroll}
+      >
         {messages?.map(message => (
           <ChatMessage
             text={message.body}
@@ -283,41 +327,43 @@ const ChatPage = () => {
         </span>
       </div>
 
-      {pendingReceivedRequest ? (
-        <div className="chat-permission-bar">
-          <p className="chat-permission-bar-title unselectable">
-            {contactName} has sent you a chat request!
-          </p>
-          <p className="chat-permission-bar-text">
-            Once you accept the request, you'll be able to chat and send
-            invoices to {contactName}
-          </p>
-          <div className="chat-permission-bar-actions unselectable">
-            <div
-              className="chat-permission-bar-action chat-permission-bar-action-accept"
-              onClick={acceptRequest}
-            >
-              Accept
-            </div>
-            <div className="chat-permission-bar-action chat-permission-bar-action-decline">
-              Decline
-            </div>
-          </div>
-        </div>
-      ) : pendingSentRequest ? (
-        <div className="chat-permission-bar">
-          <p className="chat-permission-bar-title">
-            Your request has been sent to {contactName} successfully
-          </p>
-          <p className="chat-permission-bar-text unselectable">
-            Once {contactName} accepts the request, you'll be able to chat with
-            them
-          </p>
-        </div>
-      ) : (
-        <div className="chat-bottom-bar">
+      {pendingReceivedRequest && (
+        <ChatBottomBar
+          text={`Once you accept the request, you'll be able to chat and send
+         invoices to ${contactName}`}
+          title={`${contactName} has sent you a chat request!`}
+          onAccept={acceptRequest}
+        />
+      )}
+
+      {pendingSentRequest && (
+        <ChatBottomBar
+          text={`Once ${contactName} accepts the request, you'll be able to chat with
+        them`}
+          title={`Your request has been sent to ${contactName} successfully`}
+        />
+      )}
+
+      {contact && contact.didDisconnect && (
+        <ChatBottomBar
+          acceptLabel="Delete"
+          text="Delete this chat?"
+          title="Other user disconnected"
+          onAccept={handleDisconnect}
+        />
+      )}
+
+      {contact && !contact.didDisconnect && (
+        <WithHeight
+          className="chat-bottom-bar"
+          onHeight={setBottomBarHeight}
+          onClick={actionMenuOpen ? toggleActionMenu : undefined}
+        >
           <div className="chat-input-container">
-            <div className="chat-input-btn unselectable">
+            <div
+              className="chat-input-btn unselectable"
+              onClick={toggleActionMenu}
+            >
               <img src={BitcoinLightning} alt="Menu" />
             </div>
             <TextArea
@@ -331,8 +377,24 @@ const ChatPage = () => {
               height={20}
             />
           </div>
-        </div>
+        </WithHeight>
       )}
+
+      <div
+        className={classNames("action-menu", {
+          [gStyles.displayNone]: !actionMenuOpen
+        })}
+        style={actionMenuStyle}
+      >
+        <span
+          className={classNames("action", gStyles.unselectable)}
+          onClick={handleDisconnect}
+        >
+          Disconnect
+        </span>
+      </div>
+
+      {isDisconnecting && <Loader overlay fullScreen text="Disconnecting..." />}
     </div>
   );
 };

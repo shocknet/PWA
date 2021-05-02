@@ -145,10 +145,21 @@ const MessagesPage = () => {
           ) : null}
           {contacts.map(contact => {
             const contactMessages = messages[contact.pk] ?? [];
-            const lastMessage = contactMessages[0] ?? {
-              body: "Unable to preview last message...",
-              timestamp: Date.now()
-            };
+            const lastMessage = (() => {
+              if (contact.didDisconnect) {
+                return {
+                  body: "User disconnected from you.",
+                  timestamp: Date.now()
+                };
+              }
+
+              return (
+                contactMessages[0] ?? {
+                  body: "Unable to preview last message...",
+                  timestamp: Date.now()
+                }
+              );
+            })();
 
             return (
               <Message

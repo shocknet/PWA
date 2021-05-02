@@ -4,6 +4,7 @@ export type Contact = {
   pk: string;
   avatar: string | null;
   displayName: string | null;
+  didDisconnect: boolean;
 };
 
 export interface ReceivedRequest {
