@@ -227,6 +227,7 @@ const chat = (state = INITIAL_STATE, action) => {
         const idx = draft.contacts.findIndex(c => c.pk === publicKey);
         idx > -1 && draft.contacts.splice(idx, 1);
         delete draft.messages[publicKey];
+        draft.messages[publicKey] = [];
       });
     }
     default:
