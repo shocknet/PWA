@@ -125,7 +125,7 @@ const MessagesPage = () => {
             <Request
               publicKey={request.pk}
               sent
-              key={request.pk}
+              key={request.id}
               time={undefined}
             />
           ))}
@@ -135,7 +135,7 @@ const MessagesPage = () => {
           {receivedRequests.map(request => (
             <Request
               publicKey={request.pk}
-              key={request.pk}
+              key={request.id}
               sent={false}
               time={undefined}
             />
