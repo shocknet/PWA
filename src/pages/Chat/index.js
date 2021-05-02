@@ -176,13 +176,19 @@ const ChatPage = () => {
   );
 
   const [newestTimestampInView, oldestTimestampInView] = useMemo(() => {
-    if (visibleMessages.size === 0) {
-      return [DateTime.now().valueOf(), Date.now().valueOf()];
-    }
     const sorted = Array.from(visibleMessages)
       .map(id => messages.find(msg => msg.id === id))
       .filter(x => !!x)
       .sort((a, b) => b.timestamp - a.timestamp);
+
+    if (sorted.length === 0) {
+      return [DateTime.now().valueOf(), Date.now().valueOf()];
+    }
+    if (sorted.length === 1) {
+      const [msg] = sorted;
+      return [msg.timestamp, msg.timestamp];
+    }
+
     /** @type {[number|null , number|null]} */
     const res = [sorted[0].timestamp, sorted[sorted.length - 1].timestamp];
     return res;
