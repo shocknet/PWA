@@ -430,16 +430,6 @@ const PublishContentPage = () => {
           onChange={onInputChange}
           className="input-field"
         />
-        <div
-          style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}
-        >
-          <label htmlFor="createPost">Create Post/Teaser?</label>
-          <input
-            type="checkbox"
-            name="createPost"
-            style={{ marginLeft: "0.2em" }}
-          />
-        </div>
 
         {error ? <p className="error-container">{error}</p> : null}
         <div className="flex-center">
