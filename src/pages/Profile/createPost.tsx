@@ -88,6 +88,7 @@ const PublishContentPage = () => {
     e.preventDefault();
     setError(null);
     setParagraph("");
+    setSelectedContent("");
   }, []);
   const onInputChange = useCallback(
     e => {
