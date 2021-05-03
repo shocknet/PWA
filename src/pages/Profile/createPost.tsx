@@ -1,11 +1,9 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import Loader from "../../common/Loader";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
-import Video from "../../common/Post/components/Video";
-import Image from "../../common/Post/components/Image";
 import { attachMedia } from "../../utils/Torrents";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
