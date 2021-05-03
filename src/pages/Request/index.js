@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback, useState } from "react";
 import classNames from "classnames";
 import DialogPageContainer from "../../common/DialogPageContainer";
