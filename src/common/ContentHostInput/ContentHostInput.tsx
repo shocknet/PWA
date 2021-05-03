@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as Store from "../../store";
-import {
-  subscribeUserProfile,
-  unsubscribeUserProfile
-} from "../../actions/UserProfilesActions";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import ContentHostInputView, { IHost } from "./components/ContentHostInputView";
 import { Http } from "../../utils";
