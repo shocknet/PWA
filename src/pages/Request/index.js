@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback, useState } from "react";
 import classNames from "classnames";
 import DialogPageContainer from "../../common/DialogPageContainer";
@@ -6,6 +7,10 @@ import FormStep from "./components/FormStep";
 import InvoiceStep from "./components/InvoiceStep";
 
 const MAX_STEPS = 2;
+/**
+ * @type {readonly unknown[]}
+ */
+const STEPS = Array.from({ length: MAX_STEPS });
 
 const RequestPage = () => {
   const [amount, setAmount] = useState(0);
@@ -63,7 +68,6 @@ const RequestPage = () => {
   }, [activeStep, amount, description, onInputChange, prevStep, unit]);
 
   const lastStep = activeStep === MAX_STEPS - 1;
-  const steps = Array.from({ length: MAX_STEPS });
 
   return (
     <DialogPageContainer title="REQUEST">
@@ -80,12 +84,13 @@ const RequestPage = () => {
           </div>
         ) : null}
         <div className="indicators">
-          {steps.map((_, key) => (
+          {STEPS.map((_, key) => (
             <div
               className={classNames({
                 indicator: true,
                 "indicator-active": key === activeStep
               })}
+              key={key}
             ></div>
           ))}
         </div>
