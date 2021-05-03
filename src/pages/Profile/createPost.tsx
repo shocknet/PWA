@@ -15,8 +15,6 @@ const PublishContentPage = () => {
     //@ts-expect-error
     ({ content }) => content.publishedContent
   );
-  //@ts-expect-error
-  const avatar = useSelector(({ node }) => node.avatar);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paragraph, setParagraph] = useState("");
@@ -157,23 +155,10 @@ const PublishContentPage = () => {
         onSubmit={onSubmit}
         onReset={onDiscard}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}
-        >
-          <div
-            className="profile-avatar"
-            style={{ backgroundImage: `url(${avatar})` }}
-          />
-          <div>
-            <h2>Say Something</h2>
-            <div className="line"></div>
-          </div>
-          <div style={{ width: "122px" }}></div>
-        </div>
+        <h2>
+          Say Something<div className="line"></div>
+        </h2>
+
         <textarea
           className="input-field"
           name={"paragraph"}
@@ -182,6 +167,7 @@ const PublishContentPage = () => {
           placeholder="What's up?"
           rows={4}
         ></textarea>
+
         <div
           style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}
         >
@@ -216,6 +202,7 @@ const PublishContentPage = () => {
             <option value="private">Paywall</option>
           </select>
         </div>
+
         <div
           style={{
             display: "flex",
@@ -226,7 +213,9 @@ const PublishContentPage = () => {
         >
           {Object.entries(publishedContent).map(parseContent)}
         </div>
+
         {error ? <p className="error-container">{error}</p> : null}
+
         <div className="flex-center">
           <input type="reset" value="reset" className="shock-form-button m-1" />
           <input
