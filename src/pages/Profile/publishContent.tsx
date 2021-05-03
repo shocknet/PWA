@@ -236,9 +236,8 @@ const PublishContentPage = () => {
       const promises = Array.from(e.target.files).map((file, index) => {
         console.log("doing file...");
         return new Promise(res => {
-          //@ts-ignore
+          //@ts-expect-error
           const { type } = file;
-          //@ts-ignore
           const reader = new FileReader();
 
           reader.onload = function (e) {
@@ -249,7 +248,7 @@ const PublishContentPage = () => {
               res({ type: "video", uri: e.target.result, index });
             }
           };
-          //@ts-ignore
+          //@ts-expect-error
           reader.readAsDataURL(file);
         });
       });
