@@ -170,7 +170,16 @@ const PublishContentPage = () => {
         setError("No way found to publish content");
       }
     },
-    [availableTokens, setPromptInfo, setError, onSubmitCb]
+    [
+      availableTokens,
+      setPromptInfo,
+      setError,
+      onSubmitCb,
+      userProfiles,
+      seedProviderPub,
+      seedToken,
+      seedUrl
+    ]
   );
 
   const onDiscard = useCallback(
