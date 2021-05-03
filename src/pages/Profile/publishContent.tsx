@@ -226,7 +226,7 @@ const PublishContentPage = () => {
           return;
       }
     },
-    [setTitle, setDescription, setCreatePost]
+    [setTitle, setDescription]
   );
   const onSelectedFile = useCallback(
     e => {
