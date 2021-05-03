@@ -392,10 +392,11 @@ const PublishContentPage = () => {
           ></i>
           <div>
             {mediaPreviews.length > 0 &&
-              mediaPreviews.map(prev => {
+              mediaPreviews.map((prev, i) => {
                 if (prev.type === "image") {
                   return (
                     <img
+                      alt={`Media preview ${i + 1}`}
                       src={prev.uri}
                       key={prev.index.toString()}
                       width={100}
