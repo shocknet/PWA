@@ -13,6 +13,7 @@ import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
+
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -297,22 +298,15 @@ const PublishContentPage = () => {
         <Loader overlay fullScreen text="Publishing content..." />
       ) : null}
 
+      <h2>
+        Say Something<div className="line"></div>
+      </h2>
+
       <form
         className="publish-content-form"
         onSubmit={onSubmit}
         onReset={onDiscard}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center"
-          }}
-        >
-          <h2>
-            Say Something<div className="line"></div>
-          </h2>
-        </div>
         <div
           style={{
             display: "flex",
@@ -371,33 +365,25 @@ const PublishContentPage = () => {
             <strong>Contents</strong>
           </label>
         </div>
-        <div className="m-b-1">
-          <input
-            type="file"
-            id="file"
-            ref={imageFile}
-            style={{ display: "none" }}
-            accept="image/*"
-            multiple
-            onChange={onSelectedFile}
-          />
-          <input
-            type="file"
-            id="file"
-            ref={videoFile}
-            style={{ display: "none" }}
-            accept="video/*"
-            multiple
-            onChange={onSelectedFile}
-          />
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly"
+          }}
+        >
           <i
             className="fas fa-images publish-content-icon"
             onClick={onSelectImageFile}
           ></i>
+
           <i
             className="fas fa-video publish-content-icon"
             onClick={onSelectVideoFile}
           ></i>
+        </div>
+
+        <div className="m-b-1">
           <div>
             {mediaPreviews.length > 0 &&
               mediaPreviews.map((prev, i) => {
@@ -430,8 +416,6 @@ const PublishContentPage = () => {
                 return null;
               })}
           </div>
-          {/*<i className="fas fa-music publish-content-icon"></i>
-      <i className="fas fa-paperclip publish-content-icon"></i>*/}
         </div>
         <div className="publish-content-title">
           <label htmlFor="description">
@@ -487,6 +471,25 @@ const PublishContentPage = () => {
           </div>
         </Modal>
       )}
+
+      <input
+        type="file"
+        id="file"
+        ref={imageFile}
+        style={{ display: "none" }}
+        accept="image/*"
+        multiple
+        onChange={onSelectedFile}
+      />
+      <input
+        type="file"
+        id="file"
+        ref={videoFile}
+        style={{ display: "none" }}
+        accept="video/*"
+        multiple
+        onChange={onSelectedFile}
+      />
     </DarkPage>
   );
 };

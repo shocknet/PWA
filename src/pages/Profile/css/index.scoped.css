@@ -136,20 +136,17 @@ p.profile-clipboard-text {
 }
 
 .publish-content-form {
-  padding-top: 5em;
   display: flex;
   flex-direction: column;
 }
 
 .publish-content-title {
-  margin-left: 1.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
 
 .publish-content-icon {
   font-size: 3em;
-  margin-left: 1em;
 }
 
 .line {
