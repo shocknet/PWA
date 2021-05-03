@@ -2,10 +2,11 @@ import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import Loader from "../../common/Loader";
-import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
+import DarkPage from "../../common/DarkPage";
+
 import "./css/index.scoped.css";
 
 const PublishContentPage = () => {
@@ -147,9 +148,9 @@ const PublishContentPage = () => {
   };
   console.log(selectedContent);
   return (
-    <div className="publish-content-form-container m-1">
+    <DarkPage padding scrolls pageTitle="CREATE POST">
       {loading ? <Loader overlay fullScreen text="Creating post..." /> : null}
-      <DialogNav drawerVisible={false} pageTitle="CREATE POST" />
+
       <form
         className="publish-content-form"
         onSubmit={onSubmit}
@@ -234,7 +235,7 @@ const PublishContentPage = () => {
           />
         </div>
       </form>
-    </div>
+    </DarkPage>
   );
 };
 
