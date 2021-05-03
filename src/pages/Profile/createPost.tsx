@@ -10,7 +10,6 @@ import VideoPreview from "../../common/Post/components/VideoPreview";
 import "./css/index.scoped.css";
 
 const PublishContentPage = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const publishedContent = useSelector(
     //@ts-expect-error
