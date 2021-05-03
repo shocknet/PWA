@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import "./css/index.scoped.css";
 
 import Loader from "../../common/Loader";
-import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
 import {
   addPublishedContent,
