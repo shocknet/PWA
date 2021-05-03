@@ -1,10 +1,9 @@
-import { useCallback, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useState } from "react";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import Loader from "../../common/Loader";
 import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
-import { attachMedia } from "../../utils/Torrents";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
 import "./css/index.scoped.css";
@@ -21,11 +20,8 @@ const PublishContentPage = () => {
   const [error, setError] = useState(null);
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
-  const [isPreview, setIsPreview] = useState(false);
   const [selectedContent, setSelectedContent] = useState("");
-  const contentToDisplay = useMemo(() => {
-    attachMedia([{ id: "content", contentItems: publishedContent }]);
-  }, [publishedContent]);
+
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
@@ -52,7 +48,7 @@ const PublishContentPage = () => {
             width: item.width,
             height: item.height,
             magnetURI: item.magnetURI,
-            isPreview: isPreview,
+            isPreview: false,
             isPrivate: isPrivate
           });
         }
@@ -81,7 +77,6 @@ const PublishContentPage = () => {
       selectedContent,
       paragraph,
       publishedContent,
-      isPreview,
       postType,
       history,
       setLoading,
@@ -111,14 +106,6 @@ const PublishContentPage = () => {
       }
     },
     [setParagraph]
-  );
-
-  const updateSelection = useCallback(
-    e => {
-      e.preventDefault();
-      setSelectedContent(e.target.getAttribute("propid"));
-    },
-    [selectedContent, setSelectedContent]
   );
 
   const parseContent = ([key, item], index) => {
