@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import "./css/index.scoped.css";
 
 import Loader from "../../common/Loader";
@@ -9,7 +9,7 @@ import {
   addPublishedContent,
   removeUnavailableToken
 } from "../../actions/ContentActions";
-import { EnrollToken, RequestToken } from "../../utils/seed";
+import { RequestToken } from "../../utils/seed";
 import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
