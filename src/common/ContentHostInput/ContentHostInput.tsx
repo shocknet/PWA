@@ -151,9 +151,10 @@ const ContentHostInput = () => {
     [dispatch]
   );
 
-  // @ts-ignore
   useEffect(() => {
-    const unsubscribe = dispatch(subscribeUserProfile(seedProviderPub));
+    const unsubscribe = (dispatch(
+      subscribeUserProfile(seedProviderPub)
+    ) as unknown) as () => void;
 
     return unsubscribe;
   }, [seedProviderPub, dispatch]);
