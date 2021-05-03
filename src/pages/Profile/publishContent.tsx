@@ -203,7 +203,7 @@ const PublishContentPage = () => {
   );
   const onInputChange = useCallback(
     e => {
-      const { value, name, checked } = e.target;
+      const { value, name } = e.target;
       //e.preventDefault()
       switch (name) {
         case "title": {
