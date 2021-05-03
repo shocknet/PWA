@@ -109,7 +109,7 @@ const PublishContentPage = () => {
         }
         history.push("/profile");
       } catch (err) {
-        console.log(err);
+        console.error(err);
         setError(err?.errorMessage ?? err?.message);
         setLoading(false);
       }
