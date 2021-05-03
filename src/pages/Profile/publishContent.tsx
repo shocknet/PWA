@@ -433,10 +433,10 @@ const PublishContentPage = () => {
 
         {error ? <p className="error-container">{error}</p> : null}
         <div className="flex-center">
-          <input type="reset" value="reset" className="shock-form-button m-1" />
+          <input type="reset" value="Reset" className="shock-form-button m-1" />
           <input
             type="submit"
-            value="submit"
+            value="Submit"
             className="shock-form-button-confirm m-1"
           />
         </div>
