@@ -415,6 +415,11 @@ const PublishContentPage = () => {
                     ></video>
                   );
                 }
+
+                console.error(
+                  `Unknown type of preview --| ${prev.type} |-- found inside <PublishContentPage />`
+                );
+                return null;
               })}
           </div>
           {/*<i className="fas fa-music publish-content-icon"></i>
