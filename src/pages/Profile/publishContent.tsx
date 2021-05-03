@@ -125,7 +125,8 @@ const PublishContentPage = () => {
       seedToken,
       history,
       dispatch,
-      setError
+      setError,
+      seedProviderPub
     ]
   );
 
