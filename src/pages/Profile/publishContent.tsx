@@ -13,6 +13,7 @@ import { RequestToken } from "../../utils/seed";
 import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
+import DarkPage from "../../common/DarkPage";
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -292,11 +293,10 @@ const PublishContentPage = () => {
     [videoFile]
   );
   return (
-    <div className="publish-content-form-container m-1">
+    <DarkPage padding pageTitle="PUBLISH CONTENT" scrolls>
       {loading ? (
         <Loader overlay fullScreen text="Creating content..." />
       ) : null}
-      <DialogNav drawerVisible={false} pageTitle="PUBLISH CONTENT" />
 
       <form
         className="publish-content-form"
@@ -488,7 +488,7 @@ const PublishContentPage = () => {
           </div>
         </Modal>
       )}
-    </div>
+    </DarkPage>
   );
 };
 
