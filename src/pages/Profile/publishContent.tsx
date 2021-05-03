@@ -295,7 +295,7 @@ const PublishContentPage = () => {
   return (
     <DarkPage padding pageTitle="PUBLISH CONTENT" scrolls>
       {loading ? (
-        <Loader overlay fullScreen text="Creating content..." />
+        <Loader overlay fullScreen text="Publishing content..." />
       ) : null}
 
       <form
