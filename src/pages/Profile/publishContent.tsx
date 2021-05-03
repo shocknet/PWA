@@ -46,6 +46,7 @@ const PublishContentPage = () => {
         return;
       }
       setLoading(true);
+      let res: Response | null = null;
       try {
         const {
           seedUrl: finalSeedUrl,
@@ -66,7 +67,7 @@ const PublishContentPage = () => {
         );
         formData.append("info", "extraInfo");
         formData.append("comment", "comment");
-        const res = await fetch(`${finalSeedUrl}/api/put_file`, {
+        res = await fetch(`${finalSeedUrl}/api/put_file`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${tokens[0]}`
@@ -110,6 +111,16 @@ const PublishContentPage = () => {
         history.push("/profile");
       } catch (err) {
         console.error(err);
+        if (res) {
+          res
+            .text()
+            .then(txt => {
+              console.error(`Response data as text: `, txt);
+            })
+            .catch(e => {
+              console.error(`Could not process bad response data as text: `, e);
+            });
+        }
         setError(err?.errorMessage ?? err?.message);
         setLoading(false);
       }
