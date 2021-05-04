@@ -16,7 +16,7 @@ const PublishContentPage = () => {
     ({ content }) => content.publishedContent
   );
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
   const [selectedContent, setSelectedContent] = useState("");
