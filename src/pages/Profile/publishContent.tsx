@@ -468,7 +468,6 @@ const PublishContentPage = () => {
         ref={imageFile}
         style={{ display: "none" }}
         accept="image/*"
-        multiple
         onChange={onSelectedFile}
       />
       <input
@@ -477,7 +476,6 @@ const PublishContentPage = () => {
         ref={videoFile}
         style={{ display: "none" }}
         accept="video/*"
-        multiple
         onChange={onSelectedFile}
       />
     </DarkPage>
