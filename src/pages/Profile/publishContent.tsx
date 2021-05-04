@@ -109,7 +109,7 @@ const PublishContentPage = () => {
         if (deleteToken) {
           removeUnavailableToken(finalSeedUrl, tokens[0])(dispatch);
         }
-        history.push("/profile");
+        history.replace("/profile");
       } catch (err) {
         console.error(err);
         if (res) {
