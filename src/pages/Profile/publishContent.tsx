@@ -100,7 +100,9 @@ const PublishContentPage = () => {
           type,
           magnetURI: magnet,
           width: 0,
-          height: 0
+          height: 0,
+          title,
+          description
         };
         const published = await addPublishedContent(contentItem)(dispatch);
         console.log("content publish complete");
