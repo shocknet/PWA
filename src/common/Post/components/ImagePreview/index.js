@@ -55,7 +55,7 @@ const ImagePreview = ({
             justifyContent: "center"
           }}
         >
-          <i class="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
+          <i className="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
         </div>
       )}
     </div>
