@@ -1,10 +1,8 @@
-import React, { useState, useCallback } from "react";
-import { Controlled as ControlledZoom } from "react-medium-image-zoom";
-import TipRibbon from "../TipRibbon";
-import "react-medium-image-zoom/dist/styles.css";
-import "./css/index.scoped.css";
+import { useCallback } from "react";
 
-const IMAGE_TRANSITION_MS = 200;
+import "react-medium-image-zoom/dist/styles.css";
+
+import "./css/index.scoped.css";
 
 const ImagePreview = ({
   id,
