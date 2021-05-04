@@ -43,7 +43,7 @@ const PublishContentPage = () => {
     async (servicePrice?, serviceID?) => {
       console.log([title, description, selectedFiles]);
       if (selectedFiles.length === 0) {
-        setError("no selected files");
+        setError("No selected files");
         return;
       }
       setLoading(true);
