@@ -1,3 +1,4 @@
+// @ts-check
 import { useCallback } from "react";
 
 import "react-medium-image-zoom/dist/styles.css";
