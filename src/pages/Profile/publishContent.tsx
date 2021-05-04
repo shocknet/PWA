@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import c from "classnames";
+
 import "./css/index.scoped.css";
 
 import Loader from "../../common/Loader";
@@ -31,6 +33,7 @@ const PublishContentPage = () => {
   const [loading, setLoading] = useState(false);
   const [mediaPreviews, setMediaPreviews] = useState([]);
   const [title, setTitle] = useState("");
+  const [titleMissing, setTitleMissing] = useState(false);
   const [description, setDescription] = useState("");
   const [postType, setPostType] = useState("public");
   const imageFile = useRef(null);
@@ -42,6 +45,11 @@ const PublishContentPage = () => {
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
       console.log([title, description, selectedFiles]);
+      if (!title) {
+        setError("Please input a title");
+        setTitleMissing(true);
+        return;
+      }
       if (selectedFiles.length === 0) {
         setError("No selected files");
         return;
@@ -199,6 +207,7 @@ const PublishContentPage = () => {
     async e => {
       e.preventDefault();
       setTitle("");
+      setTitleMissing(false);
       setDescription("");
       setError(null);
       setPromptInfo(null);
@@ -220,6 +229,7 @@ const PublishContentPage = () => {
       //e.preventDefault()
       switch (name) {
         case "title": {
+          setTitleMissing(false);
           setTitle(value);
           return;
         }
@@ -360,7 +370,7 @@ const PublishContentPage = () => {
           placeholder="How I monetized my content with ShockWallet"
           value={title}
           onChange={onInputChange}
-          className="input-field"
+          className={c("input-field", titleMissing && "input-field-error")}
         />
         <div className="publish-content-title">
           <label htmlFor="contents">
