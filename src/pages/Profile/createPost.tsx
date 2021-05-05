@@ -121,6 +121,7 @@ const PublishContentPage = () => {
             width="100px"
             selected={selectedContent}
             updateSelection={setSelectedContent}
+            alt={item.title}
           />
         </div>
       );
