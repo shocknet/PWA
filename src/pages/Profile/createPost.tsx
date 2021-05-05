@@ -217,7 +217,8 @@ const PublishContentPage = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            overflow: "auto",
+            overflowY: "auto",
+            overflowX: "scroll",
             whiteSpace: "nowrap"
           }}
         >
