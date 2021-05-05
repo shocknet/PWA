@@ -225,7 +225,7 @@ const PublishContentPage = () => {
             whiteSpace: "nowrap"
           }}
         >
-          {Object.entries(publishedContent).map(parseContent)}
+          {Object.entries(publishedContent).slice().reverse().map(parseContent)}
         </div>
 
         {error ? <p className="error-container">{error}</p> : null}
