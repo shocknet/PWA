@@ -6,6 +6,7 @@ import Http from "../../utils/Http";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
 import DarkPage from "../../common/DarkPage";
+import Pad from "../../common/Pad";
 
 import "./css/index.scoped.css";
 
@@ -123,6 +124,10 @@ const PublishContentPage = () => {
             updateSelection={setSelectedContent}
             alt={item.title}
           />
+
+          <Pad amt={24} />
+
+          <p>{item.title}</p>
         </div>
       );
     }
@@ -140,6 +145,10 @@ const PublishContentPage = () => {
             selected={selectedContent}
             updateSelection={setSelectedContent}
           />
+
+          <Pad amt={24} />
+
+          <p>{item.title}</p>
         </div>
       );
     }
