@@ -219,7 +219,8 @@ const PublishContentPage = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            overflowY: "auto",
+            // TODO: Why does 'visible' still shows a vertical scrollbar?
+            overflowY: "hidden",
             overflowX: "scroll",
             whiteSpace: "nowrap"
           }}
