@@ -228,6 +228,8 @@ const PublishContentPage = () => {
           {Object.entries(publishedContent).slice().reverse().map(parseContent)}
         </div>
 
+        <Pad amt={24} />
+
         {error ? <p className="error-container">{error}</p> : null}
 
         <div className="flex-center">
