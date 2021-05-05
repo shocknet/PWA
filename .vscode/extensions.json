@@ -2,6 +2,7 @@
   "recommendations": [
     "streetsidesoftware.code-spell-checker",
     "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "msjsdiag.debugger-for-chrome"
   ]
 }
