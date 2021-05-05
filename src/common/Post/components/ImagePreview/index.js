@@ -1,7 +1,7 @@
 // @ts-check
 import { useCallback } from "react";
 
-import "react-medium-image-zoom/dist/styles.css";
+import ShockImg from "../../../ShockImg";
 
 import "./css/index.scoped.css";
 
@@ -12,7 +12,8 @@ const ImagePreview = ({
   postId,
   width,
   selected,
-  updateSelection
+  updateSelection,
+  alt = ""
 }) => {
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
@@ -33,13 +34,15 @@ const ImagePreview = ({
       onClick={selectThis}
       style={{ position: "relative" }}
     >
-      <img
+      <ShockImg
         className={`image torrent-img torrent-img-${postId}-${id}`}
-        alt="Post Media"
+        alt={alt}
         data-torrent={item.magnetURI}
         data-file-key={index}
         style={mainImageStyle}
         src={contentURL}
+        placeholderHeight={75}
+        placeholderWidth={100}
       />
       {selected === id && (
         <div
