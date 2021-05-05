@@ -213,6 +213,8 @@ const PublishContentPage = () => {
           </select>
         </div>
 
+        <Pad amt={24} />
+
         <div
           style={{
             display: "flex",
