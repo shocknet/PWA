@@ -1,34 +1,27 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useState } from "react";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import Loader from "../../common/Loader";
-import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
-import Video from "../../common/Post/components/Video";
-import Image from "../../common/Post/components/Image";
-import { attachMedia } from "../../utils/Torrents";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
+import DarkPage from "../../common/DarkPage";
+import Pad from "../../common/Pad";
+
 import "./css/index.scoped.css";
 
 const PublishContentPage = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const publishedContent = useSelector(
     //@ts-expect-error
     ({ content }) => content.publishedContent
   );
-  //@ts-expect-error
-  const avatar = useSelector(({ node }) => node.avatar);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
-  const [isPreview, setIsPreview] = useState(false);
   const [selectedContent, setSelectedContent] = useState("");
-  const contentToDisplay = useMemo(() => {
-    attachMedia([{ id: "content", contentItems: publishedContent }]);
-  }, [publishedContent]);
+
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
@@ -55,7 +48,7 @@ const PublishContentPage = () => {
             width: item.width,
             height: item.height,
             magnetURI: item.magnetURI,
-            isPreview: isPreview,
+            isPreview: false,
             isPrivate: isPrivate
           });
         }
@@ -84,7 +77,6 @@ const PublishContentPage = () => {
       selectedContent,
       paragraph,
       publishedContent,
-      isPreview,
       postType,
       history,
       setLoading,
@@ -95,6 +87,7 @@ const PublishContentPage = () => {
     e.preventDefault();
     setError(null);
     setParagraph("");
+    setSelectedContent("");
   }, []);
   const onInputChange = useCallback(
     e => {
@@ -116,28 +109,27 @@ const PublishContentPage = () => {
     [setParagraph]
   );
 
-  const updateSelection = useCallback(
-    e => {
-      e.preventDefault();
-      setSelectedContent(e.target.getAttribute("propid"));
-    },
-    [selectedContent, setSelectedContent]
-  );
-
   const parseContent = ([key, item], index) => {
     if (item.type === "image/embedded") {
       return (
-        <div style={{ width: 100, margin: "1em" }}>
-          <ImagePreview
-            id={key}
-            item={item}
-            index={index}
-            postId={"content"}
-            key={`${index}`}
-            width="100px"
-            selected={selectedContent}
-            updateSelection={setSelectedContent}
-          />
+        <div className="preview-container">
+          <div className="preview-image-container">
+            <ImagePreview
+              id={key}
+              item={item}
+              index={index}
+              postId={"content"}
+              key={`${index}`}
+              width={100}
+              selected={selectedContent}
+              updateSelection={setSelectedContent}
+              alt={item.title}
+            />
+          </div>
+
+          <Pad amt={24} />
+
+          <span className="preview-item-title">{item.title}</span>
         </div>
       );
     }
@@ -155,6 +147,10 @@ const PublishContentPage = () => {
             selected={selectedContent}
             updateSelection={setSelectedContent}
           />
+
+          <Pad amt={24} />
+
+          <p>{item.title}</p>
         </div>
       );
     }
@@ -163,31 +159,18 @@ const PublishContentPage = () => {
   };
   console.log(selectedContent);
   return (
-    <div className="publish-content-form-container m-1">
+    <DarkPage padding scrolls pageTitle="CREATE POST">
       {loading ? <Loader overlay fullScreen text="Creating post..." /> : null}
-      <DialogNav drawerVisible={false} pageTitle="CREATE POST" />
+
       <form
         className="publish-content-form"
         onSubmit={onSubmit}
         onReset={onDiscard}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}
-        >
-          <div
-            className="profile-avatar"
-            style={{ backgroundImage: `url(${avatar})` }}
-          />
-          <div>
-            <h2>Say Something</h2>
-            <div className="line"></div>
-          </div>
-          <div style={{ width: "122px" }}></div>
-        </div>
+        <h2>
+          Say Something<div className="line"></div>
+        </h2>
+
         <textarea
           className="input-field"
           name={"paragraph"}
@@ -196,6 +179,7 @@ const PublishContentPage = () => {
           placeholder="What's up?"
           rows={4}
         ></textarea>
+
         <div
           style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}
         >
@@ -230,27 +214,27 @@ const PublishContentPage = () => {
             <option value="private">Paywall</option>
           </select>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            overflow: "auto",
-            whiteSpace: "nowrap"
-          }}
-        >
-          {Object.entries(publishedContent).map(parseContent)}
+
+        <Pad amt={24} />
+
+        <div className="content-carousel">
+          {Object.entries(publishedContent).slice().reverse().map(parseContent)}
         </div>
+
+        <Pad amt={24} />
+
         {error ? <p className="error-container">{error}</p> : null}
+
         <div className="flex-center">
-          <input type="reset" value="reset" className="shock-form-button m-1" />
+          <input type="reset" value="Reset" className="shock-form-button m-1" />
           <input
             type="submit"
-            value="submit"
+            value="Submit"
             className="shock-form-button-confirm m-1"
           />
         </div>
       </form>
-    </div>
+    </DarkPage>
   );
 };
 

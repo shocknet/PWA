@@ -33,7 +33,8 @@ export const ACTIONS = {
   SENDING_MESSAGE: "chat/message/sending",
   SENT_MESSAGE: "chat/message/sent",
   FAILED_MESSAGE: "chat/message/failed",
-  RECEIVED_MESSAGE: /** @type {"chat/message/received"} */ ("chat/message/received")
+  RECEIVED_MESSAGE: /** @type {"chat/message/received"} */ ("chat/message/received"),
+  CHAT_WAS_DELETED: /** @type {'chat/deleted'} */ ("chat/deleted")
 };
 
 /**
@@ -263,3 +264,13 @@ export const sendMessage = ({
     });
   }
 };
+
+/**
+ * @param {string} publicKey
+ */
+export const chatWasDeleted = publicKey => ({
+  type: ACTIONS.CHAT_WAS_DELETED,
+  data: {
+    publicKey
+  }
+});

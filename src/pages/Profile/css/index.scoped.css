@@ -136,20 +136,22 @@ p.profile-clipboard-text {
 }
 
 .publish-content-form {
-  padding-top: 5em;
   display: flex;
   flex-direction: column;
 }
 
 .publish-content-title {
-  margin-left: 1.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
 
+.publish-content-icons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .publish-content-icon {
   font-size: 3em;
-  margin-left: 1em;
 }
 
 .line {
@@ -188,4 +190,75 @@ p.profile-clipboard-text {
   position: relative;
   left: -10000px;
   display: none;
+}
+
+.content-carousel {
+  display: flex;
+  align-items: flex-start;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.preview-container {
+  margin-left: 1em;
+  margin-right: 1em;
+  /* padding-left: 36px;
+  padding-right: 36px; */
+}
+
+.preview-image-container {
+  margin-right: 24px;
+  margin-left: 24px;
+}
+
+.preview-item-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 1em;
+}
+
+.publish-content-preview {
+  /* Needed for absolutely-positioned delete button. */
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background-color: var(--dark-blue);
+  width: auto;
+  padding: 1em 0;
+  border-top: 1px solid var(--main-blue);
+  border-bottom: 1px solid var(--main-blue);
+
+  background-size: 24px 24px;
+  background-image: linear-gradient(
+      to right,
+      rgba(var(--main-blue-rgb), 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(var(--main-blue-rgb), 0.3) 1px,
+      transparent 1px
+    );
+}
+
+.remove-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  opacity: 0.6;
+  background-color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.remove-btn > i {
+  color: white;
+  font-size: 12px;
 }

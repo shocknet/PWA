@@ -10,7 +10,9 @@
       "webRoot": "${workspaceFolder}/src",
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/*"
-      }
+      },
+      // TODO: make this cross-platform
+      "runtimeArgs": ["--profile-directory=/dev/null"]
     }
   ]
 }

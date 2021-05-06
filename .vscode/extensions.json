@@ -1,6 +1,8 @@
 {
   "recommendations": [
     "streetsidesoftware.code-spell-checker",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "msjsdiag.debugger-for-chrome"
   ]
 }

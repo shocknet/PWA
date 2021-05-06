@@ -351,7 +351,8 @@ export const getChats = async ({ authToken }) => {
     const contacts = chats.map(chat => ({
       pk: chat.recipientPublicKey,
       avatar: chat.recipientAvatar,
-      displayName: chat.recipientDisplayName
+      displayName: chat.recipientDisplayName,
+      didDisconnect: chat.didDisconnect
     }));
 
     const messages = chats.reduce(
