@@ -379,7 +379,13 @@ const PublishContentPage = () => {
           </label>
         </div>
 
-        <div className="publish-content-icons">
+        <div
+          className={
+            mediaPreviews.length > 0
+              ? gStyles.displayNone
+              : "publish-content-icons"
+          }
+        >
           <i
             className="fas fa-images publish-content-icon"
             onClick={onSelectImageFile}
