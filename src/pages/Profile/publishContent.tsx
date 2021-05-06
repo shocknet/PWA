@@ -396,7 +396,12 @@ const PublishContentPage = () => {
           ></i>
         </div>
 
-        <div className="m-b-1">
+        <div
+          className={c({
+            [c("publish-content-preview", gStyles.commonMarginHNegative)]:
+              mediaPreviews.length > 0
+          })}
+        >
           <div>
             {mediaPreviews.length > 0 &&
               mediaPreviews.map((prev, i) => {

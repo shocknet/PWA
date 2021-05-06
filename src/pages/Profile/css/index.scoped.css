@@ -214,3 +214,25 @@ p.profile-clipboard-text {
   -webkit-box-orient: vertical;
   font-size: 1em;
 }
+
+.publish-content-preview {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background-color: var(--dark-blue);
+  width: auto;
+  padding: 1em 0;
+  border-top: 1px solid var(--main-blue);
+  border-bottom: 1px solid var(--main-blue);
+
+  background-size: 24px 24px;
+  background-image: linear-gradient(
+      to right,
+      rgba(var(--main-blue-rgb), 0.3) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(var(--main-blue-rgb), 0.3) 1px,
+      transparent 1px
+    );
+}
