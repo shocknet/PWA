@@ -145,6 +145,11 @@ p.profile-clipboard-text {
   margin-bottom: 0.5em;
 }
 
+.publish-content-icons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .publish-content-icon {
   font-size: 3em;
 }

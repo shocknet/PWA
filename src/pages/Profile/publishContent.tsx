@@ -379,12 +379,7 @@ const PublishContentPage = () => {
           </label>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly"
-          }}
-        >
+        <div className="publish-content-icons">
           <i
             className="fas fa-images publish-content-icon"
             onClick={onSelectImageFile}
