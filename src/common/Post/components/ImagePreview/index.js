@@ -20,7 +20,7 @@ const ImagePreview = ({
   );
   const mainImageStyle = { opacity: 1 };
   if (width) {
-    mainImageStyle.width = width;
+    mainImageStyle.width = width + "px";
   }
   const selectThis = useCallback(() => {
     if (selected !== id) {
