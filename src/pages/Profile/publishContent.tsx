@@ -15,6 +15,7 @@ import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
+import * as gStyles from "../../styles";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -478,7 +479,7 @@ const PublishContentPage = () => {
         type="file"
         id="file"
         ref={imageFile}
-        style={{ display: "none" }}
+        className={gStyles.displayNone}
         accept="image/*"
         onChange={onSelectedFile}
       />
@@ -486,7 +487,7 @@ const PublishContentPage = () => {
         type="file"
         id="file"
         ref={videoFile}
-        style={{ display: "none" }}
+        className={gStyles.displayNone}
         accept="video/*"
         onChange={onSelectedFile}
       />
