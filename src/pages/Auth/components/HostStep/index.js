@@ -84,6 +84,8 @@ const HostStep = () => {
         ) : (
           <>
             <input
+              autoCapitalize="off"
+              autoCorrect="off"
               type="text"
               name="hostIP"
               placeholder="Host Address (in IP or DNS form)"
