@@ -406,7 +406,7 @@ const PublishContentPage = () => {
                       alt={`Media preview ${i + 1}`}
                       src={prev.uri}
                       key={prev.index.toString()}
-                      width={100}
+                      width={288}
                       className="m-1"
                     ></img>
                   );
@@ -417,7 +417,7 @@ const PublishContentPage = () => {
                       src={prev.uri}
                       key={prev.index.toString()}
                       controls
-                      width={100}
+                      width={288}
                       className="m-1"
                     ></video>
                   );
