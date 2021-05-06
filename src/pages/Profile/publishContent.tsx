@@ -402,38 +402,36 @@ const PublishContentPage = () => {
               mediaPreviews.length > 0
           })}
         >
-          <div>
-            {mediaPreviews.length > 0 &&
-              mediaPreviews.map((prev, i) => {
-                if (prev.type === "image") {
-                  return (
-                    <img
-                      alt={`Media preview ${i + 1}`}
-                      src={prev.uri}
-                      key={prev.index.toString()}
-                      width={288}
-                      className="m-1"
-                    ></img>
-                  );
-                }
-                if (prev.type === "video") {
-                  return (
-                    <video
-                      src={prev.uri}
-                      key={prev.index.toString()}
-                      controls
-                      width={288}
-                      className="m-1"
-                    ></video>
-                  );
-                }
-
-                console.error(
-                  `Unknown type of preview --| ${prev.type} |-- found inside <PublishContentPage />`
+          {mediaPreviews.length > 0 &&
+            mediaPreviews.map((prev, i) => {
+              if (prev.type === "image") {
+                return (
+                  <img
+                    alt={`Media preview ${i + 1}`}
+                    src={prev.uri}
+                    key={prev.index.toString()}
+                    width={288}
+                    className="m-1"
+                  ></img>
                 );
-                return null;
-              })}
-          </div>
+              }
+              if (prev.type === "video") {
+                return (
+                  <video
+                    src={prev.uri}
+                    key={prev.index.toString()}
+                    controls
+                    width={288}
+                    className="m-1"
+                  ></video>
+                );
+              }
+
+              console.error(
+                `Unknown type of preview --| ${prev.type} |-- found inside <PublishContentPage />`
+              );
+              return null;
+            })}
         </div>
         <div className="publish-content-title">
           <label htmlFor="description">
