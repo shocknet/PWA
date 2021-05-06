@@ -29,11 +29,7 @@ const ImagePreview = ({
   }, [id, updateSelection, selected]);
 
   return (
-    <div
-      className="media-container"
-      onClick={selectThis}
-      style={{ position: "relative" }}
-    >
+    <div className="container" onClick={selectThis}>
       <ShockImg
         className={`image torrent-img torrent-img-${postId}-${id}`}
         alt={alt}
