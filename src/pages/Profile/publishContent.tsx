@@ -433,6 +433,16 @@ const PublishContentPage = () => {
               );
               return null;
             })}
+
+          <div
+            className="remove-btn"
+            onClick={useCallback(() => {
+              setSelectedFiles([]);
+              setMediaPreviews([]);
+            }, [])}
+          >
+            <i className="far fa-trash-alt" />
+          </div>
         </div>
         <div className="publish-content-title">
           <label htmlFor="description">

@@ -216,6 +216,8 @@ p.profile-clipboard-text {
 }
 
 .publish-content-preview {
+  /* Needed for absolutely-positioned delete button. */
+  position: relative;
   margin-top: 1em;
   margin-bottom: 1em;
   background-color: var(--dark-blue);
@@ -235,4 +237,23 @@ p.profile-clipboard-text {
       rgba(var(--main-blue-rgb), 0.3) 1px,
       transparent 1px
     );
+}
+
+.remove-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  opacity: 0.6;
+  background-color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.remove-btn > i {
+  color: white;
+  font-size: 12px;
 }
