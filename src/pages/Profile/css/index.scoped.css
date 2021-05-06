@@ -186,3 +186,31 @@ p.profile-clipboard-text {
   left: -10000px;
   display: none;
 }
+
+.content-carousel {
+  display: flex;
+  align-items: flex-start;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.preview-container {
+  margin-left: 1em;
+  margin-right: 1em;
+  /* padding-left: 36px;
+  padding-right: 36px; */
+}
+
+.preview-image-container {
+  margin-right: 24px;
+  margin-left: 24px;
+}
+
+.preview-item-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 1em;
+}

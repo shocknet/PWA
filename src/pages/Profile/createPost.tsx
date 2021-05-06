@@ -112,22 +112,24 @@ const PublishContentPage = () => {
   const parseContent = ([key, item], index) => {
     if (item.type === "image/embedded") {
       return (
-        <div style={{ width: 100, margin: "1em" }}>
-          <ImagePreview
-            id={key}
-            item={item}
-            index={index}
-            postId={"content"}
-            key={`${index}`}
-            width="100px"
-            selected={selectedContent}
-            updateSelection={setSelectedContent}
-            alt={item.title}
-          />
+        <div className="preview-container">
+          <div className="preview-image-container">
+            <ImagePreview
+              id={key}
+              item={item}
+              index={index}
+              postId={"content"}
+              key={`${index}`}
+              width={100}
+              selected={selectedContent}
+              updateSelection={setSelectedContent}
+              alt={item.title}
+            />
+          </div>
 
           <Pad amt={24} />
 
-          <p>{item.title}</p>
+          <span className="preview-item-title">{item.title}</span>
         </div>
       );
     }
@@ -215,16 +217,7 @@ const PublishContentPage = () => {
 
         <Pad amt={24} />
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            // TODO: Why does 'visible' still shows a vertical scrollbar?
-            overflowY: "hidden",
-            overflowX: "scroll",
-            whiteSpace: "nowrap"
-          }}
-        >
+        <div className="content-carousel">
           {Object.entries(publishedContent).slice().reverse().map(parseContent)}
         </div>
 
