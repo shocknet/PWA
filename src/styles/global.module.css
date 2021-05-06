@@ -151,6 +151,11 @@
   composes: common-margin-right;
 }
 
+.common-margin-h-negative {
+  margin-right: calc(PAD_H * -1);
+  margin-left: calc(PAD_H * -1);
+}
+
 /* -------------------------------------------------------------------------- */
 
 .bg-black {

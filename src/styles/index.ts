@@ -78,6 +78,12 @@ export const commonMarginRight = styles["common-margin-right"];
  */
 export const commonMarginH = styles["common-margin-h"];
 
+/**
+ * The most common horizontal padding in app. Applied to both left and right
+ * sides. But margin instead of padding. And negative.
+ */
+export const commonMarginHNegative = styles["common-margin-h-negative"];
+
 /* -------------------------------------------------------------------------- */
 
 export const bgBlack = styles["bg-black"];

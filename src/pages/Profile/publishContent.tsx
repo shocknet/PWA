@@ -1,18 +1,22 @@
-import React, { useCallback, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useCallback, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import c from "classnames";
+
 import "./css/index.scoped.css";
 
 import Loader from "../../common/Loader";
-import DialogNav from "../../common/DialogNav";
 import Http from "../../utils/Http";
 import {
   addPublishedContent,
   removeUnavailableToken
 } from "../../actions/ContentActions";
-import { EnrollToken, RequestToken } from "../../utils/seed";
+import { RequestToken } from "../../utils/seed";
 import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
+import DarkPage from "../../common/DarkPage";
+import * as gStyles from "../../styles";
+
 const PublishContentPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -30,9 +34,9 @@ const PublishContentPage = () => {
   const [loading, setLoading] = useState(false);
   const [mediaPreviews, setMediaPreviews] = useState([]);
   const [title, setTitle] = useState("");
+  const [titleMissing, setTitleMissing] = useState(false);
   const [description, setDescription] = useState("");
   const [postType, setPostType] = useState("public");
-  const [createPost, setCreatePost] = useState(false);
   const imageFile = useRef(null);
   const videoFile = useRef(null);
   const [promptInfo, setPromptInfo] = useState(null);
@@ -42,11 +46,17 @@ const PublishContentPage = () => {
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
       console.log([title, description, selectedFiles]);
+      if (!title) {
+        setError("Please input a title");
+        setTitleMissing(true);
+        return;
+      }
       if (selectedFiles.length === 0) {
-        setError("no selected files");
+        setError("No selected files");
         return;
       }
       setLoading(true);
+      let res: Response | null = null;
       try {
         const {
           seedUrl: finalSeedUrl,
@@ -67,7 +77,7 @@ const PublishContentPage = () => {
         );
         formData.append("info", "extraInfo");
         formData.append("comment", "comment");
-        const res = await fetch(`${finalSeedUrl}/api/put_file`, {
+        res = await fetch(`${finalSeedUrl}/api/put_file`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${tokens[0]}`
@@ -99,7 +109,9 @@ const PublishContentPage = () => {
           type,
           magnetURI: magnet,
           width: 0,
-          height: 0
+          height: 0,
+          title,
+          description
         };
         const published = await addPublishedContent(contentItem)(dispatch);
         console.log("content publish complete");
@@ -108,9 +120,19 @@ const PublishContentPage = () => {
         if (deleteToken) {
           removeUnavailableToken(finalSeedUrl, tokens[0])(dispatch);
         }
-        history.push("/profile");
+        history.replace("/profile");
       } catch (err) {
-        console.log(err);
+        console.error(err);
+        if (res) {
+          res
+            .text()
+            .then(txt => {
+              console.error(`Response data as text: `, txt);
+            })
+            .catch(e => {
+              console.error(`Could not process bad response data as text: `, e);
+            });
+        }
         setError(err?.errorMessage ?? err?.message);
         setLoading(false);
       }
@@ -125,7 +147,8 @@ const PublishContentPage = () => {
       seedToken,
       history,
       dispatch,
-      setError
+      setError,
+      seedProviderPub
     ]
   );
 
@@ -169,13 +192,23 @@ const PublishContentPage = () => {
         setError("No way found to publish content");
       }
     },
-    [availableTokens, setPromptInfo, setError, onSubmitCb]
+    [
+      availableTokens,
+      setPromptInfo,
+      setError,
+      onSubmitCb,
+      userProfiles,
+      seedProviderPub,
+      seedToken,
+      seedUrl
+    ]
   );
 
   const onDiscard = useCallback(
     async e => {
       e.preventDefault();
       setTitle("");
+      setTitleMissing(false);
       setDescription("");
       setError(null);
       setPromptInfo(null);
@@ -193,10 +226,11 @@ const PublishContentPage = () => {
   );
   const onInputChange = useCallback(
     e => {
-      const { value, name, checked } = e.target;
+      const { value, name } = e.target;
       //e.preventDefault()
       switch (name) {
         case "title": {
+          setTitleMissing(false);
           setTitle(value);
           return;
         }
@@ -216,7 +250,7 @@ const PublishContentPage = () => {
           return;
       }
     },
-    [setTitle, setDescription, setCreatePost]
+    [setTitle, setDescription]
   );
   const onSelectedFile = useCallback(
     e => {
@@ -227,9 +261,8 @@ const PublishContentPage = () => {
       const promises = Array.from(e.target.files).map((file, index) => {
         console.log("doing file...");
         return new Promise(res => {
-          //@ts-ignore
+          //@ts-expect-error
           const { type } = file;
-          //@ts-ignore
           const reader = new FileReader();
 
           reader.onload = function (e) {
@@ -240,7 +273,7 @@ const PublishContentPage = () => {
               res({ type: "video", uri: e.target.result, index });
             }
           };
-          //@ts-ignore
+          //@ts-expect-error
           reader.readAsDataURL(file);
         });
       });
@@ -273,28 +306,20 @@ const PublishContentPage = () => {
     [videoFile]
   );
   return (
-    <div className="publish-content-form-container m-1">
+    <DarkPage padding pageTitle="PUBLISH CONTENT" scrolls>
       {loading ? (
-        <Loader overlay fullScreen text="Creating content..." />
+        <Loader overlay fullScreen text="Publishing content..." />
       ) : null}
-      <DialogNav drawerVisible={false} pageTitle="PUBLISH CONTENT" />
+
+      <h2>
+        Say Something<div className="line"></div>
+      </h2>
 
       <form
         className="publish-content-form"
         onSubmit={onSubmit}
         onReset={onDiscard}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center"
-          }}
-        >
-          <h2>
-            Say Something<div className="line"></div>
-          </h2>
-        </div>
         <div
           style={{
             display: "flex",
@@ -346,68 +371,79 @@ const PublishContentPage = () => {
           placeholder="How I monetized my content with ShockWallet"
           value={title}
           onChange={onInputChange}
-          className="input-field"
+          className={c("input-field", titleMissing && "input-field-error")}
         />
         <div className="publish-content-title">
           <label htmlFor="contents">
             <strong>Contents</strong>
           </label>
         </div>
-        <div className="m-b-1">
-          <input
-            type="file"
-            id="file"
-            ref={imageFile}
-            style={{ display: "none" }}
-            accept="image/*"
-            multiple
-            onChange={onSelectedFile}
-          />
-          <input
-            type="file"
-            id="file"
-            ref={videoFile}
-            style={{ display: "none" }}
-            accept="video/*"
-            multiple
-            onChange={onSelectedFile}
-          />
+
+        <div
+          className={
+            mediaPreviews.length > 0
+              ? gStyles.displayNone
+              : "publish-content-icons"
+          }
+        >
           <i
             className="fas fa-images publish-content-icon"
             onClick={onSelectImageFile}
           ></i>
+
           <i
             className="fas fa-video publish-content-icon"
             onClick={onSelectVideoFile}
           ></i>
-          <div>
-            {mediaPreviews.length > 0 &&
-              mediaPreviews.map(prev => {
-                if (prev.type === "image") {
-                  return (
-                    <img
-                      src={prev.uri}
-                      key={prev.index.toString()}
-                      width={100}
-                      className="m-1"
-                    ></img>
-                  );
-                }
-                if (prev.type === "video") {
-                  return (
-                    <video
-                      src={prev.uri}
-                      key={prev.index.toString()}
-                      controls
-                      width={100}
-                      className="m-1"
-                    ></video>
-                  );
-                }
-              })}
+        </div>
+
+        <div
+          className={c({
+            [c("publish-content-preview", gStyles.commonMarginHNegative)]:
+              mediaPreviews.length > 0,
+            [gStyles.displayNone]: mediaPreviews.length === 0
+          })}
+        >
+          {mediaPreviews.length > 0 &&
+            mediaPreviews.map((prev, i) => {
+              if (prev.type === "image") {
+                return (
+                  <img
+                    alt={`Media preview ${i + 1}`}
+                    src={prev.uri}
+                    key={prev.index.toString()}
+                    width={288}
+                    className="m-1"
+                  ></img>
+                );
+              }
+              if (prev.type === "video") {
+                return (
+                  <video
+                    src={prev.uri}
+                    key={prev.index.toString()}
+                    controls
+                    width={288}
+                    className="m-1"
+                  ></video>
+                );
+              }
+
+              console.error(
+                `Unknown type of preview --| ${prev.type} |-- found inside <PublishContentPage />`
+              );
+              return null;
+            })}
+
+          <div
+            className="remove-btn"
+            onClick={useCallback(() => {
+              setSelectedFiles([]);
+              setMediaPreviews([]);
+            }, [])}
+          >
+            <i className="far fa-trash-alt" />
           </div>
-          {/*<i className="fas fa-music publish-content-icon"></i>
-      <i className="fas fa-paperclip publish-content-icon"></i>*/}
         </div>
         <div className="publish-content-title">
           <label htmlFor="description">
@@ -422,23 +458,13 @@ const PublishContentPage = () => {
           onChange={onInputChange}
           className="input-field"
         />
-        <div
-          style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}
-        >
-          <label htmlFor="createPost">Create Post/Teaser?</label>
-          <input
-            type="checkbox"
-            name="createPost"
-            style={{ marginLeft: "0.2em" }}
-          />
-        </div>
 
         {error ? <p className="error-container">{error}</p> : null}
         <div className="flex-center">
-          <input type="reset" value="reset" className="shock-form-button m-1" />
+          <input type="reset" value="Reset" className="shock-form-button m-1" />
           <input
             type="submit"
-            value="submit"
+            value="Submit"
             className="shock-form-button-confirm m-1"
           />
         </div>
@@ -463,7 +489,24 @@ const PublishContentPage = () => {
           </div>
         </Modal>
       )}
-    </div>
+
+      <input
+        type="file"
+        id="file"
+        ref={imageFile}
+        className={gStyles.displayNone}
+        accept="image/*"
+        onChange={onSelectedFile}
+      />
+      <input
+        type="file"
+        id="file"
+        ref={videoFile}
+        className={gStyles.displayNone}
+        accept="video/*"
+        onChange={onSelectedFile}
+      />
+    </DarkPage>
   );
 };
 
