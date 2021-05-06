@@ -399,7 +399,8 @@ const PublishContentPage = () => {
         <div
           className={c({
             [c("publish-content-preview", gStyles.commonMarginHNegative)]:
-              mediaPreviews.length > 0
+              mediaPreviews.length > 0,
+            [gStyles.displayNone]: mediaPreviews.length === 0
           })}
         >
           {mediaPreviews.length > 0 &&
