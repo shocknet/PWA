@@ -37,8 +37,8 @@ const ImagePreview = ({
         data-file-key={index}
         style={mainImageStyle}
         src={contentURL}
-        placeholderHeight={75}
-        placeholderWidth={100}
+        placeholderHeight={Math.round(width * 0.75)}
+        placeholderWidth={width}
       />
       {selected === id && (
         <div
