@@ -1,4 +1,4 @@
-import * as R from "react";
+import React from "react";
 
 import "./ChatActionBar.scoped.css";
 
@@ -11,7 +11,7 @@ export interface ChatBottomBarProps {
   title?: string;
 }
 
-const ChatBottomBar: R.FC<ChatBottomBarProps> = ({
+const ChatBottomBar: React.FC<ChatBottomBarProps> = ({
   acceptLabel,
   declineLabel,
   onAccept,

@@ -1,15 +1,15 @@
-import * as R from "react";
+import React from "react";
 
-export interface WithHeighthProps extends R.HTMLAttributes<{}> {
+export interface WithHeighthProps extends React.HTMLAttributes<{}> {
   onHeight(height: number): void;
 }
 
-const WithHeight: R.FC<WithHeighthProps> = ({
+const WithHeight: React.FC<WithHeighthProps> = ({
   children,
   onHeight,
   ...props
 }) => {
-  const divRefCb = R.useCallback(
+  const divRefCb = React.useCallback(
     el => {
       // https://www.pluralsight.com/tech-blog/getting-size-and-position-of-an-element-in-react/
       if (!el) return;
