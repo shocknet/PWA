@@ -164,6 +164,32 @@ const FeedPage = () => {
             if (!post.originalPost) {
               return null;
             }
+            const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+            let streamContentId,streamItem
+            if(item){
+              [streamContentId,streamItem] = item
+            }
+            if(streamItem){
+              //@ts-expect-error
+              if(!streamItem.liveStatus){
+                return
+              }
+              //@ts-expect-error
+              if(streamItem.liveStatus === 'waiting'){
+                return
+              }
+              //@ts-expect-error
+              if(streamItem.liveStatus === 'wasLive'){
+                //@ts-expect-error
+                if(!streamItem.playbackMagnet){
+                  return
+                }
+                post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+                //@ts-expect-error
+                post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+              }
+              
+            }
             const sharerProfile =
               userProfiles[post.sharerId] ||
               Common.createEmptyUser(post.sharerId);
@@ -186,6 +212,32 @@ const FeedPage = () => {
             );
           }
 
+          const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+          let streamContentId,streamItem
+          if(item){
+            [streamContentId,streamItem] = item
+          }
+          if(streamItem){
+            //@ts-expect-error
+            if(!streamItem.liveStatus){
+              return
+            }
+            //@ts-expect-error
+            if(streamItem.liveStatus === 'waiting'){
+              return
+            }
+            //@ts-expect-error
+            if(streamItem.liveStatus === 'wasLive'){
+              //@ts-expect-error
+              if(!streamItem.playbackMagnet){
+                return
+              }
+              post.contentItems[streamContentId].type = 'video/embedded'
+              //@ts-expect-error
+              post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+            }
+            
+          }
           const profile =
             userProfiles[post.authorId] ||
             Common.createEmptyUser(post.authorId);

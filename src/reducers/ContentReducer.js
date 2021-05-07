@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   streamUrl: "",
   streamPostId:"",
   streamContentId:"",
+  streamStatusUrl:"",
   publishedContent: {},
   unlockedContent: {},
   seedInfo: {},
@@ -42,11 +43,12 @@ const content = (state = INITIAL_STATE, action) => {
         streamUserToken: data.seedToken,
         streamUrl: data.streamUrl,
         streamPostId: data.streamPostId,
-        streamContentId: data.streamContentId
+        streamContentId: data.streamContentId,
+        streamStatusUrl:data.streamStatusUrl
       };
     }
     case ACTIONS.REMOVE_STREAM: {
-      return { ...state, streamLiveToken: "", streamUserToken: "",streamUrl:'',streamPostId:'',streamContentId:'' };
+      return { ...state, streamLiveToken: "", streamUserToken: "",streamUrl:'',streamPostId:'',streamContentId:'',streamStatusUrl:'' };
     }
     case ACTIONS.SET_SEED_INFO: {
       const { data } = action;

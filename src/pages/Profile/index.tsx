@@ -323,10 +323,27 @@ const ProfilePage = () => {
         if (!post.originalPost) {
           return null;
         }
-        const streamItem = Object.values(post.originalPost.contentItems).find(item => item.type === 'stream/embedded')
-        // @ts-expect-error
-        if(streamItem && (!streamItem.liveStatus || streamItem.liveStatus === 'waiting') ){
-          return
+        const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+        let streamContentId,streamItem
+        if(item){
+          [streamContentId,streamItem] = item
+        }
+        if(streamItem){
+          if(!streamItem.liveStatus){
+            return
+          }
+          if(streamItem.liveStatus === 'waiting'){
+            return
+          }
+          if(streamItem.liveStatus === 'wasLive'){
+            if(!streamItem.playbackMagnet){
+              return
+            }
+            post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+            //@ts-expect-error
+            post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+          }
+          
         }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
@@ -353,11 +370,29 @@ const ProfilePage = () => {
           </Suspense>
         );
       }
-      const streamItem = Object.values(post.contentItems).find(item => item.type === 'stream/embedded')
-      // @ts-expect-error
-      if(streamItem && (!streamItem.liveStatus || streamItem.liveStatus === 'waiting') ){
-        return
+      const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+      let streamContentId,streamItem
+      if(item){
+        [streamContentId,streamItem] = item
       }
+      if(streamItem){
+        if(!streamItem.liveStatus){
+          return
+        }
+        if(streamItem.liveStatus === 'waiting'){
+          return
+        }
+        if(streamItem.liveStatus === 'wasLive'){
+          if(!streamItem.playbackMagnet){
+            return
+          }
+          post.contentItems[streamContentId].type = 'video/embedded'
+          //@ts-expect-error
+          post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+        }
+        
+      }
+
       const profile =
         userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
 

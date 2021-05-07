@@ -53,8 +53,6 @@ const Stream = ({
           width: "100%"
         }}
       >
-        
-        {liveStatus === 'live' && <p>Some text to make the player work lol</p>}
         {!isLive && liveStatus === 'waiting' && <p>The stream did not start yet.</p>}
         {!isLive && liveStatus === 'wasLive' && <p>The stream is over</p>}
         {!isLive && !liveStatus && <p>The streamer has disconnected.</p>}

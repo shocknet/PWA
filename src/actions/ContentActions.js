@@ -86,10 +86,10 @@ export const unlockContent = (amt, owner, postID) => async dispatch => {
     }
   }
 };
-export const addStream = ({seedToken, liveToken, streamUrl,streamPostId,streamContentId}) => dispatch => {
+export const addStream = ({seedToken, liveToken, streamUrl,streamPostId,streamContentId,streamStatusUrl}) => dispatch => {
   dispatch({
     type: ACTIONS.ADD_STREAM,
-    data: { seedToken, liveToken, streamUrl,streamPostId,streamContentId }
+    data: { seedToken, liveToken, streamUrl,streamPostId,streamContentId,streamStatusUrl }
   });
 };
 export const removeStream = () => dispatch => {
