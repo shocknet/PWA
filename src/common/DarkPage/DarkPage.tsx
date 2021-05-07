@@ -1,4 +1,4 @@
-import * as R from "react";
+import React from "react";
 import c from "classnames";
 
 import DialogNav, { DIALOG_NAV_MIN_HEIGHT_PX } from "../DialogNav";
@@ -14,7 +14,7 @@ export interface DarkPageProps {
   scrolls?: boolean;
 }
 
-const DarkPage: R.FC<DarkPageProps> = ({
+const DarkPage: React.FC<DarkPageProps> = ({
   children,
   justify,
   padding,
@@ -25,7 +25,9 @@ const DarkPage: R.FC<DarkPageProps> = ({
     throw new Error(`Can not both set "scrolls" and "justify" at <DarkPage />`);
   }
   //#region controller
-  const [headerHeight, setHeaderHeight] = R.useState(DIALOG_NAV_MIN_HEIGHT_PX);
+  const [headerHeight, setHeaderHeight] = React.useState(
+    DIALOG_NAV_MIN_HEIGHT_PX
+  );
   //#endregion controller
 
   return (

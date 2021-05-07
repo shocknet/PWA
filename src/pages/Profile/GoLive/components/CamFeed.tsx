@@ -1,4 +1,4 @@
-import * as R from "react";
+import React from "react";
 import c from "classnames";
 
 import * as gStyles from "../../../../styles";
@@ -6,11 +6,11 @@ import * as gStyles from "../../../../styles";
 import Static from "./Static";
 
 const CamFeed = () => {
-  const videoRef = R.useRef<HTMLVideoElement>();
-  const [width, setWidth] = R.useState(100);
-  const [errorMessage, setErrorMessage] = R.useState("");
+  const videoRef = React.useRef<HTMLVideoElement>();
+  const [width, setWidth] = React.useState(100);
+  const [errorMessage, setErrorMessage] = React.useState("");
 
-  const divRefCb: R.RefCallback<HTMLElement> = R.useCallback(el => {
+  const divRefCb: React.RefCallback<HTMLElement> = React.useCallback(el => {
     // https://www.pluralsight.com/tech-blog/getting-size-and-position-of-an-element-in-react/
     if (!el) return;
     try {
@@ -21,7 +21,7 @@ const CamFeed = () => {
     }
   }, []);
 
-  R.useEffect(() => {
+  React.useEffect(() => {
     const { current: video } = videoRef;
 
     if (!video) {
@@ -33,7 +33,7 @@ const CamFeed = () => {
     // video.height = (width / 16) * 9;
   }, [width]);
 
-  R.useEffect(() => {
+  React.useEffect(() => {
     if (navigator?.mediaDevices?.getUserMedia) {
       const { current: video } = videoRef;
       navigator.mediaDevices
