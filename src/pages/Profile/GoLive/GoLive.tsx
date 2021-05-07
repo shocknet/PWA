@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
@@ -39,6 +39,15 @@ const GoLive = () => {
   const availableTokens = Store.useSelector(
     ({ content }) => content.availableTokens
   );
+  const streamPostId = Store.useSelector(
+    ({ content }) => content.streamPostId
+  );
+  const streamContentId = Store.useSelector(
+    ({ content }) => content.streamContentId
+  );
+  const streamStatusUrl = Store.useSelector(
+    ({ content }) => content.streamStatusUrl
+  );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
@@ -46,11 +55,39 @@ const GoLive = () => {
   const [streamToken, setStreamToken] = useState(streamLiveToken);
   const [, setUserToken] = useState(streamUserToken);
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
-  const [isLive] = useState(false);
+  const [isLive,setIsLive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
   const [starting, setStarting] = useState(false);
+  const [update,setUpdate] = useState(0)
+  // effect to update live status
+  useEffect(() => {
+    if(!streamStatusUrl){
+      return
+    }
+    let timeout
+    const interval = setInterval(async ()=>{
+      try{
+        const res = await Http.get(streamStatusUrl);
+        if (!res.data.isLive) {
+          return
+        }
+        setIsLive(true)
+        clearInterval(interval)
+        timeout = setTimeout(()=>{
+          console.info("upp")
+          setUpdate(Date.now())
+        },5000)
+      }catch(e){
+      }
+
+    },2000)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  },[streamStatusUrl,setIsLive])
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
       try {
@@ -78,7 +115,7 @@ const GoLive = () => {
         const streamPlaybackUrl = `${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`;
         const rtmp = finalSeedUrl.replace("https", "rtmp");
         setRtmpUri(`${rtmp}/live`);
-        addStream(latestUserToken, liveToken, streamPlaybackUrl)(dispatch);
+        const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
         let contentItems = [];
         if (paragraph !== "") {
           contentItems.push({
@@ -93,14 +130,34 @@ const GoLive = () => {
           magnetURI: streamPlaybackUrl,
           isPreview: false,
           isPrivate: false,
-          userToken: latestUserToken
+          userToken: latestUserToken,
+          liveStatus:'waiting',
+          statusUrl: stUrl
         });
+        
         const res = await Http.post(`/api/gun/wall`, {
           tags: [],
           title: "Post",
           contentItems
         });
         if (res.status === 200) {
+          const {data} = res
+          const [postId,newPost] = data
+          console.log(newPost.contentItems)
+          //@ts-expect-error
+          const [contentId] = Object.entries(newPost.contentItems).find(([_,item]) => item.magnetURI === streamPlaybackUrl)
+          addStream({
+            seedToken:latestUserToken, 
+            liveToken, 
+            streamUrl:streamPlaybackUrl,
+            streamPostId:postId,
+            streamContentId:contentId,
+            streamStatusUrl:stUrl})(dispatch);
+          await Http.post(`/api/listenStream`,{
+            postId,
+            contentId,
+            statusUrl: `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
+          })
           console.log("post created successfully");
           setLoading(false);
         } else {
@@ -201,15 +258,34 @@ const GoLive = () => {
     [setParagraph, setSelectedSource]
   );
   const stopStream = useCallback(() => {
+    Http.post("/api/gun/put", {
+      path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>liveStatus`,
+      value: 'wasLive'
+    });
     removeStream()(dispatch);
+    console.info("doing it!!")
+    console.info(streamUserToken)
+    fetch(`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`)
+    .then(r => r.json())
+    .then(j => {
+      const {magnet} = j
+      if(!magnet){
+        return
+      }
+      Http.post("/api/gun/put", {
+        path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>playbackMagnet`,
+        value: magnet
+      });
+    })
+    .catch(e => console.info(e))
     history.push("/profile");
-  }, [dispatch, history]);
+  }, [dispatch, history,streamUserToken]);
 
   const StreamRender = useMemo(() => {
     return (
       <Stream
         hideRibbon={true}
-        item={{ magnetURI: streamUrl }}
+        item={{ magnetURI: streamUrl,liveStatus:'live' }}
         timeout={1500}
         id={undefined}
         index={undefined}
@@ -219,7 +295,7 @@ const GoLive = () => {
         width={undefined}
       />
     );
-  }, [streamUrl]);
+  }, [streamUrl,update]);
 
   const btnClass = c(
     gStyles.col,
@@ -231,9 +307,9 @@ const GoLive = () => {
   return (
     <>
       <DarkPage pageTitle="GO LIVE" scrolls>
-        {isLive && <div>{StreamRender}</div>}
-
-        {!isLive && selectedSource === "camera" ? <CamFeed /> : <Static />}
+      {isLive && <div>{StreamRender}</div>}
+        {/*hide for now since it's not implemented and causes a duplication*/ }
+        {/*!isLive && selectedSource === "camera" ? <CamFeed /> : <Static /> */}
 
         <div className={c(gStyles.rowCentered, gStyles.width100)}>
           <div

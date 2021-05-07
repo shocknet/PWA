@@ -323,6 +323,28 @@ const ProfilePage = () => {
         if (!post.originalPost) {
           return null;
         }
+        const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+        let streamContentId,streamItem
+        if(item){
+          [streamContentId,streamItem] = item
+        }
+        if(streamItem){
+          if(!streamItem.liveStatus){
+            return
+          }
+          if(streamItem.liveStatus === 'waiting'){
+            return
+          }
+          if(streamItem.liveStatus === 'wasLive'){
+            if(!streamItem.playbackMagnet){
+              return
+            }
+            post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+            //@ts-expect-error
+            post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+          }
+          
+        }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
           userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
@@ -347,6 +369,28 @@ const ProfilePage = () => {
             />
           </Suspense>
         );
+      }
+      const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
+      let streamContentId,streamItem
+      if(item){
+        [streamContentId,streamItem] = item
+      }
+      if(streamItem){
+        if(!streamItem.liveStatus){
+          return
+        }
+        if(streamItem.liveStatus === 'waiting'){
+          return
+        }
+        if(streamItem.liveStatus === 'wasLive'){
+          if(!streamItem.playbackMagnet){
+            return
+          }
+          post.contentItems[streamContentId].type = 'video/embedded'
+          //@ts-expect-error
+          post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+        }
+        
       }
 
       const profile =
