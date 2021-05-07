@@ -39,6 +39,7 @@ const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
 const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
 const QRScannerPage = React.lazy(() => import("./pages/QRScanner"));
+const BackupsPage = React.lazy(() => import("./pages/Backups"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
@@ -125,6 +126,7 @@ const App = () => {
             exact
             component={OtherUserPage}
           />
+          <PrivateRoute path="/Backups" exact component={BackupsPage} />
           <Route path="/story" exact component={Story} />
           <Route path="/stories" exact component={Stories} />
           <Redirect to="/overview" />

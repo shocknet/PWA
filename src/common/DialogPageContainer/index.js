@@ -2,6 +2,7 @@
 import classNames from "classnames";
 import DialogNav from "../../common/DialogNav";
 import * as gStyles from "../../styles";
+import * as Utils from "../../utils";
 
 import "./css/index.scoped.css";
 
@@ -11,7 +12,7 @@ const DialogPageContainer = ({
   title,
   children,
   disableNav = false,
-  onBack,
+  onBack = Utils.EMPTY_FN,
   showBackBtn = false
 }) => {
   return (

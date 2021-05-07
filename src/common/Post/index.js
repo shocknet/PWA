@@ -265,6 +265,9 @@ const Post = ({
               <div className="media-carousel-pages">
                 {Array.from({ length: sliderLength }).map((_, key) => (
                   <div
+                    // TODO: Get the actual ID here. However posts can't be
+                    // edited so index is stable.
+                    key={key}
                     className={classNames({
                       "media-carousel-page": true,
                       "active-carousel-page": activeSlide === key

@@ -1,4 +1,4 @@
-import * as R from "react";
+import React from "react";
 
 import * as gStyles from "../../../../styles";
 
@@ -8,11 +8,11 @@ export interface StaticProps {
   overlay?: string;
 }
 
-const Static: R.FC<StaticProps> = ({ overlay }) => {
-  const canvasRef = R.useRef<HTMLCanvasElement>();
-  const [width, setWidth] = R.useState(100);
+const Static: React.FC<StaticProps> = ({ overlay }) => {
+  const canvasRef = React.useRef<HTMLCanvasElement>();
+  const [width, setWidth] = React.useState(100);
 
-  const divRefCb: R.RefCallback<HTMLElement> = R.useCallback(el => {
+  const divRefCb: React.RefCallback<HTMLElement> = React.useCallback(el => {
     // https://www.pluralsight.com/tech-blog/getting-size-and-position-of-an-element-in-react/
     if (!el) return;
     try {
@@ -23,7 +23,7 @@ const Static: R.FC<StaticProps> = ({ overlay }) => {
     }
   }, []);
 
-  R.useEffect(() => {
+  React.useEffect(() => {
     const { current: canvas } = canvasRef;
 
     if (!canvas) {
@@ -35,9 +35,9 @@ const Static: R.FC<StaticProps> = ({ overlay }) => {
     canvas.height = (width / 16) * 9;
   }, [width]);
 
-  const isMountedRef = R.useRef<boolean>(true);
+  const isMountedRef = React.useRef<boolean>(true);
 
-  R.useEffect(() => {
+  React.useEffect(() => {
     isMountedRef.current = true;
     const { current: canvas } = canvasRef;
 

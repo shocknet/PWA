@@ -8,7 +8,8 @@ import { DateTime } from "luxon";
 import {
   fetchWalletBalance,
   fetchUSDRate,
-  fetchUnifiedTransactions
+  fetchUnifiedTransactions,
+  FetchLightningInfo
 } from "../../actions/WalletActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import { capitalizeText } from "../../utils/String";
@@ -37,6 +38,7 @@ const OverviewPage = () => {
     fetchUSDRate()(dispatch);
     fetchWalletBalance()(dispatch);
     fetchUnifiedTransactions()(dispatch);
+    FetchLightningInfo()(dispatch);
   }, [dispatch]);
 
   //load info about content provider stored into gun

@@ -125,7 +125,7 @@ const MessagesPage = () => {
             <Request
               publicKey={request.pk}
               sent
-              key={request.pk}
+              key={request.id}
               time={undefined}
             />
           ))}
@@ -135,7 +135,7 @@ const MessagesPage = () => {
           {receivedRequests.map(request => (
             <Request
               publicKey={request.pk}
-              key={request.pk}
+              key={request.id}
               sent={false}
               time={undefined}
             />
@@ -145,10 +145,21 @@ const MessagesPage = () => {
           ) : null}
           {contacts.map(contact => {
             const contactMessages = messages[contact.pk] ?? [];
-            const lastMessage = contactMessages[0] ?? {
-              body: "Unable to preview last message...",
-              timestamp: Date.now()
-            };
+            const lastMessage = (() => {
+              if (contact.didDisconnect) {
+                return {
+                  body: "User disconnected from you.",
+                  timestamp: Date.now()
+                };
+              }
+
+              return (
+                contactMessages[0] ?? {
+                  body: "Unable to preview last message...",
+                  timestamp: Date.now()
+                }
+              );
+            })();
 
             return (
               <Message

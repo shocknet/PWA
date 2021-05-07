@@ -1,10 +1,9 @@
-import React, { useState, useCallback } from "react";
-import { Controlled as ControlledZoom } from "react-medium-image-zoom";
-import TipRibbon from "../TipRibbon";
-import "react-medium-image-zoom/dist/styles.css";
-import "./css/index.scoped.css";
+// @ts-check
+import { useCallback } from "react";
 
-const IMAGE_TRANSITION_MS = 200;
+import ShockImg from "../../../ShockImg";
+
+import "./css/index.scoped.css";
 
 const ImagePreview = ({
   id,
@@ -13,14 +12,15 @@ const ImagePreview = ({
   postId,
   width,
   selected,
-  updateSelection
+  updateSelection,
+  alt = ""
 }) => {
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
   );
   const mainImageStyle = { opacity: 1 };
   if (width) {
-    mainImageStyle.width = width;
+    mainImageStyle.width = width + "px";
   }
   const selectThis = useCallback(() => {
     if (selected !== id) {
@@ -29,18 +29,16 @@ const ImagePreview = ({
   }, [id, updateSelection, selected]);
 
   return (
-    <div
-      className="media-container"
-      onClick={selectThis}
-      style={{ position: "relative" }}
-    >
-      <img
+    <div className="container" onClick={selectThis}>
+      <ShockImg
         className={`image torrent-img torrent-img-${postId}-${id}`}
-        alt="Post Media"
+        alt={alt}
         data-torrent={item.magnetURI}
         data-file-key={index}
         style={mainImageStyle}
         src={contentURL}
+        placeholderHeight={Math.round(width * 0.75)}
+        placeholderWidth={width}
       />
       {selected === id && (
         <div
@@ -56,7 +54,7 @@ const ImagePreview = ({
             justifyContent: "center"
           }}
         >
-          <i class="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
+          <i className="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
         </div>
       )}
     </div>

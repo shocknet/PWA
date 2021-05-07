@@ -1,4 +1,4 @@
-import * as R from "react";
+import React from "react";
 import classNames from "classnames";
 import { useHistory } from "react-router";
 
@@ -19,13 +19,13 @@ const UserIcon = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isOwn = publicKey === selfPublicKey;
 
-  const handleClick = R.useCallback(() => {
+  const handleClick = React.useCallback(() => {
     if (isOwn) {
       // add/view story
     } else {
       history.push(`/otherUser/${publicKey}`);
     }
-  }, [isOwn]);
+  }, [history, isOwn, publicKey]);
 
   return (
     <div
