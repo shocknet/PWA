@@ -95,7 +95,7 @@ const ProfilePage = () => {
     );
 
     return rifleCleanup(postSubscription, sharedPostSubscription);
-  }, [publicKey]);
+  }, [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
