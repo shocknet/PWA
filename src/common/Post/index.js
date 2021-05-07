@@ -7,7 +7,6 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
-import * as Utils from "../../utils";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
