@@ -12,7 +12,6 @@ import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
 import * as Store from "../../store";
-import * as Utils from "../../utils";
 /**
  * @typedef {import('../../schema').Post} Post
  */
