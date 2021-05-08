@@ -61,15 +61,6 @@
   margin-bottom: 15px;
 }
 
-.head .user .av {
-  width: 50px;
-  height: 50px;
-  border-radius: 50px;
-  background-size: cover;
-  background-position: center;
-  margin-right: 10px;
-}
-
 .head .user .details p:first-of-type,
 .head .user .details a {
   font-size: 20px;

@@ -397,7 +397,6 @@ const ProfilePage = () => {
             id={post.id}
             timestamp={post.date}
             contentItems={post.contentItems}
-            avatar={`data:image/jpeg;base64,${profile?.avatar}`}
             username={processDisplayName(
               profile?.publicKey,
               profile?.displayName

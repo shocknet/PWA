@@ -7,6 +7,8 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
+import ShockAvatar from "../ShockAvatar";
+import Pad from "../Pad";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
@@ -18,7 +20,6 @@ import ShareIcon from "../../images/share.svg"
 const Post = ({
   id,
   timestamp,
-  avatar,
   tipCounter,
   tipValue,
   publicKey,
@@ -257,16 +258,10 @@ const Post = ({
     <div className="post">
       <div className="head">
         <div className="user">
-          <Link
-            className="av"
-            to={isOwn ? `/profile` : `/otherUser/${publicKey}`}
-            style={{
-              borderWidth: isOnlineNode && !isOwn ? 2 : undefined,
-              borderStyle: isOnlineNode && !isOwn ? "solid" : undefined,
-              borderColor: isOnlineNode && !isOwn ? "#39B54A" : undefined,
-              backgroundImage: `url(${avatar})`
-            }}
-          />
+          <ShockAvatar height={50} publicKey={publicKey} />
+
+          <Pad amt={10} insideRow />
+
           <div className="details">
             <div className="username">
               <Link to={`/otherUser/${publicKey}`}>{username}</Link>

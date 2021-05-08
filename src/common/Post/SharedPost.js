@@ -12,6 +12,8 @@ import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
 import * as Store from "../../store";
+import ShockAvatar from "../ShockAvatar";
+import Pad from "../Pad";
 /**
  * @typedef {import('../../schema').Post} Post
  */
@@ -53,16 +55,10 @@ const SharedPost = ({
     <div className="post shared-post">
       <div className="head">
         <div className="user">
-          <Link
-            to={isOwn ? `/profile` : `/otherUser/${sharerProfile.publicKey}`}
-            className="av"
-            style={{
-              borderWidth: isAppOnline && !isOwn ? 2 : undefined,
-              borderStyle: isAppOnline && !isOwn ? "solid" : undefined,
-              borderColor: isAppOnline && !isOwn ? "#39B54A" : undefined,
-              backgroundImage: `url(data:image/jpeg;base64,${sharerProfile?.avatar})`
-            }}
-          ></Link>
+          <ShockAvatar height={50} publicKey={sharerProfile.publicKey} />
+
+          <Pad amt={10} insideRow />
+
           <div className="details">
             <p>{sharerProfile?.displayName}</p>
             <p>
@@ -82,11 +78,6 @@ const SharedPost = ({
           <Post
             id={originalPost.id}
             timestamp={originalPost.date}
-            avatar={
-              originalPostProfile.avatar
-                ? `data:image/jpeg;base64,${originalPostProfile.avatar}`
-                : av1
-            }
             // @ts-expect-error tipCounter not wired right now I think
             tipCounter={originalPost.tipCounter || 0}
             // @ts-expect-error tipValue ??
