@@ -40,11 +40,29 @@ const Post = ({
   const [isPrivate, setIsPrivate] = useState(false);
 
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const [liveStatus,setLiveStatus] = useState('')
   const isOwn = selfPublicKey === publicKey;
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
+
+  //effect for liveStatus
+  useEffect(() =>{
+    const values = Object.values(contentItems)
+    const videoContent = values.find(item => item.type === 'video/embedded' && item.liveStatus === 'wasLive')
+    const streamContent = values.find(item => item.type === 'stream/embedded' && item.liveStatus === 'live')
+    let status = ''
+    if(videoContent){
+      status = videoContent.liveStatus
+    }
+    if(streamContent){
+      status = streamContent.liveStatus
+    }
+    if(status){
+      setLiveStatus(status)
+    }
+  },[contentItems,setLiveStatus])
 
   const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
@@ -240,7 +258,14 @@ const Post = ({
             }}
           />
           <div className="details">
-            <Link to={`/otherUser/${publicKey}`}>{username}</Link>
+            <div className="username">
+              <Link to={`/otherUser/${publicKey}`}>{username}</Link>
+              {liveStatus && <p className="liveStatus">
+                {liveStatus} 
+                <i className={`fas fa-circle liveStatusIcon ${liveStatus === 'live' ? "liveIcon" : ""}`}></i>
+                </p>
+              }
+            </div>
             <p>
               {timestamp && typeof timestamp === "number"
                 ? DateTime.fromMillis(timestamp).toRelative()
