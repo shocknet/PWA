@@ -255,6 +255,20 @@ i.fas.fa-play {
   opacity: 0.9;
 }
 
+.username {
+  display: flex;
+  align-items: center;
+}
+.liveStatus {
+  margin-left: 1rem;
+}
+.liveStatusIcon {
+  margin-left: 0.3rem;
+}
+.liveIcon {
+  color:rgba(240, 52, 52, 1)
+}
+
 @media only screen and (max-width: 500px) {
    {
     padding: 0;
