@@ -15,6 +15,7 @@ import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
 import UserIcon from "./components/UserIcon";
 import SendTipModal from "./components/SendTipModal";
+import ShareModal from "../Feed/components/ShareModal";
 import Loader from "../../common/Loader";
 
 import { isSharedPost } from "../../schema";
@@ -41,6 +42,7 @@ const FeedPage = () => {
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
+  const [shareModalData, setShareModalData] = useState(null);
   const { avatar, publicKey: selfPublicKey } = Store.useSelector(
     Store.selectSelfUser
   );
@@ -95,6 +97,18 @@ const FeedPage = () => {
       setUnlockModalOpen(unlockData);
     },
     [unlockModalData]
+  );
+
+  const toggleShareModal = useCallback(
+    shareData => {
+      console.log(shareData)
+      if (shareModalData || !shareData) {
+        setShareModalData(null);
+      }
+
+      setShareModalData(shareData);
+    },
+    [shareModalData]
   );
 
   useLayoutEffect(() => {
@@ -208,6 +222,7 @@ const FeedPage = () => {
                   postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
                   openUnlockModal={toggleUnlockModal}
+                  openShareModal={toggleShareModal}
                 />
               </Suspense>
             );
@@ -261,6 +276,7 @@ const FeedPage = () => {
                 tipCounter={post.tipCounter || 0}
                 //@ts-expect-error
                 tipValue={post.tipValue || 0}
+                openShareModal={toggleShareModal}
               />
             </Suspense>
           );
@@ -270,6 +286,10 @@ const FeedPage = () => {
       <UnlockModal
         unlockData={unlockModalData}
         toggleOpen={toggleUnlockModal}
+      />
+      <ShareModal
+        shareData={shareModalData}
+        toggleOpen={toggleShareModal}
       />
       <BottomBar />
     </div>

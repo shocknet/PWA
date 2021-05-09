@@ -360,6 +360,7 @@ const ProfilePage = () => {
               openTipModal={() => {}}
               openUnlockModal={() => {}}
               openDeleteModal={toggleDeleteModal}
+              openShareModal={null}
             />
           </Suspense>
         );
@@ -409,6 +410,7 @@ const ProfilePage = () => {
             //@ts-expect-error
             tipValue={post.tipValue || 0}
             openDeleteModal={toggleDeleteModal}
+            openShareModal={null}
           />
         </Suspense>
       );

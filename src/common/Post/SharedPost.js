@@ -25,7 +25,8 @@ const SharedPost = ({
   postPublicKey,
   openTipModal,
   openUnlockModal,
-  openDeleteModal = undefined
+  openDeleteModal = undefined,
+  openShareModal = (_)=>{}
 }) => {
   /** @type {Post|undefined} */
   const originalPost = origPost;
@@ -98,6 +99,7 @@ const SharedPost = ({
             username={
               originalPostProfile.displayName ?? originalPostProfile.alias
             }
+            openShareModal={openShareModal}
           />
         ) : (
           <Loader text="Loading Post..." />

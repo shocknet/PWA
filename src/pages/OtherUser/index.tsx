@@ -27,6 +27,7 @@ import QRCodeIcon from "../../images/qrcode.svg";
 import SendTipModal from "../Feed/components/SendTipModal";
 import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
+import ShareModal from "../Feed/components/ShareModal";
 import * as Store from "../../store";
 
 import styles from "./css/OtherUser.module.css";
@@ -58,6 +59,7 @@ const OtherUserPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
+  const [shareModalData, setShareModalData] = useState(null);
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
@@ -249,6 +251,19 @@ const OtherUserPage = () => {
     [unlockModalData]
   );
 
+  const toggleShareModal = useCallback(
+    shareData => {
+      console.log("share click yo")
+      console.log(shareData)
+      if (shareModalData || !shareData) {
+        setShareModalData(null);
+      }
+
+      setShareModalData(shareData);
+    },
+    [shareModalData]
+  );
+
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
@@ -297,6 +312,7 @@ const OtherUserPage = () => {
               openTipModal={toggleTipModal}
               openUnlockModal={toggleUnlockModal}
               openDeleteModal={null}
+              openShareModal={toggleShareModal}
             />
           </Suspense>
         );
@@ -336,6 +352,7 @@ const OtherUserPage = () => {
             tipCounter={post.tipCounter || 0}
             tipValue={post.tipValue || 0}
             openDeleteModal={null}
+            openShareModal={toggleShareModal}
           />
         </Suspense>
       );
@@ -468,6 +485,10 @@ const OtherUserPage = () => {
         <BuyServiceModal
           service={buyServiceModalData}
           toggleOpen={toggleBuyServiceModal}
+        />
+        <ShareModal
+          shareData={shareModalData}
+          toggleOpen={toggleShareModal}
         />
 
         <AddBtn
