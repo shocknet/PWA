@@ -14,6 +14,8 @@ import Image from "./components/Image";
 import Stream from "./components/Stream";
 import "./css/index.scoped.css";
 
+import ShareIcon from "../../images/share.svg"
+
 const Post = ({
   id,
   timestamp,
@@ -325,6 +327,7 @@ const Post = ({
       </div>
 
       <div className="actions">
+        <div></div>
         <div
           className="icon-tip-btn"
           data-tip={isPrivate ? "Unlock this post" : "Tip this post"}
@@ -337,8 +340,9 @@ const Post = ({
           data-tip={"share"}
           onClick={sharePost}
           >
-          <div className="fas fa-retweet" style={{color:"#4285b9",marginLeft:"0.2rem"}}></div>
+            <img src={ShareIcon} style={{color:"#4285b9",marginLeft:"auto"}}/>
         </div>}
+        {!openShareModal && <div></div>}
       </div>
     </div>
   );
