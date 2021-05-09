@@ -253,6 +253,9 @@ const OtherUserPage = () => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
   const renderPosts = () => {
+    if(finalPosts.length === 0){
+      return <Loader text="loading posts..." />
+    }
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
       if (post.type === "shared") {

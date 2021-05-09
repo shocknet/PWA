@@ -159,6 +159,7 @@ const FeedPage = () => {
         <p className="tab">Videos</p>
       </div>
       <div className="posts-holder">
+        {followedPosts.length === 0 && <Loader text="loading posts..." />}
         {followedPosts.map((post, index) => {
           if (post.type === "shared") {
             if (!post.originalPost) {
