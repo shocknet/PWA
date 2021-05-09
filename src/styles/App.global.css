@@ -115,6 +115,15 @@ a.bottom-nav-btn.active-nav-btn {
   pointer-events: none;
 }
 
+.floaty-container {
+  position: absolute;
+  z-index: 99999;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 @media (display-mode: standalone) {
   #root {
     height: 100% !important;
