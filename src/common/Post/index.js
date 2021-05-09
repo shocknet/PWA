@@ -97,8 +97,8 @@ const Post = ({
         finalItem.magnetURI = cached;
       } else {
         return (
-          <div>
-            <i className="fas fa-lock fa-10x"></i>
+          <div key={key}>
+            <i  className="fas fa-lock fa-10x"></i>
           </div>
         );
       }

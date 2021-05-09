@@ -20,6 +20,8 @@
   border: 2px solid var(--white-smoke);
   box-shadow: 0 3px 6px rgba(var(--white-rgb), 0.16);
   margin-bottom: 30px;
+  text-decoration: none;
+  color: var(--white-rgb)
 }
 
 .scan-qr-icon {
@@ -30,4 +32,5 @@
 .scan-qr-text {
   font-weight: bold;
   font-size: 14px;
+
 }

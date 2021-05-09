@@ -41,7 +41,7 @@ const QRCodeScanner = ({
       <QRScanner
         constraints={{
           video: {
-            facingMode: { exact: facingMode }
+            //facingMode: { exact: facingMode }
           }
         }}
         onScan={onScan}

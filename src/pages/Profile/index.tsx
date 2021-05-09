@@ -785,7 +785,6 @@ const ProfilePage = () => {
             onClick={toggleModal}
             large
             iconURL={QRCodeIcon}
-            style={{ backgroundColor: "var(--yellow)" }}
             icon={null}
             label={null}
           />
