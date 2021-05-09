@@ -25,7 +25,8 @@ const Post = ({
   openUnlockModal,
   contentItems = {},
   username,
-  openDeleteModal = undefined
+  openDeleteModal = undefined,
+  openShareModal = (_)=>{},
 }) => {
   const unlockedContent = Store.useSelector(
     ({ content }) => content.unlockedContent
@@ -235,6 +236,14 @@ const Post = ({
     openDeleteModal({ id, shared: false });
   }, [id, openDeleteModal]);
 
+  const sharePost = useCallback(()=>{  
+    openShareModal({
+      targetType: "share",
+      postID: id,
+      publicKey
+    })
+  },[publicKey,id,openShareModal])
+
   useEffect(() => {
     try {
       Tooltip.rebuild();
@@ -323,6 +332,13 @@ const Post = ({
         >
           <div className="tip-icon icon-thin-feed"></div>
         </div>
+        {openShareModal && <div
+          className="icon-tip-btn"
+          data-tip={"share"}
+          onClick={sharePost}
+          >
+          <div className="fas fa-retweet" style={{color:"#4285b9",marginLeft:"0.2rem"}}></div>
+        </div>}
       </div>
     </div>
   );
