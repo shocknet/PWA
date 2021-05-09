@@ -175,7 +175,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   return (
     <>
-      <div className={globalStyles[alignment + "Align"]}>
+      <div className={globalStyles.colCentered}>
         <img
           alt={`Avatar for ${displayName || "an user"}`}
           src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
@@ -189,9 +189,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
             <span
               style={{
-                color: "#F3EFEF",
-                fontFamily: "Montserrat-600",
-                fontSize: 12,
+                fontSize: 13,
                 textAlign: "center"
               }}
             >
