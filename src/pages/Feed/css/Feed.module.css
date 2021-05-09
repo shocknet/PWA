@@ -1,0 +1,21 @@
+.followed {
+  border: 1px solid rgba(var(--gray-rgb), 0.35);
+  background-color: var(--followers-background);
+  padding: 1em 1em;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.followed * {
+  white-space: normal;
+}
+
+.followed > * {
+  margin-right: 1em;
+}

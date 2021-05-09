@@ -13,10 +13,11 @@ import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
 import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
-import UserIcon from "./components/UserIcon";
+
 import SendTipModal from "./components/SendTipModal";
 import ShareModal from "../Feed/components/ShareModal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
 
 import { isSharedPost } from "../../schema";
 
@@ -31,6 +32,7 @@ import {
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import { rifleCleanup } from "../../utils/WebSocket";
+import styles from "./css/Feed.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -43,9 +45,7 @@ const FeedPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const { avatar, publicKey: selfPublicKey } = Store.useSelector(
-    Store.selectSelfUser
-  );
+  const { publicKey: selfPublicKey } = Store.useSelector(Store.selectSelfUser);
   // Effect to sub follows
   useEffect(() => {
     subscribeFollows()(dispatch);
@@ -140,31 +140,19 @@ const FeedPage = () => {
 
   return (
     <div className="page-container feed-page">
-      <div className="following-bar-container">
-        <UserIcon
-          addButton
-          large
-          main
-          avatar={avatar ? `data:image/jpeg;base64,${avatar}` : null}
-          username={null}
-          publicKey={selfPublicKey}
-        />
-        <div className="following-bar-list">
-          {follows?.map(follow => {
-            const publicKey = follow.user;
-            const profile =
-              userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
+      <div className={styles.followed}>
+        <ShockAvatar height={60} publicKey={selfPublicKey} />
 
-            return (
-              <UserIcon
-                username={processDisplayName(publicKey, profile.displayName)}
-                avatar={`data:image/jpeg;base64,${profile.avatar}`}
-                key={publicKey}
-                publicKey={publicKey}
-              />
-            );
-          })}
-        </div>
+        {follows?.map(follow => {
+          return (
+            <ShockAvatar
+              height={60}
+              key={follow.user}
+              nameAtBottom
+              publicKey={follow.user}
+            />
+          );
+        })}
       </div>
 
       <div className="tabs-holder">
