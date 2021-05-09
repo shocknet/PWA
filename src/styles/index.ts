@@ -1,5 +1,7 @@
 import styles from "./global.module.css";
 
+export const relative = styles["relative"];
+
 export const flex = styles["flex"];
 
 export const row = styles["row"];
