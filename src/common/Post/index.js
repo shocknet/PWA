@@ -41,10 +41,7 @@ const Post = ({
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
-
-  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const [liveStatus,setLiveStatus] = useState('')
-  const isOwn = selfPublicKey === publicKey;
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
