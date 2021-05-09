@@ -101,7 +101,7 @@ const FeedPage = () => {
 
   const toggleShareModal = useCallback(
     shareData => {
-      console.log(shareData)
+      console.log(shareData);
       if (shareModalData || !shareData) {
         setShareModalData(null);
       }
@@ -179,31 +179,35 @@ const FeedPage = () => {
             if (!post.originalPost) {
               return null;
             }
-            const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-            let streamContentId,streamItem
-            if(item){
-              [streamContentId,streamItem] = item
+            const item = Object.entries(post.originalPost.contentItems).find(
+              ([_, item]) => item.type === "stream/embedded"
+            );
+            let streamContentId, streamItem;
+            if (item) {
+              [streamContentId, streamItem] = item;
             }
-            if(streamItem){
+            if (streamItem) {
               //@ts-expect-error
-              if(!streamItem.liveStatus){
-                return
+              if (!streamItem.liveStatus) {
+                return null;
               }
               //@ts-expect-error
-              if(streamItem.liveStatus === 'waiting'){
-                return
+              if (streamItem.liveStatus === "waiting") {
+                return null;
               }
               //@ts-expect-error
-              if(streamItem.liveStatus === 'wasLive'){
+              if (streamItem.liveStatus === "wasLive") {
                 //@ts-expect-error
-                if(!streamItem.playbackMagnet){
-                  return
+                if (!streamItem.playbackMagnet) {
+                  return null;
                 }
-                post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+                post.originalPost.contentItems[streamContentId].type =
+                  "video/embedded";
                 //@ts-expect-error
-                post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+                post.originalPost.contentItems[streamContentId].magnetURI =
+                  //@ts-expect-error
+                  streamItem.playbackMagnet;
               }
-              
             }
             const sharerProfile =
               userProfiles[post.sharerId] ||
@@ -228,31 +232,34 @@ const FeedPage = () => {
             );
           }
 
-          const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-          let streamContentId,streamItem
-          if(item){
-            [streamContentId,streamItem] = item
+          const item = Object.entries(post.contentItems).find(
+            ([_, item]) => item.type === "stream/embedded"
+          );
+          let streamContentId, streamItem;
+          if (item) {
+            [streamContentId, streamItem] = item;
           }
-          if(streamItem){
+          if (streamItem) {
             //@ts-expect-error
-            if(!streamItem.liveStatus){
-              return
+            if (!streamItem.liveStatus) {
+              return null;
             }
             //@ts-expect-error
-            if(streamItem.liveStatus === 'waiting'){
-              return
+            if (streamItem.liveStatus === "waiting") {
+              return null;
             }
             //@ts-expect-error
-            if(streamItem.liveStatus === 'wasLive'){
+            if (streamItem.liveStatus === "wasLive") {
               //@ts-expect-error
-              if(!streamItem.playbackMagnet){
-                return
+              if (!streamItem.playbackMagnet) {
+                return null;
               }
-              post.contentItems[streamContentId].type = 'video/embedded'
+              post.contentItems[streamContentId].type = "video/embedded";
               //@ts-expect-error
-              post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+              post.contentItems[streamContentId].magnetURI =
+                //@ts-expect-error
+                streamItem.playbackMagnet;
             }
-            
           }
           const profile =
             userProfiles[post.authorId] ||
@@ -286,10 +293,7 @@ const FeedPage = () => {
         unlockData={unlockModalData}
         toggleOpen={toggleUnlockModal}
       />
-      <ShareModal
-        shareData={shareModalData}
-        toggleOpen={toggleShareModal}
-      />
+      <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
       <BottomBar />
     </div>
   );
