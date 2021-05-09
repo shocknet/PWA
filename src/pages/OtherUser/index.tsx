@@ -35,6 +35,7 @@ import {
   subscribeFollows,
   unsubscribeFollows
 } from "../../actions/FeedActions";
+import node from "../../reducers/NodeReducer";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -44,6 +45,7 @@ const AVATAR_SIZE = 122;
 const OtherUserPage = () => {
   //#region controller
   const dispatch = useDispatch();
+  const myGunPub = Store.useSelector(({node}) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
@@ -59,6 +61,7 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
+  const isMe = myGunPub === user.publicKey
   // Effect to sub follows
   useEffect(() => {
     subscribeFollows()(dispatch);
@@ -382,6 +385,7 @@ const OtherUserPage = () => {
         <div className="profile-cover">
           {user.header && (
             <img
+              className="w-100"
               alt="User set profile header."
               src={`data:image/jpeg;base64,${user.header}`}
             />
@@ -408,7 +412,7 @@ const OtherUserPage = () => {
               {user.bio || "Shockwallet user"}
             </p>
 
-            <FollowBtn publicKey={userPublicKey} />
+            {!isMe && <FollowBtn publicKey={userPublicKey} />}
           </div>
         </div>
 

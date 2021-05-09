@@ -43,6 +43,7 @@ import {
   subscribeUserPosts
 } from "../../actions/FeedActions";
 import { isSharedPost } from "../../schema";
+import { setWebclientPrefix } from "../../actions/NodeActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -104,11 +105,9 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const [currWebClientPrefix, setWebClientPrefix] = useState<WebClientPrefix>(
-    AVAILABLE_WEB_CLIENT_PREFIXES[0]
-  );
+  const currWebClientPrefix = Store.useSelector(({node}) => node.webClientPrefix)
   const [newWebClientPrefix, setNewWebClientPrefix] = useState<WebClientPrefix>(
-    AVAILABLE_WEB_CLIENT_PREFIXES[0]
+    currWebClientPrefix
   );
 
   const copyWebClientUrlToClipboard = useCallback(() => {
@@ -138,19 +137,12 @@ const ProfilePage = () => {
     const socket = rifle({
       query,
       onData: (webClientPrefixReceived: unknown) => {
-        if (typeof webClientPrefixReceived === "string") {
-          setWebClientPrefix(webClientPrefixReceived as WebClientPrefix);
-        } else {
-          Utils.Http.post(`/api/gun/put`, {
-            path: "$user>Profile>webClientPrefix",
-            value: AVAILABLE_WEB_CLIENT_PREFIXES[0]
-          }).catch(e => {
-            alert(`Error setting default web client prefix: ${e.message}`);
-          });
+        if (typeof webClientPrefixReceived === "string" && webClientPrefixReceived !== currWebClientPrefix) {
+          setWebclientPrefix(webClientPrefixReceived as WebClientPrefix)(dispatch)
         }
       },
       onError: (errorMessage: string) => {
-        alert(`There was an error fetching web client prefix: ${errorMessage}`);
+        console.error(`There was an error fetching web client prefix: ${errorMessage}`);
       }
     });
 
@@ -181,6 +173,7 @@ const ProfilePage = () => {
 
   const onConfigSubmit = useCallback(() => {
     if (newWebClientPrefix !== currWebClientPrefix) {
+      setWebclientPrefix(newWebClientPrefix)(dispatch)
       Utils.Http.post(`/api/gun/put`, {
         path: "$user>Profile>webClientPrefix",
         value: newWebClientPrefix
@@ -298,7 +291,8 @@ const ProfilePage = () => {
     try {
       // some browsers/platforms don't support navigator.clipboard
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(publicKey);
+        const text = `${currWebClientPrefix}/${publicKey}`
+        navigator.clipboard.writeText(text);
       } else {
         const placeholderEl = document.querySelector(
           "#public-key-holder"
@@ -656,7 +650,7 @@ const ProfilePage = () => {
             <QRCode
               bgColor="#23282d"
               fgColor="#4285b9"
-              value={publicKey}
+              value={`${currWebClientPrefix}/${publicKey}`}
               size={180}
               className="profile-qrcode"
             />
@@ -670,7 +664,7 @@ const ProfilePage = () => {
                 id="public-key-holder"
                 readOnly
                 type="text"
-                value={publicKey}
+                value={`${currWebClientPrefix}/${publicKey}`}
               ></input>
             )}
             <div

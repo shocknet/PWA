@@ -12,7 +12,8 @@ export const ACTIONS = {
   SET_HOST_ID: "node/hostId",
   SET_AUTHENTICATED_USER: "node/authenticatedUser",
   SET_CONNECTION_STATUS: "node/connectionStatus",
-  SET_NODE_HEALTH: "node/health"
+  SET_NODE_HEALTH: "node/health",
+  SET_WEBCLIENT_PREFIX:'node/setWebClientPrefix'
 };
 
 export const resetNodeInfo = () => dispatch => {
@@ -217,3 +218,10 @@ export const createWallet = ({ alias, password }) => async dispatch => {
     throw parseError(err);
   }
 };
+
+export const setWebclientPrefix = prefix => dispatch => {
+  dispatch({
+    type:ACTIONS.SET_WEBCLIENT_PREFIX,
+    data:prefix
+  })
+}

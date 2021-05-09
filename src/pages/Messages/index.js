@@ -67,8 +67,16 @@ const MessagesPage = () => {
   };
 
   const sendRequest = useCallback(
-    async shockUser => {
+    async input => {
+      if(!input){
+        return
+      }
       try {
+        let shockUser = input
+        if(input.startsWith("https://")){
+          const splitted = input.split('/')
+          shockUser = splitted[splitted.length -1]
+        }
         setSendError(null);
         setSendRequestLoading(true);
         const pk = sanitizePublicKey(shockUser);
@@ -135,7 +143,7 @@ const MessagesPage = () => {
       if (!content || !content.text) {
         return;
       }
-      //sendRequest(content.text);
+      sendRequest(content.text);
       setScanQR(false);
       console.log(content.text)
     },
