@@ -141,7 +141,7 @@ const FeedPage = () => {
   return (
     <div className="page-container feed-page">
       <div className={styles.followed}>
-        <ShockAvatar height={60} publicKey={selfPublicKey} />
+        <ShockAvatar forceAddBtn height={60} publicKey={selfPublicKey} />
 
         {follows?.map(follow => {
           return (
