@@ -15,7 +15,7 @@ import Image from "./components/Image";
 import Stream from "./components/Stream";
 import "./css/index.scoped.css";
 
-import ShareIcon from "../../images/share.svg"
+import ShareIcon from "../../images/share.svg";
 
 const Post = ({
   id,
@@ -28,7 +28,7 @@ const Post = ({
   contentItems = {},
   username,
   openDeleteModal = undefined,
-  openShareModal = (_)=>{},
+  openShareModal = _ => {}
 }) => {
   const unlockedContent = Store.useSelector(
     ({ content }) => content.unlockedContent
@@ -41,28 +41,32 @@ const Post = ({
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [liveStatus,setLiveStatus] = useState('')
+  const [liveStatus, setLiveStatus] = useState("");
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
 
   //effect for liveStatus
-  useEffect(() =>{
-    const values = Object.values(contentItems)
-    const videoContent = values.find(item => item.type === 'video/embedded' && item.liveStatus === 'wasLive')
-    const streamContent = values.find(item => item.type === 'stream/embedded' && item.liveStatus === 'live')
-    let status = ''
-    if(videoContent){
-      status = videoContent.liveStatus
+  useEffect(() => {
+    const values = Object.values(contentItems);
+    const videoContent = values.find(
+      item => item.type === "video/embedded" && item.liveStatus === "wasLive"
+    );
+    const streamContent = values.find(
+      item => item.type === "stream/embedded" && item.liveStatus === "live"
+    );
+    let status = "";
+    if (videoContent) {
+      status = videoContent.liveStatus;
     }
-    if(streamContent){
-      status = streamContent.liveStatus
+    if (streamContent) {
+      status = streamContent.liveStatus;
     }
-    if(status){
-      setLiveStatus(status)
+    if (status) {
+      setLiveStatus(status);
     }
-  },[contentItems,setLiveStatus])
+  }, [contentItems, setLiveStatus]);
 
   const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
@@ -98,7 +102,7 @@ const Post = ({
       } else {
         return (
           <div key={key}>
-            <i  className="fas fa-lock fa-10x"></i>
+            <i className="fas fa-lock fa-10x"></i>
           </div>
         );
       }
@@ -235,13 +239,13 @@ const Post = ({
     openDeleteModal({ id, shared: false });
   }, [id, openDeleteModal]);
 
-  const sharePost = useCallback(()=>{  
+  const sharePost = useCallback(() => {
     openShareModal({
       targetType: "share",
       postID: id,
       publicKey
-    })
-  },[publicKey,id,openShareModal])
+    });
+  }, [publicKey, id, openShareModal]);
 
   useEffect(() => {
     try {
@@ -262,11 +266,16 @@ const Post = ({
           <div className="details">
             <div className="username">
               <Link to={`/otherUser/${publicKey}`}>{username}</Link>
-              {liveStatus && <p className="liveStatus">
-                {liveStatus} 
-                <i className={`fas fa-circle liveStatusIcon ${liveStatus === 'live' ? "liveIcon" : ""}`}></i>
+              {liveStatus && (
+                <p className="liveStatus">
+                  {liveStatus}
+                  <i
+                    className={`fas fa-circle liveStatusIcon ${
+                      liveStatus === "live" ? "liveIcon" : ""
+                    }`}
+                  ></i>
                 </p>
-              }
+              )}
             </div>
             <p>
               {timestamp && typeof timestamp === "number"
@@ -326,13 +335,15 @@ const Post = ({
         >
           <div className="tip-icon icon-thin-feed"></div>
         </div>
-        {openShareModal && <div
-          className="icon-tip-btn"
-          data-tip={"share"}
-          onClick={sharePost}
-          >
-            <img alt="Share this post" src={ShareIcon} style={{color:"#4285b9",marginLeft:"auto"}}/>
-        </div>}
+        {openShareModal && (
+          <div className="icon-tip-btn" data-tip={"share"} onClick={sharePost}>
+            <img
+              alt="Share this post"
+              src={ShareIcon}
+              style={{ color: "#4285b9", marginLeft: "auto" }}
+            />
+          </div>
+        )}
         {!openShareModal && <div></div>}
       </div>
     </div>
