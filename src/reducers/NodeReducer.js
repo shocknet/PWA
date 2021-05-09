@@ -10,7 +10,8 @@ const INITIAL_STATE = {
   publicKey: null,
   authTokenExpirationDate: null,
   authMethod: null,
-  hostingAttemptsDone: false
+  hostingAttemptsDone: false,
+  webClientPrefix:"https://shock.pub"
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -65,6 +66,9 @@ const node = (state = INITIAL_STATE, action) => {
         authMethod: null,
         hostingAttemptsDone: false
       };
+    }
+    case ACTIONS.SET_WEBCLIENT_PREFIX:{
+      return {...state, webClientPrefix:action.data}
     }
     default:
       return state;
