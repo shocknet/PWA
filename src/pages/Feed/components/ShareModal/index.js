@@ -68,7 +68,7 @@ const ShareModal = ({ shareData, toggleOpen }) => {
           <p className="tip-modal-desc">
             This post will be shared on your profile
           </p>
-          <ModalSubmit text="UNLOCK" onClick={submitShare} />
+          <ModalSubmit text="SHARE" onClick={submitShare} />
         </form>
       )}
     </Modal>
