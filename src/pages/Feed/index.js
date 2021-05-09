@@ -52,7 +52,7 @@ const FeedPage = () => {
     return () => {
       unsubscribeFollows();
     };
-  }, []);
+  }, [dispatch]);
   const followedPosts = useMemo(() => {
     if (posts) {
       const feed = Object.values(posts)
