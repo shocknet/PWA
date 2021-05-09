@@ -95,7 +95,7 @@ const ProfilePage = () => {
     );
 
     return rifleCleanup(postSubscription, sharedPostSubscription);
-  }, [publicKey]);
+  }, [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -397,7 +397,6 @@ const ProfilePage = () => {
             id={post.id}
             timestamp={post.date}
             contentItems={post.contentItems}
-            avatar={`data:image/jpeg;base64,${profile?.avatar}`}
             username={processDisplayName(
               profile?.publicKey,
               profile?.displayName

@@ -1,0 +1,13 @@
+.user-add-btn {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background-color: var(--main-blue);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translateY(25%);
+}

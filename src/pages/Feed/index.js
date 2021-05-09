@@ -13,10 +13,11 @@ import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
 import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
-import UserIcon from "./components/UserIcon";
+
 import SendTipModal from "./components/SendTipModal";
 import ShareModal from "../Feed/components/ShareModal";
 import Loader from "../../common/Loader";
+import ShockAvatar from "../../common/ShockAvatar";
 
 import { isSharedPost } from "../../schema";
 
@@ -31,6 +32,7 @@ import {
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import { rifleCleanup } from "../../utils/WebSocket";
+import styles from "./css/Feed.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -43,16 +45,14 @@ const FeedPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const { avatar, publicKey: selfPublicKey } = Store.useSelector(
-    Store.selectSelfUser
-  );
+  const { publicKey: selfPublicKey } = Store.useSelector(Store.selectSelfUser);
   // Effect to sub follows
   useEffect(() => {
     subscribeFollows()(dispatch);
     return () => {
       unsubscribeFollows();
     };
-  }, []);
+  }, [dispatch]);
   const followedPosts = useMemo(() => {
     if (posts) {
       const feed = Object.values(posts)
@@ -101,7 +101,7 @@ const FeedPage = () => {
 
   const toggleShareModal = useCallback(
     shareData => {
-      console.log(shareData)
+      console.log(shareData);
       if (shareModalData || !shareData) {
         setShareModalData(null);
       }
@@ -140,31 +140,19 @@ const FeedPage = () => {
 
   return (
     <div className="page-container feed-page">
-      <div className="following-bar-container">
-        <UserIcon
-          addButton
-          large
-          main
-          avatar={avatar ? `data:image/jpeg;base64,${avatar}` : null}
-          username={null}
-          publicKey={selfPublicKey}
-        />
-        <div className="following-bar-list">
-          {follows?.map(follow => {
-            const publicKey = follow.user;
-            const profile =
-              userProfiles[publicKey] ?? Common.createEmptyUser(publicKey);
+      <div className={styles.followed}>
+        <ShockAvatar forceAddBtn height={60} publicKey={selfPublicKey} />
 
-            return (
-              <UserIcon
-                username={processDisplayName(publicKey, profile.displayName)}
-                avatar={`data:image/jpeg;base64,${profile.avatar}`}
-                key={publicKey}
-                publicKey={publicKey}
-              />
-            );
-          })}
-        </div>
+        {follows?.map(follow => {
+          return (
+            <ShockAvatar
+              height={60}
+              key={follow.user}
+              nameAtBottom
+              publicKey={follow.user}
+            />
+          );
+        })}
       </div>
 
       <div className="tabs-holder">
@@ -179,31 +167,35 @@ const FeedPage = () => {
             if (!post.originalPost) {
               return null;
             }
-            const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-            let streamContentId,streamItem
-            if(item){
-              [streamContentId,streamItem] = item
+            const item = Object.entries(post.originalPost.contentItems).find(
+              ([_, item]) => item.type === "stream/embedded"
+            );
+            let streamContentId, streamItem;
+            if (item) {
+              [streamContentId, streamItem] = item;
             }
-            if(streamItem){
+            if (streamItem) {
               //@ts-expect-error
-              if(!streamItem.liveStatus){
-                return
+              if (!streamItem.liveStatus) {
+                return null;
               }
               //@ts-expect-error
-              if(streamItem.liveStatus === 'waiting'){
-                return
+              if (streamItem.liveStatus === "waiting") {
+                return null;
               }
               //@ts-expect-error
-              if(streamItem.liveStatus === 'wasLive'){
+              if (streamItem.liveStatus === "wasLive") {
                 //@ts-expect-error
-                if(!streamItem.playbackMagnet){
-                  return
+                if (!streamItem.playbackMagnet) {
+                  return null;
                 }
-                post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+                post.originalPost.contentItems[streamContentId].type =
+                  "video/embedded";
                 //@ts-expect-error
-                post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+                post.originalPost.contentItems[streamContentId].magnetURI =
+                  //@ts-expect-error
+                  streamItem.playbackMagnet;
               }
-              
             }
             const sharerProfile =
               userProfiles[post.sharerId] ||
@@ -228,31 +220,34 @@ const FeedPage = () => {
             );
           }
 
-          const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-          let streamContentId,streamItem
-          if(item){
-            [streamContentId,streamItem] = item
+          const item = Object.entries(post.contentItems).find(
+            ([_, item]) => item.type === "stream/embedded"
+          );
+          let streamContentId, streamItem;
+          if (item) {
+            [streamContentId, streamItem] = item;
           }
-          if(streamItem){
+          if (streamItem) {
             //@ts-expect-error
-            if(!streamItem.liveStatus){
-              return
+            if (!streamItem.liveStatus) {
+              return null;
             }
             //@ts-expect-error
-            if(streamItem.liveStatus === 'waiting'){
-              return
+            if (streamItem.liveStatus === "waiting") {
+              return null;
             }
             //@ts-expect-error
-            if(streamItem.liveStatus === 'wasLive'){
+            if (streamItem.liveStatus === "wasLive") {
               //@ts-expect-error
-              if(!streamItem.playbackMagnet){
-                return
+              if (!streamItem.playbackMagnet) {
+                return null;
               }
-              post.contentItems[streamContentId].type = 'video/embedded'
+              post.contentItems[streamContentId].type = "video/embedded";
               //@ts-expect-error
-              post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+              post.contentItems[streamContentId].magnetURI =
+                //@ts-expect-error
+                streamItem.playbackMagnet;
             }
-            
           }
           const profile =
             userProfiles[post.authorId] ||
@@ -264,7 +259,6 @@ const FeedPage = () => {
                 id={post.id}
                 timestamp={post.date}
                 contentItems={post.contentItems}
-                avatar={`data:image/jpeg;base64,${profile?.avatar}`}
                 username={processDisplayName(
                   profile?.publicKey,
                   profile?.displayName
@@ -287,10 +281,7 @@ const FeedPage = () => {
         unlockData={unlockModalData}
         toggleOpen={toggleUnlockModal}
       />
-      <ShareModal
-        shareData={shareModalData}
-        toggleOpen={toggleShareModal}
-      />
+      <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
       <BottomBar />
     </div>
   );

@@ -6,12 +6,15 @@ import React, {
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
+import c from "classnames";
 
 import * as Store from "../../store";
 import Pad from "../Pad";
 import * as Utils from "../../utils";
 import * as globalStyles from "../../styles";
 import * as Hooks from "../../hooks";
+
+import "./css/index.scoped.css";
 
 export interface ShockAvatarProps {
   height: number;
@@ -29,7 +32,11 @@ export interface ShockAvatarProps {
    * status/online rings.
    */
   greyBorder?: boolean;
-  alignment?: "start" | "center" | "end";
+  /**
+   * If true, will force show the add button even if there stories present.
+   * Recommended to use together with disableStoriesRing.
+   */
+  forceAddBtn?: boolean;
 }
 
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
@@ -40,7 +47,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   onPress: onPressProp,
   setsAvatar,
   greyBorder,
-  alignment = "center"
+  forceAddBtn
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
@@ -71,7 +78,6 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     height: height + "px",
     width: height + "px",
     borderRadius: "50%",
-    display: "inline-block",
     objectFit: "cover"
   };
 
@@ -178,7 +184,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   return (
     <>
-      <div className={globalStyles[alignment + "Align"]}>
+      <div className={c(globalStyles.colCentered, globalStyles.relative)}>
         <img
           alt={`Avatar for ${displayName || "an user"}`}
           src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
@@ -192,15 +198,19 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
             <span
               style={{
-                color: "#F3EFEF",
-                fontFamily: "Montserrat-600",
-                fontSize: 12,
+                fontSize: 13,
                 textAlign: "center"
               }}
             >
               {displayName}
             </span>
           </>
+        )}
+
+        {forceAddBtn && (
+          <div className="user-add-btn">
+            <i className="fas fa-plus" />
+          </div>
         )}
       </div>
 

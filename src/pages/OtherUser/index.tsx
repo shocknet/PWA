@@ -344,7 +344,6 @@ const OtherUserPage = () => {
             id={post.id}
             timestamp={post.date}
             contentItems={post.contentItems}
-            avatar={`data:image/jpeg;base64,${profile?.avatar}`}
             username={processDisplayName(profile?.user, profile?.displayName)}
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
