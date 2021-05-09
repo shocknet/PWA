@@ -331,7 +331,7 @@ const Post = ({
           data-tip={"share"}
           onClick={sharePost}
           >
-            <img src={ShareIcon} style={{color:"#4285b9",marginLeft:"auto"}}/>
+            <img alt="Share this post" src={ShareIcon} style={{color:"#4285b9",marginLeft:"auto"}}/>
         </div>}
         {!openShareModal && <div></div>}
       </div>
