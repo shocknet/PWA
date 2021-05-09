@@ -29,7 +29,6 @@ export interface ShockAvatarProps {
    * status/online rings.
    */
   greyBorder?: boolean;
-  alignment?: "start" | "center" | "end";
 }
 
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
@@ -39,8 +38,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   nameAtBottom,
   onPress: onPressProp,
   setsAvatar,
-  greyBorder,
-  alignment = "center"
+  greyBorder
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
