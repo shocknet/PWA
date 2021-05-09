@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router";
+import { Link } from "react-router-dom";
 import Http from "../../utils/Http";
 import SlidePay from "../../common/SlidePay";
 import InputGroup from "../../common/InputGroup";
@@ -160,10 +161,10 @@ const SendPage = () => {
         ) : null}
         {error ? <p className="form-error">{error}</p> : null}
         {!contact ? (
-          <div className="scan-qr-btn">
+          <Link className="scan-qr-btn" to="/QRScanner">
             <i className="scan-qr-icon icon icon-solid-scan"></i>
             <p className="scan-qr-text">Scan QR</p>
-          </div>
+          </Link>
         ) : null}
         {contact ? (
           <Suggestion

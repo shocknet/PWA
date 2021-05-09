@@ -15,6 +15,7 @@ import FieldError from "../../utils/FieldError";
 import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
+import QRCodeScanner from "../../common/QRCodeScanner";
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const MessagesPage = () => {
   const receivedRequests = Store.useSelector(
     ({ chat }) => chat.receivedRequests
   );
+  const [scanQR, setScanQR] = useState(false);
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
@@ -113,6 +115,46 @@ const MessagesPage = () => {
     }
   }, [sendRequest]);
 
+  const openQR = useCallback(() => {
+    setScanQR(true);
+  }, [setScanQR]);
+
+  const closeQR = useCallback(() => {
+    setScanQR(false);
+  }, [setScanQR]);
+
+  const scanErr = useCallback(e => {
+    console.log(e)
+    setSendError(e.message);
+    },
+    [setSendError]
+  );
+  
+  const scanDone = useCallback(
+    content => {
+      if (!content || !content.text) {
+        return;
+      }
+      //sendRequest(content.text);
+      setScanQR(false);
+      console.log(content.text)
+    },
+    [sendRequest, setScanQR]
+  );
+
+  if (scanQR) {
+    return (
+      <div>
+        <QRCodeScanner
+          mode="invoice"
+          onClose={closeQR}
+          onError={scanErr}
+          onScan={scanDone}
+        />
+      </div>
+    );
+  }
+console.log(sendError)
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
@@ -192,7 +234,7 @@ const MessagesPage = () => {
             <div className="send-request-error">{sendError}</div>
           ) : null}
           <div className="send-request-cards">
-            <div className="send-request-card" onClick={sendRequest}>
+            <div className="send-request-card" onClick={openQR}>
               <i className="send-request-card-icon fas fa-qrcode" />
               <p className="send-request-card-title">SCAN QR</p>
               <p className="send-request-card-desc">
