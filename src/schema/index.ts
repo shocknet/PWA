@@ -85,3 +85,36 @@ export const isSharedPost = (post: any): post is SharedPost => {
 
   return obj.type === "shared";
 };
+
+export interface PublishedContent {
+  type: "image/embedded" | "video/embedded";
+  magnetURI: string;
+  width: number;
+  height: number;
+  title: string;
+  description: string;
+}
+
+export const isPublishedContent = (o: unknown): o is PublishedContent => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+  const obj = (o as unknown) as PublishedContent;
+
+  if (typeof obj.description !== "string") {
+    return false;
+  }
+  if (typeof obj.height !== "number") {
+    return false;
+  }
+  if (typeof obj.width !== "number") {
+    return false;
+  }
+  if (!Common.isPopulatedString(obj.title)) {
+    return false;
+  }
+  if (obj.type !== "image/embedded" && obj.type !== "video/embedded") {
+    return false;
+  }
+  return true;
+};
