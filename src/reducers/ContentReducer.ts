@@ -1,14 +1,22 @@
-import { ACTIONS } from "../actions/ContentActions";
+import produce from "immer";
+
+import {
+  ACTIONS,
+  publishedContentAdded,
+  publishedContentRemoved
+} from "../actions/ContentActions";
+import { PublishedContent } from "../schema";
+
 const INITIAL_STATE = {
   seedProviderPub:
     "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
   streamUserToken: "",
   streamLiveToken: "",
   streamUrl: "",
-  streamPostId:"",
-  streamContentId:"",
-  streamStatusUrl:"",
-  publishedContent: {},
+  streamPostId: "",
+  streamContentId: "",
+  streamStatusUrl: "",
+  publishedContent: {} as Record<string, PublishedContent>,
   unlockedContent: {},
   seedInfo: {},
   availableTokens: {},
@@ -16,19 +24,28 @@ const INITIAL_STATE = {
 };
 
 const content = (state = INITIAL_STATE, action) => {
+  if (publishedContentAdded.match(action)) {
+    return produce(state, draft => {
+      const {
+        payload: { content, res }
+      } = action;
+      if (res.ok) {
+        draft.publishedContent[res.id] = content;
+      }
+    });
+  }
+
+  if (publishedContentRemoved.match(action)) {
+    return produce(state, draft => {
+      delete draft.publishedContent[action.payload.id];
+    });
+  }
+
   switch (action.type) {
     case ACTIONS.SET_SEED_PROVIDER_PUB: {
       return { ...state, seedProviderPub: action.data };
     }
-    case ACTIONS.ADD_PUBLISHED_CONTENT: {
-      const { data } = action;
-      const { content, res } = data;
-      const contentTmp = { ...state.publishedContent };
-      if (res.ok) {
-        contentTmp[res.id] = content;
-      }
-      return { ...state, publishedContent: contentTmp };
-    }
+
     case ACTIONS.ADD_UNLOCKED_CONTENT: {
       const { data } = action;
       const unlockedTmp = { ...state.unlockedContent };
@@ -44,11 +61,19 @@ const content = (state = INITIAL_STATE, action) => {
         streamUrl: data.streamUrl,
         streamPostId: data.streamPostId,
         streamContentId: data.streamContentId,
-        streamStatusUrl:data.streamStatusUrl
+        streamStatusUrl: data.streamStatusUrl
       };
     }
     case ACTIONS.REMOVE_STREAM: {
-      return { ...state, streamLiveToken: "", streamUserToken: "",streamUrl:'',streamPostId:'',streamContentId:'',streamStatusUrl:'' };
+      return {
+        ...state,
+        streamLiveToken: "",
+        streamUserToken: "",
+        streamUrl: "",
+        streamPostId: "",
+        streamContentId: "",
+        streamStatusUrl: ""
+      };
     }
     case ACTIONS.SET_SEED_INFO: {
       const { data } = action;
