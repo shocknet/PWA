@@ -1,13 +1,14 @@
 import { ACTIONS } from "../actions/ContentActions";
+
 const INITIAL_STATE = {
   seedProviderPub:
     "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
   streamUserToken: "",
   streamLiveToken: "",
   streamUrl: "",
-  streamPostId:"",
-  streamContentId:"",
-  streamStatusUrl:"",
+  streamPostId: "",
+  streamContentId: "",
+  streamStatusUrl: "",
   publishedContent: {},
   unlockedContent: {},
   seedInfo: {},
@@ -44,11 +45,19 @@ const content = (state = INITIAL_STATE, action) => {
         streamUrl: data.streamUrl,
         streamPostId: data.streamPostId,
         streamContentId: data.streamContentId,
-        streamStatusUrl:data.streamStatusUrl
+        streamStatusUrl: data.streamStatusUrl
       };
     }
     case ACTIONS.REMOVE_STREAM: {
-      return { ...state, streamLiveToken: "", streamUserToken: "",streamUrl:'',streamPostId:'',streamContentId:'',streamStatusUrl:'' };
+      return {
+        ...state,
+        streamLiveToken: "",
+        streamUserToken: "",
+        streamUrl: "",
+        streamPostId: "",
+        streamContentId: "",
+        streamStatusUrl: ""
+      };
     }
     case ACTIONS.SET_SEED_INFO: {
       const { data } = action;
