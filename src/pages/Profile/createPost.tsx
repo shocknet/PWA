@@ -1,26 +1,38 @@
-import { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
+
 import Loader from "../../common/Loader";
 import Http from "../../utils/Http";
 import ImagePreview from "../../common/Post/components/ImagePreview";
 import VideoPreview from "../../common/Post/components/VideoPreview";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
+import * as Store from "../../store";
+import {
+  subOwnPublishedContent,
+  unsubOwnPublishedContent
+} from "../../actions/ContentActions";
 
 import "./css/index.scoped.css";
 
 const PublishContentPage = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
-  const publishedContent = useSelector(
-    //@ts-expect-error
-    ({ content }) => content.publishedContent
-  );
+  const publishedContent = Store.useSelector(Store.selectOwnPublishedContent);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
   const [selectedContent, setSelectedContent] = useState("");
+
+  useEffect(() => {
+    dispatch(subOwnPublishedContent());
+
+    return () => {
+      dispatch(unsubOwnPublishedContent());
+    };
+  }, [dispatch]);
 
   const onSubmit = useCallback(
     async e => {

@@ -1,10 +1,15 @@
+import { createAction } from "@reduxjs/toolkit";
+
 import Http from "../utils/Http";
+import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
+import { PublishedContent, isPublishedContent } from "../schema";
+import { parseJson } from "../utils";
 
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB: "content/setSeedProviderPub",
   SET_SEED_INFO: "content/setSeedInfo",
 
-  ADD_PUBLISHED_CONTENT: "content/addPublishedContent",
+  PUBLISHED_CONTENT_ADDED: "content/publishedContentAdded",
   PUBLISHED_CONTENT_REMOVED: "content/publishedContentRemoved",
 
   ADD_UNLOCKED_CONTENT: "content/addUnlocked",
@@ -49,32 +54,36 @@ export const setSeedInfo = (seedUrl, seedToken) => async dispatch => {
   });
 };
 
-export const addPublishedContent = content => async dispatch => {
-  let toSet = content;
-  if (typeof content !== "string") {
-    toSet = JSON.stringify(content);
-  }
-  const { data } = await Http.post("/api/gun/set", {
-    path: "$user>publishedContent",
-    value: {
-      $$__ENCRYPT__FOR: "me",
-      value: toSet
+export const publishedContentAdded = createAction<{
+  content: PublishedContent;
+  res: { ok: boolean; id: string };
+}>(ACTIONS.PUBLISHED_CONTENT_ADDED);
+
+export const addPublishedContent = (
+  content: PublishedContent
+) => async dispatch => {
+  const { data } = await Http.post<{ ok: boolean; id: string }>(
+    "/api/gun/set",
+    {
+      path: "$user>publishedContent",
+      value: {
+        $$__ENCRYPT__FOR: "me",
+        value: JSON.stringify(content)
+      }
     }
-  });
-  dispatch({
-    type: ACTIONS.ADD_PUBLISHED_CONTENT,
-    data: { content, res: data }
-  });
+  );
+  dispatch(
+    publishedContentAdded({
+      content,
+      res: data
+    })
+  );
   return data;
 };
 
-export const publishedContentRemoved = (id: string) =>
-  ({
-    type: ACTIONS.PUBLISHED_CONTENT_REMOVED,
-    data: {
-      id
-    }
-  } as const);
+export const publishedContentRemoved = createAction<{ id: string }>(
+  ACTIONS.PUBLISHED_CONTENT_REMOVED
+);
 
 export const unlockContent = (amt, owner, postID) => async dispatch => {
   const { data } = await Http.post("/api/lnd/unifiedTrx", {
@@ -148,4 +157,71 @@ export const removeStreamToken = (seedUrl, userToken) => dispatch => {
   });
 };
 
-export const subPublishedContentSelf = () => dispatch => {};
+const OWN_PUBLISHED_CONTENT_QUERY = "$user::publishedContent::map.on";
+
+export const subOwnPublishedContent = () => async (
+  dispatch: (action: any) => void,
+  getState: () => { node: { publicKey: string } }
+) => {
+  console.debug(`Subscribing to own published content`);
+  const subscription = await rifle({
+    query: OWN_PUBLISHED_CONTENT_QUERY,
+    reconnect: true,
+    publicKey: getState().node.publicKey,
+    onData: async (content: string, key) => {
+      try {
+        console.debug(`Received own content:`);
+        console.debug(content);
+
+        if (typeof key !== "string") {
+          throw new TypeError(`Invalid content key received: ${key}`);
+        }
+
+        if (!content) {
+          dispatch(
+            publishedContentRemoved({
+              id: key
+            })
+          );
+          return;
+        }
+
+        if (typeof content !== "string") {
+          throw new TypeError(`Invalid content received (${content})`);
+        }
+
+        const parsed = parseJson(content);
+
+        if (!isPublishedContent(parsed)) {
+          throw new TypeError(
+            `Invalid content received (might be incomplete replication): ${JSON.stringify(
+              parsed,
+              null,
+              2
+            )}`
+          );
+        }
+
+        dispatch(
+          publishedContentAdded({
+            content: parsed,
+            res: {
+              id: key,
+              ok: true
+            }
+          })
+        );
+      } catch (e) {
+        console.error(`Error inside own published content sub:`);
+        console.error(e);
+      }
+    }
+  });
+
+  return subscription;
+};
+
+export const unsubOwnPublishedContent = () => () => {
+  console.debug(`Unsubbing own published content.`);
+  unsubscribeRifleByQuery(OWN_PUBLISHED_CONTENT_QUERY);
+};

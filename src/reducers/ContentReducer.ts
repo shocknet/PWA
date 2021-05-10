@@ -1,6 +1,11 @@
 import produce from "immer";
 
-import { ACTIONS } from "../actions/ContentActions";
+import {
+  ACTIONS,
+  publishedContentAdded,
+  publishedContentRemoved
+} from "../actions/ContentActions";
+import { PublishedContent } from "../schema";
 
 const INITIAL_STATE = {
   seedProviderPub:
@@ -11,7 +16,7 @@ const INITIAL_STATE = {
   streamPostId: "",
   streamContentId: "",
   streamStatusUrl: "",
-  publishedContent: {},
+  publishedContent: {} as Record<string, PublishedContent>,
   unlockedContent: {},
   seedInfo: {},
   availableTokens: {},
@@ -19,24 +24,26 @@ const INITIAL_STATE = {
 };
 
 const content = (state = INITIAL_STATE, action) => {
+  if (publishedContentAdded.match(action)) {
+    return produce(state, draft => {
+      const {
+        payload: { content, res }
+      } = action;
+      if (res.ok) {
+        draft.publishedContent[res.id] = content;
+      }
+    });
+  }
+
+  if (publishedContentRemoved.match(action)) {
+    return produce(state, draft => {
+      delete draft.publishedContent[action.payload.id];
+    });
+  }
+
   switch (action.type) {
     case ACTIONS.SET_SEED_PROVIDER_PUB: {
       return { ...state, seedProviderPub: action.data };
-    }
-
-    case ACTIONS.ADD_PUBLISHED_CONTENT: {
-      const { data } = action;
-      const { content, res } = data;
-      const contentTmp = { ...state.publishedContent };
-      if (res.ok) {
-        contentTmp[res.id] = content;
-      }
-      return { ...state, publishedContent: contentTmp };
-    }
-    case ACTIONS.PUBLISHED_CONTENT_REMOVED: {
-      return produce(state, draft => {
-        delete draft.publishedContent[action.data.id];
-      });
     }
 
     case ACTIONS.ADD_UNLOCKED_CONTENT: {
