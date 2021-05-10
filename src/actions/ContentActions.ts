@@ -11,7 +11,7 @@ export const ACTIONS = {
   REMOVE_USED_TOKEN: "content/removeToken",
   ADD_STREAM_TOKEN: "content/addStreamToken",
   REMOVE_STREAM_TOKEN: "content/removeStreamToken"
-};
+} as const;
 
 export const setSeedProviderPub = pub => async dispatch => {
   let value: string | Record<string, any> = {
