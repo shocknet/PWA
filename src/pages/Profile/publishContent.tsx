@@ -101,10 +101,12 @@ const PublishContentPage = () => {
         const { magnet } = torrent;
         const [firstFile] = mediaPreviews;
         console.log(firstFile);
-        let type = "image/embedded";
-        if (firstFile.type === "video") {
-          type = "video/embedded";
-        }
+
+        const type =
+          firstFile.type === "video"
+            ? ("video/embedded" as const)
+            : ("image/embedded" as const);
+
         const contentItem = {
           type,
           magnetURI: magnet,
