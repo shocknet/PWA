@@ -57,15 +57,15 @@ const ShareModal = ({ shareData, toggleOpen }) => {
       modalTitle="Share post"
     >
       {success ? (
-        <div className="tip-modal-success">
+        <div className="tip-modal-success m-1">
           <i className="tip-success-icon fas fa-check-circle"></i>
           <p className="tip-success-title">Post shared successfully!</p>
         </div>
       ) : (
-        <form className="modal-form tip-form" onSubmit={submitShare}>
+        <form className="modal-form tip-form m-1" onSubmit={submitShare}>
           {error ? <div className="form-error">{error}</div> : null}
           {loading ? <Loader overlay text="Sharing..." /> : null}
-          <p className="tip-modal-desc">
+          <p className="tip-modal-desc m-1">
             This post will be shared on your profile
           </p>
           <ModalSubmit text="SHARE" onClick={submitShare} />
