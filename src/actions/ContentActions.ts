@@ -113,7 +113,8 @@ export const addStream = ({
   streamUrl,
   streamPostId,
   streamContentId,
-  streamStatusUrl
+  streamStatusUrl,
+  streamBroadcasterUrl
 }) => dispatch => {
   dispatch({
     type: ACTIONS.ADD_STREAM,
@@ -123,7 +124,8 @@ export const addStream = ({
       streamUrl,
       streamPostId,
       streamContentId,
-      streamStatusUrl
+      streamStatusUrl,
+      streamBroadcasterUrl
     }
   });
 };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
@@ -20,6 +20,7 @@ import Pad from "../../../common/Pad";
 import Static from "./components/Static";
 import CamFeed from "./components/CamFeed";
 import styles from "./css/GoLive.module.css";
+import InputGroup from "../../../common/InputGroup";
 
 const GoLive = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,9 @@ const GoLive = () => {
   const availableTokens = Store.useSelector(
     ({ content }) => content.availableTokens
   );
+  const streamBroadcasterUrl = Store.useSelector(
+    ({ content }) => content.streamBroadcasterUrl
+  );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
@@ -50,6 +54,9 @@ const GoLive = () => {
   const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
   const [starting, setStarting] = useState(false);
+
+  const [copiedUrl,setCopiedUrl] = useState(false)
+  const [copiedToken,setCopiedToken] = useState(false)
   
   
   const onSubmitCb = useCallback(
@@ -78,7 +85,7 @@ const GoLive = () => {
         setStreamToken(`${latestUserToken}?key=${obsToken}`);
         const streamPlaybackUrl = `${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`;
         const rtmp = finalSeedUrl.replace("https", "rtmp");
-        setRtmpUri(`${rtmp}/live`);
+        const rtmpUrl = `${rtmp}/live`
         const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
         let contentItems = [];
         if (paragraph !== "") {
@@ -116,7 +123,8 @@ const GoLive = () => {
             streamUrl:streamPlaybackUrl,
             streamPostId:postId,
             streamContentId:contentId,
-            streamStatusUrl:stUrl})(dispatch);
+            streamStatusUrl:stUrl,
+            streamBroadcasterUrl:rtmpUrl})(dispatch);
           await Http.post(`/api/listenStream`,{
             postId,
             contentId,
@@ -199,10 +207,12 @@ const GoLive = () => {
   );
   const copyToken = useCallback(() => {
     navigator.clipboard.writeText(streamToken);
-  }, [streamToken]);
+    setCopiedToken(true)
+  }, [streamToken,setCopiedToken]);
   const copyUri = useCallback(() => {
-    navigator.clipboard.writeText(rtmpUri);
-  }, [rtmpUri]);
+    navigator.clipboard.writeText(streamBroadcasterUrl);
+    setCopiedUrl(true)
+  }, [streamBroadcasterUrl,setCopiedUrl]);
   const onInputChange = useCallback(
     e => {
       const { value, name } = e.target;
@@ -304,37 +314,27 @@ const GoLive = () => {
                   )}
 
                   <p>Broadcaster:</p>
-
-                  <div
-                    style={{
-                      border: "1px solid var(--main-blue)",
-                      padding: "0.5rem",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "1rem"
-                    }}
-                  >
-                    <p>
-                      {rtmpUri.substring(0, 20) +
-                        (rtmpUri.length > 21 ? "..." : "")}
-                    </p>
-                    <i className="far fa-copy" onClick={copyUri}></i>
+                    
+                  <div className="d-flex flex-align-center">
+                    {/*@ts-expect-error*/ }
+                    <InputGroup
+                      name="Streamer Url"
+                      value={streamBroadcasterUrl}
+                      disabled
+                    />
+                    <i className={!copiedUrl ? "far fa-copy fa-lg m-1" : "fas fa-check fa-lg m-1"} onClick={copyUri}></i>
                   </div>
                   <p>Stream Key:</p>
-                  <div
-                    style={{
-                      border: "1px solid var(--main-blue)",
-                      padding: "0.5rem",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "1rem"
-                    }}
-                  >
-                    <p>
-                      {streamToken.substring(0, 20) +
-                        (streamToken.length > 21 ? "..." : "")}
-                    </p>
-                    <i className="far fa-copy" onClick={copyToken}></i>
+                  
+                  <div className="d-flex flex-align-center">
+                    {/*@ts-expect-error*/ }
+                    <InputGroup
+                      name="Stream Key"
+                      value={streamToken}
+                      disabled
+                      
+                    />
+                  <i className={!copiedToken ? "far fa-copy fa-lg m-1" : "fas fa-check fa-lg m-1"} onClick={copyToken}></i>
                   </div>
                   <div className="flex-center">
                     <button

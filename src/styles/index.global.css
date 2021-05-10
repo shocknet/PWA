@@ -251,6 +251,14 @@ p.shock-form-button-text {
   margin-bottom: 1em;
 }
 
+.d-flex {
+  display: flex;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
