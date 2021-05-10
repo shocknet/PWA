@@ -197,3 +197,5 @@ export const useBooleanState = (initialState: boolean) => {
 
   return [state, toggle] as const;
 };
+
+export const parseJson = (o: string) => JSON.parse(o) as unknown;
