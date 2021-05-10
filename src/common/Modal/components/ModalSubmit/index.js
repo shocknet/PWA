@@ -1,5 +1,6 @@
 import React from "react";
 import "./css/index.scoped.css";
+import "../../css/index.scoped.css"
 
 const ModalSubmit = ({ text = "Submit", onClick }) => {
   return (

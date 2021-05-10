@@ -59,16 +59,16 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   return (
     <Modal toggleModal={toggleOpen} modalOpen={!!tipData} modalTitle="Send Tip">
       {tipSuccess ? (
-        <div className="tip-modal-success">
+        <div className="tip-modal-success m-1">
           <i className="tip-success-icon fas fa-check-circle"></i>
           <p className="tip-success-title">Post tipped successfully!</p>
           <p className="tip-success-desc"></p>
         </div>
       ) : (
-        <form className="modal-form tip-form" onSubmit={submitTip}>
+        <form className="modal-form tip-form m-1" onSubmit={submitTip}>
           {error ? <div className="form-error">{error}</div> : null}
           {loading ? <Loader overlay text="Sending Tip..." /> : null}
-          <p className="tip-modal-desc">
+          <p className="tip-modal-desc m-1">
             Please specify the amount of sats you'd like to tip this user with
             below.
           </p>
