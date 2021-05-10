@@ -33,7 +33,7 @@ const content = (state = INITIAL_STATE, action) => {
       }
       return { ...state, publishedContent: contentTmp };
     }
-    case ACTIONS.REMOVE_PUBLISHED_CONTENT: {
+    case ACTIONS.PUBLISHED_CONTENT_REMOVED: {
       return produce(state, draft => {
         delete draft.publishedContent[action.data.id];
       });

@@ -5,7 +5,7 @@ export const ACTIONS = {
   SET_SEED_INFO: "content/setSeedInfo",
 
   ADD_PUBLISHED_CONTENT: "content/addPublishedContent",
-  REMOVE_PUBLISHED_CONTENT: "content/removePublishedContent",
+  PUBLISHED_CONTENT_REMOVED: "content/publishedContentRemoved",
 
   ADD_UNLOCKED_CONTENT: "content/addUnlocked",
   ADD_STREAM: "content/addStream",
@@ -68,9 +68,9 @@ export const addPublishedContent = content => async dispatch => {
   return data;
 };
 
-export const removePublishedContent = (id: string) =>
+export const publishedContentRemoved = (id: string) =>
   ({
-    type: ACTIONS.REMOVE_PUBLISHED_CONTENT,
+    type: ACTIONS.PUBLISHED_CONTENT_REMOVED,
     data: {
       id
     }
