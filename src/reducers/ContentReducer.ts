@@ -1,3 +1,5 @@
+import produce from "immer";
+
 import { ACTIONS } from "../actions/ContentActions";
 
 const INITIAL_STATE = {
@@ -21,6 +23,7 @@ const content = (state = INITIAL_STATE, action) => {
     case ACTIONS.SET_SEED_PROVIDER_PUB: {
       return { ...state, seedProviderPub: action.data };
     }
+
     case ACTIONS.ADD_PUBLISHED_CONTENT: {
       const { data } = action;
       const { content, res } = data;
@@ -30,6 +33,12 @@ const content = (state = INITIAL_STATE, action) => {
       }
       return { ...state, publishedContent: contentTmp };
     }
+    case ACTIONS.REMOVE_PUBLISHED_CONTENT: {
+      return produce(state, draft => {
+        delete draft.publishedContent[action.data.id];
+      });
+    }
+
     case ACTIONS.ADD_UNLOCKED_CONTENT: {
       const { data } = action;
       const unlockedTmp = { ...state.unlockedContent };

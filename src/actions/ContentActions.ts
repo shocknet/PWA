@@ -3,7 +3,10 @@ import Http from "../utils/Http";
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB: "content/setSeedProviderPub",
   SET_SEED_INFO: "content/setSeedInfo",
+
   ADD_PUBLISHED_CONTENT: "content/addPublishedContent",
+  REMOVE_PUBLISHED_CONTENT: "content/removePublishedContent",
+
   ADD_UNLOCKED_CONTENT: "content/addUnlocked",
   ADD_STREAM: "content/addStream",
   REMOVE_STREAM: "content/removeStream",
@@ -45,6 +48,7 @@ export const setSeedInfo = (seedUrl, seedToken) => async dispatch => {
     data: { seedUrl: cleanUrl, seedToken }
   });
 };
+
 export const addPublishedContent = content => async dispatch => {
   let toSet = content;
   if (typeof content !== "string") {
@@ -63,6 +67,14 @@ export const addPublishedContent = content => async dispatch => {
   });
   return data;
 };
+
+export const removePublishedContent = (id: string) =>
+  ({
+    type: ACTIONS.REMOVE_PUBLISHED_CONTENT,
+    data: {
+      id
+    }
+  } as const);
 
 export const unlockContent = (amt, owner, postID) => async dispatch => {
   const { data } = await Http.post("/api/lnd/unifiedTrx", {
