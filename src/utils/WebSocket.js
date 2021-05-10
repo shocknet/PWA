@@ -4,6 +4,7 @@ import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "../utils/String";
 import { setAuthenticated } from "../actions/AuthActions";
+import { connectHost } from "../actions/NodeActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  */
@@ -63,6 +64,14 @@ export const connectSocket = async (host = "", reconnect = false) => {
 
   GunSocket.on(Common.NOT_AUTH, () => {
     store.dispatch(setAuthenticated(false));
+  });
+
+  GunSocket.on("encryption:error", async err => {
+    if (err.field === "deviceId") {
+      const cachedNodeIP = store.getState().node.hostIP;
+      await store.dispatch(connectHost(cachedNodeIP, false));
+      store.dispatch(setAuthenticated(false));
+    }
   });
 
   return { GunSocket, LNDSocket };
