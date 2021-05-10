@@ -1,4 +1,3 @@
-// @ts-check
 import Http from "../utils/Http";
 
 export const ACTIONS = {
@@ -15,8 +14,7 @@ export const ACTIONS = {
 };
 
 export const setSeedProviderPub = pub => async dispatch => {
-  /** @type {string | Record<string, any>} */
-  let value = {
+  let value: string | Record<string, any> = {
     $$__ENCRYPT__FOR: "me",
     value: pub
   };
@@ -137,3 +135,5 @@ export const removeStreamToken = (seedUrl, userToken) => dispatch => {
     data: { seedUrl, userToken }
   });
 };
+
+export const subPublishedContentSelf = () => dispatch => {};
