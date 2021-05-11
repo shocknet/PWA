@@ -36,7 +36,6 @@ import {
   subscribeFollows,
   unsubscribeFollows
 } from "../../actions/FeedActions";
-import node from "../../reducers/NodeReducer";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -46,7 +45,7 @@ const AVATAR_SIZE = 122;
 const OtherUserPage = () => {
   //#region controller
   const dispatch = useDispatch();
-  const myGunPub = Store.useSelector(({node}) => node.publicKey);
+  const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
@@ -63,14 +62,14 @@ const OtherUserPage = () => {
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
-  const isMe = myGunPub === user.publicKey
+  const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
-    subscribeFollows()(dispatch);
+    dispatch(subscribeFollows());
     return () => {
-      unsubscribeFollows();
+      dispatch(unsubscribeFollows());
     };
-  }, []);
+  }, [dispatch]);
   const subscribeUserPosts = useCallback(() => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = rifle({
@@ -253,8 +252,8 @@ const OtherUserPage = () => {
 
   const toggleShareModal = useCallback(
     shareData => {
-      console.log("share click yo")
-      console.log(shareData)
+      console.log("share click yo");
+      console.log(shareData);
       if (shareModalData || !shareData) {
         setShareModalData(null);
       }
@@ -268,8 +267,8 @@ const OtherUserPage = () => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
   const renderPosts = () => {
-    if(finalPosts.length === 0){
-      return <Loader text="loading posts..." />
+    if (finalPosts.length === 0) {
+      return <Loader text="loading posts..." />;
     }
     return finalPosts.map((post, index) => {
       const profile = userProfiles[post.authorId];
@@ -277,27 +276,31 @@ const OtherUserPage = () => {
         if (!post.originalPost) {
           return null;
         }
-        //@ts-expect-error
-        const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-        let streamContentId,streamItem
-        if(item){
-          [streamContentId,streamItem] = item
+
+        const item = Object.entries(post.originalPost.contentItems).find(
+          //@ts-expect-error
+          ([_, item]) => item.type === "stream/embedded"
+        );
+        let streamContentId, streamItem;
+        if (item) {
+          [streamContentId, streamItem] = item;
         }
-        if(streamItem){
-          if(!streamItem.liveStatus){
-            return
+        if (streamItem) {
+          if (!streamItem.liveStatus) {
+            return null;
           }
-          if(streamItem.liveStatus === 'waiting'){
-            return
+          if (streamItem.liveStatus === "waiting") {
+            return null;
           }
-          if(streamItem.liveStatus === 'wasLive'){
-            if(!streamItem.playbackMagnet){
-              return
+          if (streamItem.liveStatus === "wasLive") {
+            if (!streamItem.playbackMagnet) {
+              return null;
             }
-            post.originalPost.contentItems[streamContentId].type = 'video/embedded'
-            post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+            post.originalPost.contentItems[streamContentId].type =
+              "video/embedded";
+            post.originalPost.contentItems[streamContentId].magnetURI =
+              streamItem.playbackMagnet;
           }
-          
         }
         const originalPublicKey = post.originalAuthor;
         const originalProfile = userProfiles[originalPublicKey];
@@ -317,25 +320,28 @@ const OtherUserPage = () => {
           </Suspense>
         );
       }
-      //@ts-expect-error
-      const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-      let streamContentId,streamItem
-      if(item){
-        [streamContentId,streamItem] = item
+      const item = Object.entries(post.contentItems).find(
+        //@ts-expect-error
+        ([_, item]) => item.type === "stream/embedded"
+      );
+      let streamContentId, streamItem;
+      if (item) {
+        [streamContentId, streamItem] = item;
       }
-      if(streamItem){
-        if(!streamItem.liveStatus){
-          return
+      if (streamItem) {
+        if (!streamItem.liveStatus) {
+          return null;
         }
-        if(streamItem.liveStatus === 'waiting'){
-          return
+        if (streamItem.liveStatus === "waiting") {
+          return null;
         }
-        if(streamItem.liveStatus === 'wasLive'){
-          if(!streamItem.playbackMagnet){
-            return
+        if (streamItem.liveStatus === "wasLive") {
+          if (!streamItem.playbackMagnet) {
+            return null;
           }
-          post.contentItems[streamContentId].type = 'video/embedded'
-          post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+          post.contentItems[streamContentId].type = "video/embedded";
+          post.contentItems[streamContentId].magnetURI =
+            streamItem.playbackMagnet;
         }
       }
       return (
@@ -485,10 +491,7 @@ const OtherUserPage = () => {
           service={buyServiceModalData}
           toggleOpen={toggleBuyServiceModal}
         />
-        <ShareModal
-          shareData={shareModalData}
-          toggleOpen={toggleShareModal}
-        />
+        <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
 
         <AddBtn
           onClick={toggleModal}

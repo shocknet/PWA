@@ -48,9 +48,9 @@ const FeedPage = () => {
   const { publicKey: selfPublicKey } = Store.useSelector(Store.selectSelfUser);
   // Effect to sub follows
   useEffect(() => {
-    subscribeFollows()(dispatch);
+    dispatch(subscribeFollows());
     return () => {
-      unsubscribeFollows();
+      dispatch(unsubscribeFollows());
     };
   }, [dispatch]);
   const followedPosts = useMemo(() => {
