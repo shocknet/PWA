@@ -288,14 +288,14 @@ const OtherUserPage = () => {
         }
         if (streamItem) {
           if (!streamItem.liveStatus) {
-            return;
+            return null;
           }
           if (streamItem.liveStatus === "waiting") {
-            return;
+            return null;
           }
           if (streamItem.liveStatus === "wasLive") {
             if (!streamItem.playbackMagnet) {
-              return;
+              return null;
             }
             post.originalPost.contentItems[streamContentId].type =
               "video/embedded";
@@ -331,14 +331,14 @@ const OtherUserPage = () => {
       }
       if (streamItem) {
         if (!streamItem.liveStatus) {
-          return;
+          return null;
         }
         if (streamItem.liveStatus === "waiting") {
-          return;
+          return null;
         }
         if (streamItem.liveStatus === "wasLive") {
           if (!streamItem.playbackMagnet) {
-            return;
+            return null;
           }
           post.contentItems[streamContentId].type = "video/embedded";
           post.contentItems[streamContentId].magnetURI =
