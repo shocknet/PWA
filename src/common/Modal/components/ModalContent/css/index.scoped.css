@@ -15,7 +15,7 @@
 }
 
 .content::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--modal-body-bg);
 }
 
 .content::-webkit-scrollbar-thumb {
