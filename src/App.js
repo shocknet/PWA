@@ -37,7 +37,7 @@ const PublishContentPage = React.lazy(() =>
 const offerServicePage = React.lazy(() =>
   import("./pages/Profile/offerService")
 );
-const createPostPage = React.lazy(() => import("./pages/Profile/createPost"));
+const CreatePostPage = React.lazy(() => import("./pages/Profile/CreatePost"));
 const GoLivePage = React.lazy(() => import("./pages/Profile/GoLive/GoLive"));
 const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
 const Story = React.lazy(() => import("./pages/Story"));
@@ -207,7 +207,7 @@ const App = () => {
           />
           <PrivateRoute path="/feed" exact component={FeedPage} />
           <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
-          <PrivateRoute path="/createPost" exact component={createPostPage} />
+          <PrivateRoute path="/createPost" exact component={CreatePostPage} />
           <PrivateRoute path="/goLive" exact component={GoLivePage} />
           <PrivateRoute
             path="/offerService"
