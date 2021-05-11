@@ -121,7 +121,7 @@ const OverviewPage = () => {
       <div className="recent-activity-container">
         <p className="recent-activity-title">Recent Activity</p>
         <PullToRefresh
-          className="recent-activity-entries"
+          className="recent-activity-entries no-scrollbar"
           pullingContent={
             <div className="pull-refresh-text">
               <i className="fas fa-arrow-down"></i> Pull down to refresh{" "}

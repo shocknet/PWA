@@ -60,6 +60,22 @@ a.bottom-nav-btn.active-nav-btn {
   background-color: var(--background);
 }
 
+.ptr__children::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ptr__children::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.ptr__children::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.ptr__children::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .inputs-group {
   display: flex;
   align-items: flex-end;
