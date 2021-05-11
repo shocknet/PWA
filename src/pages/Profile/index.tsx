@@ -563,7 +563,7 @@ const ProfilePage = () => {
   return (
     <>
       <div className="page-container profile-page">
-        <div className="profile-container">
+        <div className="profile-container no-scrollbar">
           <div className="profile-cover" onClick={onPressHeader}>
             {user.header && (
               <img
