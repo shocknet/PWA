@@ -96,7 +96,7 @@ const OverviewPage = () => {
   ]);
 
   return (
-    <div className="page-container overview-page">
+    <div className="page-container overview-page no-scrollbar">
       <div className="overview-header">
         <MainNav absolute pageTitle={undefined} />
         <div className="overview-balance-container">
