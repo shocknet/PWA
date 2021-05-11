@@ -105,7 +105,9 @@ const ProfilePage = () => {
   // CONFIG MODAL
 
   const [profileConfigModalOpen, setProfileConfigModalOpen] = useState(false);
-  const currWebClientPrefix = Store.useSelector(({node}) => node.webClientPrefix)
+  const currWebClientPrefix = Store.useSelector(
+    ({ node }) => node.webClientPrefix
+  );
   const [newWebClientPrefix, setNewWebClientPrefix] = useState<WebClientPrefix>(
     currWebClientPrefix
   );
@@ -137,12 +139,19 @@ const ProfilePage = () => {
     const socket = rifle({
       query,
       onData: (webClientPrefixReceived: unknown) => {
-        if (typeof webClientPrefixReceived === "string" && webClientPrefixReceived !== currWebClientPrefix) {
-          setWebclientPrefix(webClientPrefixReceived as WebClientPrefix)(dispatch)
+        if (
+          typeof webClientPrefixReceived === "string" &&
+          webClientPrefixReceived !== currWebClientPrefix
+        ) {
+          setWebclientPrefix(webClientPrefixReceived as WebClientPrefix)(
+            dispatch
+          );
         }
       },
       onError: (errorMessage: string) => {
-        console.error(`There was an error fetching web client prefix: ${errorMessage}`);
+        console.error(
+          `There was an error fetching web client prefix: ${errorMessage}`
+        );
       }
     });
 
@@ -173,7 +182,7 @@ const ProfilePage = () => {
 
   const onConfigSubmit = useCallback(() => {
     if (newWebClientPrefix !== currWebClientPrefix) {
-      setWebclientPrefix(newWebClientPrefix)(dispatch)
+      setWebclientPrefix(newWebClientPrefix)(dispatch);
       Utils.Http.post(`/api/gun/put`, {
         path: "$user>Profile>webClientPrefix",
         value: newWebClientPrefix
@@ -291,7 +300,7 @@ const ProfilePage = () => {
     try {
       // some browsers/platforms don't support navigator.clipboard
       if (navigator.clipboard) {
-        const text = `${currWebClientPrefix}/${publicKey}`
+        const text = `${currWebClientPrefix}/${publicKey}`;
         navigator.clipboard.writeText(text);
       } else {
         const placeholderEl = document.querySelector(
@@ -317,27 +326,30 @@ const ProfilePage = () => {
         if (!post.originalPost) {
           return null;
         }
-        const item = Object.entries(post.originalPost.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-        let streamContentId,streamItem
-        if(item){
-          [streamContentId,streamItem] = item
+        const item = Object.entries(post.originalPost.contentItems).find(
+          ([_, item]) => item.type === "stream/embedded"
+        );
+        let streamContentId, streamItem;
+        if (item) {
+          [streamContentId, streamItem] = item;
         }
-        if(streamItem){
-          if(!streamItem.liveStatus){
-            return
+        if (streamItem) {
+          if (!streamItem.liveStatus) {
+            return;
           }
-          if(streamItem.liveStatus === 'waiting'){
-            return
+          if (streamItem.liveStatus === "waiting") {
+            return;
           }
-          if(streamItem.liveStatus === 'wasLive'){
-            if(!streamItem.playbackMagnet){
-              return
+          if (streamItem.liveStatus === "wasLive") {
+            if (!streamItem.playbackMagnet) {
+              return;
             }
-            post.originalPost.contentItems[streamContentId].type = 'video/embedded'
+            post.originalPost.contentItems[streamContentId].type =
+              "video/embedded";
             //@ts-expect-error
-            post.originalPost.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+            post.originalPost.contentItems[streamContentId].magnetURI =
+              streamItem.playbackMagnet;
           }
-          
         }
         // TODO: ensure users reducer receives sharer profiles
         const sharerProfile =
@@ -365,27 +377,29 @@ const ProfilePage = () => {
           </Suspense>
         );
       }
-      const item = Object.entries(post.contentItems).find(([_,item]) => item.type === 'stream/embedded')
-      let streamContentId,streamItem
-      if(item){
-        [streamContentId,streamItem] = item
+      const item = Object.entries(post.contentItems).find(
+        ([_, item]) => item.type === "stream/embedded"
+      );
+      let streamContentId, streamItem;
+      if (item) {
+        [streamContentId, streamItem] = item;
       }
-      if(streamItem){
-        if(!streamItem.liveStatus){
-          return
+      if (streamItem) {
+        if (!streamItem.liveStatus) {
+          return;
         }
-        if(streamItem.liveStatus === 'waiting'){
-          return
+        if (streamItem.liveStatus === "waiting") {
+          return;
         }
-        if(streamItem.liveStatus === 'wasLive'){
-          if(!streamItem.playbackMagnet){
-            return
+        if (streamItem.liveStatus === "wasLive") {
+          if (!streamItem.playbackMagnet) {
+            return;
           }
-          post.contentItems[streamContentId].type = 'video/embedded'
+          post.contentItems[streamContentId].type = "video/embedded";
           //@ts-expect-error
-          post.contentItems[streamContentId].magnetURI = streamItem.playbackMagnet
+          post.contentItems[streamContentId].magnetURI =
+            streamItem.playbackMagnet;
         }
-        
       }
 
       const profile =
