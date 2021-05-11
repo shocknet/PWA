@@ -36,7 +36,6 @@ import {
   subscribeFollows,
   unsubscribeFollows
 } from "../../actions/FeedActions";
-import node from "../../reducers/NodeReducer";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
