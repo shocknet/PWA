@@ -65,11 +65,11 @@ const OtherUserPage = () => {
   const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
-    subscribeFollows()(dispatch);
+    dispatch(subscribeFollows());
     return () => {
-      unsubscribeFollows();
+      dispatch(unsubscribeFollows());
     };
-  }, []);
+  }, [dispatch]);
   const subscribeUserPosts = useCallback(() => {
     const query = `${userPublicKey}::posts::on`;
     const subscription = rifle({
