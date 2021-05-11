@@ -138,3 +138,12 @@ a.bottom-nav-btn.active-nav-btn {
     flex: 1;
   }
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
