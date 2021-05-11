@@ -68,14 +68,14 @@ const MessagesPage = () => {
 
   const sendRequest = useCallback(
     async input => {
-      if(!input){
-        return
+      if (!input) {
+        return;
       }
       try {
-        let shockUser = input
-        if(input.startsWith("https://")){
-          const splitted = input.split('/')
-          shockUser = splitted[splitted.length -1]
+        let shockUser = input;
+        if (input.startsWith("https://")) {
+          const splitted = input.split("/");
+          shockUser = splitted[splitted.length - 1];
         }
         setSendError(null);
         setSendRequestLoading(true);
@@ -131,13 +131,14 @@ const MessagesPage = () => {
     setScanQR(false);
   }, [setScanQR]);
 
-  const scanErr = useCallback(e => {
-    console.log(e)
-    setSendError(e.message);
+  const scanErr = useCallback(
+    e => {
+      console.log(e);
+      setSendError(e.message);
     },
     [setSendError]
   );
-  
+
   const scanDone = useCallback(
     content => {
       if (!content || !content.text) {
@@ -145,7 +146,7 @@ const MessagesPage = () => {
       }
       sendRequest(content.text);
       setScanQR(false);
-      console.log(content.text)
+      console.log(content.text);
     },
     [sendRequest, setScanQR]
   );
@@ -162,7 +163,7 @@ const MessagesPage = () => {
       </div>
     );
   }
-console.log(sendError)
+  console.log(sendError);
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
