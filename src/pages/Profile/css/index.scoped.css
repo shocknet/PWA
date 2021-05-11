@@ -200,6 +200,26 @@ p.profile-clipboard-text {
   overflow-x: scroll;
 }
 
+/* #region scrollbar */
+
+.content-carousel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content-carousel::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.content-carousel::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.content-carousel::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* #endregion scrollbar */
+
 .preview-container {
   margin-left: 1em;
   margin-right: 1em;

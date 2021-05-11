@@ -2,6 +2,8 @@
   /* Expected to be inside <FullScreen /> which has display:flex */
   flex-grow: 1;
   text-align: center;
+  scrollbar-color: #888 var(--background);
+  scrollbar-width: thin;
 }
 
 .container > * {
@@ -13,3 +15,23 @@
   overflow-y: scroll;
   overflow-x: hidden;
 }
+
+/* #region scrollbar */
+
+.container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* #endregion scrollbar */

@@ -96,7 +96,7 @@ const OverviewPage = () => {
   ]);
 
   return (
-    <div className="page-container overview-page">
+    <div className="page-container overview-page no-scrollbar">
       <div className="overview-header">
         <MainNav absolute pageTitle={undefined} />
         <div className="overview-balance-container">
@@ -121,7 +121,7 @@ const OverviewPage = () => {
       <div className="recent-activity-container">
         <p className="recent-activity-title">Recent Activity</p>
         <PullToRefresh
-          className="recent-activity-entries"
+          className="recent-activity-entries no-scrollbar"
           pullingContent={
             <div className="pull-refresh-text">
               <i className="fas fa-arrow-down"></i> Pull down to refresh{" "}

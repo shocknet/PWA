@@ -16,7 +16,7 @@ import {
 
 import "./css/index.scoped.css";
 
-const PublishContentPage = () => {
+const CreatePostPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const publishedContent = Store.useSelector(Store.selectOwnPublishedContent);
@@ -250,4 +250,4 @@ const PublishContentPage = () => {
   );
 };
 
-export default PublishContentPage;
+export default CreatePostPage;

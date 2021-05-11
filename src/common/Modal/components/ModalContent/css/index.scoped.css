@@ -6,4 +6,27 @@
   border-radius: 0 0 15px 15px;
   flex: 1;
   overflow: auto;
+
+  scrollbar-color: #888 var(--modal-body-bg);
+  scrollbar-width: thin;
 }
+
+/* #region scrollbar */
+
+.content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: var(--modal-body-bg);
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* #endregion scrollbar */
