@@ -58,6 +58,7 @@
   border-radius: 6px;
   background-color: var(--main);
   border: 2px solid var(--main-blue);
+  cursor: pointer;
 }
 
 .config-btn-icon {
