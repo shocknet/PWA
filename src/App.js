@@ -1,5 +1,11 @@
 // @ts-check
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
@@ -67,45 +73,49 @@ const App = () => {
     f => f.user
   );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
-  const streamStatusUrl = Store.useSelector(({ content }) => content.streamStatusUrl);
-  const streamContentId = Store.useSelector(({ content }) => content.streamContentId);
+  const streamStatusUrl = Store.useSelector(
+    ({ content }) => content.streamStatusUrl
+  );
+  const streamContentId = Store.useSelector(
+    ({ content }) => content.streamContentId
+  );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
-  const streamUserToken = Store.useSelector(({ content }) => content.streamUserToken);
-  const [update,setUpdate] = useState(0)
-  const [isLive,setIsLive] = useState(false);
-  const [showFloatingPlayer,setShowFloatingPlayer] = useState(false);
+  const streamUserToken = Store.useSelector(
+    ({ content }) => content.streamUserToken
+  );
+  const [update, setUpdate] = useState(0);
+  const [isLive, setIsLive] = useState(false);
+  const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
   useEffect(() => {
-    if(!streamStatusUrl){
-      return
+    if (!streamStatusUrl) {
+      return;
     }
-    let timeout
-    const interval = setInterval(async ()=>{
-      try{
+    let timeout;
+    const interval = setInterval(async () => {
+      try {
         const res = await Http.get(streamStatusUrl);
         if (!res.data.isLive) {
-          return
+          return;
         }
-        setIsLive(true)
-        clearInterval(interval)
-        timeout = setTimeout(()=>{
-          console.info("upp")
-          setUpdate(Date.now())
-        },5000)
-      }catch(e){
-      }
-
-    },2000)
+        setIsLive(true);
+        clearInterval(interval);
+        timeout = setTimeout(() => {
+          console.info("upp");
+          setUpdate(Date.now());
+        }, 5000);
+      } catch (e) {}
+    }, 2000);
     return () => {
-      clearInterval(interval)
-      clearTimeout(timeout)
-    }
-  },[streamStatusUrl,setIsLive,setUpdate])
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [streamStatusUrl, setIsLive, setUpdate]);
   const StreamRender = useMemo(() => {
     return (
       <Stream
         hideRibbon={true}
-        item={{ magnetURI: streamUrl,liveStatus:'live' }}
+        item={{ magnetURI: streamUrl, liveStatus: "live" }}
         timeout={1500}
         id={undefined}
         index={undefined}
@@ -115,31 +125,33 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl,update]);
+  }, [streamUrl, update]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/gun/put", {
       path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>liveStatus`,
-      value: 'wasLive'
+      value: "wasLive"
     });
     removeStream()(dispatch);
-    console.info("doing it!!")
-    console.info(streamUserToken)
-    fetch(`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`)
-    .then(r => r.json())
-    .then(j => {
-      const {magnet} = j
-      if(!magnet){
-        return
-      }
-      Http.post("/api/gun/put", {
-        path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>playbackMagnet`,
-        value: magnet
-      });
-    })
-    .catch(e => console.info(e))
+    console.info("doing it!!");
+    console.info(streamUserToken);
+    fetch(
+      `https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`
+    )
+      .then(r => r.json())
+      .then(j => {
+        const { magnet } = j;
+        if (!magnet) {
+          return;
+        }
+        Http.post("/api/gun/put", {
+          path: `$user>posts>${streamPostId}>contentItems>${streamContentId}>playbackMagnet`,
+          value: magnet
+        });
+      })
+      .catch(e => console.info(e));
     history.push("/profile");
-  }, [dispatch,history,streamUserToken]);
+  }, [dispatch, history, streamUserToken]);
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -172,23 +184,32 @@ const App = () => {
     }
   }, [authenticated, dispatch, publicKey]);
 
-  useEffect(()=>{
-    const tmp = authenticated && isLive && streamUrl
-    if(tmp !== showFloatingPlayer){
-      setShowFloatingPlayer(tmp)
+  useEffect(() => {
+    const tmp = authenticated && isLive && streamUrl;
+    if (tmp !== showFloatingPlayer) {
+      setShowFloatingPlayer(tmp);
     }
-  },[authenticated,isLive,streamUrl,showFloatingPlayer,setShowFloatingPlayer])
-  useEffect(()=>{
-    if(showFloatingPlayer){
-      dragElement("floatyVideo")
+  }, [
+    authenticated,
+    isLive,
+    streamUrl,
+    showFloatingPlayer,
+    setShowFloatingPlayer
+  ]);
+  useEffect(() => {
+    if (showFloatingPlayer) {
+      dragElement("floatyVideo");
     }
-  },[showFloatingPlayer])
+  }, [showFloatingPlayer]);
   return (
     <FullHeight className="ShockWallet">
-      {showFloatingPlayer && <div id="floatyVideo" className="floaty-container">
-        <i id="floatyVideoHeader" className="fas fa-grip-vertical"></i>
-        {StreamRender}
-      <button onClick={stopStream}>CLOSE STREAM</button></div>}
+      {showFloatingPlayer && (
+        <div id="floatyVideo" className="floaty-container">
+          <i id="floatyVideoHeader" className="fas fa-grip-vertical"></i>
+          {StreamRender}
+          <button onClick={stopStream}>CLOSE STREAM</button>
+        </div>
+      )}
       <Drawer />
       <Suspense fallback={<Loader fullScreen text={null} />}>
         <Switch>
