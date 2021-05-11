@@ -19,3 +19,23 @@
 .followed > * {
   margin-right: 1em;
 }
+
+/* #region scrollbar */
+
+.followed::-webkit-scrollbar {
+  width: 10px;
+}
+
+.followed::-webkit-scrollbar-track {
+  background: var(--followers-background);
+}
+
+.followed::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.followed::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* #endregion scrollbar */
