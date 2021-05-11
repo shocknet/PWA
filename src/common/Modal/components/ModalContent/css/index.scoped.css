@@ -6,6 +6,9 @@
   border-radius: 0 0 15px 15px;
   flex: 1;
   overflow: auto;
+
+  scrollbar-color: #888 var(--modal-body-bg);
+  scrollbar-width: thin;
 }
 
 /* #region scrollbar */

@@ -10,6 +10,9 @@
   overflow-y: hidden;
   overflow-x: scroll;
   white-space: nowrap;
+
+  scrollbar-color: #888 var(--followers-background);
+  scrollbar-width: thin;
 }
 
 .followed * {

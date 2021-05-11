@@ -54,6 +54,8 @@ a.bottom-nav-btn.active-nav-btn {
 
 .ptr__children {
   overflow: hidden auto !important;
+  scrollbar-color: #888 var(--background);
+  scrollbar-width: thin;
 }
 
 .recent-activity-entries {
