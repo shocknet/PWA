@@ -38,7 +38,7 @@ const AuthPage = React.lazy(() => import("./pages/Auth"));
 const FeedPage = React.lazy(() => import("./pages/Feed"));
 const MoonPayPage = React.lazy(() => import("./pages/MoonPay"));
 const PublishContentPage = React.lazy(() =>
-  import("./pages/Profile/publishContent")
+  import("./pages/Profile/PublishContent")
 );
 const offerServicePage = React.lazy(() =>
   import("./pages/Profile/offerService")
