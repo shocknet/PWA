@@ -10,7 +10,7 @@ import { store, persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import "./styles/index.global.css";
 
-Http.defaults.timeout = 10000;
+Http.defaults.timeout = 20000;
 
 ReactDOM.render(
   <Provider store={store}>
