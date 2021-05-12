@@ -24,6 +24,7 @@ import InputGroup from "../../../common/InputGroup";
 
 const GoLive = () => {
   const dispatch = useDispatch();
+  const history = useHistory()
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
@@ -42,6 +43,8 @@ const GoLive = () => {
   const streamBroadcasterUrl = Store.useSelector(
     ({ content }) => content.streamBroadcasterUrl
   );
+  const streamContentId = Store.useSelector(({ content }) => content.streamContentId);
+  const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
@@ -233,7 +236,16 @@ const GoLive = () => {
   );
 
   const stopStream = useCallback(() => {
+    Http.post("/api/stopStream",{
+      postId:streamPostId, 
+      contentId:streamContentId, 
+      endUrl:`https://webtorrent.shock.network/api/stream/end`, 
+      urlForMagnet:`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`, 
+      obsToken:streamLiveToken
+    })
     removeStream()(dispatch);
+    console.info(streamUserToken)
+    history.push("/profile");
   }, [dispatch,removeStream]);
   const btnClass = c(
     gStyles.col,
