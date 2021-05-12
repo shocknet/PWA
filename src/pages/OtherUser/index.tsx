@@ -406,7 +406,7 @@ const OtherUserPage = () => {
 
   return (
     <div className={classNames("page-container", styles["profile-page"])}>
-      <div className={styles["profile-container"]}>
+      <div className={classNames(styles["profile-container"], "no-scrollbar")}>
         <div className="profile-cover">
           {user.header && (
             <img
