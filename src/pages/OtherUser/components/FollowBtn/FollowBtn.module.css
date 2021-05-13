@@ -11,11 +11,6 @@
   cursor: pointer;
 }
 
-.icon {
-  margin-right: 5px;
-  font-size: 14px;
-}
-
 .text {
   font-size: 12px;
   color: var(--main-blue);
