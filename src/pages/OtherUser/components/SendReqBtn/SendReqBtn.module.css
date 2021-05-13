@@ -1,0 +1,15 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: var(--main);
+  border: 2px solid var(--main-blue);
+  cursor: pointer;
+}
+
+.text {
+  font-size: 12px;
+  color: var(--main-blue);
+  font-weight: 600;
+}
