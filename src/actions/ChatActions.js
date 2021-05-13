@@ -14,6 +14,7 @@ import {
 } from "../utils/WebSocket";
 import { initialMessagePrefix } from "../utils/String";
 import * as Schema from "../schema";
+import * as Utils from "../utils";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').SentRequest} SentRequest
@@ -142,56 +143,70 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
   });
 };
 
+/**
+ * @param {string} userPublicKey
+ * @param {string} recipientPublicKey
+ * @returns {(dispatch: (action: any) => void) => Promise<{off(): void}>}
+ */
 export const subscribeChatMessages = (
   userPublicKey,
   recipientPublicKey
 ) => async dispatch => {
-  const { data: incomingId } = await Http.get(
-    `/api/gun/user/once/userToIncoming>${recipientPublicKey}`,
-    {
-      headers: {
-        "public-key-for-decryption": userPublicKey
+  try {
+    const { data: incomingId } = await Http.get(
+      `/api/gun/user/once/userToIncoming>${recipientPublicKey}`,
+      {
+        headers: {
+          "public-key-for-decryption": userPublicKey
+        }
       }
-    }
-  );
+    );
 
-  if (!incomingId.data) {
-    console.warn("Unable to retrieve incoming ID for selected contact");
-    return null;
+    if (!incomingId.data) {
+      throw new Error(`Unable to retrieve incoming ID for selected contact.`);
+    }
+
+    const incomingMessages = await rifle({
+      query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
+      publicKey: recipientPublicKey,
+      onData: (message, id) => {
+        if (!message.body || message.body === initialMessagePrefix) {
+          return;
+        }
+        /** @type {RawMessage} */
+        const rawMsg = message;
+
+        /** @type {ChatMessage} */
+        const msg = {
+          body: rawMsg.body,
+          id,
+          localId: id,
+          outgoing: false,
+          recipientPublicKey,
+          status: Schema.CHAT_MESSAGE_STATUS.SENT,
+          timestamp: rawMsg.timestamp
+        };
+
+        /** @type {ReceivedMessageAction} */
+        const action = {
+          type: ACTIONS.RECEIVED_MESSAGE,
+          data: msg
+        };
+
+        dispatch(action);
+      }
+    });
+
+    return incomingMessages;
+  } catch (e) {
+    Utils.logger.error(
+      `Error inside subscribeChatMessages, recipient public key: ${recipientPublicKey}: `,
+      e
+    );
+    return Promise.resolve({
+      off() {}
+    });
   }
-
-  const incomingMessages = await rifle({
-    query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
-    publicKey: recipientPublicKey,
-    onData: (message, id) => {
-      if (!message.body || message.body === initialMessagePrefix) {
-        return;
-      }
-      /** @type {RawMessage} */
-      const rawMsg = message;
-
-      /** @type {ChatMessage} */
-      const msg = {
-        body: rawMsg.body,
-        id,
-        localId: id,
-        outgoing: false,
-        recipientPublicKey,
-        status: Schema.CHAT_MESSAGE_STATUS.SENT,
-        timestamp: rawMsg.timestamp
-      };
-
-      /** @type {ReceivedMessageAction} */
-      const action = {
-        type: ACTIONS.RECEIVED_MESSAGE,
-        data: msg
-      };
-
-      dispatch(action);
-    }
-  });
-
-  return incomingMessages;
 };
 
 export const acceptHandshakeRequest = requestId => async dispatch => {
