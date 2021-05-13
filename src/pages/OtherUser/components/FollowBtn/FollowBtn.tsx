@@ -49,8 +49,6 @@ const FollowBtn = ({ publicKey }: FollowBtnProps) => {
 
   return (
     <div className={styles.container} onClick={handleFollow}>
-      <i className={c(styles.icon, "fas", "fa-user-plus")} />
-
       <p className={c(gStyles.unselectable, styles.text)}>
         {changingStatus ? "..." : isFollowed ? "Unfollow" : "Follow"}
       </p>

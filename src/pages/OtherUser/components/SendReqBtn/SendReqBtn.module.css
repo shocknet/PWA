@@ -5,9 +5,6 @@
   border-radius: 6px;
   background-color: var(--main);
   border: 2px solid var(--main-blue);
-}
-
-.container:hover {
   cursor: pointer;
 }
 

@@ -165,3 +165,7 @@ a.bottom-nav-btn.active-nav-btn {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

@@ -29,9 +29,11 @@ import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
 import ShareModal from "../Feed/components/ShareModal";
 import * as Store from "../../store";
+import * as gStyles from "../../styles";
 
 import styles from "./css/OtherUser.module.css";
 import FollowBtn from "./components/FollowBtn";
+import SendReqBtn from "./components/SendReqBtn";
 import {
   subscribeFollows,
   unsubscribeFollows
@@ -431,13 +433,19 @@ const OtherUserPage = () => {
               greyBorder
             />
           </div>
-          <div className={styles["profile-info"]}>
+          <div>
             <p className={styles["profile-name"]}>{user.displayName}</p>
             <p className={styles["profile-desc"]}>
               {user.bio || "Shockwallet user"}
             </p>
 
-            {!isMe && <FollowBtn publicKey={userPublicKey} />}
+            <div className={gStyles.rowCentered}>
+              {!isMe && <FollowBtn publicKey={userPublicKey} />}
+
+              <Pad amt={24} insideRow />
+
+              {!isMe && <SendReqBtn publicKey={userPublicKey} />}
+            </div>
           </div>
         </div>
 

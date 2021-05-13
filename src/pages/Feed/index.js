@@ -8,6 +8,7 @@ import React, {
   useState
 } from "react";
 import * as Common from "shock-common";
+import { useHistory } from "react-router-dom";
 
 import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
@@ -39,6 +40,7 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
@@ -141,7 +143,14 @@ const FeedPage = () => {
   return (
     <div className="page-container feed-page">
       <div className={styles.followed}>
-        <ShockAvatar forceAddBtn height={60} publicKey={selfPublicKey} />
+        <ShockAvatar
+          forceAddBtn
+          height={60}
+          publicKey={selfPublicKey}
+          onPress={useCallback(() => {
+            history.push("/createPost");
+          }, [history])}
+        />
 
         {follows?.map(follow => {
           return (

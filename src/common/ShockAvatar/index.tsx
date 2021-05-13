@@ -184,12 +184,18 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   return (
     <>
-      <div className={c(globalStyles.colCentered, globalStyles.relative)}>
+      <div
+        className={c(
+          globalStyles.colCentered,
+          globalStyles.relative,
+          "cursor-pointer"
+        )}
+        onClick={onPress}
+      >
         <img
           alt={`Avatar for ${displayName || "an user"}`}
           src={`data:image/jpeg;base64,${image || DEFAULT_USER_IMAGE}`}
           style={avatarStyle}
-          onClick={onPress}
         />
 
         {nameAtBottom && (
