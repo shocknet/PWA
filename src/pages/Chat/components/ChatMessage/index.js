@@ -49,7 +49,7 @@ const ChatMessage = ({
       console.error(e);
       return null;
     }
-  }, [timestamp])
+  }, [timestamp]);
 
   return (
     <div
@@ -61,7 +61,7 @@ const ChatMessage = ({
     >
       {receivedMessage && (
         <>
-          <ShockAvatar height={48} publicKey={publicKey} alignment="end" />
+          <ShockAvatar height={48} publicKey={publicKey} />
 
           <Pad amt={16} insideRow />
         </>
