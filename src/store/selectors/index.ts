@@ -17,8 +17,6 @@ export const selectIsInContact = (publicKey: string) => (
     chat: { contacts, sentRequests, receivedRequests }
   } = state;
 
-  console.log(sentRequests);
-
   const isContact = !!contacts.find(c => c.pk === publicKey);
   const hasSentReq = !!sentRequests.find(r => r.pk === publicKey);
   const hasReceivedReq = !!receivedRequests.find(r => r.pk === publicKey);
