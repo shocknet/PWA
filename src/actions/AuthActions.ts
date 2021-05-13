@@ -1,3 +1,4 @@
+// @ts-check
 export const ACTIONS = {
   RESET_AUTH_INFO: "auth/reset",
   SET_AUTH_STEP: "auth/step/set",
