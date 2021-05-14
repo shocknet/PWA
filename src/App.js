@@ -80,11 +80,15 @@ const App = () => {
     ({ content }) => content.streamContentId
   );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
-  const streamUserToken = Store.useSelector(({ content }) => content.streamUserToken);
-  const streamLiveToken = Store.useSelector(({ content }) => content.streamLiveToken);
-  const [update,setUpdate] = useState(0)
-  const [isLive,setIsLive] = useState(false);
-  const [showFloatingPlayer,setShowFloatingPlayer] = useState(false);
+  const streamUserToken = Store.useSelector(
+    ({ content }) => content.streamUserToken
+  );
+  const streamLiveToken = Store.useSelector(
+    ({ content }) => content.streamLiveToken
+  );
+  const [update, setUpdate] = useState(0);
+  const [isLive, setIsLive] = useState(false);
+  const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
   useEffect(() => {
     if (!streamStatusUrl) {
@@ -127,15 +131,15 @@ const App = () => {
   }, [streamUrl, update]);
 
   const stopStream = useCallback(() => {
-    Http.post("/api/stopStream",{
-      postId:streamPostId, 
-      contentId:streamContentId, 
-      endUrl:`https://webtorrent.shock.network/api/stream/end`, 
-      urlForMagnet:`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`, 
-      obsToken:streamLiveToken
-    })
+    Http.post("/api/stopStream", {
+      postId: streamPostId,
+      contentId: streamContentId,
+      endUrl: `https://webtorrent.shock.network/api/stream/end`,
+      urlForMagnet: `https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`,
+      obsToken: streamLiveToken
+    });
     removeStream()(dispatch);
-    console.info(streamUserToken)
+    console.info(streamUserToken);
     history.push("/profile");
   }, [dispatch, history, streamUserToken]);
 
