@@ -25,7 +25,11 @@ import "./styles/App.global.css";
 import Stream from "./common/Post/components/Stream";
 import { dragElement } from "./utils/ui";
 import { Http } from "./utils";
-import { removeStream } from "./actions/ContentActions";
+import {
+  removeStream,
+  setSeedInfo,
+  setSeedProviderPub
+} from "./actions/ContentActions";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -190,6 +194,52 @@ const App = () => {
       dragElement("floatyVideo");
     }
   }, [showFloatingPlayer]);
+
+  //load info about content provider stored into gun
+  const loadContentInfo = useCallback(async () => {
+    try {
+      const { data: serviceProvider } = await Http.get(
+        `/api/gun/user/load/seedServiceProviderPubKey`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        serviceProvider &&
+        typeof serviceProvider.data === "string" &&
+        serviceProvider.data !== ""
+      ) {
+        setSeedProviderPub(serviceProvider.data)(dispatch);
+      }
+      const { data: seedData } = await Http.get(
+        `/api/gun/user/load/seedServiceSeedData`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        seedData &&
+        typeof seedData.data === "string" &&
+        seedData.data !== ""
+      ) {
+        const JObject = JSON.parse(seedData.data);
+        if (JObject && JObject.seedUrl && JObject.seedToken) {
+          setSeedInfo(JObject.seedUrl, JObject.seedToken)(dispatch);
+        }
+      }
+    } catch (err) {
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err);
+    }
+  }, [dispatch, publicKey]);
+  useEffect(() => {
+    loadContentInfo();
+  }, [loadContentInfo]);
+
   return (
     <FullHeight className="ShockWallet">
       {showFloatingPlayer && (
