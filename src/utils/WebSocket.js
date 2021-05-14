@@ -339,7 +339,6 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   });
 
 /**
- *
  * @param {Promise<() => void>} subscription
  */
 export const rifleCleanup = (...subscriptions) => () => {
