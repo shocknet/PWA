@@ -56,7 +56,7 @@ const ContentHostInput = () => {
   }, [providerProfile, providedService, setProvidedService]);
   //effect to populate the hosts
   useEffect(() => {
-    let toSet = [];
+    let toSet: IHost[] = [];
     if (seedUrl && seedToken) {
       toSet.push({
         URI: seedUrl,
@@ -127,9 +127,9 @@ const ContentHostInput = () => {
     setHosts(tmpHosts);
   }, [providerError, setProviderError, hosts, setHosts]);
   const addHost = useCallback(
-    (publicKeyOrURI, token) => {
+    (publicKeyOrURI: string, token?: string) => {
       if (publicKeyOrURI.startsWith("http")) {
-        setSeedInfo(publicKeyOrURI, token)(dispatch);
+        setSeedInfo(publicKeyOrURI, token!)(dispatch);
       } else {
         setSeedProviderPub(publicKeyOrURI)(dispatch);
       }
