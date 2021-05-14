@@ -19,12 +19,12 @@ const INITIAL_STATE = {
   streamBroadcasterUrl: "",
   publishedContent: {} as Record<string, PublishedContent>,
   unlockedContent: {},
-  seedInfo: {},
+  seedInfo: {} as { seedUrl?: string; seedToken?: string },
   availableTokens: {},
   availableStreamTokens: {}
 };
 
-const content = (state = INITIAL_STATE, action) => {
+const content = (state = INITIAL_STATE, action): typeof INITIAL_STATE => {
   if (publishedContentAdded.match(action)) {
     return produce(state, draft => {
       const {
