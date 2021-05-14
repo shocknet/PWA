@@ -38,7 +38,10 @@ export const setSeedProviderPub = pub => async dispatch => {
     data: pub
   });
 };
-export const setSeedInfo = (seedUrl, seedToken) => async dispatch => {
+export const setSeedInfo = (
+  seedUrl: string,
+  seedToken: string
+) => async dispatch => {
   const cleanUrl = seedUrl.endsWith("/") ? seedUrl.slice(0, -1) : seedUrl;
   const infoS = JSON.stringify({ seedUrl: cleanUrl, seedToken });
   await Http.post("/api/gun/put", {

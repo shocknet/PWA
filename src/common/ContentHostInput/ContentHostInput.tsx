@@ -6,6 +6,7 @@ import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import ContentHostInputView, { IHost } from "./components/ContentHostInputView";
 import { Http } from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
+import * as Utils from "../../utils";
 
 const ContentHostInput = () => {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ const ContentHostInput = () => {
   }, [providerProfile, providedService, setProvidedService]);
   //effect to populate the hosts
   useEffect(() => {
-    let toSet = [];
+    let toSet: IHost[] = [];
     if (seedUrl && seedToken) {
       toSet.push({
         URI: seedUrl,
@@ -126,23 +127,34 @@ const ContentHostInput = () => {
     tmpHosts[providerIndex].error = err;
     setHosts(tmpHosts);
   }, [providerError, setProviderError, hosts, setHosts]);
+
   const addHost = useCallback(
-    (publicKeyOrURI, token) => {
-      if (publicKeyOrURI.startsWith("http")) {
-        setSeedInfo(publicKeyOrURI, token)(dispatch);
-      } else {
-        setSeedProviderPub(publicKeyOrURI)(dispatch);
+    (publicKeyOrURI: string, token?: string) => {
+      try {
+        if (publicKeyOrURI.startsWith("http")) {
+          setSeedInfo(publicKeyOrURI, token!)(dispatch);
+        } else {
+          setSeedProviderPub(publicKeyOrURI)(dispatch);
+        }
+      } catch (e) {
+        alert(`Could not add host: ${e.message}`);
+        Utils.logger.error("Could not add host: ", e);
       }
     },
     [dispatch]
   );
 
   const removeHost = useCallback(
-    publicKeyOrURI => {
-      if (publicKeyOrURI.startsWith("http")) {
-        setSeedInfo("", "")(dispatch);
-      } else {
-        setSeedProviderPub("")(dispatch);
+    (publicKeyOrURI: string) => {
+      try {
+        if (publicKeyOrURI.startsWith("http")) {
+          setSeedInfo("", "")(dispatch);
+        } else {
+          setSeedProviderPub("")(dispatch);
+        }
+      } catch (e) {
+        alert(`Could not remove host: ${e.message}`);
+        Utils.logger.error("Could not remove host: ", e);
       }
     },
     [dispatch]

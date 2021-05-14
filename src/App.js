@@ -25,7 +25,11 @@ import "./styles/App.global.css";
 import Stream from "./common/Post/components/Stream";
 import { dragElement } from "./utils/ui";
 import { Http } from "./utils";
-import { removeStream } from "./actions/ContentActions";
+import {
+  removeStream,
+  setSeedInfo,
+  setSeedProviderPub
+} from "./actions/ContentActions";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -64,14 +68,6 @@ const App = () => {
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const publicKey = Store.useSelector(Store.selectSelfPublicKey);
-  const contacts = Store.useSelector(({ chat }) => chat.contacts);
-  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = Store.useSelector(
-    ({ chat }) => chat.receivedRequests
-  );
-  const followedPublicKeys = Store.useSelector(Store.selectFollows).map(
-    f => f.user
-  );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const streamStatusUrl = Store.useSelector(
     ({ content }) => content.streamStatusUrl
@@ -80,11 +76,15 @@ const App = () => {
     ({ content }) => content.streamContentId
   );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
-  const streamUserToken = Store.useSelector(({ content }) => content.streamUserToken);
-  const streamLiveToken = Store.useSelector(({ content }) => content.streamLiveToken);
-  const [update,setUpdate] = useState(0)
-  const [isLive,setIsLive] = useState(false);
-  const [showFloatingPlayer,setShowFloatingPlayer] = useState(false);
+  const streamUserToken = Store.useSelector(
+    ({ content }) => content.streamUserToken
+  );
+  const streamLiveToken = Store.useSelector(
+    ({ content }) => content.streamLiveToken
+  );
+  const [, setUpdate] = useState(0);
+  const [isLive, setIsLive] = useState(false);
+  const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
   useEffect(() => {
     if (!streamStatusUrl) {
@@ -124,20 +124,27 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl, update]);
+  }, [streamUrl]);
 
   const stopStream = useCallback(() => {
-    Http.post("/api/stopStream",{
-      postId:streamPostId, 
-      contentId:streamContentId, 
-      endUrl:`https://webtorrent.shock.network/api/stream/end`, 
-      urlForMagnet:`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`, 
-      obsToken:streamLiveToken
-    })
+    Http.post("/api/stopStream", {
+      postId: streamPostId,
+      contentId: streamContentId,
+      endUrl: `https://webtorrent.shock.network/api/stream/end`,
+      urlForMagnet: `https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`,
+      obsToken: streamLiveToken
+    });
     removeStream()(dispatch);
-    console.info(streamUserToken)
+    console.info(streamUserToken);
     history.push("/profile");
-  }, [dispatch, history, streamUserToken]);
+  }, [
+    dispatch,
+    history,
+    streamContentId,
+    streamLiveToken,
+    streamPostId,
+    streamUserToken
+  ]);
 
   useEffect(() => {
     videojs.addLanguage("en", {
@@ -171,7 +178,7 @@ const App = () => {
   }, [authenticated, dispatch, publicKey]);
 
   useEffect(() => {
-    const tmp = authenticated && isLive && streamUrl;
+    const tmp = !!(authenticated && isLive && streamUrl);
     if (tmp !== showFloatingPlayer) {
       setShowFloatingPlayer(tmp);
     }
@@ -187,6 +194,52 @@ const App = () => {
       dragElement("floatyVideo");
     }
   }, [showFloatingPlayer]);
+
+  //load info about content provider stored into gun
+  const loadContentInfo = useCallback(async () => {
+    try {
+      const { data: serviceProvider } = await Http.get(
+        `/api/gun/user/load/seedServiceProviderPubKey`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        serviceProvider &&
+        typeof serviceProvider.data === "string" &&
+        serviceProvider.data !== ""
+      ) {
+        setSeedProviderPub(serviceProvider.data)(dispatch);
+      }
+      const { data: seedData } = await Http.get(
+        `/api/gun/user/load/seedServiceSeedData`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        seedData &&
+        typeof seedData.data === "string" &&
+        seedData.data !== ""
+      ) {
+        const JObject = JSON.parse(seedData.data);
+        if (JObject && JObject.seedUrl && JObject.seedToken) {
+          setSeedInfo(JObject.seedUrl, JObject.seedToken)(dispatch);
+        }
+      }
+    } catch (err) {
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err);
+    }
+  }, [dispatch, publicKey]);
+  useEffect(() => {
+    loadContentInfo();
+  }, [loadContentInfo]);
+
   return (
     <FullHeight className="ShockWallet">
       {showFloatingPlayer && (
