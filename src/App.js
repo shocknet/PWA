@@ -120,7 +120,7 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl, update]);
+  }, [streamUrl]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
@@ -133,7 +133,14 @@ const App = () => {
     removeStream()(dispatch);
     console.info(streamUserToken);
     history.push("/profile");
-  }, [dispatch, history, streamUserToken]);
+  }, [
+    dispatch,
+    history,
+    streamContentId,
+    streamLiveToken,
+    streamPostId,
+    streamUserToken
+  ]);
 
   useEffect(() => {
     videojs.addLanguage("en", {
