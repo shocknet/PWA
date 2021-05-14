@@ -174,7 +174,7 @@ const App = () => {
   }, [authenticated, dispatch, publicKey]);
 
   useEffect(() => {
-    const tmp = authenticated && isLive && streamUrl;
+    const tmp = !!(authenticated && isLive && streamUrl);
     if (tmp !== showFloatingPlayer) {
       setShowFloatingPlayer(tmp);
     }
