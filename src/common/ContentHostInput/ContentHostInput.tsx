@@ -145,7 +145,7 @@ const ContentHostInput = () => {
   );
 
   const removeHost = useCallback(
-    publicKeyOrURI => {
+    (publicKeyOrURI: string) => {
       try {
         if (publicKeyOrURI.startsWith("http")) {
           setSeedInfo("", "")(dispatch);
