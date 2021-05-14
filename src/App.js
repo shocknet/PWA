@@ -64,14 +64,6 @@ const App = () => {
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const publicKey = Store.useSelector(Store.selectSelfPublicKey);
-  const contacts = Store.useSelector(({ chat }) => chat.contacts);
-  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = Store.useSelector(
-    ({ chat }) => chat.receivedRequests
-  );
-  const followedPublicKeys = Store.useSelector(Store.selectFollows).map(
-    f => f.user
-  );
   const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const streamStatusUrl = Store.useSelector(
     ({ content }) => content.streamStatusUrl
@@ -86,7 +78,7 @@ const App = () => {
   const streamLiveToken = Store.useSelector(
     ({ content }) => content.streamLiveToken
   );
-  const [update, setUpdate] = useState(0);
+  const [, setUpdate] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
