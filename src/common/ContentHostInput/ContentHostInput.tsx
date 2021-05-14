@@ -6,6 +6,7 @@ import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import ContentHostInputView, { IHost } from "./components/ContentHostInputView";
 import { Http } from "../../utils";
 import { setSeedInfo, setSeedProviderPub } from "../../actions/ContentActions";
+import * as Utils from "../../utils";
 
 const ContentHostInput = () => {
   const dispatch = useDispatch();
@@ -126,12 +127,18 @@ const ContentHostInput = () => {
     tmpHosts[providerIndex].error = err;
     setHosts(tmpHosts);
   }, [providerError, setProviderError, hosts, setHosts]);
+
   const addHost = useCallback(
     (publicKeyOrURI: string, token?: string) => {
-      if (publicKeyOrURI.startsWith("http")) {
-        setSeedInfo(publicKeyOrURI, token!)(dispatch);
-      } else {
-        setSeedProviderPub(publicKeyOrURI)(dispatch);
+      try {
+        if (publicKeyOrURI.startsWith("http")) {
+          setSeedInfo(publicKeyOrURI, token!)(dispatch);
+        } else {
+          setSeedProviderPub(publicKeyOrURI)(dispatch);
+        }
+      } catch (e) {
+        alert(`Could not add host: ${e.message}`);
+        Utils.logger.error("Could not add host: ", e);
       }
     },
     [dispatch]
