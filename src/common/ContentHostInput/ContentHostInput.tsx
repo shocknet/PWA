@@ -146,10 +146,15 @@ const ContentHostInput = () => {
 
   const removeHost = useCallback(
     publicKeyOrURI => {
-      if (publicKeyOrURI.startsWith("http")) {
-        setSeedInfo("", "")(dispatch);
-      } else {
-        setSeedProviderPub("")(dispatch);
+      try {
+        if (publicKeyOrURI.startsWith("http")) {
+          setSeedInfo("", "")(dispatch);
+        } else {
+          setSeedProviderPub("")(dispatch);
+        }
+      } catch (e) {
+        alert(`Could not remove host: ${e.message}`);
+        Utils.logger.error("Could not remove host: ", e);
       }
     },
     [dispatch]
