@@ -100,7 +100,7 @@ const ScanStep = () => {
           <h2 className="m-auto" style={{marginBottom:"1rem"}}>Connect to ShockWizard</h2>
           
           <a target="_blank" href="https://github.com/shocknet/Wizard" className="w-50 m-auto" style={{marginBottom:"1rem"}}>
-            <img className="w-100" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900.png"></img>
+            <img className="w-100" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900tr.png"></img>
           </a>
           <p className="text-center m-b-1">ShockWizard is an easy to install Lightning node for your Desktop or Laptop.  Windows, MacOS and Desktop Linux users can download it  <a target="_blank" href="https://github.com/shocknet/Wizard" className="color-text-blue">Here</a></p>
           <p className="text-center ">At the end of the Wizard, scan the QR code to pair it with your mobile device.</p>
