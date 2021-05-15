@@ -267,6 +267,10 @@ p.shock-form-button-text {
   margin-top: 5em;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .m-auto {
   margin: auto;
 }
