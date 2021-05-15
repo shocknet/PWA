@@ -75,6 +75,15 @@ const HostStep = () => {
 
   return (
     <div className="auth-form-container">
+      <div className="vertical-flex m-b-5">
+        <div className="m-b-1">
+          <h2>Configure Your Node</h2>
+          <p>Shockwallet can connect to your own Lightning node, your node must be running <a href="https://github.com/shocknet/api" className="color-text-blue">ShockAPI</a> with LND</p>
+        </div>
+        <div>
+          <p>Umbrel, MyNode and Command Line instructions can be found <a href="" className="color-text-blue">Here</a></p>
+        </div>
+      </div>
       {!connecting && (
         <p className="auth-form-container-title">Connect to Node</p>
       )}

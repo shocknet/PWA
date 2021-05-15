@@ -250,6 +250,26 @@ p.shock-form-button-text {
 .m-b-1 {
   margin-bottom: 1em;
 }
+.m-b-3 {
+  margin-bottom: 3em;
+}
+.m-b-5 {
+  margin-bottom: 5em;
+}
+
+.m-t-1 {
+  margin-top: 1em;
+}
+.m-t-3 {
+  margin-top: 3em;
+}
+.m-t-5 {
+  margin-top: 5em;
+}
+
+.m-auto {
+  margin: auto;
+}
 
 .d-flex {
   display: flex;
@@ -262,6 +282,11 @@ p.shock-form-button-text {
 .flex-center {
   display: flex;
   justify-content: center;
+}
+
+.vertical-flex {
+  display: flex;
+  flex-direction: column;
 }
 
 .vertical-flex-center {
@@ -309,4 +334,8 @@ p.shock-form-button-text {
     top: 0;
     background-color: var(--background);
   }
+}
+
+.color-text-blue {
+  color: var(--text-blue);
 }

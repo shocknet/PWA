@@ -11,6 +11,11 @@ const ScanStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const [scan, setScan] = useState(false);
+
+  const openScanner = useCallback(()=>{
+    setScan(true)
+  },[setScan])
 
   const connectHostIP = useCallback(
     async (hostIP, walletPort) => {
@@ -79,12 +84,30 @@ const ScanStep = () => {
   return (
     <div className="auth-form-container">
       {loading ? <Loader fullScreen overlay text="Loading Host..." /> : null}
-      <QRCodeScanner
+      {scan && <QRCodeScanner
         mode="wizard"
         onScan={onScan}
         onError={onError}
         onClose={closeScanner}
-      />
+      />}
+      {!scan && <div className="vertical-flex m-b-5">
+        <div className="m-b-1">
+          <div className="w-100 d-flex">
+          <h2 className="m-auto">Connect to ShockWizard</h2>
+            
+          </div>
+          <div className="d-flex m-b-1 m-t-1">
+          <img className="w-50 m-auto" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900.png"></img>
+          </div>
+          <p>ShockWizard is an easy to install Lightning node for your Desktop or Laptop.  Windows, MacOS and Desktop Linux users can download it  <a href="https://github.com/shocknet/Wizard" className="color-text-blue">Here</a></p>
+        </div>
+        <div>
+          <p>At the end of the Wizard, scan the QR code to pair it with your mobile device.</p>
+        </div>
+      </div>}
+      {!scan && <button className="submit-btn" onClick={openScanner}>
+        Scan QR
+      </button>}
     </div>
   );
 };
