@@ -26,6 +26,7 @@ import Stream from "./common/Post/components/Stream";
 import { dragElement } from "./utils/ui";
 import { Http } from "./utils";
 import {
+  addStream,
   removeStream,
   setSeedInfo,
   setSeedProviderPub
@@ -211,8 +212,13 @@ const App = () => {
         typeof serviceProvider.data === "string" &&
         serviceProvider.data !== ""
       ) {
-        setSeedProviderPub(serviceProvider.data)(dispatch);
+        setSeedProviderPub(serviceProvider.data,true)(dispatch);
       }
+    }catch(err){
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err);
+    }
+    try{
       const { data: seedData } = await Http.get(
         `/api/gun/user/load/seedServiceSeedData`,
         {
@@ -228,7 +234,7 @@ const App = () => {
       ) {
         const JObject = JSON.parse(seedData.data);
         if (JObject && JObject.seedUrl && JObject.seedToken) {
-          setSeedInfo(JObject.seedUrl, JObject.seedToken)(dispatch);
+          setSeedInfo(JObject.seedUrl, JObject.seedToken,true)(dispatch);
         }
       }
     } catch (err) {
@@ -237,8 +243,50 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
+    if(!authenticated){
+      return
+    }
     loadContentInfo();
-  }, [loadContentInfo]);
+  }, [authenticated,loadContentInfo]);
+
+  //load info about current stream stored into gun
+  const loadStreamInfo = useCallback(async () => {
+    try {
+      const { data: streamData } = await Http.get(
+        `/api/gun/user/load/currentStreamInfo`,
+        {
+          headers: {
+            "public-key-for-decryption": publicKey
+          }
+        }
+      );
+      if (
+        streamData &&
+        typeof streamData.data === "string" &&
+        streamData.data !== ""
+      ) {
+        if(streamData.data === 'NO DATA'){
+          removeStream(true)(dispatch)
+          return
+        }
+        const JObject = JSON.parse(streamData.data);
+        
+        if (JObject) {
+          addStream(JObject,true)(dispatch);
+        }
+      }
+    } catch (err) {
+      //if something goes wrong just log the error, no need to do anything else
+      console.log(err);
+    }
+  }, [dispatch, publicKey]);
+  useEffect(() => {
+    console.log("load info effect")
+    if(!authenticated){
+      return
+    }
+    loadStreamInfo();
+  }, [authenticated,loadStreamInfo]);
 
   return (
     <FullHeight className="ShockWallet">
