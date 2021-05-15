@@ -81,6 +81,11 @@ const ScanStep = () => {
     dispatch(setAuthStep(null));
   }, [dispatch]);
 
+  const chooseAnotherMethod = useCallback(() => {
+    dispatch(setAuthMethod(null));
+    dispatch(setAuthStep(null));
+  }, [dispatch]);
+
   return (
     <div className="auth-form-container">
       {loading ? <Loader fullScreen overlay text="Loading Host..." /> : null}
@@ -90,24 +95,24 @@ const ScanStep = () => {
         onError={onError}
         onClose={closeScanner}
       />}
-      {!scan && <div className="vertical-flex m-b-5">
-        <div className="m-b-1">
-          <div className="w-100 d-flex">
-          <h2 className="m-auto">Connect to ShockWizard</h2>
-            
-          </div>
-          <div className="d-flex m-b-1 m-t-1">
-          <img className="w-50 m-auto" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900.png"></img>
-          </div>
-          <p>ShockWizard is an easy to install Lightning node for your Desktop or Laptop.  Windows, MacOS and Desktop Linux users can download it  <a href="https://github.com/shocknet/Wizard" className="color-text-blue">Here</a></p>
-        </div>
-        <div>
-          <p>At the end of the Wizard, scan the QR code to pair it with your mobile device.</p>
+      {!scan && <div className="vertical-flex-center">
+        <div className="m-b-1 vertical-flex-center">
+          <h2 className="m-auto" style={{marginBottom:"1rem"}}>Connect to ShockWizard</h2>
+          
+          <a target="_blank" href="https://github.com/shocknet/Wizard" className="w-50 m-auto" style={{marginBottom:"1rem"}}>
+            <img className="w-100" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900.png"></img>
+          </a>
+          <p className="text-center m-b-1">ShockWizard is an easy to install Lightning node for your Desktop or Laptop.  Windows, MacOS and Desktop Linux users can download it  <a target="_blank" href="https://github.com/shocknet/Wizard" className="color-text-blue">Here</a></p>
+          <p className="text-center ">At the end of the Wizard, scan the QR code to pair it with your mobile device.</p>
         </div>
       </div>}
+      <div style={{height:"15vh"}}></div>
       {!scan && <button className="submit-btn" onClick={openScanner}>
         Scan QR
       </button>}
+      {!scan && <p className="inline-link" onClick={chooseAnotherMethod}>
+        Choose another method
+      </p>}
     </div>
   );
 };
