@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
 /**
  * @typedef {import('shock-common').Message} RawMessage
+ * @typedef {import('../../schema').Subscription} Subscription
  */
 
 import {
@@ -146,7 +147,7 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 /**
  * @param {string} userPublicKey
  * @param {string} recipientPublicKey
- * @returns {(dispatch: (action: any) => void) => Promise<{off(): void}>}
+ * @returns {(dispatch: (action: any) => void) => Promise<Subscription>}
  */
 export const subscribeChatMessages = (
   userPublicKey,

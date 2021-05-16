@@ -7,6 +7,7 @@ import { setAuthenticated } from "../actions/AuthActions";
 import { connectHost } from "../actions/NodeActions";
 /**
  * @typedef {import('../schema').Contact} Contact
+ * @typedef {import('../schema').Subscription} Subscription
  */
 
 const options = {
@@ -298,7 +299,7 @@ export const rifleSocketExists = subscriptionId => {
  * gun.get('handshakeNodes').on(...)
  * ```
  * @param {RifleParams} args
- * @returns {Promise<{ off: () => void }>}
+ * @returns {Promise<Subscription>}
  */
 export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   new Promise((resolve, reject) => {
