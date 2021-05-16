@@ -31,6 +31,7 @@ import {
   setSeedInfo,
   setSeedProviderPub
 } from "./actions/ContentActions";
+import { closeDialog } from "./actions/AppActions";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -82,6 +83,12 @@ const App = () => {
   );
   const streamLiveToken = Store.useSelector(
     ({ content }) => content.streamLiveToken
+  );
+  const dialogText = Store.useSelector(
+    ({ app }) => app.dialogText
+  );
+  const dialogHasCallback = Store.useSelector(
+    ({ app }) => app.dialogHasCallback
   );
   const [, setUpdate] = useState(0);
   const [isLive, setIsLive] = useState(false);
@@ -266,7 +273,7 @@ const App = () => {
         streamData.data !== ""
       ) {
         if(streamData.data === 'NO DATA'){
-          removeStream(true)(dispatch)
+          removeStream(true,true)(dispatch)
           return
         }
         const JObject = JSON.parse(streamData.data);
@@ -281,13 +288,19 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
-    console.log("load info effect")
     if(!authenticated){
       return
     }
     loadStreamInfo();
   }, [authenticated,loadStreamInfo]);
 
+  const DialogClose = useCallback(()=>{
+    closeDialog(false)(dispatch)
+  },[closeDialog,dispatch])
+
+  const ConfirmDialog = useCallback(() => {
+    closeDialog(dialogHasCallback)(dispatch)
+  },[dialogHasCallback,closeDialog,dispatch])
   return (
     <FullHeight className="ShockWallet">
       {showFloatingPlayer && (
@@ -297,6 +310,18 @@ const App = () => {
           <button onClick={stopStream}>CLOSE STREAM</button>
         </div>
       )}
+      {dialogText &&
+        <div className="fixed-container">
+          <div className="global-dialog">
+            <p>{dialogText}</p>
+            <div className="d-flex flex-justify-center w-80">
+              {dialogHasCallback && <button className="shock-form-button m-t-1 w-50" onClick={DialogClose}>Cancel</button>}
+              {dialogHasCallback && <div style={{width:"1rem"}}></div>}
+              <button className="shock-form-button-confirm m-t-1 w-50" onClick={ConfirmDialog}>OK</button>
+            </div>
+          </div>
+        </div>
+      }
       <Drawer />
       <Suspense fallback={<Loader fullScreen text={null} />}>
         <Switch>

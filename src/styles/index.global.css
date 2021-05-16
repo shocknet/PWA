@@ -239,6 +239,10 @@ p.shock-form-button-text {
   height: 100%;
 }
 
+.w-80 {
+  width: 80%;
+}
+
 .w-50 {
   width: 50%;
 }
@@ -281,6 +285,9 @@ p.shock-form-button-text {
 
 .flex-align-center {
   align-items: center;
+}
+.flex-justify-center {
+  justify-content: center;
 }
 
 .flex-center {
