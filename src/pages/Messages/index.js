@@ -5,7 +5,8 @@ import { DateTime } from "luxon";
 import {
   loadChatData,
   sendHandshakeRequest,
-  subRecipientToOutgoing
+  subRecipientToOutgoing,
+  subUserToIncoming
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -46,6 +47,13 @@ const MessagesPage = () => {
 
   useEffect(() => {
     const sub = dispatch(subRecipientToOutgoing());
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const sub = dispatch(subUserToIncoming());
     return () => {
       sub.then(sub => sub.off());
     };

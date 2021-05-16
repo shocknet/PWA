@@ -12,7 +12,11 @@ import produce from "immer";
  */
 
 import * as Schema from "../schema";
-import { ACTIONS, recipientToOutgoingReceived } from "../actions/ChatActions";
+import {
+  ACTIONS,
+  recipientToOutgoingReceived,
+  userToIncomingReceived
+} from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
@@ -33,7 +37,8 @@ const INITIAL_STATE = {
   sentRequests: /** @type {SentRequest[]} */ ([]),
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: [],
-  recipientToOutgoing: /** @type {Record<string, string>} */ ({})
+  recipientToOutgoing: /** @type {Record<string, string>} */ ({}),
+  userToIncoming: /** @type {Record<string, string>} */ ({})
 };
 
 /**
@@ -115,6 +120,16 @@ const chat = (state = INITIAL_STATE, action) => {
         delete draft.recipientToOutgoing[publicKey];
       } else {
         draft.recipientToOutgoing[publicKey] = outgoingID;
+      }
+    });
+  }
+  if (userToIncomingReceived.match(action)) {
+    const { incomingID, publicKey } = action.payload;
+    return produce(state, draft => {
+      if (incomingID === null) {
+        delete draft.userToIncoming[publicKey];
+      } else {
+        draft.userToIncoming[publicKey] = incomingID;
       }
     });
   }
