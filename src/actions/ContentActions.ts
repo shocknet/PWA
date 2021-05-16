@@ -4,6 +4,7 @@ import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
 import { PublishedContent, isPublishedContent } from "../schema";
 import { parseJson } from "../utils";
+import { openDialog } from "./AppActions";
 
 export const ACTIONS = {
   SET_SEED_PROVIDER_PUB: "content/setSeedProviderPub",
@@ -21,18 +22,20 @@ export const ACTIONS = {
   REMOVE_STREAM_TOKEN: "content/removeStreamToken"
 } as const;
 
-export const setSeedProviderPub = pub => async dispatch => {
-  let value: string | Record<string, any> = {
-    $$__ENCRYPT__FOR: "me",
-    value: pub
-  };
-  if (!pub) {
-    value = "";
+export const setSeedProviderPub = (pub, dontBackup = false) => async dispatch => {
+  if(!dontBackup){
+    let value: string | Record<string, any> = {
+      $$__ENCRYPT__FOR: "me",
+      value: pub
+    };
+    if (!pub) {
+      value = "";
+    }
+    await Http.post("/api/gun/put", {
+      path: "$user>seedServiceProviderPubKey",
+      value
+    });
   }
-  await Http.post("/api/gun/put", {
-    path: "$user>seedServiceProviderPubKey",
-    value
-  });
   dispatch({
     type: ACTIONS.SET_SEED_PROVIDER_PUB,
     data: pub
@@ -40,17 +43,20 @@ export const setSeedProviderPub = pub => async dispatch => {
 };
 export const setSeedInfo = (
   seedUrl: string,
-  seedToken: string
+  seedToken: string,
+  dontBackup = false
 ) => async dispatch => {
   const cleanUrl = seedUrl.endsWith("/") ? seedUrl.slice(0, -1) : seedUrl;
-  const infoS = JSON.stringify({ seedUrl: cleanUrl, seedToken });
-  await Http.post("/api/gun/put", {
-    path: "$user>seedServiceSeedData",
-    value: {
-      $$__ENCRYPT__FOR: "me",
-      value: infoS
-    }
-  });
+  if(!dontBackup){
+    const infoS = JSON.stringify({ seedUrl: cleanUrl, seedToken });
+    await Http.post("/api/gun/put", {
+      path: "$user>seedServiceSeedData",
+      value: {
+        $$__ENCRYPT__FOR: "me",
+        value: infoS
+      }
+    });
+  }
   dispatch({
     type: ACTIONS.SET_SEED_INFO,
     data: { seedUrl: cleanUrl, seedToken }
@@ -118,7 +124,27 @@ export const addStream = ({
   streamContentId,
   streamStatusUrl,
   streamBroadcasterUrl
-}) => dispatch => {
+},dontBackup = false) => async dispatch => {
+  if(!dontBackup){
+    await Http.post(
+      "/api/gun/put",
+      {
+        path: "$user>currentStreamInfo",
+        value: {
+          $$__ENCRYPT__FOR: "me",
+          value: JSON.stringify({
+            seedToken,
+            liveToken,
+            streamUrl,
+            streamPostId,
+            streamContentId,
+            streamStatusUrl,
+            streamBroadcasterUrl
+          })
+        }
+      }
+    );
+  }
   dispatch({
     type: ACTIONS.ADD_STREAM,
     data: {
@@ -132,7 +158,24 @@ export const addStream = ({
     }
   });
 };
-export const removeStream = () => dispatch => {
+export const removeStream = (dontBackup = false, noDialog = false) => async dispatch => {
+  if(!noDialog){
+    openDialog({
+      text:"The recording of the stream will be published in a few moments."
+    })(dispatch)
+  }
+  if(!dontBackup){
+    await Http.post(
+      "/api/gun/put",
+      {
+        path: "$user>currentStreamInfo",
+        value: {
+          $$__ENCRYPT__FOR: "me",
+          value: "NO DATA"
+        }
+      }
+    );
+  }
   dispatch({
     type: ACTIONS.REMOVE_STREAM
   });
