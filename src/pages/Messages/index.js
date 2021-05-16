@@ -1,6 +1,5 @@
 // @ts-check
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
@@ -16,6 +15,7 @@ import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
+import { useDispatch } from "../../utils";
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
