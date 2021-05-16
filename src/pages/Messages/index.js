@@ -2,7 +2,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
 
-import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
+import {
+  loadChatData,
+  sendHandshakeRequest,
+  subRecipientToOutgoing
+} from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
@@ -39,6 +43,13 @@ const MessagesPage = () => {
   useEffect(() => {
     loadChat();
   }, [loadChat]);
+
+  useEffect(() => {
+    const sub = dispatch(subRecipientToOutgoing());
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const subscriptions = [
