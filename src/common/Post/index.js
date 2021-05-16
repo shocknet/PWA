@@ -42,12 +42,13 @@ const Post = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
   const [liveStatus, setLiveStatus] = useState("");
+  const [viewersCounter, setViewersCounter] = useState(0);
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
 
-  //effect for liveStatus
+  //effect for liveStatus and viewers counter
   useEffect(() => {
     const values = Object.values(contentItems);
     const videoContent = values.find(
@@ -58,10 +59,13 @@ const Post = ({
     );
     let status = "";
     if (videoContent) {
-      status = videoContent.liveStatus;
+      status = "Was Live"
     }
     if (streamContent) {
-      status = streamContent.liveStatus;
+      status = "Is Live"
+      if(streamContent.viewersCounter){
+        setViewersCounter(streamContent.viewersCounter)
+      }
     }
     if (status) {
       setLiveStatus(status);
@@ -271,9 +275,10 @@ const Post = ({
                   {liveStatus}
                   <i
                     className={`fas fa-circle liveStatusIcon ${
-                      liveStatus === "live" ? "liveIcon" : ""
+                      liveStatus === "Is Live" ? "liveIcon" : ""
                     }`}
-                  ></i>
+                  ></i>  
+                  {liveStatus === 'Is Live' &&  <span> | {viewersCounter} watching</span>}
                 </p>
               )}
             </div>
