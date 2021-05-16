@@ -334,16 +334,7 @@ const ProfilePage = () => {
           [streamContentId, streamItem] = item;
         }
         if (streamItem) {
-          if (!streamItem.liveStatus) {
-            return;
-          }
-          if (streamItem.liveStatus === "waiting") {
-            return;
-          }
-          if (streamItem.liveStatus === "wasLive") {
-            if (!streamItem.playbackMagnet) {
-              return;
-            }
+          if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
             post.originalPost.contentItems[streamContentId].type =
               "video/embedded";
             //@ts-expect-error
@@ -385,16 +376,7 @@ const ProfilePage = () => {
         [streamContentId, streamItem] = item;
       }
       if (streamItem) {
-        if (!streamItem.liveStatus) {
-          return;
-        }
-        if (streamItem.liveStatus === "waiting") {
-          return;
-        }
-        if (streamItem.liveStatus === "wasLive") {
-          if (!streamItem.playbackMagnet) {
-            return;
-          }
+        if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
           post.contentItems[streamContentId].type = "video/embedded";
           //@ts-expect-error
           post.contentItems[streamContentId].magnetURI =
