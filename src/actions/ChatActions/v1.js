@@ -1,5 +1,5 @@
 // @ts-check
-import Http from "../utils/Http";
+import Http from "../../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
 /**
@@ -11,15 +11,15 @@ import {
   getReceivedRequests,
   getSentRequests,
   rifle
-} from "../utils/WebSocket";
-import { initialMessagePrefix } from "../utils/String";
-import * as Schema from "../schema";
-import * as Utils from "../utils";
+} from "../../utils/WebSocket";
+import { initialMessagePrefix } from "../../utils/String";
+import * as Schema from "../../schema";
+import * as Utils from "../../utils";
 /**
- * @typedef {import('../schema').Contact} Contact
- * @typedef {import('../schema').SentRequest} SentRequest
- * @typedef {import("../schema").ReceivedRequest} ReceivedRequest
- * @typedef {import('../schema').ChatMessage} ChatMessage
+ * @typedef {import('../../schema').Contact} Contact
+ * @typedef {import('../../schema').SentRequest} SentRequest
+ * @typedef {import("../../schema").ReceivedRequest} ReceivedRequest
+ * @typedef {import('../../schema').ChatMessage} ChatMessage
  */
 
 export const ACTIONS = {
