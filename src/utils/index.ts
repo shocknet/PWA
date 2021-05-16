@@ -1,6 +1,10 @@
 import * as Common from "shock-common";
 import { useCallback, useState } from "react";
+import { Action } from "redux";
+import { useDispatch as originalUseDispatch } from "react-redux";
+import { ThunkDispatch } from "redux-thunk";
 
+import { State } from "../reducers";
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
 
 export * from "./Date";
@@ -199,3 +203,7 @@ export const useBooleanState = (initialState: boolean) => {
 };
 
 export const parseJson = (o: string) => JSON.parse(o) as unknown;
+
+export const useDispatch = (): ThunkDispatch<State, undefined, Action> => {
+  return originalUseDispatch() as ThunkDispatch<State, undefined, Action>;
+};
