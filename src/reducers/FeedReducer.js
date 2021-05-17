@@ -4,6 +4,7 @@
  */
 
 import { ACTIONS } from "../actions/FeedActions";
+import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 /**
  * @typedef {import('../schema').Post} Post
  * @typedef {import('../schema').SharedPost} SharedPost
@@ -147,6 +148,9 @@ const feed = (state = INITIAL_STATE, action) => {
           [sharerId]: updatedPosts
         }
       };
+    }
+    case AUTH_ACTIONS.LOGOUT :{
+      return INITIAL_STATE
     }
     default:
       return state;
