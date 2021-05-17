@@ -10,6 +10,7 @@ const CreateAliasStep = () => {
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -22,10 +23,14 @@ const CreateAliasStep = () => {
         setPassword(value);
         return;
       }
+      case "confirmPassword": {
+        setConfirmPassword(value);
+        return;
+      }
       default:
         return;
     }
-  }, []);
+  }, [setAlias,setPassword,setConfirmPassword]);
 
   const onSubmit = useCallback(
     async e => {
@@ -33,6 +38,11 @@ const CreateAliasStep = () => {
 
       if (alias.length < 3 || alias.length > 32) {
         setError("Please specify an alias that is 3-32 characters long");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError("Password and Confirm password fields must match");
         return;
       }
 
@@ -46,7 +56,7 @@ const CreateAliasStep = () => {
         setLoading(false);
       }
     },
-    [alias, password, dispatch]
+    [alias, password,confirmPassword, dispatch]
   );
 
   const chooseUnlockWallet = useCallback(() => {
@@ -80,6 +90,14 @@ const CreateAliasStep = () => {
           name="password"
           placeholder="LND Wallet Password"
           value={password}
+          onChange={onInputChange}
+          className="input-field"
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Wallet Password"
+          value={confirmPassword}
           onChange={onInputChange}
           className="input-field"
         />

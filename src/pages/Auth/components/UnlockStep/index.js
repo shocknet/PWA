@@ -56,6 +56,10 @@ const UnlockStep = () => {
     dispatch(setAuthMethod(null));
     dispatch(setAuthStep(null));
   }, [dispatch]);
+  
+  const createNewAlias = useCallback(() => {
+    dispatch(setAuthStep("createGun"));
+  }, [dispatch]);
 
   return (
     <div className="auth-form-container">
@@ -115,7 +119,7 @@ const UnlockStep = () => {
         />
         {error ? <p className="error-container">{error}</p> : null}
         <button className="submit-btn">Unlock</button>
-        <p className="inline-link" onClick={chooseAnotherMethod}>
+        <p className="inline-link" onClick={createNewAlias}>
           Create a new alias
         </p>
         <p className="inline-link" onClick={chooseAnotherMethod}>
