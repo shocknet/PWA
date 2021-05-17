@@ -38,7 +38,7 @@ const INITIAL_STATE = {
   sentRequests: /** @type {SentRequest[]} */ ([]),
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: [],
-  currentHandshakeAddress: /** @type {string} */ (""),
+  currentHandshakeAddress: /** @type {string} */ ("donotexistdoesnotexist"),
   recipientToOutgoing: /** @type {Record<string, string>} */ ({}),
   userToIncoming: /** @type {Record<string, string>} */ ({})
 };
