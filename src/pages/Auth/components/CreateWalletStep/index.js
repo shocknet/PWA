@@ -30,7 +30,7 @@ const CreateWalletStep = () => {
       default:
         return;
     }
-  }, []);
+  }, [setAlias,setPassword,setConfirmPassword]);
 
   const onSubmit = useCallback(
     async e => {

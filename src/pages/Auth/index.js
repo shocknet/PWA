@@ -12,19 +12,21 @@ import LogoSection from "./components/LogoSection";
 import ChoicesStep from "./components/ChoicesStep";
 import InviteStep from "./components/InviteStep";
 import ScanStep from "./components/ScanStep";
+import * as Store from "../../store"
 import "./css/index.css";
+import CreateAliasStep from "./components/CreateAliasStep";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
-  const cachedHostIP = useSelector(({ node }) => node.hostIP);
+  const cachedHostIP = Store.useSelector(({ node }) => node.hostIP);
   const [loading, setLoading] = useState(!!cachedHostIP);
   const [error, setError] = useState(null);
-  const authTokenExpirationDate = useSelector(
+  const authTokenExpirationDate = Store.useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
-  const authToken = useSelector(({ node }) => node.authToken);
-  const authStep = useSelector(({ auth }) => auth.authStep);
-  const authMethod = useSelector(({ auth }) => auth.authMethod);
+  const authToken = Store.useSelector(({ node }) => node.authToken);
+  const authStep = Store.useSelector(({ auth }) => auth.authStep);
+  const authMethod = Store.useSelector(({ auth }) => auth.authMethod);
 
   const handleBackOnError = useCallback(() => {
     setError(null);
@@ -56,6 +58,10 @@ const AuthPage = () => {
 
     if (authStep === "createWallet") {
       return <CreateWalletStep />;
+    }
+
+    if (authStep === "createGun") {
+      return <CreateAliasStep />;
     }
 
     return <ChoicesStep />;
