@@ -90,7 +90,7 @@ const App = () => {
   const dialogHasCallback = Store.useSelector(
     ({ app }) => app.dialogHasCallback
   );
-  const [, setUpdate] = useState(0);
+  const [update, setUpdate] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
@@ -132,7 +132,7 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl]);
+  }, [streamUrl,update]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
