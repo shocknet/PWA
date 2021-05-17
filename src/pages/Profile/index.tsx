@@ -58,6 +58,7 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [deletePostModalData, setDeletePostModalData] = useState(null);
+  const [deletePostModalLoading, setDeletePostModalLoading] = useState(false);
 
   const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
@@ -276,6 +277,7 @@ const ProfilePage = () => {
       if (!deletePostModalData || !deletePostModalData.id) {
         return;
       }
+      setDeletePostModalLoading(true)
       console.log("deleting:");
       console.log(deletePostModalData);
       const key = deletePostModalData.shared ? "sharedPosts" : "posts";
@@ -290,12 +292,14 @@ const ProfilePage = () => {
         })
       );
       toggleDeleteModal(null);
+      setDeletePostModalLoading(true)
     } catch (e) {
+      setDeletePostModalLoading(true)
       console.log(`Error when deleting post:`);
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
     }
-  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal]);
+  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal,setDeletePostModalLoading]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -757,7 +761,8 @@ const ProfilePage = () => {
             }}
           >
             <div>You sure delete</div>
-            <div className="flex-center" style={{ marginTop: "auto" }}>
+            {deletePostModalLoading && <Loader />}
+            {!deletePostModalLoading && <div className="flex-center" style={{ marginTop: "auto" }}>
               <button
                 onClick={closeDeleteModal}
                 className="shock-form-button m-1"
@@ -770,7 +775,7 @@ const ProfilePage = () => {
               >
                 DELETE
               </button>
-            </div>
+            </div>}
           </Modal>
           <AddBtn
             onClick={toggleModal}
