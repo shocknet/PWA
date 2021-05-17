@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import {
   loadChatData,
   sendHandshakeRequest,
+  subCurrentHandshakeAddress,
   subRecipientToOutgoing,
   subUserToIncoming
 } from "../../actions/ChatActions";
@@ -44,6 +45,14 @@ const MessagesPage = () => {
   useEffect(() => {
     loadChat();
   }, [loadChat]);
+
+  useEffect(() => {
+    const sub = dispatch(subCurrentHandshakeAddress());
+
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const sub = dispatch(subRecipientToOutgoing());

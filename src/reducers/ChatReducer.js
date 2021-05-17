@@ -15,7 +15,8 @@ import * as Schema from "../schema";
 import {
   ACTIONS,
   recipientToOutgoingReceived,
-  userToIncomingReceived
+  userToIncomingReceived,
+  handshakeAddressUpdated
 } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
@@ -37,6 +38,7 @@ const INITIAL_STATE = {
   sentRequests: /** @type {SentRequest[]} */ ([]),
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: [],
+  currentHandshakeAddress: /** @type {string} */ (""),
   recipientToOutgoing: /** @type {Record<string, string>} */ ({}),
   userToIncoming: /** @type {Record<string, string>} */ ({})
 };
@@ -131,6 +133,12 @@ const chat = (state = INITIAL_STATE, action) => {
       } else {
         draft.userToIncoming[publicKey] = incomingID;
       }
+    });
+  }
+  if (handshakeAddressUpdated.match(action)) {
+    const { handshakeAddress } = action.payload;
+    return produce(state, draft => {
+      draft.currentHandshakeAddress = handshakeAddress;
     });
   }
   switch (action.type) {

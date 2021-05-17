@@ -6,6 +6,42 @@ import * as Schema from "../../schema";
 import { rifle } from "../../utils/WebSocket";
 
 /**
+ * Dispatched when the handshake address changes.
+ */
+export const handshakeAddressUpdated = createAction<{
+  handshakeAddress: string;
+}>("handshakeAddressUpdated");
+
+/**
+ * Subscribe to the current handshake address stored in gun.
+ * @returns
+ */
+export const subCurrentHandshakeAddress = () => (
+  dispatch: (action: any) => void
+) => {
+  try {
+    return rifle({
+      query: `$user::currentHandshakeAddress::on`,
+      onData: handshakeAddress => {
+        dispatch(
+          handshakeAddressUpdated({
+            handshakeAddress
+          })
+        );
+      }
+    });
+  } catch (e) {
+    alert(
+      `Could not establish a subscription to current handshake address: ${e.message}`
+    );
+    Utils.logger.error(
+      `Could not establish a subscription to current handshake address:`,
+      e
+    );
+  }
+};
+
+/**
  * Dispatched when one pub to outgoing pair is received from the pub to
  * outgoings map in gun.
  */
