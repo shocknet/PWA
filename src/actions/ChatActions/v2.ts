@@ -14,7 +14,7 @@ export const handshakeAddressUpdated = createAction<{
 
 /**
  * Subscribe to the current handshake address stored in gun.
- * @returns
+ * @returns A thunk that returns a subscription.
  */
 export const subCurrentHandshakeAddress = () => (
   dispatch: (action: any) => void
