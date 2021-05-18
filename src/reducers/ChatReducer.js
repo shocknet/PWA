@@ -138,6 +138,9 @@ const chat = (state = INITIAL_STATE, action) => {
   if (handshakeAddressUpdated.match(action)) {
     const { handshakeAddress } = action.payload;
     return produce(state, draft => {
+      if (draft.currentHandshakeAddress !== handshakeAddress) {
+        draft.receivedRequests = [];
+      }
       draft.currentHandshakeAddress = handshakeAddress;
     });
   }
