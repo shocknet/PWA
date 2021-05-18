@@ -14,9 +14,10 @@ import produce from "immer";
 import * as Schema from "../schema";
 import {
   ACTIONS,
+  handshakeAddressUpdated,
+  receivedHandshakeRequest,
   recipientToOutgoingReceived,
-  userToIncomingReceived,
-  handshakeAddressUpdated
+  userToIncomingReceived
 } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
@@ -142,6 +143,15 @@ const chat = (state = INITIAL_STATE, action) => {
         draft.receivedRequests = [];
       }
       draft.currentHandshakeAddress = handshakeAddress;
+    });
+  }
+  if (receivedHandshakeRequest.match(action)) {
+    const { receivedRequest } = action.payload;
+    return produce(state, draft => {
+      if (draft.receivedRequests.find(req => req.id === receivedRequest.id)) {
+        return;
+      }
+      draft.receivedRequests.push(receivedRequest);
     });
   }
   switch (action.type) {

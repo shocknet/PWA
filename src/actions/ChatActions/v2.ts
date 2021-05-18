@@ -42,6 +42,59 @@ export const subCurrentHandshakeAddress = () => (
 };
 
 /**
+ * Dispatched when a handshake request is received inside the current handshake
+ * node.
+ */
+export const receivedHandshakeRequest = createAction<{
+  receivedRequest: Schema.ReceivedRequest;
+}>("chat/receivedHandshakeRequest");
+
+/**
+ * Subscribe to received requests inside the specified handshake node.
+ * @returns A thunk that returns a subscription.
+ */
+export const subHandshakeNode = (handshakeAddress: string) => (
+  dispatch: (action: any) => void,
+  getState: () => { chat: { currentHandshakeAddress: string } }
+): Promise<Schema.Subscription> => {
+  try {
+    return rifle({
+      query: `$gun::handshakeNodes>${handshakeAddress}::map.on`,
+      onData: (handshakeRequest: Common.HandshakeRequest, id) => {
+        const {
+          chat: { currentHandshakeAddress }
+        } = getState();
+        if (handshakeAddress !== currentHandshakeAddress) {
+          return;
+        }
+        if (!Common.isHandshakeRequest(handshakeRequest)) {
+          return;
+        }
+        dispatch(
+          receivedHandshakeRequest({
+            receivedRequest: {
+              avatar: null,
+              displayName: null,
+              id,
+              pk: handshakeRequest.from,
+              timestamp: handshakeRequest.timestamp
+            }
+          })
+        );
+      }
+    });
+  } catch (e) {
+    alert(
+      `Could not establish a subscription to handshake node with address: ${handshakeAddress} : ${e.message}`
+    );
+    Utils.logger.error(
+      `Could not establish a subscription to handshake node with address: ${handshakeAddress} : `,
+      e
+    );
+  }
+};
+
+/**
  * Dispatched when one pub to outgoing pair is received from the pub to
  * outgoings map in gun.
  */

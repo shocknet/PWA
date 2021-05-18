@@ -6,6 +6,7 @@ import {
   loadChatData,
   sendHandshakeRequest,
   subCurrentHandshakeAddress,
+  subHandshakeNode,
   subRecipientToOutgoing,
   subUserToIncoming
 } from "../../actions/ChatActions";
@@ -32,10 +33,11 @@ const MessagesPage = () => {
   const contacts = Store.useSelector(({ chat }) => chat.contacts);
   const messages = Store.useSelector(({ chat }) => chat.messages);
   const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = Store.useSelector(
-    ({ chat }) => chat.receivedRequests
-  );
+  const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
+  const currentHandshakeAddress = Store.useSelector(
+    Store.selectCurrentHandshakeAddress
+  );
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
@@ -53,6 +55,14 @@ const MessagesPage = () => {
       sub.then(sub => sub.off());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    const sub = dispatch(subHandshakeNode(currentHandshakeAddress));
+
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [currentHandshakeAddress, dispatch]);
 
   useEffect(() => {
     const sub = dispatch(subRecipientToOutgoing());
