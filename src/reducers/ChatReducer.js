@@ -119,9 +119,9 @@ const chat = (state = INITIAL_STATE, action) => {
   if (recipientToOutgoingReceived.match(action)) {
     const { outgoingID, publicKey } = action.payload;
     return produce(state, draft => {
-      if (outgoingID === null) {
+      if (outgoingID === null && draft.recipientToOutgoing[publicKey]) {
         delete draft.recipientToOutgoing[publicKey];
-      } else {
+      } else if (draft.recipientToOutgoing[publicKey] !== outgoingID) {
         draft.recipientToOutgoing[publicKey] = outgoingID;
       }
     });
@@ -129,9 +129,9 @@ const chat = (state = INITIAL_STATE, action) => {
   if (userToIncomingReceived.match(action)) {
     const { incomingID, publicKey } = action.payload;
     return produce(state, draft => {
-      if (incomingID === null) {
+      if (incomingID === null && draft.userToIncoming[publicKey]) {
         delete draft.userToIncoming[publicKey];
-      } else {
+      } else if (draft.userToIncoming[publicKey] !== incomingID) {
         draft.userToIncoming[publicKey] = incomingID;
       }
     });
@@ -139,10 +139,13 @@ const chat = (state = INITIAL_STATE, action) => {
   if (handshakeAddressUpdated.match(action)) {
     const { handshakeAddress } = action.payload;
     return produce(state, draft => {
-      if (draft.currentHandshakeAddress !== handshakeAddress) {
+      if (
+        draft.currentHandshakeAddress !== handshakeAddress &&
+        Common.isPopulatedString(handshakeAddress)
+      ) {
         draft.receivedRequests = [];
+        draft.currentHandshakeAddress = handshakeAddress;
       }
-      draft.currentHandshakeAddress = handshakeAddress;
     });
   }
   if (receivedHandshakeRequest.match(action)) {
