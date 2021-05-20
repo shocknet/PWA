@@ -30,7 +30,10 @@ const QRCodeScanner = ({
   onClose
 }: Props) => {
   const content = modeContents[mode];
-  const facingMode = isDesktop() ? "user" : "environment";
+  const videoConstrain:{facingMode?} = {}
+  if(!isDesktop()) {
+    videoConstrain.facingMode = { exact: "environment" }
+  }
 
   return (
     <div className="qr-code-scanner-container">
@@ -40,9 +43,7 @@ const QRCodeScanner = ({
 
       <QRScanner
         constraints={{
-          video: {
-            //facingMode: { exact: facingMode }
-          }
+          video: videoConstrain
         }}
         onScan={onScan}
         onError={onError}
