@@ -1,4 +1,5 @@
 import { Schema } from "shock-common";
+import { createSelector } from "reselect";
 
 import { State } from "../../reducers";
 
@@ -37,12 +38,11 @@ export const selectAllOtherPublicKeys = (state: State): string[] => {
 };
 
 export const selectAllOtherUsers = createSelector(
-  (state: State) => state.users,
-  selectAllOtherPublicKeys,
-  (users, allOtherPublicKeys): Schema.User[] => {
-    const usersWithoutSelf = pickBy<Schema.User>(users, (_, publicKey) =>
-      allOtherPublicKeys.includes(publicKey)
+  (state: State) => state.userProfiles,
+  (state: State) => state.node.publicKey,
+  (users, selfPublicKey): Schema.User[] => {
+    return Object.values(users).filter(
+      user => user.publicKey !== selfPublicKey
     );
-    return Object.values(usersWithoutSelf);
   }
 );
