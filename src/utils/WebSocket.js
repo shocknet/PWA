@@ -191,7 +191,7 @@ const encryptedOn = socket => async (eventName, callback) => {
   });
 };
 
-const subscribeSocket = ({ eventName, callback }) =>
+export const subscribeSocket = ({ eventName, callback }) =>
   new Promise((resolve, reject) => {
     try {
       import("../store").then(({ store }) => {
