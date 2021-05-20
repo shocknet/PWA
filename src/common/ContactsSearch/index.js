@@ -4,6 +4,7 @@ import useOutsideClick from "use-onclickoutside";
 import { processDisplayName } from "../../utils/String";
 import Suggestion from "./components/Suggestion";
 import "./css/index.scoped.css";
+import * as Store from "../../store";
 
 const ContactsSearch = ({
   features = ["btc", "invoice", "contact"],
@@ -12,7 +13,7 @@ const ContactsSearch = ({
   const ref = useRef();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
-  const contacts = useSelector(({ chat }) => chat.contacts);
+  const contacts = Store.useSelector(({ chat }) => chat.contacts);
 
   const isBTCAddress = useMemo(
     () =>
