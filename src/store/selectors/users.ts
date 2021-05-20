@@ -35,3 +35,14 @@ export const selectAllOtherPublicKeys = (state: State): string[] => {
   const selfPublicKey = selectSelfPublicKey(state);
   return selectAllPublicKeys(state).filter(key => key !== selfPublicKey);
 };
+
+export const selectAllOtherUsers = createSelector(
+  (state: State) => state.users,
+  selectAllOtherPublicKeys,
+  (users, allOtherPublicKeys): Schema.User[] => {
+    const usersWithoutSelf = pickBy<Schema.User>(users, (_, publicKey) =>
+      allOtherPublicKeys.includes(publicKey)
+    );
+    return Object.values(usersWithoutSelf);
+  }
+);
