@@ -19,7 +19,6 @@ import {
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
-import { rifleCleanup } from "../../utils/WebSocket";
 import * as Utils from "../../utils";
 import * as gStyles from "../../styles";
 /**
@@ -153,19 +152,15 @@ const ChatPage = () => {
     [message, recipientPublicKey, dispatch]
   );
 
-  const subscribeIncomingMessages = useCallback(() => {
+  useEffect(() => {
     const subscription = dispatch(
       subscribeChatMessages(gunPublicKey, recipientPublicKey)
     );
 
-    return rifleCleanup(subscription);
+    return () => {
+      subscription.then(sub => sub.off());
+    };
   }, [dispatch, gunPublicKey, recipientPublicKey]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeIncomingMessages();
-
-    return unsubscribe;
-  }, [subscribeIncomingMessages]);
 
   // ------------------------------------------------------------------------ //
   // Date bubble
