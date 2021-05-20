@@ -306,3 +306,7 @@ export const subUserToLastReqSent = () => (
 };
 
 //#endregion sentRequests
+
+export const otherUserDisconnected = createAction<{
+  recipientPublicKey: string;
+}>("chat/otherUserDisconnected");

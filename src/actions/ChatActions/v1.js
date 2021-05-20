@@ -2,6 +2,7 @@
 import Http from "../../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
+import * as Common from "shock-common";
 /**
  * @typedef {import('shock-common').Message} RawMessage
  * @typedef {import('../../schema').Subscription} Subscription
@@ -22,6 +23,8 @@ import * as Utils from "../../utils";
  * @typedef {import("../../schema").ReceivedRequest} ReceivedRequest
  * @typedef {import('../../schema').ChatMessage} ChatMessage
  */
+
+import { otherUserDisconnected } from "./v2";
 
 export const ACTIONS = {
   LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
@@ -147,28 +150,28 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 /**
  * @param {string} userPublicKey
  * @param {string} recipientPublicKey
- * @returns {(dispatch: (action: any) => void) => Promise<Subscription>}
+ * @returns {(dispatch: (action: any) => void, getState: () => { chat: { userToIncoming: Record<string, string|null> } }) => Promise<Subscription>}
  */
 export const subscribeChatMessages = (
   userPublicKey,
   recipientPublicKey
-) => async dispatch => {
+) => async (dispatch, getState) => {
   try {
-    const { data: incomingId } = await Http.get(
-      `/api/gun/user/once/userToIncoming>${recipientPublicKey}`,
-      {
-        headers: {
-          "public-key-for-decryption": userPublicKey
-        }
-      }
-    );
+    alert("subbing to messages");
+    const {
+      chat: { userToIncoming }
+    } = getState();
+    /** @type {string|null} */
+    const incomingID = userToIncoming[userPublicKey];
 
-    if (!incomingId.data) {
-      throw new Error(`Unable to retrieve incoming ID for selected contact.`);
+    if (incomingID) {
+      throw new Error(
+        `Unable to retrieve incoming ID (got: ${incomingID}) for selected contact (${userPublicKey}).`
+      );
     }
 
-    const incomingMessages = await rifle({
-      query: `${recipientPublicKey}::outgoings>${incomingId.data}>messages::map.on`,
+    const incomingMessagesPromise = rifle({
+      query: `${recipientPublicKey}::outgoings>${incomingID}>messages::map.on`,
       publicKey: recipientPublicKey,
       onData: (message, id) => {
         if (!message.body || message.body === initialMessagePrefix) {
@@ -198,7 +201,31 @@ export const subscribeChatMessages = (
       }
     });
 
-    return incomingMessages;
+    const didDisconnectPromise = rifle({
+      query: `${recipientPublicKey}::outgoings>${incomingID}::on`,
+      publicKey: recipientPublicKey,
+      onData(incoming) {
+        alert(JSON.stringify(incoming));
+        if (!Common.isObj(incoming)) {
+          dispatch(
+            otherUserDisconnected({
+              recipientPublicKey
+            })
+          );
+        }
+      }
+    });
+    const [incomingMessages, didDisconnect] = await Promise.all([
+      incomingMessagesPromise,
+      didDisconnectPromise
+    ]);
+
+    return {
+      off() {
+        incomingMessages.off();
+        didDisconnect.off();
+      }
+    };
   } catch (e) {
     Utils.logger.error(
       `Error inside subscribeChatMessages, recipient public key: ${recipientPublicKey}: `,

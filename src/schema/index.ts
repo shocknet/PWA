@@ -4,7 +4,6 @@ export type Contact = {
   pk: string;
   avatar: string | null;
   displayName: string | null;
-  didDisconnect: boolean;
 };
 
 export interface ReceivedRequest {
@@ -122,3 +121,9 @@ export const isPublishedContent = (o: unknown): o is PublishedContent => {
 export interface Subscription {
   off(): void;
 }
+
+/**
+ * Sentinel value that signals the recipient disconnected inside the user to
+ * incoming map.
+ */
+export const DID_DISCONNECT = "DID_DISCONNECT";

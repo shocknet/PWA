@@ -26,10 +26,7 @@ const reducers = combineReducers({
   feed: FeedReducer,
   userProfiles: UserProfilesReducer,
   orders: OrdersReducer,
-  app:AppReducer,
-  users: () => {
-    return {} as Record<string, Common.User>;
-  }
+  app: AppReducer
 });
 
 export type State = ReturnType<typeof reducers>;

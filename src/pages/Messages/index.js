@@ -26,6 +26,7 @@ import Modal from "../../common/Modal";
 import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
 import { useDispatch } from "../../utils";
+import * as Schema from "../../schema";
 
 const MessagesPage = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,11 @@ const MessagesPage = () => {
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
-  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+  const contacts = Store.useSelector(Store.selectContacts).map(user => ({
+    pk: user.publicKey,
+    avatar: user.avatar,
+    displayName: user.displayName
+  }));
   const messages = Store.useSelector(({ chat }) => chat.messages);
   const sentRequests = Store.useSelector(Store.selectSentRequests);
   const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
@@ -41,6 +46,7 @@ const MessagesPage = () => {
   const currentHandshakeAddress = Store.useSelector(
     Store.selectCurrentHandshakeAddress
   );
+  const userToIncoming = Store.useSelector(Store.selectUserToIncoming);
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
@@ -265,7 +271,10 @@ const MessagesPage = () => {
           {contacts.map(contact => {
             const contactMessages = messages[contact.pk] ?? [];
             const lastMessage = (() => {
-              if (contact.didDisconnect) {
+              const didDisconnect =
+                userToIncoming[contact.pk] === Schema.DID_DISCONNECT;
+
+              if (didDisconnect) {
                 return {
                   body: "User disconnected from you.",
                   timestamp: Date.now()

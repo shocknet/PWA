@@ -22,10 +22,10 @@ import {
   userToIncomingReceived,
   storedReqUpdated,
   pubToAddressUpdated,
-  userToLastReqSentUpdated
+  userToLastReqSentUpdated,
+  otherUserDisconnected
 } from "../actions/ChatActions";
 /**
- * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
  * @typedef {import("../schema").SentRequest} SentRequest
  *
@@ -36,7 +36,6 @@ import {
  */
 
 const INITIAL_STATE = {
-  contacts: /** @type {Contact[]} */ ([]),
   /**
    * @type {Record<string, Schema.ChatMessage[]>}
    */
@@ -144,6 +143,14 @@ const chat = (state = INITIAL_STATE, action) => {
       }
     });
   }
+  if (otherUserDisconnected.match(action)) {
+    const { recipientPublicKey } = action.payload;
+    return produce(state, draft => {
+      if (draft.userToIncoming[recipientPublicKey] !== Schema.DID_DISCONNECT) {
+        draft.userToIncoming[recipientPublicKey] = Schema.DID_DISCONNECT;
+      }
+    });
+  }
   if (handshakeAddressUpdated.match(action)) {
     const { handshakeAddress } = action.payload;
     return produce(state, draft => {
@@ -205,11 +212,10 @@ const chat = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ACTIONS.LOAD_CHAT_DATA: {
       const {
-        data: { contacts, messages }
+        data: { messages }
       } = /** @type {LoadChatDataAction} */ (action);
       return {
         ...state,
-        contacts,
         // TODO: Could not replacing messages altogether be bad?
         messages: {
           ...state.messages,
@@ -319,8 +325,6 @@ const chat = (state = INITIAL_STATE, action) => {
         data: { publicKey }
       } = action;
       return produce(state, draft => {
-        const idx = draft.contacts.findIndex(c => c.pk === publicKey);
-        idx > -1 && draft.contacts.splice(idx, 1);
         delete draft.messages[publicKey];
         draft.messages[publicKey] = [];
       });

@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import useOutsideClick from "use-onclickoutside";
 import { processDisplayName } from "../../utils/String";
 import Suggestion from "./components/Suggestion";
@@ -8,12 +7,17 @@ import * as Store from "../../store";
 
 const ContactsSearch = ({
   features = ["btc", "invoice", "contact"],
-  selectContact = () => {}
+  selectContact = _ => {}
 }) => {
   const ref = useRef();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
-  const contacts = Store.useSelector(({ chat }) => chat.contacts);
+
+  const contacts = Store.useSelector(Store.selectContacts).map(user => ({
+    pk: user.publicKey,
+    avatar: user.avatar,
+    displayName: user.displayName
+  }));
 
   const isBTCAddress = useMemo(
     () =>
@@ -117,7 +121,7 @@ const ContactsSearch = ({
   useOutsideClick(ref, onBlur);
 
   return (
-    <div className="contacts-search" ref={ref} tabIndex="0" onFocus={onFocus}>
+    <div className="contacts-search" ref={ref} tabIndex={0} onFocus={onFocus}>
       <div className="contacts-search-input-container">
         <i className="contacts-search-icon fas fa-search" />
         <input
@@ -137,6 +141,7 @@ const ContactsSearch = ({
               selectContact={onSuggestionClick}
               contact={suggestion}
               key={suggestion.pk ?? suggestion.value}
+              style={undefined}
             />
           ))}
         </div>

@@ -21,6 +21,7 @@ import "./css/index.scoped.css";
 import * as Store from "../../store";
 import * as Utils from "../../utils";
 import * as gStyles from "../../styles";
+import * as Schema from "../../schema";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
  * @typedef {import('../../schema').Contact} Contact
@@ -43,6 +44,8 @@ const ChatPage = () => {
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
+  const userToIncoming = Store.useSelector(Store.selectUserToIncoming);
+  const contacts = Store.useSelector(Store.selectContacts);
   /* ------------------------------------------------------------------------ */
   //#region dateBubble
   const [shouldShowDateBubble, setShouldShowDateBubble] = useState(false);
@@ -106,9 +109,9 @@ const ChatPage = () => {
     ({ chat }) => chat.messages[recipientPublicKey]
   );
 
-  const contact = /** @type {Contact} */ (Store.useSelector(({ chat }) =>
-    Utils.getContact(chat.contacts, recipientPublicKey)
-  ));
+  const isContact = !!contacts.find(
+    user => user.publicKey === recipientPublicKey
+  );
   const sentRequest = Store.useSelector(({ chat }) =>
     Utils.getContact(chat.sentRequests, recipientPublicKey)
   );
@@ -116,8 +119,8 @@ const ChatPage = () => {
     ({ chat }) => Utils.getContact(chat.receivedRequests, recipientPublicKey)
   ));
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
-  const pendingSentRequest = !contact && sentRequest;
-  const pendingReceivedRequest = !contact && receivedRequest;
+  const pendingSentRequest = !isContact && sentRequest;
+  const pendingReceivedRequest = !isContact && receivedRequest;
 
   const handleInputChange = useCallback(e => {
     setMessage(e.target.value);
@@ -344,41 +347,43 @@ const ChatPage = () => {
         />
       )}
 
-      {contact && contact.didDisconnect && (
-        <ChatBottomBar
-          acceptLabel="Delete"
-          text="Delete this chat?"
-          title="Other user disconnected"
-          onAccept={handleDisconnect}
-        />
-      )}
+      {isContact &&
+        userToIncoming[recipientPublicKey] === Schema.DID_DISCONNECT && (
+          <ChatBottomBar
+            acceptLabel="Delete"
+            text="Delete this chat?"
+            title="Other user disconnected"
+            onAccept={handleDisconnect}
+          />
+        )}
 
-      {contact && !contact.didDisconnect && (
-        <WithHeight
-          className="chat-bottom-bar"
-          onHeight={setBottomBarHeight}
-          onClick={actionMenuOpen ? toggleActionMenu : undefined}
-        >
-          <div className="chat-input-container">
-            <div
-              className="chat-input-btn unselectable"
-              onClick={toggleActionMenu}
-            >
-              <img src={BitcoinLightning} alt="Menu" />
+      {isContact &&
+        userToIncoming[recipientPublicKey] !== Schema.DID_DISCONNECT && (
+          <WithHeight
+            className="chat-bottom-bar"
+            onHeight={setBottomBarHeight}
+            onClick={actionMenuOpen ? toggleActionMenu : undefined}
+          >
+            <div className="chat-input-container">
+              <div
+                className="chat-input-btn unselectable"
+                onClick={toggleActionMenu}
+              >
+                <img src={BitcoinLightning} alt="Menu" />
+              </div>
+              <TextArea
+                className="chat-input"
+                // @ts-expect-error
+                type="text"
+                enterKeyHint="send"
+                onKeyPress={submitMessage}
+                onChange={handleInputChange}
+                value={message}
+                height={20}
+              />
             </div>
-            <TextArea
-              className="chat-input"
-              // @ts-expect-error
-              type="text"
-              enterKeyHint="send"
-              onKeyPress={submitMessage}
-              onChange={handleInputChange}
-              value={message}
-              height={20}
-            />
-          </div>
-        </WithHeight>
-      )}
+          </WithHeight>
+        )}
 
       <div
         className={classNames("action-menu", {

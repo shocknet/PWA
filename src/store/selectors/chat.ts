@@ -1,7 +1,10 @@
 import { createSelector } from "reselect";
+import * as Common from "shock-common";
 
 import { State } from "../../reducers";
 import * as Schema from "../../schema";
+
+import { selectAllOtherUsers } from "./users";
 
 export const selectIsInContact = (publicKey: string) => (
   state: State
@@ -32,11 +35,13 @@ export const selectReceivedRequests = createSelector(
   }
 );
 
+export const selectUserToIncoming = (state: State) => state.chat.userToIncoming;
+
 export const selectSentRequests = createSelector(
   (state: State) => state.chat.storedReqs,
   (state: State) => state.chat.pubToAddress,
   (state: State) => state.chat.userToLastReqSent,
-  (state: State) => state.chat.userToIncoming,
+  selectUserToIncoming,
   (
     storedReqs,
     pubToAddress,
@@ -85,5 +90,15 @@ export const selectSentRequests = createSelector(
     }
 
     return sentRequests;
+  }
+);
+
+export const selectContacts = createSelector(
+  selectAllOtherUsers,
+  selectUserToIncoming,
+  (users, userToIncoming): Common.User[] => {
+    return Object.values(users).filter(
+      user => !!userToIncoming[user.publicKey]
+    );
   }
 );
