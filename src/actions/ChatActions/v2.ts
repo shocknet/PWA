@@ -5,6 +5,8 @@ import * as Utils from "../../utils";
 import * as Schema from "../../schema";
 import { rifle } from "../../utils/WebSocket";
 
+//#region receivedRequests
+
 /**
  * Dispatched when the handshake address changes.
  */
@@ -93,6 +95,10 @@ export const subHandshakeNode = (handshakeAddress: string) => (
     );
   }
 };
+
+//#endregion receivedRequests
+
+//#region conversations
 
 /**
  * Dispatched when one pub to outgoing pair is received from the pub to
@@ -185,3 +191,5 @@ export const subUserToIncoming = () => (
     );
   }
 };
+
+//#endregion conversations
