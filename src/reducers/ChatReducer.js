@@ -3,8 +3,10 @@
  * @format
  */
 import produce from "immer";
+import * as Common from "shock-common";
 /**
  * @typedef {import('redux').AnyAction} AnyAction
+ * @typedef {import("shock-common").StoredRequest} StoredReq
  */
 /**
  * @template S
@@ -17,7 +19,10 @@ import {
   handshakeAddressUpdated,
   receivedHandshakeRequest,
   recipientToOutgoingReceived,
-  userToIncomingReceived
+  userToIncomingReceived,
+  storedReqUpdated,
+  pubToAddressUpdated,
+  userToLastReqSentUpdated
 } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').Contact} Contact
@@ -41,7 +46,10 @@ const INITIAL_STATE = {
   requestBlacklist: [],
   currentHandshakeAddress: /** @type {string} */ ("donotexistdoesnotexist"),
   recipientToOutgoing: /** @type {Record<string, string>} */ ({}),
-  userToIncoming: /** @type {Record<string, string>} */ ({})
+  userToIncoming: /** @type {Record<string, string>} */ ({}),
+  storedReqs: /** @type {Record<string, StoredReq>} */ ({}),
+  pubToAddress: /** @type {Record<string, string>} */ ({}),
+  userToLastReqSent: /** @type {Record<string, string>} */ ({})
 };
 
 /**
@@ -155,6 +163,43 @@ const chat = (state = INITIAL_STATE, action) => {
         return;
       }
       draft.receivedRequests.push(receivedRequest);
+    });
+  }
+  if (storedReqUpdated.match(action)) {
+    const { storedReq, storedReqID } = action.payload;
+
+    return produce(state, draft => {
+      if (storedReq === null && draft.storedReqs[storedReqID]) {
+        delete draft.storedReqs[storedReqID];
+        // stored reqs do not get edited
+      }
+      if (storedReq !== null && !draft.storedReqs[storedReqID]) {
+        draft.storedReqs[storedReqID] = storedReq;
+      }
+    });
+  }
+  if (pubToAddressUpdated.match(action)) {
+    const { address, pub } = action.payload;
+
+    return produce(state, draft => {
+      if (draft.pubToAddress[pub] !== address) {
+        draft.pubToAddress[pub] = address;
+      }
+    });
+  }
+  if (userToLastReqSentUpdated.match(action)) {
+    const { lastReqSent, user } = action.payload;
+
+    return produce(state, draft => {
+      if (lastReqSent === null && draft.userToLastReqSent[user]) {
+        delete draft.userToLastReqSent[user];
+      }
+      if (
+        lastReqSent !== null &&
+        draft.userToLastReqSent[user] !== lastReqSent
+      ) {
+        draft.userToLastReqSent[user] = lastReqSent;
+      }
     });
   }
   switch (action.type) {

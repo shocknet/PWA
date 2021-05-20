@@ -8,7 +8,10 @@ import {
   subCurrentHandshakeAddress,
   subHandshakeNode,
   subRecipientToOutgoing,
-  subUserToIncoming
+  subUserToIncoming,
+  subUserToLastReqSent,
+  subStoredReqs,
+  subPubToAddress
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -32,7 +35,7 @@ const MessagesPage = () => {
   const [chatLoaded, setChatLoaded] = useState(false);
   const contacts = Store.useSelector(({ chat }) => chat.contacts);
   const messages = Store.useSelector(({ chat }) => chat.messages);
-  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
+  const sentRequests = Store.useSelector(Store.selectSentRequests);
   const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
   const currentHandshakeAddress = Store.useSelector(
@@ -73,10 +76,37 @@ const MessagesPage = () => {
 
   useEffect(() => {
     const sub = dispatch(subUserToIncoming());
+
     return () => {
       sub.then(sub => sub.off());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    const sub = dispatch(subUserToLastReqSent());
+
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const sub = dispatch(subStoredReqs());
+
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const sub = dispatch(
+      subPubToAddress(sentRequests.map(sentRequest => sentRequest.pk))
+    );
+
+    return () => {
+      sub.then(sub => sub.off());
+    };
+  }, [dispatch, sentRequests]);
 
   useEffect(() => {
     const subscriptions = [
