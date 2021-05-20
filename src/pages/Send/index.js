@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import Http from "../../utils/Http";
@@ -9,6 +9,7 @@ import DialogPageContainer from "../../common/DialogPageContainer";
 import Suggestion from "../../common/ContactsSearch/components/Suggestion";
 import Loader from "../../common/Loader";
 import "./css/index.scoped.css";
+import { isDesktop } from "../../utils/Platform";
 
 const SendPage = () => {
   const location = useLocation();
@@ -21,6 +22,10 @@ const SendPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
+
+  const isDesktopDevice = useMemo(()=>{
+    return isDesktop()
+  },[])
 
   const onInputChange = useCallback(e => {
     if (e.target.name === "amount") {
@@ -208,7 +213,10 @@ const SendPage = () => {
           disabled={contact?.type === "invoice"}
         />
       </div>
-      <SlidePay disabled={!contact} onSuccess={onSubmit} />
+      {isDesktopDevice && <div className="w-100 flex-center m-b-3">
+        <button disabled={!contact} onClick={onSubmit} className="shock-form-button-confirm">SEND</button>
+      </div>}
+      {!isDesktopDevice && <SlidePay disabled={!contact} onSuccess={onSubmit} />}
     </DialogPageContainer>
   );
 };
