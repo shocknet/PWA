@@ -3,7 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
-import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
+import {
+  loadChatData,
+  sendHandshakeRequest,
+  loadReceivedRequests,
+  loadSentRequests
+} from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
@@ -39,6 +44,11 @@ const MessagesPage = () => {
   useEffect(() => {
     loadChat();
   }, [loadChat]);
+
+  useEffect(() => {
+    dispatch(loadReceivedRequests());
+    dispatch(loadSentRequests());
+  }, [dispatch]);
 
   useEffect(() => {
     const subscriptions = [

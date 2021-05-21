@@ -13,7 +13,7 @@ import videojs from "video.js";
 import FullHeight from "react-div-100vh";
 
 import { setAuthenticated } from "./actions/AuthActions";
-import { loadReceivedRequests, loadSentRequests } from "./actions/ChatActions";
+
 import Loader from "./common/Loader";
 import Drawer from "./common/Drawer";
 import {
@@ -175,9 +175,6 @@ const App = () => {
 
   useEffect(() => {
     if (authenticated) {
-      // TODO: Move to messages screen
-      dispatch(loadSentRequests());
-      dispatch(loadReceivedRequests());
       // Get current user's profile on login
       dispatch(subscribeUserProfile(publicKey));
     } else {
