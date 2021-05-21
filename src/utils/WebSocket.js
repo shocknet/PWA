@@ -26,6 +26,14 @@ export let GunSocket = null;
 export let LNDSocket = null;
 
 export const connectSocket = async (host = "", reconnect = false) => {
+  const { store } = await import("../store");
+  const socketOptions = {
+    ...options,
+    auth: {
+      encryptionId: store.getState().encryption.deviceId
+    }
+  };
+
   if (GunSocket?.connected && LNDSocket?.connected && !reconnect) {
     return { GunSocket, LNDSocket };
   }
@@ -35,13 +43,6 @@ export const connectSocket = async (host = "", reconnect = false) => {
     disconnectSocket(LNDSocket);
   }
 
-  const { store } = await import("../store");
-  const socketOptions = {
-    ...options,
-    auth: {
-      encryptionId: store.getState().encryption.deviceId
-    }
-  };
   GunSocket = SocketIO(`${host}/gun`, socketOptions);
   LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
 
@@ -69,12 +70,10 @@ export const connectSocket = async (host = "", reconnect = false) => {
   });
 
   GunSocket.on("encryption:error", async err => {
-    if (err.field === "deviceId") {
+    if (err.field === "deviceId" || err.message === "Bad Mac") {
       const cachedNodeIP = store.getState().node.hostIP;
       await store.dispatch(connectHost(cachedNodeIP, false));
       store.dispatch(setAuthenticated(false));
-      disconnectSocket(GunSocket);
-      disconnectSocket(LNDSocket);
     }
   });
 
