@@ -17,14 +17,8 @@ interface EncryptedMessageResponse {
   mac: string;
 }
 
-interface DeriveKey {
-  localPrivateKey: Uint8Array | string;
-  remotePublicKey: Uint8Array | string;
-}
-
 interface EncryptMessageArgs {
   publicKey: Uint8Array | string;
-  sharedKey: Uint8Array | string;
   message: string;
 }
 
@@ -152,19 +146,6 @@ export const generateKeyPair = () => {
     privateKeyBase64,
     publicKeyBase64
   };
-};
-
-export const deriveKey = async ({
-  localPrivateKey,
-  remotePublicKey
-}: DeriveKey) => {
-  const sharedKey: Uint8Array = await ECCrypto.derive(
-    processKey(localPrivateKey),
-    processKey(remotePublicKey)
-  );
-  const sharedKeyBase64 = convertBufferToBase64(sharedKey);
-
-  return { sharedKey, sharedKeyBase64 };
 };
 
 export const encryptMessage = async ({

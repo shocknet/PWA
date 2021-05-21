@@ -2,7 +2,7 @@ import SocketIO from "socket.io-client";
 import binaryParser from "socket.io-msgpack-parser";
 import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
-import { initialMessagePrefix } from "../utils/String";
+import { initialMessagePrefix } from "./String";
 import { setAuthenticated } from "../actions/AuthActions";
 import { connectHost } from "../actions/NodeActions";
 /**
@@ -19,12 +19,22 @@ const options = {
 
 const rifleSubscriptions = new Map();
 
+/** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let GunSocket = null;
 
+/** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let LNDSocket = null;
 
 export const connectSocket = async (host = "", reconnect = false) => {
-  if (GunSocket && LNDSocket && !reconnect) {
+  const { store } = await import("../store");
+  const socketOptions = {
+    ...options,
+    auth: {
+      encryptionId: store.getState().encryption.deviceId
+    }
+  };
+
+  if (GunSocket?.connected && LNDSocket?.connected && !reconnect) {
     return { GunSocket, LNDSocket };
   }
 
@@ -33,15 +43,8 @@ export const connectSocket = async (host = "", reconnect = false) => {
     disconnectSocket(LNDSocket);
   }
 
-  const { store } = await import("../store");
-  const socketOptions = {
-    ...options,
-    auth: {
-      encryptionId: store.getState().encryption.deviceId
-    }
-  };
-  GunSocket = SocketIO.connect(`${host}/gun`, socketOptions);
-  LNDSocket = SocketIO.connect(`${host}/lndstreaming`, socketOptions);
+  GunSocket = SocketIO(`${host}/gun`, socketOptions);
+  LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
 
   const GunOn = encryptedOn(GunSocket);
 
@@ -67,7 +70,7 @@ export const connectSocket = async (host = "", reconnect = false) => {
   });
 
   GunSocket.on("encryption:error", async err => {
-    if (err.field === "deviceId") {
+    if (err.field === "deviceId" || err.message === "Bad Mac") {
       const cachedNodeIP = store.getState().node.hostIP;
       await store.dispatch(connectHost(cachedNodeIP, false));
       store.dispatch(setAuthenticated(false));

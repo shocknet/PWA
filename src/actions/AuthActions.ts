@@ -7,26 +7,20 @@ export const ACTIONS = {
   LOGOUT: "auth/logout"
 };
 
-export const setAuthenticated = status => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTHENTICATED,
-    data: status
-  });
-};
+export const setAuthenticated = status => ({
+  type: ACTIONS.SET_AUTHENTICATED,
+  data: status
+});
 
-export const setAuthStep = step => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTH_STEP,
-    data: step
-  });
-};
+export const setAuthStep = step => ({
+  type: ACTIONS.SET_AUTH_STEP,
+  data: step
+});
 
-export const setAuthMethod = method => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTH_METHOD,
-    data: method
-  });
-};
+export const setAuthMethod = method => ({
+  type: ACTIONS.SET_AUTH_METHOD,
+  data: method
+});
 
 export const logout = () => ({
   type: ACTIONS.LOGOUT
