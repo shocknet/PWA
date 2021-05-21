@@ -1,7 +1,6 @@
 // @ts-check
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
 import { DateTime } from "luxon";
@@ -39,7 +38,7 @@ enableMapSet();
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { publicKey: recipientPublicKey } = params;
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
