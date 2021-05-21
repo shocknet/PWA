@@ -192,6 +192,9 @@ const encryptedOn = socket => async (eventName, callback) => {
   });
 };
 
+/**
+ * @returns {Promise<Subscription>}
+ */
 export const subscribeSocket = ({ eventName, callback }) =>
   new Promise((resolve, reject) => {
     try {
@@ -213,12 +216,16 @@ export const subscribeSocket = ({ eventName, callback }) =>
           }
         );
 
-        on(eventName, data => {
-          if (callback) {
+        if (callback) {
+          on(eventName, data => {
             callback(null, data);
-            return;
+          });
+        }
+
+        resolve({
+          off() {
+            emit(`unsubscribe:${eventName}`);
           }
-          resolve(data);
         });
       });
     } catch (err) {
@@ -353,9 +360,17 @@ export const rifleCleanup = (...subscriptions) => () => {
 /**
  * @returns {Promise<{ messages: any , contacts: Contact[]}>}
  */
-export const getChats = async ({ authToken }) => {
+export const getChats = async () => {
   try {
-    const chats = await subscribeSocket({ authToken, eventName: "chats" });
+    const chats = await new Promise(res => {
+      const subscription = subscribeSocket({
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        },
+        eventName: "chats"
+      });
+    });
 
     const contacts = chats.map(chat => ({
       pk: chat.recipientPublicKey,
@@ -389,13 +404,19 @@ export const getChats = async ({ authToken }) => {
   }
 };
 
-export const getSentRequests = async ({ hostIP, authToken }, callback) => {
+/**
+ * @returns {Promise<Common.SimpleSentRequest[]>}
+ */
+export const getSentRequests = async () => {
   try {
-    const sentRequests = await subscribeSocket({
-      hostIP,
-      authToken,
-      eventName: "sentRequests",
-      callback
+    const sentRequests = await new Promise(res => {
+      const subscription = subscribeSocket({
+        eventName: "sentRequests",
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        }
+      });
     });
 
     return sentRequests;
@@ -404,13 +425,19 @@ export const getSentRequests = async ({ hostIP, authToken }, callback) => {
   }
 };
 
-export const getReceivedRequests = async ({ hostIP, authToken }, callback) => {
+/**
+ * @returns {Promise<Common.SimpleReceivedRequest[]>}
+ */
+export const getReceivedRequests = async () => {
   try {
-    const receivedRequests = await subscribeSocket({
-      hostIP,
-      authToken,
-      eventName: "receivedRequests",
-      callback
+    const receivedRequests = await new Promise(res => {
+      const subscription = subscribeSocket({
+        eventName: "receivedRequests",
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        }
+      });
     });
 
     return receivedRequests.map(request => ({

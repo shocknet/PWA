@@ -68,9 +68,8 @@ export const ACTIONS = {
  * @prop {ChatMessage} data
  */
 
-export const loadChatData = () => async (dispatch, getState) => {
-  const { authToken } = getState().node;
-  const data = await getChats({ authToken });
+export const loadChatData = () => async dispatch => {
+  const data = await getChats();
   console.log("LOAD_CHAT_DATA:", data);
 
   dispatch({
@@ -79,68 +78,52 @@ export const loadChatData = () => async (dispatch, getState) => {
   });
 };
 
-export const loadSentRequests = () => (dispatch, getState) => {
-  const { hostIP, authToken } = getState().node;
-  getSentRequests({ hostIP, authToken }, (err, sentRequests) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+export const loadSentRequests = () => async dispatch => {
+  const sentRequests = await getSentRequests();
 
-    console.log("sentRequests:", sentRequests);
+  /** @type {LoadSentRequestsAction} */
+  const action = {
+    type: ACTIONS.LOAD_SENT_REQUESTS,
+    data: sentRequests.map(request => {
+      /** @type {SentRequest} */
+      const req = {
+        id: request.id,
+        pk: request.recipientPublicKey,
+        avatar: request.recipientAvatar,
+        displayName: request.recipientDisplayName,
+        changedAddress: request.recipientChangedRequestAddress,
+        timestamp: request.timestamp,
+        loading: false
+      };
 
-    /** @type {LoadSentRequestsAction} */
-    const action = {
-      type: ACTIONS.LOAD_SENT_REQUESTS,
-      data: sentRequests.map(request => {
-        /** @type {SentRequest} */
-        const req = {
-          id: request.id,
-          pk: request.recipientPublicKey,
-          avatar: request.recipientAvatar,
-          displayName: request.recipientDisplayName,
-          changedAddress: request.recipientChangedRequestAddress,
-          timestamp: request.timestamp,
-          loading: false
-        };
+      return req;
+    })
+  };
 
-        return req;
-      })
-    };
-
-    dispatch(action);
-  });
+  dispatch(action);
 };
 
-export const loadReceivedRequests = () => (dispatch, getState) => {
-  const { hostIP, authToken } = getState().node;
-  getReceivedRequests({ hostIP, authToken }, (err, receivedRequests) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+export const loadReceivedRequests = () => async (dispatch, getState) => {
+  const receivedRequests = await getReceivedRequests();
 
-    console.log("receivedRequests:", receivedRequests);
+  /** @type {LoadReceivedRequestsAction} */
+  const action = {
+    type: ACTIONS.LOAD_RECEIVED_REQUESTS,
+    data: receivedRequests.map(request => {
+      /** @type {ReceivedRequest} */
+      const req = {
+        id: request.id,
+        pk: request.requestorPK,
+        avatar: request.requestorAvatar,
+        displayName: request.requestorDisplayName,
+        timestamp: request.timestamp
+      };
 
-    /** @type {LoadReceivedRequestsAction} */
-    const action = {
-      type: ACTIONS.LOAD_RECEIVED_REQUESTS,
-      data: receivedRequests.map(request => {
-        /** @type {ReceivedRequest} */
-        const req = {
-          id: request.id,
-          pk: request.requestorPK,
-          avatar: request.requestorAvatar,
-          displayName: request.requestorDisplayName,
-          timestamp: request.timestamp
-        };
+      return req;
+    })
+  };
 
-        return req;
-      })
-    };
-
-    dispatch(action);
-  });
+  dispatch(action);
 };
 
 /**
