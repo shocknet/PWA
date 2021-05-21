@@ -14,7 +14,8 @@ import {
   acceptHandshakeRequest,
   sendMessage,
   subscribeChatMessages,
-  chatWasDeleted
+  chatWasDeleted,
+  subChats
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
@@ -166,6 +167,15 @@ const ChatPage = () => {
 
     return unsubscribe;
   }, [subscribeIncomingMessages]);
+
+  useEffect(() => {
+    // listen to didDisconnect
+    const subscription = dispatch(subChats());
+
+    return () => {
+      subscription.then(sub => sub.off());
+    };
+  }, [dispatch]);
 
   // ------------------------------------------------------------------------ //
   // Date bubble
