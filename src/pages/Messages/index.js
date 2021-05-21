@@ -1,6 +1,5 @@
 // @ts-check
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import {
@@ -23,7 +22,7 @@ import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
 
 const MessagesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
