@@ -7,6 +7,7 @@ import { setAuthenticated } from "../actions/AuthActions";
 import { connectHost } from "../actions/NodeActions";
 /**
  * @typedef {import('../schema').Contact} Contact
+ * @typedef {import('../schema').Subscription} Subscription
  */
 
 const options = {
@@ -339,7 +340,7 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
   });
 
 /**
- * @param {Promise<() => void>} subscription
+ * @param {Promise<Subscription>[]} subscriptions
  */
 export const rifleCleanup = (...subscriptions) => () => {
   subscriptions.map(subscription =>
@@ -350,7 +351,7 @@ export const rifleCleanup = (...subscriptions) => () => {
 };
 
 /**
- * @returns {{ messages: any , contacts: Contact[]}}
+ * @returns {Promise<{ messages: any , contacts: Contact[]}>}
  */
 export const getChats = async ({ authToken }) => {
   try {
