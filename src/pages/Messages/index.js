@@ -6,7 +6,10 @@ import {
   loadChatData,
   sendHandshakeRequest,
   loadReceivedRequests,
-  loadSentRequests
+  loadSentRequests,
+  subChats,
+  subReceivedRequests,
+  subSentRequests
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -47,6 +50,18 @@ const MessagesPage = () => {
   useEffect(() => {
     dispatch(loadReceivedRequests());
     dispatch(loadSentRequests());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscriptions = [
+      dispatch(subChats()),
+      dispatch(subSentRequests()),
+      dispatch(subReceivedRequests())
+    ];
+
+    return () => {
+      Promise.all(subscriptions).then(subs => subs.forEach(sub => sub.off()));
+    };
   }, [dispatch]);
 
   useEffect(() => {
