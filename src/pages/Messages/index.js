@@ -224,14 +224,14 @@ const MessagesPage = () => {
               if (contact.didDisconnect) {
                 return {
                   body: "User disconnected from you.",
-                  timestamp: Date.now()
+                  timestamp: -1
                 };
               }
 
               return (
                 contactMessages[0] ?? {
-                  body: "Unable to preview last message...",
-                  timestamp: Date.now()
+                  body: "",
+                  timestamp: -1
                 }
               );
             })();
@@ -242,8 +242,12 @@ const MessagesPage = () => {
                 publicKey={contact.pk}
                 subtitle={lastMessage.body}
                 time={(() => {
+                  const { timestamp } = lastMessage;
+                  if (timestamp === -1) {
+                    return "";
+                  }
                   const relativeTime = DateTime.fromMillis(
-                    lastMessage.timestamp
+                    timestamp
                   ).toRelative();
                   return relativeTime === "in 0 seconds"
                     ? "Just now"
