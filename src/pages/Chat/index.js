@@ -229,7 +229,7 @@ const ChatPage = () => {
       />
 
       <div
-        className="chat-messages-container no-scrollbar"
+        className="chat-messages-container"
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >

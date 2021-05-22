@@ -17,7 +17,7 @@ const DialogPageContainer = ({
 }) => {
   return (
     <div
-      className={`page-container dialog-page ${containerClassName} no-scrollbar`}
+      className={`page-container dialog-page ${containerClassName}`}
       style={
         disableNav
           ? {
