@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { DateTime } from "luxon";
 
 import {
@@ -32,6 +32,14 @@ const MessagesPage = () => {
   const [chatLoaded, setChatLoaded] = useState(false);
   const contacts = Store.useSelector(({ chat }) => chat.contacts);
   const messages = Store.useSelector(({ chat }) => chat.messages);
+  const orderedContacts = useMemo(() => {
+    return contacts.slice().sort((a, b) => {
+      const lastMsgA = messages[a.pk][0] || { timestamp: -1 };
+      const lastMsgB = messages[b.pk][0] || { timestamp: -1 };
+
+      return lastMsgB.timestamp - lastMsgA.timestamp;
+    });
+  }, [contacts, messages]);
   const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
   const receivedRequests = Store.useSelector(
     ({ chat }) => chat.receivedRequests
@@ -218,7 +226,7 @@ const MessagesPage = () => {
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>
           ) : null}
-          {contacts.map(contact => {
+          {orderedContacts.map(contact => {
             const contactMessages = messages[contact.pk] ?? [];
             const lastMessage = (() => {
               if (contact.didDisconnect) {
