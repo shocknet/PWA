@@ -241,7 +241,14 @@ const MessagesPage = () => {
                 key={contact.pk}
                 publicKey={contact.pk}
                 subtitle={lastMessage.body}
-                time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
+                time={(() => {
+                  const relativeTime = DateTime.fromMillis(
+                    lastMessage.timestamp
+                  ).toRelative();
+                  return relativeTime === "in 0 seconds"
+                    ? "Just now"
+                    : relativeTime;
+                })()}
                 chatLoaded={chatLoaded}
               />
             );
