@@ -17,9 +17,3 @@
 .unselected {
   color: var(--text-gray);
 }
-
-.divider {
-  height: 100%;
-  width: 1px;
-  color: white;
-}
