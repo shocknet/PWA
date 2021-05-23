@@ -24,8 +24,7 @@ const ProfileDivider = ({ onChange, selected }: ProfileDividerProps) => {
       <span
         className={classNames(
           gStyles.unselectable,
-          selected === "posts" && styles.selected,
-          selected === "services" && styles.unselected
+          selected === "posts" ? styles.selected : styles.unselected
         )}
         onClick={() => {
           onChange("posts");
@@ -41,8 +40,7 @@ const ProfileDivider = ({ onChange, selected }: ProfileDividerProps) => {
       <span
         className={classNames(
           gStyles.unselectable,
-          selected === "services" && styles.selected,
-          selected === "posts" && styles.unselected
+          selected === "services" ? styles.selected : styles.unselected
         )}
         onClick={() => {
           onChange("services");
