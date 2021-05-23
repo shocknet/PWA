@@ -1,6 +1,5 @@
 // @ts-check
 import { useCallback, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 
@@ -18,7 +17,7 @@ const Message = ({
   publicKey,
   chatLoaded = false
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const user = Store.useSelector(Store.selectUser(publicKey));
   const time = useMemo(() => {
