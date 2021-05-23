@@ -72,24 +72,36 @@ export const publishedContentAdded = createAction<{
 }>(ACTIONS.PUBLISHED_CONTENT_ADDED);
 
 export const addPublishedContent = (
-  content: PublishedContent
+  content: PublishedContent,
+  type: "public" | "private"
 ) => async dispatch => {
   const { data } = await Http.post<{ ok: boolean; id: string }>(
     "/api/gun/set",
-    {
-      path: "$user>publishedContent",
-      value: {
-        $$__ENCRYPT__FOR: "me",
-        value: JSON.stringify(content)
-      }
-    }
+    type === "public"
+      ? {
+          path: "$user>publishedContentPublic",
+          value: content
+        }
+      : {
+          path: "$user>publishedContent",
+          value: {
+            $$__ENCRYPT__FOR: "me",
+            value: JSON.stringify(content)
+          }
+        }
   );
-  dispatch(
-    publishedContentAdded({
-      content,
-      res: data
-    })
-  );
+
+  if (type === "public") {
+    // TODO: redux public content
+  } else {
+    dispatch(
+      publishedContentAdded({
+        content,
+        res: data
+      })
+    );
+  }
+
   return data;
 };
 

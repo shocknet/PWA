@@ -115,7 +115,10 @@ const PublishContentPage = () => {
           title,
           description
         };
-        const published = await addPublishedContent(contentItem)(dispatch);
+        const published = await addPublishedContent(
+          contentItem,
+          postType
+        )(dispatch);
         console.log("content publish complete");
         console.log(published);
         setLoading(false);
@@ -145,6 +148,7 @@ const PublishContentPage = () => {
       dispatch,
       history,
       mediaPreviews,
+      postType,
       seedProviderPub,
       seedToken,
       seedUrl,
