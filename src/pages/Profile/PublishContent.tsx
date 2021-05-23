@@ -36,7 +36,7 @@ const PublishContentPage = () => {
   const [title, setTitle] = useState("");
   const [titleMissing, setTitleMissing] = useState(false);
   const [description, setDescription] = useState("");
-  const [postType, setPostType] = useState("public");
+  const [postType, setPostType] = useState<"public" | "private">("public");
   const imageFile = useRef(null);
   const videoFile = useRef(null);
   const [promptInfo, setPromptInfo] = useState(null);
