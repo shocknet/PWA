@@ -84,11 +84,10 @@ const userProfiles = (state = INITIAL_STATE, action) => {
       return produce(state, draft => {
         const { data } = /** @type {LoadChatDataAction} */ (action);
 
-        data.contacts.forEach(c => {
-          draft[c.pk] = {
-            ...Common.createEmptyUser(c.pk),
-            ...draft[c.pk]
-          };
+        data.contacts.forEach(({ pk }) => {
+          if (!draft[pk]) {
+            draft[pk] = Common.createEmptyUser(pk);
+          }
         });
       });
     }

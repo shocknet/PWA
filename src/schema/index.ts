@@ -118,3 +118,7 @@ export const isPublishedContent = (o: unknown): o is PublishedContent => {
   }
   return true;
 };
+
+export interface Subscription {
+  off(): void;
+}

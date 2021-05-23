@@ -1,9 +1,16 @@
 // @ts-check
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { DateTime } from "luxon";
 
-import { loadChatData, sendHandshakeRequest } from "../../actions/ChatActions";
+import {
+  loadChatData,
+  sendHandshakeRequest,
+  loadReceivedRequests,
+  loadSentRequests,
+  subChats,
+  subReceivedRequests,
+  subSentRequests
+} from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
 import Message from "./components/Message";
@@ -18,13 +25,21 @@ import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
 
 const MessagesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
   const contacts = Store.useSelector(({ chat }) => chat.contacts);
   const messages = Store.useSelector(({ chat }) => chat.messages);
+  const orderedContacts = useMemo(() => {
+    return contacts.slice().sort((a, b) => {
+      const lastMsgA = messages[a.pk][0] || { timestamp: -1 };
+      const lastMsgB = messages[b.pk][0] || { timestamp: -1 };
+
+      return lastMsgB.timestamp - lastMsgA.timestamp;
+    });
+  }, [contacts, messages]);
   const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
   const receivedRequests = Store.useSelector(
     ({ chat }) => chat.receivedRequests
@@ -39,6 +54,23 @@ const MessagesPage = () => {
   useEffect(() => {
     loadChat();
   }, [loadChat]);
+
+  useEffect(() => {
+    dispatch(loadReceivedRequests());
+    dispatch(loadSentRequests());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscriptions = [
+      dispatch(subChats()),
+      dispatch(subSentRequests()),
+      dispatch(subReceivedRequests())
+    ];
+
+    return () => {
+      Promise.all(subscriptions).then(subs => subs.forEach(sub => sub.off()));
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const subscriptions = [
@@ -151,6 +183,37 @@ const MessagesPage = () => {
     [sendRequest, setScanQR]
   );
 
+  const messagesNode = useMemo(() => {
+    return orderedContacts.map(contact => {
+      const contactMessages = messages[contact.pk] ?? [];
+      const lastMessage = (() => {
+        if (contact.didDisconnect) {
+          return {
+            body: "User disconnected from you.",
+            timestamp: -1
+          };
+        }
+
+        return (
+          contactMessages[0] ?? {
+            body: "",
+            timestamp: -1
+          }
+        );
+      })();
+
+      return (
+        <Message
+          key={contact.pk}
+          publicKey={contact.pk}
+          subtitle={lastMessage.body}
+          lastMessageTimestamp={lastMessage.timestamp}
+          chatLoaded={chatLoaded}
+        />
+      );
+    });
+  }, [chatLoaded, messages, orderedContacts]);
+
   if (scanQR) {
     return (
       <div>
@@ -164,6 +227,7 @@ const MessagesPage = () => {
     );
   }
   console.log(sendError);
+
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
@@ -191,37 +255,12 @@ const MessagesPage = () => {
               time={undefined}
             />
           ))}
+
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>
           ) : null}
-          {contacts.map(contact => {
-            const contactMessages = messages[contact.pk] ?? [];
-            const lastMessage = (() => {
-              if (contact.didDisconnect) {
-                return {
-                  body: "User disconnected from you.",
-                  timestamp: Date.now()
-                };
-              }
 
-              return (
-                contactMessages[0] ?? {
-                  body: "Unable to preview last message...",
-                  timestamp: Date.now()
-                }
-              );
-            })();
-
-            return (
-              <Message
-                key={contact.pk}
-                publicKey={contact.pk}
-                subtitle={lastMessage.body}
-                time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
-                chatLoaded={chatLoaded}
-              />
-            );
-          })}
+          {messagesNode}
         </div>
         <AddBtn onClick={toggleModal} label="REQUEST" />
         {/* TODO: Extract to a separate component */}

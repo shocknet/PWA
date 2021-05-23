@@ -7,7 +7,7 @@ import React, {
   useRef,
   InputHTMLAttributes
 } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import c from "classnames";
@@ -55,7 +55,7 @@ export type WebClientPrefix =
   | "https://satoshi.watch";
 
 const ProfilePage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [deletePostModalData, setDeletePostModalData] = useState(null);
   const [deletePostModalLoading, setDeletePostModalLoading] = useState(false);

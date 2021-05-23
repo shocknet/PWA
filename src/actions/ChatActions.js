@@ -10,7 +10,8 @@ import {
   getChats,
   getReceivedRequests,
   getSentRequests,
-  rifle
+  rifle,
+  subscribeSocket
 } from "../utils/WebSocket";
 import { initialMessagePrefix } from "../utils/String";
 import * as Schema from "../schema";
@@ -68,9 +69,8 @@ export const ACTIONS = {
  * @prop {ChatMessage} data
  */
 
-export const loadChatData = () => async (dispatch, getState) => {
-  const { authToken } = getState().node;
-  const data = await getChats({ authToken });
+export const loadChatData = () => async dispatch => {
+  const data = await getChats();
   console.log("LOAD_CHAT_DATA:", data);
 
   dispatch({
@@ -79,68 +79,52 @@ export const loadChatData = () => async (dispatch, getState) => {
   });
 };
 
-export const loadSentRequests = () => (dispatch, getState) => {
-  const { hostIP, authToken } = getState().node;
-  getSentRequests({ hostIP, authToken }, (err, sentRequests) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+export const loadSentRequests = () => async dispatch => {
+  const sentRequests = await getSentRequests();
 
-    console.log("sentRequests:", sentRequests);
+  /** @type {LoadSentRequestsAction} */
+  const action = {
+    type: ACTIONS.LOAD_SENT_REQUESTS,
+    data: sentRequests.map(request => {
+      /** @type {SentRequest} */
+      const req = {
+        id: request.id,
+        pk: request.recipientPublicKey,
+        avatar: request.recipientAvatar,
+        displayName: request.recipientDisplayName,
+        changedAddress: request.recipientChangedRequestAddress,
+        timestamp: request.timestamp,
+        loading: false
+      };
 
-    /** @type {LoadSentRequestsAction} */
-    const action = {
-      type: ACTIONS.LOAD_SENT_REQUESTS,
-      data: sentRequests.map(request => {
-        /** @type {SentRequest} */
-        const req = {
-          id: request.id,
-          pk: request.recipientPublicKey,
-          avatar: request.recipientAvatar,
-          displayName: request.recipientDisplayName,
-          changedAddress: request.recipientChangedRequestAddress,
-          timestamp: request.timestamp,
-          loading: false
-        };
+      return req;
+    })
+  };
 
-        return req;
-      })
-    };
-
-    dispatch(action);
-  });
+  dispatch(action);
 };
 
-export const loadReceivedRequests = () => (dispatch, getState) => {
-  const { hostIP, authToken } = getState().node;
-  getReceivedRequests({ hostIP, authToken }, (err, receivedRequests) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+export const loadReceivedRequests = () => async (dispatch, getState) => {
+  const receivedRequests = await getReceivedRequests();
 
-    console.log("receivedRequests:", receivedRequests);
+  /** @type {LoadReceivedRequestsAction} */
+  const action = {
+    type: ACTIONS.LOAD_RECEIVED_REQUESTS,
+    data: receivedRequests.map(request => {
+      /** @type {ReceivedRequest} */
+      const req = {
+        id: request.id,
+        pk: request.requestorPK,
+        avatar: request.requestorAvatar,
+        displayName: request.requestorDisplayName,
+        timestamp: request.timestamp
+      };
 
-    /** @type {LoadReceivedRequestsAction} */
-    const action = {
-      type: ACTIONS.LOAD_RECEIVED_REQUESTS,
-      data: receivedRequests.map(request => {
-        /** @type {ReceivedRequest} */
-        const req = {
-          id: request.id,
-          pk: request.requestorPK,
-          avatar: request.requestorAvatar,
-          displayName: request.requestorDisplayName,
-          timestamp: request.timestamp
-        };
+      return req;
+    })
+  };
 
-        return req;
-      })
-    };
-
-    dispatch(action);
-  });
+  dispatch(action);
 };
 
 /**
@@ -289,3 +273,136 @@ export const chatWasDeleted = publicKey => ({
     publicKey
   }
 });
+
+export const subChats = () => async dispatch => {
+  try {
+    console.debug(`Subbing to chats`);
+    const sub = await subscribeSocket({
+      callback(err, chats) {
+        if (err) {
+          console.error(`Error in chats subscription: `, err);
+        } else {
+          console.debug(`sub chat data received: `, chats);
+
+          const contacts = chats.map(chat => ({
+            pk: chat.recipientPublicKey,
+            avatar: chat.recipientAvatar,
+            displayName: chat.recipientDisplayName,
+            didDisconnect: chat.didDisconnect
+          }));
+
+          const messages = chats.reduce(
+            (messages, chat) => ({
+              ...messages,
+              [chat.recipientPublicKey]: chat.messages
+                ?.filter(
+                  message =>
+                    message.body &&
+                    message.body.trim() &&
+                    message.body !== initialMessagePrefix
+                )
+                .sort((a, b) => b.timestamp - a.timestamp)
+            }),
+            {}
+          );
+
+          dispatch({
+            type: ACTIONS.LOAD_CHAT_DATA,
+            data: { contacts, messages }
+          });
+        }
+      },
+      eventName: "chats"
+    });
+
+    return sub;
+  } catch (e) {
+    alert(`Could not subscribe to chats: ${e.message}`);
+    console.error(`Could not subscribe to chats: `, e);
+  }
+};
+
+export const subReceivedRequests = () => async dispatch => {
+  try {
+    console.debug(`Subbing to received requests`);
+    const sub = await subscribeSocket({
+      callback(err, receivedRequests) {
+        if (err) {
+          console.error(`Error in received requests subscription: `, err);
+        } else {
+          console.debug(
+            `sub received requests data received: `,
+            receivedRequests
+          );
+
+          /** @type {LoadReceivedRequestsAction} */
+          const action = {
+            type: ACTIONS.LOAD_RECEIVED_REQUESTS,
+            data: receivedRequests.map(request => {
+              /** @type {ReceivedRequest} */
+              const req = {
+                id: request.id,
+                pk: request.requestorPK,
+                avatar: request.requestorAvatar,
+                displayName: request.requestorDisplayName,
+                timestamp: request.timestamp
+              };
+
+              return req;
+            })
+          };
+
+          dispatch(action);
+        }
+      },
+      eventName: "receivedRequests"
+    });
+
+    return sub;
+  } catch (e) {
+    alert(`Could not subscribe to received requests: ${e.message}`);
+    console.error(`Could not subscribe to received requests: `, e);
+  }
+};
+
+export const subSentRequests = () => async dispatch => {
+  try {
+    console.debug(`Subbing to sent requests`);
+    const sub = await subscribeSocket({
+      callback(err, sentRequests) {
+        if (err) {
+          console.error(`Error in sent requests subscription: `, err);
+        } else {
+          console.debug(`sub sent requests data received: `, sentRequests);
+
+          /** @type {LoadSentRequestsAction} */
+          const action = {
+            type: ACTIONS.LOAD_SENT_REQUESTS,
+            data: sentRequests.map(request => {
+              /** @type {SentRequest} */
+              const req = {
+                id: request.id,
+                pk: request.recipientPublicKey,
+                avatar: request.recipientAvatar,
+                displayName: request.recipientDisplayName,
+                changedAddress: request.recipientChangedRequestAddress,
+                timestamp: request.timestamp,
+                loading: false
+              };
+
+              return req;
+            })
+          };
+
+          dispatch(action);
+        }
+      },
+      eventName: "sentRequests"
+    });
+
+    return sub;
+  } catch (e) {
+    alert(`Could not subscribe to sent requests: ${e.message}`);
+    console.error(`Could not subscribe to sent requests: `, e);
+  }
+};

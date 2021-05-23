@@ -1,7 +1,7 @@
 // @ts-check
-import { useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { DateTime } from "luxon";
 
 import { subscribeChatMessages } from "../../../../actions/ChatActions";
 import ShockAvatar from "../../../../common/ShockAvatar";
@@ -11,10 +11,22 @@ import * as Store from "../../../../store";
 import "./css/index.scoped.css";
 import { rifleCleanup } from "../../../../utils/WebSocket";
 
-const Message = ({ subtitle = "", time, publicKey, chatLoaded = false }) => {
-  const dispatch = useDispatch();
+const Message = ({
+  subtitle = "",
+  lastMessageTimestamp,
+  publicKey,
+  chatLoaded = false
+}) => {
+  const dispatch = Store.useDispatch();
   const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
   const user = Store.useSelector(Store.selectUser(publicKey));
+  const time = useMemo(() => {
+    if (lastMessageTimestamp === -1) {
+      return "";
+    }
+    const relativeTime = DateTime.fromMillis(lastMessageTimestamp).toRelative();
+    return relativeTime === "in 0 seconds" ? "Just now" : relativeTime;
+  }, [lastMessageTimestamp]);
 
   const subscribeMessages = useCallback(() => {
     const subscription = dispatch(
