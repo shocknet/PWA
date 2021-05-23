@@ -183,6 +183,37 @@ const MessagesPage = () => {
     [sendRequest, setScanQR]
   );
 
+  const messagesNode = useMemo(() => {
+    return orderedContacts.map(contact => {
+      const contactMessages = messages[contact.pk] ?? [];
+      const lastMessage = (() => {
+        if (contact.didDisconnect) {
+          return {
+            body: "User disconnected from you.",
+            timestamp: -1
+          };
+        }
+
+        return (
+          contactMessages[0] ?? {
+            body: "",
+            timestamp: -1
+          }
+        );
+      })();
+
+      return (
+        <Message
+          key={contact.pk}
+          publicKey={contact.pk}
+          subtitle={lastMessage.body}
+          lastMessageTimestamp={lastMessage.timestamp}
+          chatLoaded={chatLoaded}
+        />
+      );
+    });
+  }, [chatLoaded, messages, orderedContacts]);
+
   if (scanQR) {
     return (
       <div>
@@ -196,6 +227,7 @@ const MessagesPage = () => {
     );
   }
   console.log(sendError);
+
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
@@ -223,37 +255,12 @@ const MessagesPage = () => {
               time={undefined}
             />
           ))}
+
           {contacts.length > 0 ? (
             <p className="messages-section-title">Messages</p>
           ) : null}
-          {orderedContacts.map(contact => {
-            const contactMessages = messages[contact.pk] ?? [];
-            const lastMessage = (() => {
-              if (contact.didDisconnect) {
-                return {
-                  body: "User disconnected from you.",
-                  timestamp: -1
-                };
-              }
 
-              return (
-                contactMessages[0] ?? {
-                  body: "",
-                  timestamp: -1
-                }
-              );
-            })();
-
-            return (
-              <Message
-                key={contact.pk}
-                publicKey={contact.pk}
-                subtitle={lastMessage.body}
-                lastMessageTimestamp={lastMessage.timestamp}
-                chatLoaded={chatLoaded}
-              />
-            );
-          })}
+          {messagesNode}
         </div>
         <AddBtn onClick={toggleModal} label="REQUEST" />
         {/* TODO: Extract to a separate component */}
