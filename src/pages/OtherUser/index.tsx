@@ -449,7 +449,11 @@ const OtherUserPage = () => {
           </div>
         </div>
 
-        <ProfileDivider onChange={handleViewChange} selected={selectedView} />
+        <ProfileDivider
+          onChange={handleViewChange}
+          selected={selectedView}
+          showContentBtn
+        />
 
         <div>
           {selectedView === "posts" && renderPosts()}
