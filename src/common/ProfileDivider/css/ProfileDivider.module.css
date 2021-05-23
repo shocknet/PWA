@@ -17,3 +17,11 @@
 .unselected {
   color: var(--text-gray);
 }
+
+.left-line {
+  left: 33%;
+}
+
+.right-line {
+  right: 33%;
+}

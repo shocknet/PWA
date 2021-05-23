@@ -6,8 +6,8 @@ import Line from "../Line";
 import styles from "./css/ProfileDivider.module.css";
 
 export interface ProfileDividerProps {
-  onChange(newlySelected: "posts" | "services"): void;
-  selected: "posts" | "services";
+  onChange(newlySelected: "posts" | "services" | "content"): void;
+  selected: "posts" | "services" | "content";
 }
 
 const ProfileDivider = ({ onChange, selected }: ProfileDividerProps) => {
@@ -33,7 +33,7 @@ const ProfileDivider = ({ onChange, selected }: ProfileDividerProps) => {
         Posts
       </span>
 
-      <div className={gStyles.absolute /* centers it, keeps texts in place */}>
+      <div className={classNames(gStyles.absolute, styles["left-line"])}>
         <Line color="white" length={16} type="vertical" width={2} />
       </div>
 
@@ -47,6 +47,22 @@ const ProfileDivider = ({ onChange, selected }: ProfileDividerProps) => {
         }}
       >
         Services
+      </span>
+
+      <div className={classNames(gStyles.absolute, styles["right-line"])}>
+        <Line color="white" length={16} type="vertical" width={2} />
+      </div>
+
+      <span
+        className={classNames(
+          gStyles.unselectable,
+          selected === "content" ? styles.selected : styles.unselected
+        )}
+        onClick={() => {
+          onChange("content");
+        }}
+      >
+        Content
       </span>
     </div>
   );
