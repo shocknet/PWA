@@ -140,17 +140,16 @@ const PublishContentPage = () => {
       }
     },
     [
-      title,
-      description,
-      selectedFiles,
-      mediaPreviews,
       availableTokens,
-      seedUrl,
-      seedToken,
-      history,
+      description,
       dispatch,
-      setError,
-      seedProviderPub
+      history,
+      mediaPreviews,
+      seedProviderPub,
+      seedToken,
+      seedUrl,
+      selectedFiles,
+      title
     ]
   );
 
