@@ -21,6 +21,7 @@ import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ProfileDivider from "../../common/ProfileDivider";
 import Pad from "../../common/Pad";
+import ContentWall from "../../common/ContentWall";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -61,9 +62,9 @@ const OtherUserPage = () => {
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const [selectedView, setSelectedView] = useState<"posts" | "services">(
-    "posts"
-  );
+  const [selectedView, setSelectedView] = useState<
+    "posts" | "services" | "content"
+  >("posts");
   const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
@@ -401,9 +402,15 @@ const OtherUserPage = () => {
         );
       });
   };
-  const handleViewChange = useCallback((selected: "posts" | "services") => {
-    setSelectedView(selected);
-  }, []);
+  const renderContent = () => {
+    return <ContentWall publicKey={userPublicKey} />;
+  };
+  const handleViewChange = useCallback(
+    (selected: "posts" | "services" | "content") => {
+      setSelectedView(selected);
+    },
+    []
+  );
   //#endregion controller
 
   return (
@@ -458,6 +465,7 @@ const OtherUserPage = () => {
         <div>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
+          {selectedView === "content" && renderContent()}
         </div>
 
         {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
