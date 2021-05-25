@@ -83,6 +83,12 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
               </div>
             )}
 
+            {item.type === "video/embedded" && (
+              <div className="video-container" style={VIDEO_PLACEHOLDER_STYLE}>
+                <i className="fas fa-video video-icon" />
+              </div>
+            )}
+
             <div className="title-and-description">
               <h3 className="title">{item.title}</h3>
 
