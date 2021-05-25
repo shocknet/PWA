@@ -7,13 +7,13 @@ import "./css/index.scoped.css";
 const IMAGE_TRANSITION_MS = 200;
 
 const Image = ({
-  id,
+  id = "",
   item,
-  index,
-  postId,
-  tipValue,
-  tipCounter,
-  hideRibbon,
+  index = 0,
+  postId = "",
+  tipValue = 0,
+  tipCounter = 0,
+  hideRibbon = false,
   width = null,
   disableZoom = false,
   style = /** @type {import('react').CSSProperties} */ ({})
