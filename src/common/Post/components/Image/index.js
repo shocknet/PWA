@@ -14,7 +14,8 @@ const Image = ({
   tipValue,
   tipCounter,
   hideRibbon,
-  width
+  width,
+  disableZoom = false
 }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomLoaded, setZoomLoaded] = useState(false);
@@ -55,43 +56,53 @@ const Image = ({
     mainImageStyle.width = width;
   }
 
+  const imgNode = (
+    <>
+      <img
+        className={`image torrent-img torrent-img-${postId}-${id}`}
+        alt="Post Media"
+        data-torrent={item.magnetURI}
+        data-file-key={index}
+        style={mainImageStyle}
+        src={contentURL}
+      />
+      <img
+        className={`image enlarged-img enlarged-img-${postId}-${id}`}
+        alt="Post Media"
+        data-file-key={index}
+        onLoad={() => {
+          setZoomLoaded(true);
+        }}
+        style={{
+          opacity: zoomed ? 1 : 0,
+          display: zoomed ? "block" : "none"
+        }}
+        src={contentURL}
+      />
+      {!hideRibbon && (
+        <TipRibbon
+          tipCounter={tipCounter}
+          tipValue={tipValue}
+          zoomed={zoomed}
+        />
+      )}
+    </>
+  );
+
   return (
     <div className="media-container">
-      <ControlledZoom
-        isZoomed={zoomed}
-        onZoomChange={handleZoomChange}
-        overlayBgColorStart="#16191c00"
-        overlayBgColorEnd="#16191c"
-      >
-        <img
-          className={`image torrent-img torrent-img-${postId}-${id}`}
-          alt="Post Media"
-          data-torrent={item.magnetURI}
-          data-file-key={index}
-          style={mainImageStyle}
-          src={contentURL}
-        />
-        <img
-          className={`image enlarged-img enlarged-img-${postId}-${id}`}
-          alt="Post Media"
-          data-file-key={index}
-          onLoad={() => {
-            setZoomLoaded(true);
-          }}
-          style={{
-            opacity: zoomed ? 1 : 0,
-            display: zoomed ? "block" : "none"
-          }}
-          src={contentURL}
-        />
-        {!hideRibbon && (
-          <TipRibbon
-            tipCounter={tipCounter}
-            tipValue={tipValue}
-            zoomed={zoomed}
-          />
-        )}
-      </ControlledZoom>
+      {disableZoom ? (
+        imgNode
+      ) : (
+        <ControlledZoom
+          isZoomed={zoomed}
+          onZoomChange={handleZoomChange}
+          overlayBgColorStart="#16191c00"
+          overlayBgColorEnd="#16191c"
+        >
+          {imgNode}
+        </ControlledZoom>
+      )}
     </div>
   );
 };
