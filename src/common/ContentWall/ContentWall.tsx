@@ -49,13 +49,20 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
     };
   }, [publicKey]);
 
+  const orderedContent = React.useMemo(() => {
+    return Object.entries(content).sort(([, a], [, b]) => {
+      // TODO: timestamps
+      return 0;
+    });
+  }, [content]);
+
   if (error) {
     return <p>{error}</p>;
   }
 
   return (
     <>
-      {Object.entries(content).map(([key, item]) => {
+      {orderedContent.map(([key, item], i) => {
         return (
           <div className="item" key={key}>
             <img alt={item.description} width="44%" />
