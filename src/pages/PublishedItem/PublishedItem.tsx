@@ -4,7 +4,10 @@ import { useParams } from "react-router-dom";
 import * as Schema from "../../schema";
 import * as Utils from "../../utils";
 import DarkPage from "../../common/DarkPage";
+import Pad from "../../common/Pad";
 import { rifle } from "../../utils/WebSocket";
+
+import "./css/PublishedItem.scoped.css";
 
 export interface PublishedItemPageProps {
   id: string;
@@ -16,6 +19,9 @@ const PublishedItemPage: React.FC<PublishedItemPageProps> = () => {
   const [error, setError] = React.useState<string>("");
 
   React.useEffect(() => {
+    if (error) {
+      return () => {};
+    }
     const subscription = rifle({
       query: `${publicKey}::publishedContentPublic>${id}::on`,
       onError(e) {
@@ -41,7 +47,25 @@ const PublishedItemPage: React.FC<PublishedItemPageProps> = () => {
     return () => {
       subscription.then(sub => sub.off());
     };
-  }, [id, publicKey]);
+  }, [error, id, publicKey]);
+
+  const onRetry = React.useCallback(() => {
+    setError("");
+  }, []);
+
+  if (error) {
+    return (
+      <DarkPage pageTitle="Error" justify="center">
+        <span>{error}</span>
+
+        <Pad amt={32} />
+
+        <button className="submit-btn retry-btn" onClick={onRetry}>
+          Retry
+        </button>
+      </DarkPage>
+    );
+  }
 
   if (!item) {
     return <DarkPage pageTitle="Loading..." />;
