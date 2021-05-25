@@ -153,3 +153,14 @@ p.profile-clipboard-text {
 .m-1 {
   margin: 1em;
 }
+
+.content-container {
+  padding-left: 12px;
+  padding-right: 12px;
+  width: 100%;
+}
+
+.content-container > * {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}

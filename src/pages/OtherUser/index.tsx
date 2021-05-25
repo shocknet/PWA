@@ -403,7 +403,11 @@ const OtherUserPage = () => {
       });
   };
   const renderContent = () => {
-    return <ContentWall publicKey={userPublicKey} />;
+    return (
+      <div className={styles["content-container"]}>
+        <ContentWall publicKey={userPublicKey} />
+      </div>
+    );
   };
   const handleViewChange = useCallback(
     (selected: "posts" | "services" | "content") => {
