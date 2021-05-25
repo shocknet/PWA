@@ -364,7 +364,7 @@ const App = () => {
           <PrivateRoute path="/Backups" exact component={BackupsPage} />
           <Route path="/story" exact component={Story} />
           <Route path="/stories" exact component={Stories} />
-          <Route
+          <PrivateRoute
             path="/item/:publicKey/:id"
             exact
             component={PublishedItemPage}

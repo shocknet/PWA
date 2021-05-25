@@ -1,5 +1,6 @@
 import React from "react";
 import produce from "immer";
+import { useHistory } from "react-router-dom";
 
 import { rifle } from "../../utils/WebSocket";
 import * as Schema from "../../schema";
@@ -13,6 +14,7 @@ export interface ContentWallProps {
 }
 
 const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
+  const history = useHistory();
   const [content, setContent] = React.useState<
     Record<string, Schema.PublicContentItem>
   >({});
@@ -64,7 +66,13 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
     <>
       {orderedContent.map((item, i) => {
         return (
-          <div className="item" key={item.id}>
+          <div
+            className="item"
+            key={item.id}
+            onClick={() => {
+              history.push(`/item/${item.author}/${item.id}`);
+            }}
+          >
             {item.type === "image/embedded" && (
               <div style={MEDIA_STYLE}>
                 <Image
