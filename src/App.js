@@ -84,9 +84,7 @@ const App = () => {
   const streamLiveToken = Store.useSelector(
     ({ content }) => content.streamLiveToken
   );
-  const dialogText = Store.useSelector(
-    ({ app }) => app.dialogText
-  );
+  const dialogText = Store.useSelector(({ app }) => app.dialogText);
   const dialogHasCallback = Store.useSelector(
     ({ app }) => app.dialogHasCallback
   );
@@ -132,7 +130,7 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl,update]);
+  }, [streamUrl, update]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
@@ -216,13 +214,13 @@ const App = () => {
         typeof serviceProvider.data === "string" &&
         serviceProvider.data !== ""
       ) {
-        setSeedProviderPub(serviceProvider.data,true)(dispatch);
+        setSeedProviderPub(serviceProvider.data, true)(dispatch);
       }
-    }catch(err){
+    } catch (err) {
       //if something goes wrong just log the error, no need to do anything else
       console.log(err);
     }
-    try{
+    try {
       const { data: seedData } = await Http.get(
         `/api/gun/user/load/seedServiceSeedData`,
         {
@@ -238,7 +236,7 @@ const App = () => {
       ) {
         const JObject = JSON.parse(seedData.data);
         if (JObject && JObject.seedUrl && JObject.seedToken) {
-          setSeedInfo(JObject.seedUrl, JObject.seedToken,true)(dispatch);
+          setSeedInfo(JObject.seedUrl, JObject.seedToken, true)(dispatch);
         }
       }
     } catch (err) {
@@ -247,11 +245,11 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
-    if(!authenticated){
-      return
+    if (!authenticated) {
+      return;
     }
     loadContentInfo();
-  }, [authenticated,loadContentInfo]);
+  }, [authenticated, loadContentInfo]);
 
   //load info about current stream stored into gun
   const loadStreamInfo = useCallback(async () => {
@@ -269,14 +267,14 @@ const App = () => {
         typeof streamData.data === "string" &&
         streamData.data !== ""
       ) {
-        if(streamData.data === 'NO DATA'){
-          removeStream(true,true)(dispatch)
-          return
+        if (streamData.data === "NO DATA") {
+          removeStream(true, true)(dispatch);
+          return;
         }
         const JObject = JSON.parse(streamData.data);
-        
+
         if (JObject) {
-          addStream(JObject,true)(dispatch);
+          addStream(JObject, true)(dispatch);
         }
       }
     } catch (err) {
@@ -285,19 +283,19 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
-    if(!authenticated){
-      return
+    if (!authenticated) {
+      return;
     }
     loadStreamInfo();
-  }, [authenticated,loadStreamInfo]);
+  }, [authenticated, loadStreamInfo]);
 
-  const DialogClose = useCallback(()=>{
-    closeDialog(false)(dispatch)
-  },[closeDialog,dispatch])
+  const DialogClose = useCallback(() => {
+    closeDialog(false)(dispatch);
+  }, [closeDialog, dispatch]);
 
   const ConfirmDialog = useCallback(() => {
-    closeDialog(dialogHasCallback)(dispatch)
-  },[dialogHasCallback,closeDialog,dispatch])
+    closeDialog(dialogHasCallback)(dispatch);
+  }, [dialogHasCallback, closeDialog, dispatch]);
   return (
     <FullHeight className="ShockWallet">
       {showFloatingPlayer && (
@@ -307,18 +305,30 @@ const App = () => {
           <button onClick={stopStream}>CLOSE STREAM</button>
         </div>
       )}
-      {dialogText &&
+      {dialogText && (
         <div className="fixed-container">
           <div className="global-dialog">
             <p>{dialogText}</p>
             <div className="d-flex flex-justify-center w-80">
-              {dialogHasCallback && <button className="shock-form-button m-t-1 w-50" onClick={DialogClose}>Cancel</button>}
-              {dialogHasCallback && <div style={{width:"1rem"}}></div>}
-              <button className="shock-form-button-confirm m-t-1 w-50" onClick={ConfirmDialog}>OK</button>
+              {dialogHasCallback && (
+                <button
+                  className="shock-form-button m-t-1 w-50"
+                  onClick={DialogClose}
+                >
+                  Cancel
+                </button>
+              )}
+              {dialogHasCallback && <div style={{ width: "1rem" }}></div>}
+              <button
+                className="shock-form-button-confirm m-t-1 w-50"
+                onClick={ConfirmDialog}
+              >
+                OK
+              </button>
             </div>
           </div>
         </div>
-      }
+      )}
       <Drawer />
       <Suspense fallback={<Loader fullScreen text={null} />}>
         <Switch>
