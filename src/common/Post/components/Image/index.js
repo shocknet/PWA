@@ -14,8 +14,9 @@ const Image = ({
   tipValue,
   tipCounter,
   hideRibbon,
-  width,
-  disableZoom = false
+  width = null,
+  disableZoom = false,
+  style = /** @type {import('react').CSSProperties} */ ({})
 }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomLoaded, setZoomLoaded] = useState(false);
@@ -51,7 +52,7 @@ const Image = ({
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
   );
-  const mainImageStyle = { opacity: previewVisible ? 1 : 0 };
+  const mainImageStyle = { ...style, opacity: previewVisible ? 1 : 0 };
   if (width) {
     mainImageStyle.width = width;
   }

@@ -67,7 +67,7 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
         return (
           <div className="item" key={key}>
             {item.type === "image/embedded" && (
-              <div className="image-container">
+              <div style={MEDIA_STYLE}>
                 <Image
                   disableZoom
                   hideRibbon
@@ -77,14 +77,13 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
                   postId={null}
                   tipCounter={null}
                   tipValue={null}
-                  width={100}
-                  // height={1000}
+                  style={MEDIA_STYLE}
                 />
               </div>
             )}
 
             {item.type === "video/embedded" && (
-              <div className="video-container" style={VIDEO_PLACEHOLDER_STYLE}>
+              <div className="video-placeholder" style={MEDIA_STYLE}>
                 <i className="fas fa-video video-icon" />
               </div>
             )}
@@ -92,7 +91,7 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
             <div className="title-and-description">
               <h3 className="title">{item.title}</h3>
 
-              <p className="description">{item.description || ""}</p>
+              <p className="description">{item.description || " "}</p>
 
               {/* timestamp here later */}
             </div>
@@ -101,6 +100,14 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
       })}
     </>
   );
+};
+
+const MAX_MEDIA_LONG_EDGE = 100;
+
+const MEDIA_STYLE: React.CSSProperties = {
+  height: MAX_MEDIA_LONG_EDGE,
+  width: MAX_MEDIA_LONG_EDGE,
+  objectFit: "contain"
 };
 
 export default ContentWall;
