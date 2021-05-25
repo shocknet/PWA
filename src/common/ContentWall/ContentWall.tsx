@@ -4,6 +4,7 @@ import produce from "immer";
 import { rifle } from "../../utils/WebSocket";
 import * as Schema from "../../schema";
 import * as Utils from "../../utils";
+import Image from "../../common/Post/components/Image";
 
 import "./css/ContentWall.scoped.css";
 
@@ -65,17 +66,30 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
       {orderedContent.map(([key, item], i) => {
         return (
           <div className="item" key={key}>
-            <img alt={item.description} width="44%" />
+            {item.type === "image/embedded" && (
+              <div className="image-container">
+                <Image
+                  disableZoom
+                  hideRibbon
+                  id={key}
+                  index={i}
+                  item={item}
+                  postId={null}
+                  tipCounter={null}
+                  tipValue={null}
+                  width={100}
+                  // height={1000}
+                />
+              </div>
+            )}
 
-            <div>
-              <h3>{item.title}</h3>
+            <div className="title-and-description">
+              <h3 className="title">{item.title}</h3>
 
-              <p>{item.description}</p>
+              <p className="description">{item.description || ""}</p>
 
               {/* timestamp here later */}
             </div>
-
-            <i className="fas fa-ellipsis-v" />
           </div>
         );
       })}

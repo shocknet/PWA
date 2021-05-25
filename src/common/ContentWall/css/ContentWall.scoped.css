@@ -1,2 +1,47 @@
 .item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-height: 300px;
+}
+
+.item:hover {
+  cursor: pointer;
+}
+
+.item > *:first-child {
+  margin-right: 4px;
+}
+
+.item > *:last-child {
+  margin-left: 4px;
+}
+
+.item > *:not(:first-child):not(:last-child) {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.image-container {
+  width: 100px;
+  background-color: lavender;
+}
+
+.title-and-description {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-left: 12px;
+}
+
+.title {
+  /* white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+}
+
+.description {
+  /* white-space: nowrap; */
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
 }
