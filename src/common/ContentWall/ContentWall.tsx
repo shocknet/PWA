@@ -14,7 +14,7 @@ export interface ContentWallProps {
 
 const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
   const [content, setContent] = React.useState<
-    Record<string, Schema.PublishedContent>
+    Record<string, Schema.PublicContentItem>
   >({});
   const [error, setError] = React.useState<string>("");
 
@@ -27,7 +27,7 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
       onData(item, key) {
         setContent(
           produce(draft => {
-            if (Schema.isPublishedContent(item)) {
+            if (Schema.isPublicContentItem(item)) {
               draft[key] = item;
             } else {
               Utils.logger.warn(
@@ -51,9 +51,8 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
   }, [publicKey]);
 
   const orderedContent = React.useMemo(() => {
-    return Object.entries(content).sort(([, a], [, b]) => {
-      // TODO: timestamps
-      return 0;
+    return Object.values(content).sort((a, b) => {
+      return b.timestamp - a.timestamp;
     });
   }, [content]);
 
@@ -63,15 +62,15 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
 
   return (
     <>
-      {orderedContent.map(([key, item], i) => {
+      {orderedContent.map((item, i) => {
         return (
-          <div className="item" key={key}>
+          <div className="item" key={item.id}>
             {item.type === "image/embedded" && (
               <div style={MEDIA_STYLE}>
                 <Image
                   disableZoom
                   hideRibbon
-                  id={key}
+                  id={item.id}
                   index={i}
                   item={item}
                   postId={null}

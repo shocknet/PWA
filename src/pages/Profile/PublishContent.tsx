@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
+import { v1 as uuid } from "uuid";
 
 import "./css/index.scoped.css";
 
@@ -16,6 +17,7 @@ import * as Store from "../../store";
 import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
 import * as gStyles from "../../styles";
+import * as Schema from "../../schema";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -40,6 +42,7 @@ const PublishContentPage = () => {
   const imageFile = useRef(null);
   const videoFile = useRef(null);
   const [promptInfo, setPromptInfo] = useState(null);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -107,7 +110,10 @@ const PublishContentPage = () => {
             ? ("video/embedded" as const)
             : ("image/embedded" as const);
 
-        const contentItem = {
+        const contentItem: Schema.PublicContentItem = {
+          id: uuid(),
+          timestamp: Date.now(),
+          author: selfPublicKey,
           type,
           magnetURI: magnet,
           width: 0,
@@ -153,6 +159,7 @@ const PublishContentPage = () => {
       seedToken,
       seedUrl,
       selectedFiles,
+      selfPublicKey,
       title
     ]
   );

@@ -2,7 +2,12 @@ import { createAction } from "@reduxjs/toolkit";
 
 import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
-import { PublishedContent, isPublishedContent } from "../schema";
+import {
+  PublishedContent,
+  isPublishedContent,
+  PublicContentItem,
+  isPublicContentItem
+} from "../schema";
 import { parseJson } from "../utils";
 import { openDialog } from "./AppActions";
 
@@ -72,37 +77,43 @@ export const publishedContentAdded = createAction<{
 }>(ACTIONS.PUBLISHED_CONTENT_ADDED);
 
 export const addPublishedContent = (
-  content: PublishedContent,
+  content: PublishedContent | PublicContentItem,
   type: "public" | "private"
 ) => async dispatch => {
-  const { data } = await Http.post<{ ok: boolean; id: string }>(
-    "/api/gun/set",
-    type === "public"
-      ? {
-          path: "$user>publishedContentPublic",
-          value: content
-        }
-      : {
-          path: "$user>publishedContent",
-          value: {
-            $$__ENCRYPT__FOR: "me",
-            value: JSON.stringify(content)
-          }
-        }
-  );
-
   if (type === "public") {
+    if (!isPublicContentItem(content)) {
+      throw new TypeError(
+        `Expected content to upload to be a PublicContentItem`
+      );
+    }
+
+    await Http.post("/api/gun/put", {
+      path: `$user>publishedContentPublic>${content.id}`,
+      value: content
+    });
+
     // TODO: redux public content
+
+    return content;
   } else {
+    const { data } = await Http.post<{ ok: boolean; id: string }>(
+      "/api/gun/set",
+      {
+        path: "$user>publishedContent",
+        value: {
+          $$__ENCRYPT__FOR: "me",
+          value: JSON.stringify(content)
+        }
+      }
+    );
     dispatch(
       publishedContentAdded({
         content,
         res: data
       })
     );
+    return data;
   }
-
-  return data;
 };
 
 export const publishedContentRemoved = createAction<{ id: string }>(
