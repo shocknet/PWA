@@ -56,7 +56,9 @@ const Story = React.lazy(() => import("./pages/Story"));
 const Stories = React.lazy(() => import("./pages/Stories"));
 const QRScannerPage = React.lazy(() => import("./pages/QRScanner"));
 const BackupsPage = React.lazy(() => import("./pages/Backups"));
-const PublishedItemPage = React.lazy(() => import("./pages/PublishedItem"));
+const PublicContentItemPage = React.lazy(() =>
+  import("./pages/PublicContentItem")
+);
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
@@ -367,7 +369,7 @@ const App = () => {
           <PrivateRoute
             path="/item/:publicKey/:id"
             exact
-            component={PublishedItemPage}
+            component={PublicContentItemPage}
           />
           <Redirect to="/overview" />
         </Switch>

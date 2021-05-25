@@ -5,15 +5,16 @@ import * as Schema from "../../schema";
 import * as Utils from "../../utils";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
+import Image from "../../common/Post/components/Image";
 import { rifle } from "../../utils/WebSocket";
 
-import "./css/PublishedItem.scoped.css";
+import "./css/PublicContentItemPage.scoped.css";
 
-export interface PublishedItemPageProps {
+export interface PublicContentItemPageProps {
   id: string;
 }
 
-const PublishedItemPage: React.FC<PublishedItemPageProps> = () => {
+const PublicContentItemPage: React.FC<PublicContentItemPageProps> = () => {
   const { id, publicKey } = useParams<{ id: string; publicKey: string }>();
   const [item, setItem] = React.useState<Schema.PublicContentItem | null>(null);
   const [error, setError] = React.useState<string>("");
@@ -75,9 +76,13 @@ const PublishedItemPage: React.FC<PublishedItemPageProps> = () => {
     <DarkPage>
       <h1>{item.title}</h1>
 
+      {item.type === "image/embedded" && <Image item={item} />}
+
+      {item.type === "video/embedded" && null}
+
       <p>{publicKey}</p>
     </DarkPage>
   );
 };
 
-export default PublishedItemPage;
+export default PublicContentItemPage;
