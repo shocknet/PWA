@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
 
 import { GUN_PROPS } from "../../utils/Gun";
@@ -48,11 +48,15 @@ const AVATAR_SIZE = 122;
 const OtherUserPage = () => {
   //#region controller
   const dispatch = useDispatch();
+  const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
-  const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
+  const { publicKey: userPublicKey, selectedView = "posts" } = useParams<{
+    publicKey: string;
+    selectedView: "posts" | "services" | "content";
+  }>();
   const user = Store.useSelector(Store.selectUser(userPublicKey));
   const [userPosts, setUserPosts] = useState([]);
   const [userSharedPosts, setUserSharedPosts] = useState([]);
@@ -62,9 +66,6 @@ const OtherUserPage = () => {
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const [selectedView, setSelectedView] = useState<
-    "posts" | "services" | "content"
-  >("posts");
   const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
@@ -411,9 +412,9 @@ const OtherUserPage = () => {
   };
   const handleViewChange = useCallback(
     (selected: "posts" | "services" | "content") => {
-      setSelectedView(selected);
+      history.replace(`/otherUser/${userPublicKey}/${selected}`);
     },
-    []
+    [history, userPublicKey]
   );
   //#endregion controller
 

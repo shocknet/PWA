@@ -359,7 +359,7 @@ const App = () => {
           />
           <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
           <PrivateRoute
-            path="/otherUser/:publicKey"
+            path="/otherUser/:publicKey/:selectedView?"
             exact
             component={OtherUserPage}
           />
