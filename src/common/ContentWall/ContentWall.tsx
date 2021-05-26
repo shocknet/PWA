@@ -72,6 +72,7 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
             onClick={() => {
               history.push(`/item/${item.author}/${item.id}`);
             }}
+            style={ITEM_STYLE}
           >
             {item.type === "image/embedded" && (
               <div style={MEDIA_STYLE}>
@@ -110,6 +111,10 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
 };
 
 const MAX_MEDIA_LONG_EDGE = 100;
+
+const ITEM_STYLE = {
+  height: MAX_MEDIA_LONG_EDGE * 1.2
+};
 
 const MEDIA_STYLE: React.CSSProperties = {
   height: MAX_MEDIA_LONG_EDGE,
