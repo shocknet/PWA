@@ -1,5 +1,4 @@
 import { useCallback, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 
 import Loader from "../../common/Loader";
@@ -17,7 +16,7 @@ import {
 import "./css/index.scoped.css";
 
 const CreatePostPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const publishedContent = Store.useSelector(Store.selectOwnPublishedContent);
   const [loading, setLoading] = useState(false);
