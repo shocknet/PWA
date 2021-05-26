@@ -9,7 +9,8 @@ const INITIAL_STATE = {
 const defaultSteps = {
   manual: "host",
   shockWizard: "scan",
-  shockCloud: "inviteCode"
+  shockCloud: "inviteCode",
+  hostingTiers: "chooseTier"
 };
 
 const auth = (state = INITIAL_STATE, action) => {
