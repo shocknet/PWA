@@ -10,7 +10,8 @@ import Pad from "../../common/Pad";
 import * as Store from "../../store";
 import {
   subOwnPublishedContent,
-  unsubOwnPublishedContent
+  unsubOwnPublishedContent,
+  subOwnPublicContent
 } from "../../actions/ContentActions";
 
 import "./css/index.scoped.css";
@@ -30,6 +31,14 @@ const CreatePostPage = () => {
 
     return () => {
       dispatch(unsubOwnPublishedContent());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscription = dispatch(subOwnPublicContent());
+
+    return () => {
+      subscription.then(sub => sub.off());
     };
   }, [dispatch]);
 
