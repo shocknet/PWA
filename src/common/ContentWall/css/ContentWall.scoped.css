@@ -3,7 +3,7 @@
 
   flex-direction: row;
   justify-content: flex-start;
-  overflow-x: hidden;
+  overflow: hidden; /* long descriptions */
 }
 
 .item:hover {
