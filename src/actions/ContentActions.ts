@@ -2,8 +2,13 @@ import { createAction } from "@reduxjs/toolkit";
 
 import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
-import { PublishedContent, isPublishedContent } from "../schema";
-import { parseJson } from "../utils";
+import {
+  PublishedContent,
+  isPublishedContent,
+  PublicContentItem,
+  isPublicContentItem
+} from "../schema";
+import { parseJson, logger } from "../utils";
 import { openDialog } from "./AppActions";
 
 export const ACTIONS = {
@@ -22,8 +27,11 @@ export const ACTIONS = {
   REMOVE_STREAM_TOKEN: "content/removeStreamToken"
 } as const;
 
-export const setSeedProviderPub = (pub, dontBackup = false) => async dispatch => {
-  if(!dontBackup){
+export const setSeedProviderPub = (
+  pub,
+  dontBackup = false
+) => async dispatch => {
+  if (!dontBackup) {
     let value: string | Record<string, any> = {
       $$__ENCRYPT__FOR: "me",
       value: pub
@@ -47,7 +55,7 @@ export const setSeedInfo = (
   dontBackup = false
 ) => async dispatch => {
   const cleanUrl = seedUrl.endsWith("/") ? seedUrl.slice(0, -1) : seedUrl;
-  if(!dontBackup){
+  if (!dontBackup) {
     const infoS = JSON.stringify({ seedUrl: cleanUrl, seedToken });
     await Http.post("/api/gun/put", {
       path: "$user>seedServiceSeedData",
@@ -68,26 +76,52 @@ export const publishedContentAdded = createAction<{
   res: { ok: boolean; id: string };
 }>(ACTIONS.PUBLISHED_CONTENT_ADDED);
 
+export const publicContentAdded = createAction<{
+  item: PublicContentItem;
+}>("content/publicContentAdded");
+
 export const addPublishedContent = (
-  content: PublishedContent
+  content: PublishedContent | PublicContentItem,
+  type: "public" | "private"
 ) => async dispatch => {
-  const { data } = await Http.post<{ ok: boolean; id: string }>(
-    "/api/gun/set",
-    {
-      path: "$user>publishedContent",
-      value: {
-        $$__ENCRYPT__FOR: "me",
-        value: JSON.stringify(content)
-      }
+  if (type === "public") {
+    if (!isPublicContentItem(content)) {
+      throw new TypeError(
+        `Expected content to upload to be a PublicContentItem`
+      );
     }
-  );
-  dispatch(
-    publishedContentAdded({
-      content,
-      res: data
-    })
-  );
-  return data;
+
+    await Http.post("/api/gun/put", {
+      path: `$user>publishedContentPublic>${content.id}`,
+      value: content
+    });
+
+    dispatch(
+      publicContentAdded({
+        item: content
+      })
+    );
+
+    return content;
+  } else {
+    const { data } = await Http.post<{ ok: boolean; id: string }>(
+      "/api/gun/set",
+      {
+        path: "$user>publishedContent",
+        value: {
+          $$__ENCRYPT__FOR: "me",
+          value: JSON.stringify(content)
+        }
+      }
+    );
+    dispatch(
+      publishedContentAdded({
+        content,
+        res: data
+      })
+    );
+    return data;
+  }
 };
 
 export const publishedContentRemoved = createAction<{ id: string }>(
@@ -116,34 +150,34 @@ export const unlockContent = (amt, owner, postID) => async dispatch => {
     }
   }
 };
-export const addStream = ({
-  seedToken,
-  liveToken,
-  streamUrl,
-  streamPostId,
-  streamContentId,
-  streamStatusUrl,
-  streamBroadcasterUrl
-},dontBackup = false) => async dispatch => {
-  if(!dontBackup){
-    await Http.post(
-      "/api/gun/put",
-      {
-        path: "$user>currentStreamInfo",
-        value: {
-          $$__ENCRYPT__FOR: "me",
-          value: JSON.stringify({
-            seedToken,
-            liveToken,
-            streamUrl,
-            streamPostId,
-            streamContentId,
-            streamStatusUrl,
-            streamBroadcasterUrl
-          })
-        }
+export const addStream = (
+  {
+    seedToken,
+    liveToken,
+    streamUrl,
+    streamPostId,
+    streamContentId,
+    streamStatusUrl,
+    streamBroadcasterUrl
+  },
+  dontBackup = false
+) => async dispatch => {
+  if (!dontBackup) {
+    await Http.post("/api/gun/put", {
+      path: "$user>currentStreamInfo",
+      value: {
+        $$__ENCRYPT__FOR: "me",
+        value: JSON.stringify({
+          seedToken,
+          liveToken,
+          streamUrl,
+          streamPostId,
+          streamContentId,
+          streamStatusUrl,
+          streamBroadcasterUrl
+        })
       }
-    );
+    });
   }
   dispatch({
     type: ACTIONS.ADD_STREAM,
@@ -158,23 +192,23 @@ export const addStream = ({
     }
   });
 };
-export const removeStream = (dontBackup = false, noDialog = false) => async dispatch => {
-  if(!noDialog){
+export const removeStream = (
+  dontBackup = false,
+  noDialog = false
+) => async dispatch => {
+  if (!noDialog) {
     openDialog({
-      text:"The recording of the stream will be published in a few moments."
-    })(dispatch)
+      text: "The recording of the stream will be published in a few moments."
+    })(dispatch);
   }
-  if(!dontBackup){
-    await Http.post(
-      "/api/gun/put",
-      {
-        path: "$user>currentStreamInfo",
-        value: {
-          $$__ENCRYPT__FOR: "me",
-          value: "NO DATA"
-        }
+  if (!dontBackup) {
+    await Http.post("/api/gun/put", {
+      path: "$user>currentStreamInfo",
+      value: {
+        $$__ENCRYPT__FOR: "me",
+        value: "NO DATA"
       }
-    );
+    });
   }
   dispatch({
     type: ACTIONS.REMOVE_STREAM
@@ -272,4 +306,44 @@ export const subOwnPublishedContent = () => async (
 export const unsubOwnPublishedContent = () => () => {
   console.debug(`Unsubbing own published content.`);
   unsubscribeRifleByQuery(OWN_PUBLISHED_CONTENT_QUERY);
+};
+
+export const subOwnPublicContent = () => async (
+  dispatch: (action: any) => void
+) => {
+  logger.debug(`Subscribing to own public content`);
+  const subscription = await rifle({
+    query: "$user::publishedContentPublic::map.on",
+    reconnect: true,
+    onError(e) {
+      alert(`Error inside own public content rifle: ${JSON.stringify(e)}`);
+      logger.error(`Error inside own public content rifle: `, e);
+    },
+    onData: async (item: unknown) => {
+      try {
+        if (item === null) {
+          return; // was deleted
+        }
+        logger.debug(`Received own public item:`);
+        logger.debug(item);
+
+        if (!isPublicContentItem(item)) {
+          throw new TypeError(
+            `Invalid public content item: ${JSON.stringify(item, null, 2)}`
+          );
+        }
+
+        dispatch(
+          publicContentAdded({
+            item
+          })
+        );
+      } catch (e) {
+        logger.error(`Error inside own public content sub:`);
+        logger.error(e);
+      }
+    }
+  });
+
+  return subscription;
 };

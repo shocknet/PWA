@@ -122,3 +122,22 @@ export const isPublishedContent = (o: unknown): o is PublishedContent => {
 export interface Subscription {
   off(): void;
 }
+
+export interface PublicContentItem extends PublishedContent {
+  id: string;
+  author: string;
+  timestamp: number;
+}
+
+export const isPublicContentItem = (o: unknown): o is PublicContentItem => {
+  if (!isPublishedContent(o)) {
+    return false;
+  }
+  const obj = (o as unknown) as PublicContentItem;
+
+  if (!Common.isPopulatedString(obj.author)) {
+    return false;
+  }
+
+  return typeof obj.timestamp === "number";
+};

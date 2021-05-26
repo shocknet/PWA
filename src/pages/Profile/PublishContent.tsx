@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
+import { v1 as uuid } from "uuid";
 
 import "./css/index.scoped.css";
 
@@ -16,6 +17,7 @@ import * as Store from "../../store";
 import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
 import * as gStyles from "../../styles";
+import * as Schema from "../../schema";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -36,10 +38,11 @@ const PublishContentPage = () => {
   const [title, setTitle] = useState("");
   const [titleMissing, setTitleMissing] = useState(false);
   const [description, setDescription] = useState("");
-  const [postType, setPostType] = useState("public");
+  const [postType, setPostType] = useState<"public" | "private">("public");
   const imageFile = useRef(null);
   const videoFile = useRef(null);
   const [promptInfo, setPromptInfo] = useState(null);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -107,7 +110,10 @@ const PublishContentPage = () => {
             ? ("video/embedded" as const)
             : ("image/embedded" as const);
 
-        const contentItem = {
+        const contentItem: Schema.PublicContentItem = {
+          id: uuid(),
+          timestamp: Date.now(),
+          author: selfPublicKey,
           type,
           magnetURI: magnet,
           width: 0,
@@ -115,7 +121,10 @@ const PublishContentPage = () => {
           title,
           description
         };
-        const published = await addPublishedContent(contentItem)(dispatch);
+        const published = await addPublishedContent(
+          contentItem,
+          postType
+        )(dispatch);
         console.log("content publish complete");
         console.log(published);
         setLoading(false);
@@ -140,17 +149,18 @@ const PublishContentPage = () => {
       }
     },
     [
-      title,
-      description,
-      selectedFiles,
-      mediaPreviews,
       availableTokens,
-      seedUrl,
-      seedToken,
-      history,
+      description,
       dispatch,
-      setError,
-      seedProviderPub
+      history,
+      mediaPreviews,
+      postType,
+      seedProviderPub,
+      seedToken,
+      seedUrl,
+      selectedFiles,
+      selfPublicKey,
+      title
     ]
   );
 

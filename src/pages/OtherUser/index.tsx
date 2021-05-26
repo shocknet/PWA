@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
 
 import { GUN_PROPS } from "../../utils/Gun";
@@ -21,6 +21,7 @@ import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ProfileDivider from "../../common/ProfileDivider";
 import Pad from "../../common/Pad";
+import ContentWall from "../../common/ContentWall";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -47,11 +48,15 @@ const AVATAR_SIZE = 122;
 const OtherUserPage = () => {
   //#region controller
   const dispatch = useDispatch();
+  const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   //@ts-expect-error
   const userProfiles = useSelector(({ userProfiles }) => userProfiles);
-  const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
+  const { publicKey: userPublicKey, selectedView = "posts" } = useParams<{
+    publicKey: string;
+    selectedView: "posts" | "services" | "content";
+  }>();
   const user = Store.useSelector(Store.selectUser(userPublicKey));
   const [userPosts, setUserPosts] = useState([]);
   const [userSharedPosts, setUserSharedPosts] = useState([]);
@@ -61,9 +66,6 @@ const OtherUserPage = () => {
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const [selectedView, setSelectedView] = useState<"posts" | "services">(
-    "posts"
-  );
   const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
@@ -401,9 +403,19 @@ const OtherUserPage = () => {
         );
       });
   };
-  const handleViewChange = useCallback((selected: "posts" | "services") => {
-    setSelectedView(selected);
-  }, []);
+  const renderContent = () => {
+    return (
+      <div className={styles["content-container"]}>
+        <ContentWall publicKey={userPublicKey} />
+      </div>
+    );
+  };
+  const handleViewChange = useCallback(
+    (selected: "posts" | "services" | "content") => {
+      history.replace(`/otherUser/${userPublicKey}/${selected}`);
+    },
+    [history, userPublicKey]
+  );
   //#endregion controller
 
   return (
@@ -449,11 +461,16 @@ const OtherUserPage = () => {
           </div>
         </div>
 
-        <ProfileDivider onChange={handleViewChange} selected={selectedView} />
+        <ProfileDivider
+          onChange={handleViewChange}
+          selected={selectedView}
+          showContentBtn
+        />
 
         <div>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
+          {selectedView === "content" && renderContent()}
         </div>
 
         {/* Allow some wiggle room to avoid the QR btn covering the view selector */}

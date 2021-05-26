@@ -1,5 +1,4 @@
 import { useCallback, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 
 import Loader from "../../common/Loader";
@@ -11,13 +10,14 @@ import Pad from "../../common/Pad";
 import * as Store from "../../store";
 import {
   subOwnPublishedContent,
-  unsubOwnPublishedContent
+  unsubOwnPublishedContent,
+  subOwnPublicContent
 } from "../../actions/ContentActions";
 
 import "./css/index.scoped.css";
 
 const CreatePostPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const publishedContent = Store.useSelector(Store.selectOwnPublishedContent);
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,14 @@ const CreatePostPage = () => {
 
     return () => {
       dispatch(unsubOwnPublishedContent());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscription = dispatch(subOwnPublicContent());
+
+    return () => {
+      subscription.then(sub => sub.off());
     };
   }, [dispatch]);
 
