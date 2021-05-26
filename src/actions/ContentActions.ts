@@ -8,7 +8,7 @@ import {
   PublicContentItem,
   isPublicContentItem
 } from "../schema";
-import { parseJson } from "../utils";
+import { parseJson, logger } from "../utils";
 import { openDialog } from "./AppActions";
 
 export const ACTIONS = {
@@ -76,6 +76,10 @@ export const publishedContentAdded = createAction<{
   res: { ok: boolean; id: string };
 }>(ACTIONS.PUBLISHED_CONTENT_ADDED);
 
+export const publicContentAdded = createAction<{
+  item: PublicContentItem;
+}>("content/publicContentAdded");
+
 export const addPublishedContent = (
   content: PublishedContent | PublicContentItem,
   type: "public" | "private"
@@ -92,7 +96,11 @@ export const addPublishedContent = (
       value: content
     });
 
-    // TODO: redux public content
+    dispatch(
+      publicContentAdded({
+        item: content
+      })
+    );
 
     return content;
   } else {
@@ -298,4 +306,44 @@ export const subOwnPublishedContent = () => async (
 export const unsubOwnPublishedContent = () => () => {
   console.debug(`Unsubbing own published content.`);
   unsubscribeRifleByQuery(OWN_PUBLISHED_CONTENT_QUERY);
+};
+
+export const subOwnPublicContent = () => async (
+  dispatch: (action: any) => void
+) => {
+  logger.debug(`Subscribing to own public content`);
+  const subscription = await rifle({
+    query: "$user::publishedContentPublic::map.on",
+    reconnect: true,
+    onError(e) {
+      alert(`Error inside own public content rifle: ${JSON.stringify(e)}`);
+      logger.error(`Error inside own public content rifle: `, e);
+    },
+    onData: async (item: unknown) => {
+      try {
+        if (item === null) {
+          return; // was deleted
+        }
+        logger.debug(`Received own public item:`);
+        logger.debug(item);
+
+        if (!isPublicContentItem(item)) {
+          throw new TypeError(
+            `Invalid public content item: ${JSON.stringify(item, null, 2)}`
+          );
+        }
+
+        dispatch(
+          publicContentAdded({
+            item
+          })
+        );
+      } catch (e) {
+        logger.error(`Error inside own public content sub:`);
+        logger.error(e);
+      }
+    }
+  });
+
+  return subscription;
 };
