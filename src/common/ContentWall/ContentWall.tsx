@@ -96,7 +96,7 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
             )}
 
             <div className="title-and-description">
-              <h3 className="title">{item.title}</h3>
+              <h2 className="title">{item.title}</h2>
 
               <p className="description">{item.description || " "}</p>
 
