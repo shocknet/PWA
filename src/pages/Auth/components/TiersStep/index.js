@@ -19,13 +19,13 @@ const TiersStep = () => {
         even as your mobile sleeps.
       </p>
       <div className="tiers-container">
-        <div className="w-100 d-flex flex-align-center">
-        <h3 className="m-r-1">select USD</h3>
-        <label className="switch">
-          <input type="checkbox" disabled/>
-          <span className="slider round"></span>
-        </label>
-        <h3 className="m-l-1">select BTC</h3>
+        <div className="w-100 d-flex flex-align-center flex-justify-center">
+          <h3 className="m-r-1">select USD</h3>
+          <label className="switch">
+            <input type="checkbox" disabled/>
+            <span className="slider round"></span>
+          </label>
+          <h3 className="m-l-1">select BTC</h3>
         </div>
         <div className="d-flex flex-align-center m-b-1">
           <p className="usd-icon">$</p>
