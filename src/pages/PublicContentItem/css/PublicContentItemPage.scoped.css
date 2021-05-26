@@ -1,3 +1,28 @@
 .retry-btn {
   width: 32%;
 }
+
+.info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--dark-blue);
+  /* border: 1px solid var(--main-blue); */
+  padding: 12px 24px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.description {
+  background-color: var(--dark-blue);
+  min-height: 60px;
+
+  padding: 24px 24px;
+
+  text-align: left;
+}

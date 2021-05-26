@@ -3,10 +3,13 @@ import { useParams } from "react-router-dom";
 
 import * as Schema from "../../schema";
 import * as Utils from "../../utils";
+import * as Store from "../../store";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
 import Image from "../../common/Post/components/Image";
+import ShockAvatar from "../../common/ShockAvatar";
 import { rifle } from "../../utils/WebSocket";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import "./css/PublicContentItemPage.scoped.css";
 
@@ -15,9 +18,14 @@ export interface PublicContentItemPageProps {
 }
 
 const PublicContentItemPage: React.FC<PublicContentItemPageProps> = () => {
+  const dispatch = Store.useDispatch();
   const { id, publicKey } = useParams<{ id: string; publicKey: string }>();
   const [item, setItem] = React.useState<Schema.PublicContentItem | null>(null);
   const [error, setError] = React.useState<string>("");
+
+  const author = Store.useSelector(Store.selectUser(publicKey));
+
+  React.useEffect(() => dispatch(subscribeUserProfile(publicKey)));
 
   React.useEffect(() => {
     if (error) {
@@ -73,14 +81,28 @@ const PublicContentItemPage: React.FC<PublicContentItemPageProps> = () => {
   }
 
   return (
-    <DarkPage>
+    <DarkPage scrolls>
       <h1>{item.title}</h1>
 
       {item.type === "image/embedded" && <Image item={item} />}
 
       {item.type === "video/embedded" && null}
 
-      <p>{publicKey}</p>
+      <div className="info">
+        <div className="user-info">
+          <ShockAvatar height={48} publicKey={publicKey} />
+
+          <Pad amt={12} insideRow />
+
+          <span>{author.displayName}</span>
+        </div>
+
+        <span>{Utils.formatTimestamp(item.timestamp)}</span>
+      </div>
+
+      <p className="description">{item.description}</p>
+
+      <Pad amt={160} />
     </DarkPage>
   );
 };
