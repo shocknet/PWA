@@ -20,6 +20,7 @@ const TiersStep = () => {
       </p>
       <div className="tiers-container">
         <div className="w-100 d-flex flex-align-center">
+        <h3 className="m-r-1">select USD</h3>
         <label className="switch">
           <input type="checkbox" disabled/>
           <span className="slider round"></span>
