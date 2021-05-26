@@ -56,3 +56,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.timestamp {
+  color: var(--text-gray);
+  font-size: 10px;
+}

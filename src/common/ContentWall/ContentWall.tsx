@@ -100,7 +100,9 @@ const ContentWall: React.FC<ContentWallProps> = ({ publicKey }) => {
 
               <p className="description">{item.description || " "}</p>
 
-              {/* timestamp here later */}
+              <span className="timestamp">
+                {Utils.formatTimestamp(item.timestamp)}
+              </span>
             </div>
           </div>
         );
