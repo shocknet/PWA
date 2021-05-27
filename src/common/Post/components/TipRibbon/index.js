@@ -1,4 +1,3 @@
-import React from "react";
 import "./css/index.scoped.css";
 
 const TipRibbon = ({ tipCounter, tipValue, zoomed }) =>
