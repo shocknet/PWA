@@ -22,7 +22,8 @@ const INITIAL_STATE = {
   /**
    * Maps public key to posts/shared posts.
    */
-  posts: /** @type {Record<string, Array<Post|SharedPost>>} */ ({})
+  posts: /** @type {Record<string, Array<Post|SharedPost>>} */ ({}),
+  reloadDone:false
 };
 
 /**
@@ -149,7 +150,10 @@ const feed = (state = INITIAL_STATE, action) => {
         }
       };
     }
-    case AUTH_ACTIONS.LOGOUT :{
+    case ACTIONS.RELOAD_FEED: {
+      return {...state, reloadDone:true}
+    }
+    case AUTH_ACTIONS.LOGOUT: {
       return INITIAL_STATE
     }
     default:

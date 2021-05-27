@@ -29,7 +29,8 @@ import {
   subscribeFollows,
   subscribeSharedUserPosts,
   subscribeUserPosts,
-  unsubscribeFollows
+  unsubscribeFollows,
+  reloadFeed
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import { rifleCleanup } from "../../utils/WebSocket";
@@ -48,6 +49,7 @@ const FeedPage = () => {
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
   const { publicKey: selfPublicKey } = Store.useSelector(Store.selectSelfUser);
+  const reloadDone = Store.useSelector(({ feed }) => feed.reloadDone);
   // Effect to sub follows
   useEffect(() => {
     dispatch(subscribeFollows());
@@ -139,6 +141,16 @@ const FeedPage = () => {
       subscriptions.map(unsubscribe => unsubscribe());
     };
   }, [follows, dispatch]);
+
+  //effect to reload the feed once after a cache clear
+  useEffect(() => {
+    if(followedPosts.length > 0 && !reloadDone){
+      dispatch(reloadFeed())
+      setTimeout(() => {
+        history.go(0)
+      },3000)
+    }
+  },[followedPosts,reloadDone,history,reloadFeed,dispatch])
 
   return (
     <div className="page-container feed-page">
