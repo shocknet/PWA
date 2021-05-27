@@ -86,7 +86,13 @@ const PublicContentItemPage: React.FC<PublicContentItemPageProps> = () => {
 
       {item.type === "image/embedded" && <Image item={item} />}
 
-      {item.type === "video/embedded" && null}
+      {item.type === "video/embedded" && (
+        <video
+          className="public-content-item-video"
+          controls
+          src={decodeURIComponent(item.magnetURI.replace(/.*(ws=)/gi, ""))}
+        />
+      )}
 
       <div className="info">
         <div className="user-info">
