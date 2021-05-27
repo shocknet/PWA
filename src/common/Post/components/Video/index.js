@@ -36,7 +36,11 @@ const Video = ({
           src={contentURL}
         />
         {!hideRibbon && (
-          <TipRibbon tipCounter={tipCounter} tipValue={tipValue} />
+          <TipRibbon
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            zoomed={false}
+          />
         )}
       </div>
     </div>
