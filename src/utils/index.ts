@@ -199,3 +199,61 @@ export const useBooleanState = (initialState: boolean) => {
 };
 
 export const parseJson = (o: string) => JSON.parse(o) as unknown;
+
+/**
+ * Returns a base64-encoded URI.
+ */
+export const extractThumbnailFromVideo = async (file: File): Promise<string> =>
+  new Promise(async res => {
+    const fileReader = new FileReader();
+    await new Promise(res2 => {
+      fileReader.onload = res2;
+      fileReader.readAsDataURL(file as Blob);
+    });
+
+    const blob = new Blob([fileReader.result], { type: file.type });
+    const url = URL.createObjectURL(blob);
+    const video = document.createElement("video");
+
+    function snapImage() {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas
+        .getContext("2d")
+        .drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL();
+      const success = image.length > 100000;
+      if (success) {
+        // const img = document.createElement("img");
+        // img.src = image;
+        // document.getElementsByTagName("div")[0].appendChild(img);
+        URL.revokeObjectURL(url);
+      }
+      return image;
+    }
+
+    function timeupdate() {
+      const maybeData = snapImage();
+      if (maybeData) {
+        video.removeEventListener("timeupdate", timeupdate);
+        video.pause();
+        res(maybeData);
+      }
+    }
+    video.addEventListener("loadeddata", function () {
+      const maybeData = snapImage();
+      if (maybeData) {
+        video.removeEventListener("timeupdate", timeupdate);
+        res(maybeData);
+      }
+    });
+
+    video.addEventListener("timeupdate", timeupdate);
+    video.preload = "metadata";
+    video.src = url;
+    // Load video in Safari / IE11
+    video.muted = true;
+    video.playsInline = true;
+    video.play();
+  });

@@ -18,6 +18,7 @@ import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
 import * as gStyles from "../../styles";
 import * as Schema from "../../schema";
+import * as Utils from "../../utils";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -119,8 +120,18 @@ const PublishContentPage = () => {
           width: 0,
           height: 0,
           title,
-          description
+          description,
+          thumbnail: ""
         };
+
+        if (type === "video/embedded") {
+          const thumbnail = await Utils.extractThumbnailFromVideo(firstFile);
+          console.log("---------------------------------------------");
+          console.log(thumbnail);
+          console.log("---------------------------------------------");
+          contentItem.thumbnail = thumbnail;
+        }
+
         const published = await addPublishedContent(
           contentItem,
           postType

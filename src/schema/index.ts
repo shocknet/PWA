@@ -127,6 +127,10 @@ export interface PublicContentItem extends PublishedContent {
   id: string;
   author: string;
   timestamp: number;
+  /**
+   * Base 64 video thumbnail. Empty string if an image.
+   */
+  thumbnail: string;
 }
 
 export const isPublicContentItem = (o: unknown): o is PublicContentItem => {
