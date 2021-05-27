@@ -1,4 +1,3 @@
-import React from "react";
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 
