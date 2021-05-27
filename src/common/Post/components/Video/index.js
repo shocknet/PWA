@@ -2,14 +2,14 @@ import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 
 const Video = ({
-  id,
+  id = "",
   item,
-  index,
-  postId,
-  tipValue,
-  tipCounter,
-  hideRibbon,
-  width
+  index = 0,
+  postId = "",
+  tipValue = 0,
+  tipCounter = 0,
+  hideRibbon = false,
+  width = null
 }) => {
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
