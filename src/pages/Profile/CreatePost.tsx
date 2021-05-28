@@ -4,7 +4,6 @@ import { useHistory } from "react-router";
 import Loader from "../../common/Loader";
 import Http from "../../utils/Http";
 import ImagePreview from "../../common/Post/components/ImagePreview";
-import VideoPreview from "../../common/Post/components/VideoPreview";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
 import * as Store from "../../store";
@@ -156,17 +155,23 @@ const CreatePostPage = () => {
 
     if (item.type === "video/embedded") {
       return (
-        <div style={{ width: 100 }}>
-          <VideoPreview
-            id={key}
-            item={item}
-            index={index}
-            postId={"content"}
-            key={`${index}`}
-            width="100px"
-            selected={selectedContent}
-            updateSelection={setSelectedContent}
-          />
+        <div
+          className="width-100-px margin-1-em"
+          onClick={() => {
+            setSelectedContent(key);
+          }}
+        >
+          <div className="relative">
+            <div className="video-placeholder width-100-px">
+              <i className="fas fa-video video-icon" />
+            </div>
+
+            {selectedContent === key && (
+              <div className="checkmark-container">
+                <i className="far fa-check-circle fa-3x" />
+              </div>
+            )}
+          </div>
 
           <Pad amt={24} />
 
