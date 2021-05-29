@@ -205,16 +205,8 @@ export const parseJson = (o: string) => JSON.parse(o) as unknown;
  */
 export const extractThumbnailFromVideo = async (file: File): Promise<string> =>
   new Promise(async res => {
-    /*const fileReader = new FileReader();
-    await new Promise(res2 => {
-      fileReader.onload = res2;
-      //@ts-ignore
-      fileReader.readAsDataURL(file.uri as Blob);
-    });
-    console.log("errrr")
-    const blob = new Blob([fileReader.result], { type: file.type });*/
     //@ts-ignore
-    const url = file.uri//URL.createObjectURL(blob);
+    const url = file.uri;
     const video = document.createElement("video");
 
     function snapImage() {
@@ -225,13 +217,7 @@ export const extractThumbnailFromVideo = async (file: File): Promise<string> =>
         .getContext("2d")
         .drawImage(video, 0, 0, canvas.width, canvas.height);
       const image = canvas.toDataURL();
-      const success = image.length > 100000;
-      if (success) {
-         const img = document.createElement("img");
-         img.src = image;
-         document.getElementsByTagName("div")[0].appendChild(img);
-        URL.revokeObjectURL(url);
-      }
+
       return image;
     }
 
@@ -259,5 +245,3 @@ export const extractThumbnailFromVideo = async (file: File): Promise<string> =>
     video.playsInline = true;
     video.play();
   });
-
-
