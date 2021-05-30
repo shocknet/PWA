@@ -15,6 +15,7 @@ import ScanStep from "./components/ScanStep";
 import * as Store from "../../store"
 import "./css/index.css";
 import CreateAliasStep from "./components/CreateAliasStep";
+import TiersStep from "./components/TiersStep";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,12 @@ const AuthPage = () => {
     if (authMethod === "shockCloud") {
       if (authStep === "inviteCode") {
         return <InviteStep />;
+      }
+    }
+
+    if (authMethod === "hostingTiers") {
+      if (authStep === "chooseTier") {
+        return <TiersStep />
       }
     }
 
