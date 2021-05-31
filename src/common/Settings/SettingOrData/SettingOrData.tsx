@@ -58,7 +58,7 @@ const subtitleBase = {
   maxWidth: "90%"
 };
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   container: {
     alignItems: "center",
     flexDirection: "row",
@@ -83,4 +83,4 @@ const styles: Record<string, React.CSSProperties> = {
     ...subtitleBase,
     color: "transparent"
   }
-};
+} as const;
