@@ -2,6 +2,7 @@ import React from "react";
 
 import Icon, { IconName } from "../Icon";
 import Pad from "../../Pad";
+import * as gStyles from "../../../styles";
 
 import "./SettingOrData.scoped.css";
 
@@ -9,7 +10,7 @@ export interface SettingOrDataProps {
   onPress?(): void;
   subtitle?: string;
   title: string;
-  rightSide?: IconName | "input";
+  rightSide?: IconName | "input" | "input-%";
   disabled?: boolean;
   handleInputTextChange?(text: string): void;
   inputValue?: string;
@@ -49,12 +50,35 @@ export default class SettingOrData extends React.PureComponent<SettingOrDataProp
           (() => {
             if (rightSide === "input") {
               return (
-                <input
-                  className="input-field"
-                  onChange={this.handleInputChange}
-                  size={4}
-                  style={styles.input}
-                />
+                <div className={gStyles.rowCentered}>
+                  <input
+                    className="input-field"
+                    onChange={this.handleInputChange}
+                    size={4}
+                    style={styles.input}
+                  />
+
+                  <Pad amt={8} insideRow />
+
+                  <span className={gStyles.opacityNone}>%</span>
+                </div>
+              );
+            }
+
+            if (rightSide === "input-%") {
+              return (
+                <div className={gStyles.rowCentered}>
+                  <input
+                    className="input-field"
+                    onChange={this.handleInputChange}
+                    size={4}
+                    style={styles.input}
+                  />
+
+                  <Pad amt={8} insideRow />
+
+                  <span>%</span>
+                </div>
               );
             }
 
@@ -71,7 +95,7 @@ const subtitleBase = {
   color: "var(--btn-blue-border)",
   letterSpacing: 0.1,
   fontSize: 11,
-  textAlign: "left" as const
+  textAlign: "left"
 } as const;
 
 const containerBase = {
