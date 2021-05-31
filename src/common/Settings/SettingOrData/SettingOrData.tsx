@@ -11,6 +11,8 @@ export interface SettingOrDataProps {
   title: string;
   rightSide?: IconName | "input";
   disabled?: boolean;
+  handleInputTextChange?(text: string): void;
+  inputValue?: string;
 }
 
 export default class SettingOrData extends React.PureComponent<SettingOrDataProps> {
@@ -20,31 +22,43 @@ export default class SettingOrData extends React.PureComponent<SettingOrDataProp
     !disabled && onPress && onPress();
   };
 
+  handleInputChange = (e: { target: { value: string } }) => {
+    const { handleInputTextChange } = this.props;
+    handleInputTextChange(e.target.value);
+  };
+
   render() {
     const { subtitle, title, rightSide } = this.props;
 
     return (
-      <div onClick={this.onPress}>
-        <div style={styles.container}>
-          <div style={styles.titleAndSubtitleContainer}>
-            <span style={styles.title}>{title}</span>
+      <div onClick={this.onPress} style={styles.container}>
+        <div style={styles.titleAndSubtitleContainer}>
+          <span style={styles.title}>{title}</span>
 
-            <Pad amt={8} />
+          <Pad amt={8} />
 
-            <span style={subtitle ? styles.subtitle : styles.subtitleHidden}>
-              {subtitle || "Lorem ipsumDolor Lorem ipsumDolor"}
-            </span>
-          </div>
-
-          {rightSide &&
-            (() => {
-              if (rightSide === "input") {
-                return null;
-              }
-
-              return <Icon name={rightSide} />;
-            })()}
+          <span style={subtitle ? styles.subtitle : styles.subtitleHidden}>
+            {subtitle || "Lorem ipsumDolor Lorem ipsumDolor"}
+          </span>
         </div>
+
+        {rightSide &&
+          (() => {
+            if (rightSide === "input") {
+              return (
+                <input
+                  className="input-field"
+                  onChange={this.handleInputChange}
+                  size={4}
+                  style={styles.input}
+                />
+              );
+            }
+
+            return <Icon name={rightSide} />;
+          })()}
+
+        {!rightSide && <div />}
       </div>
     );
   }
@@ -52,28 +66,34 @@ export default class SettingOrData extends React.PureComponent<SettingOrDataProp
 
 const subtitleBase = {
   color: "var(--btn-blue-border)",
-  fontFamily: "Montserrat-500",
   letterSpacing: 0.1,
   fontSize: 11,
-  maxWidth: "90%"
-};
+  textAlign: "left" as const
+} as const;
 
 const styles = {
   container: {
     alignItems: "center",
+    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between"
   },
 
+  input: {
+    width: "unset",
+    padding: "8px 0px",
+    margin: 0
+  },
+
   titleAndSubtitleContainer: {
+    display: "flex",
     alignItems: "flex-start",
     flexDirection: "column",
     flexShrink: 1 // prevent text from pushing stuff out of the screen
   },
 
   title: {
-    color: "var(--btn-blue-border)",
-    fontFamily: "Montserrat-700",
+    color: "#4285B9",
     fontSize: 16
   },
 
