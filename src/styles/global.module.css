@@ -241,6 +241,19 @@
   margin-left: 12px;
 }
 
+.children-spaced-48-col > *:not(:first-child):not(:last-child) {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.children-spaced-48-col > *:first-child {
+  margin-bottom: 24px;
+}
+
+.children-spaced-48-col > *:last-child {
+  margin-top: 24px;
+}
+
 .padding-0 {
   padding: 0px;
 }
