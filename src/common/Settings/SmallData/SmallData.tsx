@@ -37,12 +37,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   feePreferenceOptionTitle: {
     color: "#4285B9",
-    fontFamily: "Montserrat-600",
     fontSize: 15,
     textAlign: "center"
   },
   feePreferenceOptionInfo: {
-    fontFamily: "Montserrat-600",
     fontSize: 12,
     color: "white",
     textAlign: "center",
