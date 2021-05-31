@@ -370,7 +370,7 @@ const mapDispatchToProps = {
 // @ts-expect-error
 export default connect(mapStateToProps, mapDispatchToProps)(WalletSettings);
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   flexCenterDark: {
     height: "100%",
     display: "flex",
@@ -378,13 +378,11 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: "#16191C"
   },
   feePreferenceText: {
-    fontFamily: "Montserrat-600",
-    fontSize: 15,
     color: "#EBEBEB",
-    fontWeight: 700
+    fontWeight: 700,
+    textAlign: "left"
   },
   balanceSettingTitle: {
-    fontFamily: "Montserrat-600",
     fontSize: 15,
     color: "#EBEBEB",
     fontWeight: 700
@@ -401,12 +399,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   feePreferenceOptionTitle: {
     color: "#4285B9",
-    fontFamily: "Montserrat-600",
+
     fontSize: 15,
     textAlign: "center"
   },
   feePreferenceOptionInfo: {
-    fontFamily: "Montserrat-600",
     fontSize: 12,
     color: "white",
     textAlign: "center",
@@ -442,7 +439,6 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 5
   },
   feeSourceLabel: {
-    fontFamily: "Montserrat-600",
     fontSize: 15,
     color: "#EBEBEB",
     fontWeight: 700
@@ -465,13 +461,11 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1
   },
   balanceSettingContentTitle: {
-    fontFamily: "Montserrat-700",
     fontSize: 14,
     color: "#4285B9"
   },
   balanceSettingContentDescription: {
     color: "#EBEBEB",
-    fontFamily: "Montserrat-600",
     fontSize: 11,
     marginTop: 5
   },
@@ -513,17 +507,14 @@ const styles: Record<string, React.CSSProperties> = {
   },
   actionButtonTextDark1: {
     color: "#4285B9",
-    fontFamily: "Montserrat-700",
     fontSize: 14
   },
   actionButtonTextDark2: {
     color: "#212937",
-    fontFamily: "Montserrat-700",
     fontSize: 14
   },
   inputDark: {
     flex: 1,
-    fontFamily: "Montserrat-600",
     // textAlignVertical: "center",
     verticalAlign: "center",
     textAlign: "center",
@@ -541,117 +532,4 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     opacity: 0.7
   }
-  /*balanceSettingCheckBoxView: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },*/
-  /*feePreferenceText: {
-    fontFamily: 'Montserrat-600',
-    fontSize: 15,
-    color: '#EBEBEB',
-  },
-  balanceSettingTitle: {
-    fontFamily: 'Montserrat-600',
-    fontSize: 15,
-    color: '#EBEBEB',
-  },
-  feePreferenceOption: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  feePreferenceContainer: {
-    flexDirection: 'row',
-    marginTop: 25,
-  },
-  feePreferenceOptionTitle: {
-    color: '#4285B9',
-    fontFamily: 'Montserrat-600',
-    fontSize: 15,
-    textAlign: 'center',
-  },
-  feePreferenceOptionInfo: {
-    fontFamily: 'Montserrat-600',
-    fontSize: 12,
-    color: 'white',
-    textAlign: 'center',
-    paddingTop: 5,
-  },
-  mainContainer: {
-    padding: 38,
-    paddingTop: 10,
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    flex: 1,
-    width: '100%',
-  },
-  feeSlider: {
-    width: '80%',
-    flex: 1,
-  },
-  feeSliderContainer: {
-    flexDirection: 'row',
-    marginTop: 18,
-    marginBottom: 18,
-  },
-  feeSliderThumb: {
-    borderWidth: 1,
-    borderColor: 'white',
-    width: 22,
-    height: 22,
-  },
-  feeSourceContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    marginBottom: 25,
-  },
-  feeSourceLabel: {
-    fontFamily: 'Montserrat-600',
-    fontSize: 15,
-    color: '#EBEBEB',
-  },
-  balanceSettingContainer: {
-    width: '100%',
-  },
-  balanceSetting: {
-    flexDirection: 'row',
-    marginTop: 20,
-  },
-  balanceSettingCheckBoxContainer: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start',
-    // marginTop: -15,
-  },
-  balanceSettingContent: {
-    flex: 1,
-  },
-  balanceSettingContentTitle: {
-    fontFamily: 'Montserrat-700',
-    fontSize: 14,
-    color: '#4285B9',
-  },
-  balanceSettingContentDescription: {
-    color: '#EBEBEB',
-    fontFamily: 'Montserrat-600',
-    fontSize: 11,
-    marginTop: 5,
-  },
-  feeSourceContainerInputGroup: {
-    marginBottom: 0,
-  },
-  submitFeeSource: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    marginBottom: 20,
-    width: '12%',
-  },
-  feeSourceInputGroupContainer: {
-    flexDirection: 'row',
-    width: '85%',
-  },
-  balanceSettingCheckBoxView: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },*/
-};
+} as const;
