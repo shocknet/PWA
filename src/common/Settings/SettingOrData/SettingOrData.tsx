@@ -28,10 +28,13 @@ export default class SettingOrData extends React.PureComponent<SettingOrDataProp
   };
 
   render() {
-    const { subtitle, title, rightSide } = this.props;
+    const { disabled, subtitle, title, rightSide } = this.props;
 
     return (
-      <div onClick={this.onPress} style={styles.container}>
+      <div
+        onClick={this.onPress}
+        style={disabled ? styles.containerDisabled : styles.container}
+      >
         <div style={styles.titleAndSubtitleContainer}>
           <span style={styles.title}>{title}</span>
 
@@ -71,12 +74,19 @@ const subtitleBase = {
   textAlign: "left" as const
 } as const;
 
+const containerBase = {
+  alignItems: "center",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between"
+} as const;
+
 const styles = {
-  container: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between"
+  container: containerBase,
+
+  containerDisabled: {
+    ...containerBase,
+    opacity: 0.3
   },
 
   input: {
