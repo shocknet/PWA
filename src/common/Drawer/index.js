@@ -63,6 +63,12 @@ const Drawer = () => {
             </div>
             <p className="drawer-item-title unselectable">Seed Backup</p>
           </NavLink>
+          <NavLink to="/walletSettings" className="drawer-item" onClick={close}>
+            <div className="drawer-item-icon">
+              <i className="icon-solid-spending-rule" />
+            </div>
+            <p className="drawer-item-title unselectable">Wallet Settings</p>
+          </NavLink>
         </div>
         <div className="drawer-bottom-section">
           <NavLink className="drawer-item" to="/moonpay" onClick={close}>
