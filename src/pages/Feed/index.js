@@ -43,7 +43,7 @@ const FeedPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const follows = Store.useSelector(Store.selectFollows);
-  const posts = Store.useSelector(({ feed }) => feed.posts);
+  const posts = Store.useSelector(Store.selectFeedPosts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
