@@ -14,7 +14,7 @@ const INITIAL_STATE = {
   follows: /** @type {Follow[]} */ ([
     {
       user:
-        "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+        "JVz7h3yUnbgMwwKxSddGenBlrE9eeDJVYWlmOr941mI.LW5PEWM3Y-DRf-UApdSN76wH6id6zR4mXNyBApihoAA",
       status: "ok",
       private: false
     }
