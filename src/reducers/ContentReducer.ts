@@ -10,7 +10,7 @@ import { PublishedContent, PublicContentItem } from "../schema";
 
 const INITIAL_STATE = {
   seedProviderPub:
-    "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+    "JVz7h3yUnbgMwwKxSddGenBlrE9eeDJVYWlmOr941mI.LW5PEWM3Y-DRf-UApdSN76wH6id6zR4mXNyBApihoAA",
   streamUserToken: "",
   streamLiveToken: "",
   streamUrl: "",
