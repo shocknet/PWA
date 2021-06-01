@@ -10,6 +10,7 @@ import styles from "./css/DarkPage.module.css";
 export interface DarkPageProps {
   justify?: "start" | "center";
   padding?: boolean;
+  paddingBetweenChildren?: 0 | 48;
   pageTitle?: string;
   scrolls?: boolean;
 }
@@ -18,6 +19,7 @@ const DarkPage: React.FC<DarkPageProps> = ({
   children,
   justify,
   padding,
+  paddingBetweenChildren = 0,
   pageTitle,
   scrolls
 }) => {
@@ -36,7 +38,8 @@ const DarkPage: React.FC<DarkPageProps> = ({
         [styles["container-scrolls"]]: !!scrolls,
         [gStyles.col]: !!justify,
         [gStyles.centerJustify]: justify === "center",
-        [gStyles.commonPaddingH]: !!padding
+        [gStyles.commonPaddingH]: !!padding,
+        [gStyles.childrenSpaced48Col]: paddingBetweenChildren === 48
       })}
     >
       <DialogNav pageTitle={pageTitle || ""} onHeight={setHeaderHeight} />

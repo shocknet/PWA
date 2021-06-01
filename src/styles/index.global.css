@@ -365,3 +365,7 @@ p.shock-form-button-text {
 .color-text-blue {
   color: var(--text-blue);
 }
+
+.text-align-left {
+  text-align: left;
+}
