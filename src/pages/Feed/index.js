@@ -144,13 +144,13 @@ const FeedPage = () => {
 
   //effect to reload the feed once after a cache clear
   useEffect(() => {
-    if(followedPosts.length > 0 && !reloadDone){
-      dispatch(reloadFeed())
+    if (followedPosts.length > 0 && !reloadDone) {
+      dispatch(reloadFeed());
       setTimeout(() => {
-        history.go(0)
-      },3000)
+        history.go(0);
+      }, 3000);
     }
-  },[followedPosts,reloadDone,history,reloadFeed,dispatch])
+  }, [followedPosts, reloadDone, history, reloadFeed, dispatch]);
 
   return (
     <div className="page-container feed-page">
