@@ -5,7 +5,7 @@ import debounce from "lodash/debounce";
 import * as Settings from "../../common/Settings";
 import * as gStyles from "../../styles";
 import * as Store from "../../store";
-import * as Schema from "../../schema";
+
 import * as FeesActions from "../../actions/FeesActions";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
@@ -29,7 +29,7 @@ export interface WalletSettingsProps {
 
 const WalletSettings = () => {
   const dispatch = Store.useDispatch();
-  const { feeRates, rate, source } = Store.useSelector(state => state.fees);
+  const { rate, source } = Store.useSelector(state => state.fees);
   const [newSource, setNewSource] = React.useState(source);
 
   const submitNewSource = debounce(
