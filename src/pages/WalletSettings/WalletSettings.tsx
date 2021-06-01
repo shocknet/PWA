@@ -1,9 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
+import c from "classnames";
 
+import * as Settings from "../../common/Settings";
 import { logger } from "../../utils";
 import { State } from "../../reducers";
 import DarkPage from "../../common/DarkPage";
+import Pad from "../../common/Pad";
+import * as gStyles from "../../styles";
+
+import "./WalletSettings.scoped.css";
 
 export interface WalletSettingsProps {
   fees: {
@@ -223,135 +229,91 @@ class WalletSettings extends React.PureComponent<
     }
 
     return (
-      <DarkPage paddingBetweenChildren={48} scrolls>
-        <span style={styles.feePreferenceText}>Fee Preference (Chain)</span>
-        <div style={styles.feePreferenceContainer}>
-          <div style={styles.feePreferenceOption}>
-            <span style={styles.feePreferenceOptionTitle}>
-              {feePreferenceOption[0].title}
-            </span>
-            <span style={styles.feePreferenceOptionInfo}>
-              {feePreferenceOption[0].info} sats/byte
-            </span>
-          </div>
-          <div style={styles.feePreferenceOption}>
-            <span style={styles.feePreferenceOptionTitle}>
-              {feePreferenceOption[1].title}
-            </span>
-            <span style={styles.feePreferenceOptionInfo}>
-              {feePreferenceOption[1].info} sats/byte
-            </span>
-          </div>
-          <div style={styles.feePreferenceOption}>
-            <span style={styles.feePreferenceOptionTitle}>
-              {feePreferenceOption[2].title}
-            </span>
-            <span style={styles.feePreferenceOptionInfo}>
-              {feePreferenceOption[2].info} sats/byte
-            </span>
-          </div>
-        </div>
-        <div style={styles.feeSliderContainer}>
+      <DarkPage
+        padding
+        paddingBetweenChildren={48}
+        pageTitle="Wallet Settings"
+        scrolls
+      >
+        <Settings.SectionTitle>Fee Preference (Chain)</Settings.SectionTitle>
+
+        <div className={gStyles.rowCentered}>
           <div
-            style={styles.feeSlider}
-            // thumbStyle={styles.feeSliderThumb}
-            // maximumValue={2}
-            // minimumValue={0}
-            // step={1}
-            // onSlidingComplete={this.handleSlider}
-            // value={level}
-            // thumbTintColor="#F5A623"
-            // minimumTrackTintColor="#707070"
-            // maximumTrackTintColor="#707070"
-          />
-        </div>
-        <div style={styles.feeSourceContainer}>
-          <div style={styles.feeSourceInputGroupContainer}>
-            <input
-              value={tmpSource}
-              style={styles.feeSourceContainerInputGroup}
-              onChange={e => this.updateTmpSource(e.target.value)}
-            />
+            className={c(
+              "input-field",
+              "fee-preference",
+              false && "fee-preference-selected"
+            )}
+            style={styles.resetInputStyle}
+          >
+            {`> 1 hour`}
+          </div>
+
+          <div
+            className={c(
+              "input-field",
+              "fee-preference",
+              true && "fee-preference-selected"
+            )}
+            style={styles.resetInputStyle}
+          >
+            {`< 1 hour`}
+          </div>
+
+          <div
+            className={c(
+              "input-field",
+              "fee-preference",
+              false && "fee-preference-selected"
+            )}
+            style={styles.resetInputStyle}
+          >
+            ASAP
           </div>
         </div>
 
-        <div style={styles.balanceSettingContainer}>
-          <span style={styles.balanceSettingTitle}>
-            Routing Fee Limits (Lightning)
-          </span>
-          <div style={styles.balanceSetting}>
-            <div style={styles.balanceSettingContent}>
-              <span style={styles.balanceSettingContentTitle}>Base Fee</span>
-              <span style={styles.balanceSettingContentDescription}>
-                Fixed rate per payment measured in sats, allowed regardless of
-                payment size
-              </span>
-            </div>
-            <div style={styles.balanceSettingCheckBoxContainer}>
-              <input
-                onChange={e => this.updateTmpAbsoluteFee(e.target.value)}
-                value={tmpAbsoluteFee}
-                style={styles.inputDark}
-              />
-            </div>
-          </div>
-          <div style={styles.balanceSetting}>
-            <div style={styles.balanceSettingContent}>
-              <span style={styles.balanceSettingContentTitle}>
-                Percentage Fee
-              </span>
-              <span style={styles.balanceSettingContentDescription}>
-                Maximum fee as a percentage of payment (if higher than base fee)
-              </span>
-            </div>
-            <div style={styles.balanceSettingCheckBoxContainer}>
-              <input
-                onChange={e => this.updateTmpRelativeFee(e.target.value)}
-                value={relativeValue}
-                style={styles.inputDark}
-              />
-            </div>
-          </div>
-        </div>
-        <div style={styles.balanceSettingContainer}>
-          <span style={styles.balanceSettingTitle}>Notifications Settings</span>
-          <div style={styles.balanceSetting}>
-            <div style={styles.balanceSettingContent}>
-              <span style={styles.balanceSettingContentTitle}>
-                Disconnect Alerts
-              </span>
-              <span style={styles.balanceSettingContentDescription}>
-                Triggering a notification if wallet is unable to connect to the
-                node
-              </span>
-            </div>
-            <div style={styles.balanceSettingCheckBoxContainer}>
-              <div
-              // value={tmpNotifyDisconnect}
-              // onValueChange={this.updateTmpNotifyDisconnect}
-              // thumbColor="#4285b9"
-              // trackColor={{
-              //   true: "rgba(66,133,185,0.8)",
-              //   false: "black"
-              // }}
-              />
-            </div>
-          </div>
-        </div>
+        <Settings.SectionTitle>Fee Source</Settings.SectionTitle>
 
-        {somethingChanged && (
-          <div style={styles.actionButtonsDark}>
-            <div style={styles.actionButtonDark1} onClick={this.goBack}>
-              <span style={styles.actionButtonTextDark1}>Cancel</span>
-            </div>
-            <div
-              style={styles.actionButtonDark2}
-              onClick={this.submitSourceToStore}
-            >
-              <span style={styles.actionButtonTextDark2}>Save</span>
-            </div>
-          </div>
-        )}
+        <input className="input-field" size={1} />
+
+        <Settings.SectionTitle>
+          Routing Fee Limits (Lightning)
+        </Settings.SectionTitle>
+
+        <Settings.SettingOrData
+          subtitle="Fixed rate per payment measured in sats, allowed regardless of payment size."
+          title="Base Fee"
+          rightSide="input"
+        />
+
+        <Settings.SettingOrData
+          subtitle="Maximum fee as a percentage of payment (if higher than the base fee)."
+          title="Percentage Fee"
+          rightSide="input-%"
+        />
+
+        <Settings.SectionTitle>Balance Management</Settings.SectionTitle>
+
+        <Settings.SettingOrData
+          subtitle="Fallback to buddy system until sufficient channels are established."
+          title="Bootstrap Wallet"
+          rightSide="checkbox-active"
+          disabled
+        />
+
+        <Settings.SettingOrData
+          subtitle="Establish channels with recommended routers."
+          title="Automatic Channels"
+          rightSide="checkbox-active"
+        />
+
+        <Settings.SettingOrData
+          subtitle="Push channel balances outward to make on-chain payments via the swap provider."
+          title="Automatic Swaps"
+          rightSide="checkbox-active"
+        />
+
+        <Pad amt={80} />
       </DarkPage>
     );
     //}
@@ -393,10 +355,7 @@ const styles = {
     justifyContent: "center",
     flex: 1
   },
-  feePreferenceContainer: {
-    flexDirection: "row",
-    marginTop: 10
-  },
+
   feePreferenceOptionTitle: {
     color: "#4285B9",
 
@@ -475,61 +434,9 @@ const styles = {
   feeSourceInputGroupContainer: {
     flexDirection: "row"
   },
-  actionButtonsDark: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%"
-  },
-  actionButtonDark1: {
-    width: "43%",
-    height: 54,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 13,
-    backgroundColor: "#001220",
-    borderColor: "#4285B9",
-    borderWidth: 1,
-    marginLeft: 5,
-    marginRight: 5
-  },
-  actionButtonDark2: {
-    width: "43%",
-    height: 54,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 13,
-    backgroundColor: "#4285B9",
-    borderColor: "white",
-    borderWidth: 1,
-    marginLeft: 5,
-    marginRight: 5
-  },
-  actionButtonTextDark1: {
-    color: "#4285B9",
-    fontSize: 14
-  },
-  actionButtonTextDark2: {
-    color: "#212937",
-    fontSize: 14
-  },
-  inputDark: {
-    flex: 1,
-    // textAlignVertical: "center",
-    verticalAlign: "center",
-    textAlign: "center",
-    fontSize: 12,
-    // color: CSS.Colors.TEXT_WHITE,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 50,
-    padding: `0px 2px`,
-    //height: 5,
-    //marginBottom: 5,
-    backgroundColor: "#212937",
-    borderWidth: 1,
-    borderColor: "#4285B9",
-    overflow: "hidden",
-    opacity: 0.7
+  resetInputStyle: {
+    width: "unset",
+    padding: "8px 0px",
+    margin: 0
   }
 } as const;
