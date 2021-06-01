@@ -1,4 +1,6 @@
 .fee-preference {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
 
   -webkit-touch-callout: none;

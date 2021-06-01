@@ -29,7 +29,7 @@ export interface WalletSettingsProps {
 
 const WalletSettings = () => {
   const dispatch = Store.useDispatch();
-  const { rate, source } = Store.useSelector(state => state.fees);
+  const { feeRates, rate, source } = Store.useSelector(state => state.fees);
   const [newSource, setNewSource] = React.useState(source);
 
   const submitNewSource = debounce(
@@ -68,7 +68,8 @@ const WalletSettings = () => {
             dispatch(FeesActions.setRate("hourFee"));
           }}
         >
-          {`> 1 hour`}
+          <span>{`> 1 hour`}</span>
+          <span>{`${feeRates.hourFee} sats/byte`}</span>
         </div>
 
         <div
@@ -82,7 +83,8 @@ const WalletSettings = () => {
             dispatch(FeesActions.setRate("halfHourFee"));
           }}
         >
-          {`< 1 hour`}
+          <span>{`< 1 hour`}</span>
+          <span>{`${feeRates.halfHourFee} sats/byte`}</span>
         </div>
 
         <div
@@ -96,7 +98,8 @@ const WalletSettings = () => {
             dispatch(FeesActions.setRate("fastestFee"));
           }}
         >
-          ASAP
+          <span>ASAP</span>
+          <span>{`${feeRates.fastestFee} sats/byte`}</span>
         </div>
       </div>
 
