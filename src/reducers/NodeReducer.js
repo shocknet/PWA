@@ -11,7 +11,7 @@ const INITIAL_STATE = {
   authTokenExpirationDate: null,
   authMethod: null,
   hostingAttemptsDone: false,
-  webClientPrefix:"https://shock.pub"
+  webClientPrefix:"https://lightning.page"
 };
 
 const node = (state = INITIAL_STATE, action) => {
