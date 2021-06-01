@@ -24,7 +24,6 @@ import { isSharedPost } from "../../schema";
 
 import "./css/index.scoped.css";
 import UnlockModal from "./components/UnlockModal";
-import { useDispatch } from "react-redux";
 import {
   subscribeFollows,
   subscribeSharedUserPosts,
@@ -40,7 +39,7 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(Store.selectFeedPosts);
