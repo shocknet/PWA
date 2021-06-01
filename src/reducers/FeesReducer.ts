@@ -40,6 +40,7 @@ const fees = (
       const source = action.data;
       return {
         ...state,
+        feeRates: INITIAL_STATE["feeRates"],
         source
       };
     }
