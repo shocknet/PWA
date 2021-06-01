@@ -12,25 +12,11 @@ import Pad from "../../common/Pad";
 
 import "./WalletSettings.scoped.css";
 
-export interface WalletSettingsProps {
-  fees: {
-    feesSource: string;
-    absoluteFee: string;
-    relativeFee: string;
-    feesLevel: string;
-  };
-
-  updateNotifyDisconnect(val: boolean): void;
-  updateNotifyDisconnectAfter(val: number): void;
-  updateRoutingFeeAbsolute(val: string): void;
-  updateRoutingFeeRelative(val: string): void;
-  updateFeesSource(val: string): void;
-}
-
 const WalletSettings = () => {
   const dispatch = Store.useDispatch();
   const { feeRates, rate, source } = Store.useSelector(state => state.fees);
   const [newSource, setNewSource] = React.useState(source);
+  const [sourceError, setSourceError] = React.useState<string>("");
 
   const submitNewSource = debounce(
     (newSource: string) => {
@@ -44,7 +30,10 @@ const WalletSettings = () => {
   );
 
   React.useEffect(() => {
-    dispatch(FeesActions.loadFeeRates());
+    setSourceError("");
+    dispatch(FeesActions.loadFeeRates()).catch(e => {
+      setSourceError(e.message);
+    });
   }, [dispatch, source /* implicit */]);
 
   return (
@@ -106,7 +95,7 @@ const WalletSettings = () => {
       <Settings.SectionTitle>Fee Source</Settings.SectionTitle>
 
       <input
-        className="input-field"
+        className={c("input-field", sourceError && "red-border")}
         size={1}
         onChange={e => {
           setNewSource(e.target.value);
@@ -114,6 +103,10 @@ const WalletSettings = () => {
         }}
         value={newSource}
       />
+
+      <span className={c("red-text", !sourceError && gStyles.opacityNone)}>
+        {sourceError || "_"}
+      </span>
 
       <Settings.SectionTitle>
         Routing Fee Limits (Lightning)
