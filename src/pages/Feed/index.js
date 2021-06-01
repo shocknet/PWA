@@ -24,7 +24,6 @@ import { isSharedPost } from "../../schema";
 
 import "./css/index.scoped.css";
 import UnlockModal from "./components/UnlockModal";
-import { useDispatch } from "react-redux";
 import {
   subscribeFollows,
   subscribeSharedUserPosts,
@@ -40,10 +39,10 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 const FeedPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const follows = Store.useSelector(Store.selectFollows);
-  const posts = Store.useSelector(({ feed }) => feed.posts);
+  const posts = Store.useSelector(Store.selectFeedPosts);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
@@ -144,13 +143,13 @@ const FeedPage = () => {
 
   //effect to reload the feed once after a cache clear
   useEffect(() => {
-    if(followedPosts.length > 0 && !reloadDone){
-      dispatch(reloadFeed())
+    if (followedPosts.length > 0 && !reloadDone) {
+      dispatch(reloadFeed());
       setTimeout(() => {
-        history.go(0)
-      },3000)
+        history.go(0);
+      }, 3000);
     }
-  },[followedPosts,reloadDone,history,reloadFeed,dispatch])
+  }, [followedPosts, reloadDone, history, reloadFeed, dispatch]);
 
   return (
     <div className="page-container feed-page">
