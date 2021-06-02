@@ -15,7 +15,7 @@ export const ACTIONS = {
   DELETE_USER_POST: "feed/posts/delete",
   LOAD_SHARED_POST: "feed/sharedPosts/load",
   POST_TIPPED: "feed/posts/tipped",
-  RELOAD_FEED:"feed/reload"
+  RELOAD_FEED: "feed/reload"
 };
 
 export const removeFollow = key => dispatch =>
@@ -265,5 +265,5 @@ export const deleteUserPost = ({ id, authorId }) => ({
 });
 
 export const reloadFeed = () => ({
-  type:ACTIONS.RELOAD_FEED
-})
+  type: ACTIONS.RELOAD_FEED
+});
