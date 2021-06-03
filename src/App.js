@@ -53,8 +53,6 @@ const offerServicePage = React.lazy(() =>
 const CreatePostPage = React.lazy(() => import("./pages/Profile/CreatePost"));
 const GoLivePage = React.lazy(() => import("./pages/Profile/GoLive/GoLive"));
 const OtherUserPage = React.lazy(() => import("./pages/OtherUser"));
-const Story = React.lazy(() => import("./pages/Story"));
-const Stories = React.lazy(() => import("./pages/Stories"));
 const QRScannerPage = React.lazy(() => import("./pages/QRScanner"));
 const BackupsPage = React.lazy(() => import("./pages/Backups"));
 const PublicContentItemPage = React.lazy(() =>
@@ -370,8 +368,6 @@ const App = () => {
             component={OtherUserPage}
           />
           <PrivateRoute path="/Backups" exact component={BackupsPage} />
-          <Route path="/story" exact component={Story} />
-          <Route path="/stories" exact component={Stories} />
           <PrivateRoute
             path="/item/:publicKey/:id"
             exact
