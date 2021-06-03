@@ -58,7 +58,6 @@ const BackupsPage = React.lazy(() => import("./pages/Backups"));
 const PublicContentItemPage = React.lazy(() =>
   import("./pages/PublicContentItem")
 );
-const IntroPage = React.lazy(() => import("./pages/Intro"));
 
 const PrivateRoute = ({ component, ...options }) => {
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
@@ -369,7 +368,6 @@ const App = () => {
             component={OtherUserPage}
           />
           <PrivateRoute path="/Backups" exact component={BackupsPage} />
-          <PrivateRoute path="/intro" exact component={IntroPage} />
 
           <PrivateRoute
             path="/item/:publicKey/:id"
