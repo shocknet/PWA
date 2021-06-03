@@ -265,7 +265,8 @@ p.profile-clipboard-text {
     );
 }
 
-.remove-btn {
+.remove-btn,
+.change-thumbnail-btn {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -277,6 +278,10 @@ p.profile-clipboard-text {
   justify-content: center;
   width: 48px;
   height: 48px;
+}
+
+.change-thumbnail-btn {
+  right: 80px;
 }
 
 .remove-btn > i {
