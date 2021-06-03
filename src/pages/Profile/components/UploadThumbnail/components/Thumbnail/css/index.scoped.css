@@ -1,0 +1,23 @@
+.choice {
+  width: 200px;
+  aspect-ratio: 16 / 9;
+  background-color: var(--input-black);
+  background-size: cover;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.choice.active {
+  border: 3px solid var(--btn-blue);
+}
+
+@media (max-width: 560px) {
+  .choices {
+    justify-content: center;
+  }
+
+  .choice {
+    margin-right: 0;
+    width: 100%;
+  }
+}
