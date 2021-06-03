@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import Http from "../../utils/Http";
 import { connectHost } from "../../actions/NodeActions";
@@ -12,7 +12,7 @@ import LogoSection from "./components/LogoSection";
 import ChoicesStep from "./components/ChoicesStep";
 import InviteStep from "./components/InviteStep";
 import ScanStep from "./components/ScanStep";
-import * as Store from "../../store"
+import * as Store from "../../store";
 import "./css/index.css";
 import CreateAliasStep from "./components/CreateAliasStep";
 import TiersStep from "./components/TiersStep";
@@ -55,7 +55,7 @@ const AuthPage = () => {
 
     if (authMethod === "hostingTiers") {
       if (authStep === "chooseTier") {
-        return <TiersStep />
+        return <TiersStep />;
       }
     }
 
