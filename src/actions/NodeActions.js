@@ -127,13 +127,14 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
   return nodeHealthHttps || nodeHealth;
 };
 
-export const unlockWallet = ({ alias, password }) => async dispatch => {
+export const unlockWallet = ({ alias, password,invite = null }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/auth",
       {
         alias,
-        password
+        password,
+        invite
       },
       {
         // Unlocking can take significantly longer than other endpoints
@@ -160,11 +161,12 @@ export const unlockWallet = ({ alias, password }) => async dispatch => {
   }
 };
 
-export const createAlias = ({ alias, password }) => async dispatch => {
+export const createAlias = ({ alias, password,invite = null }) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/wallet/existing", {
       alias,
-      password
+      password,
+      invite
     });
 
     dispatch(setAuthenticated(true));
@@ -186,13 +188,14 @@ export const createAlias = ({ alias, password }) => async dispatch => {
   }
 };
 
-export const createWallet = ({ alias, password }) => async dispatch => {
+export const createWallet = ({ alias, password,invite = null }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/wallet",
       {
         alias,
-        password
+        password,
+        invite
       },
       {
         // Creating a wallet can take longer than any other endpoints.
