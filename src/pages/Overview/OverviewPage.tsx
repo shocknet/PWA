@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from "react";
+// @ts-check
+import { useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 
@@ -9,10 +10,12 @@ import {
   FetchLightningInfo
 } from "../../actions/WalletActions";
 import { subCoordinates } from "../../actions/CoordinateActions";
+import { set } from "../../actions/SettingsActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import BottomBar from "../../common/BottomBar";
 import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
+import Modal from "../../common/Modal";
 import Transaction from "./components/Transaction";
 import "./css/index.scoped.css";
 
@@ -27,6 +30,17 @@ const OverviewPage = () => {
   const recentTransactions = Store.useSelector(
     Store.selectAllCoordinatesNewestToOldest
   );
+  const introDismissed = Store.useSelector(
+    ({ settings }) => settings.introDismissed
+  );
+  const dismissIntro = useCallback(() => {
+    dispatch(
+      set({
+        key: "introDismissed",
+        value: true
+      })
+    );
+  }, [dispatch]);
 
   useEffect(() => {
     fetchWalletBalance()(dispatch);
@@ -97,8 +111,39 @@ const OverviewPage = () => {
         </PullToRefresh>
       </div>
       <BottomBar />
+
+      <Modal
+        modalOpen={!introDismissed}
+        modalTitle="Welcome"
+        toggleModal={dismissIntro}
+        contentStyle={INTRO_MODAL_STYLE}
+      >
+        {PARAGRAPHS_NODE}
+      </Modal>
     </div>
   );
+};
+
+/**
+ * @type {Array<string> | null}
+ */
+const INTRO_PARAGRAPHS = JSON.parse(
+  process.env.REACT_APP_INTRO_PARAGRAPHS || null
+);
+
+const PARAGRAPHS_NODE = INTRO_PARAGRAPHS.map(p => (
+  <>
+    <p className="intro-paragraph" dangerouslySetInnerHTML={{ __html: p }}></p>
+
+    <br />
+  </>
+));
+
+/** @type {React.CSSProperties} */
+const INTRO_MODAL_STYLE = {
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 24
 };
 
 export default OverviewPage;
