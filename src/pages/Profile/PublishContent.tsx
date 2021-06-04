@@ -66,6 +66,18 @@ const PublishContentPage = () => {
       setLoading(true);
       let res: Response | null = null;
       try {
+        const {
+          seedUrl: finalSeedUrl,
+          tokens,
+          deleteToken
+        } = await RequestToken({
+          availableTokens,
+          seedProviderPub,
+          seedToken,
+          seedUrl,
+          serviceID,
+          servicePrice
+        });
         const formData = new FormData();
         //TODO support public/private content by requesting two tokens and doing this req twice
         await Promise.all(
@@ -102,18 +114,6 @@ const PublishContentPage = () => {
         formData.append("info", "extraInfo");
         formData.append("comment", "comment");
         console.log("Form Data:", formData);
-        const {
-          seedUrl: finalSeedUrl,
-          tokens,
-          deleteToken
-        } = await RequestToken({
-          availableTokens,
-          seedProviderPub,
-          seedToken,
-          seedUrl,
-          serviceID,
-          servicePrice
-        });
         res = await fetch(`${finalSeedUrl}/api/put_file`, {
           method: "POST",
           headers: {
@@ -226,7 +226,7 @@ const PublishContentPage = () => {
         //@ts-expect-error
         serviceID = userProfiles[seedProviderPub].SeedServiceProvided;
       }
-      if (true) {
+      if (availableToken || (seedUrl && seedToken)) {
         onSubmitCb();
       } else if (serviceID && seedProviderPub) {
         const { data: service } = await Http.get(
