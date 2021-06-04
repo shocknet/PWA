@@ -140,8 +140,8 @@ const App = () => {
     Http.post("/api/stopStream", {
       postId: streamPostId,
       contentId: streamContentId,
-      endUrl: `https://webtorrent.shock.network/api/stream/end`,
-      urlForMagnet: `https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`,
+      endUrl: `https://stream.shock.network/api/stream/end`,
+      urlForMagnet: `https://stream.shock.network/api/stream/torrent/${streamUserToken}`,
       obsToken: streamLiveToken
     });
     removeStream()(dispatch);
