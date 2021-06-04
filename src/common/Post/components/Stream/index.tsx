@@ -4,9 +4,6 @@ import "./css/index.scoped.css";
 import videojs from "video.js";
 import Http from "../../../../utils/Http";
 
-const REACT_APP_SL_SEED_URI = "https://webtorrent.shock.network";
-const STREAM_STATUS_URI = `${REACT_APP_SL_SEED_URI}/rtmpapi/api/streams/live`;
-
 const Stream = ({
   id,
   item,
