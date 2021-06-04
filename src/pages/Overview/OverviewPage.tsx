@@ -113,7 +113,7 @@ const OverviewPage = () => {
       <BottomBar />
 
       <Modal
-        modalOpen={!introDismissed}
+        modalOpen={!introDismissed && !!INTRO_PARAGRAPHS.length}
         modalTitle="Welcome"
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
@@ -128,7 +128,7 @@ const OverviewPage = () => {
  * @type {Array<string> | null}
  */
 const INTRO_PARAGRAPHS = JSON.parse(
-  process.env.REACT_APP_INTRO_PARAGRAPHS || null
+  process.env.REACT_APP_INTRO_PARAGRAPHS || "[]"
 );
 
 const PARAGRAPHS_NODE = INTRO_PARAGRAPHS.map(p => (
