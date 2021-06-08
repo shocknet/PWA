@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 
 import {
   loadChatData,
-  sendHandshakeRequest,
+  sendHandshakeRequestNew as sendHandshakeRequest,
   loadReceivedRequests,
   loadSentRequests,
   subChats,

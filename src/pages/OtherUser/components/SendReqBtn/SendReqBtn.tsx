@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import * as Store from "../../../../store";
 import * as Utils from "../../../../utils";
 import * as gStyles from "../../../../styles";
-import { sendHandshakeRequest } from "../../../../actions/ChatActions";
+import { sendHandshakeRequestNew as sendHandshakeRequest } from "../../../../actions/ChatActions";
 
 import styles from "./SendReqBtn.module.css";
 
