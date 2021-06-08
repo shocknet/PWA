@@ -472,7 +472,7 @@ export const sendHandshakeRequestNew = publicKey => async (_, getState) => {
     selfEpubP
   ]);
 
-  await Utils.Http.post(`/api/gun/set`, {
+  await Utils.Http.post(`/api/gun/put`, {
     path: `$gun>handshakeNodes>${handshakeAddress}>${requestID}`,
     value: {
       id: requestID,
