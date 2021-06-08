@@ -22,6 +22,7 @@ import * as Utils from "../utils";
  * @typedef {import('../schema').SentRequest} SentRequest
  * @typedef {import("../schema").ReceivedRequest} ReceivedRequest
  * @typedef {import('../schema').ChatMessage} ChatMessage
+ * @typedef {import('../schema').ReceivedRequestNew} ReceivedRequestNew
  */
 
 export const ACTIONS = {
@@ -194,17 +195,47 @@ export const subscribeChatMessages = (
   }
 };
 
-export const acceptHandshakeRequest = requestId => async dispatch => {
-  const { data } = await Http.put(`/api/gun/requests/${requestId}`, {
-    accept: true
+/**
+ * @param {string} requestId
+ */
+export const acceptHandshakeRequest = requestId => async (_, getState) => {
+  /** @type {ReceivedRequestNew} */
+  const req = getState().requestsNew[requestId];
+
+  const [incomingID, outgoingID] = JSON.parse(req.response);
+
+  await Utils.Http.post(`/api/gun/put`, {
+    path: `$user>outgoings>${outgoingID}`,
+    value: {
+      with: {
+        $$__ENCRYPT__FOR: "me",
+        value: {
+          messages: {
+            [uuidv4()]: {
+              body: {
+                $$__ENCRYPT__FOR: req.from,
+                $$__EPUB__FOR: req.epub,
+                value: Common.INITIAL_MSG
+              }
+            }
+          },
+          with: {
+            $$__ENCRYPT__FOR: "me",
+            value: req.from
+          },
+          incomingID: {
+            $$__ENCRYPT__FOR: "me",
+            value: incomingID
+          }
+        }
+      }
+    }
   });
 
-  dispatch({
-    type: ACTIONS.ACCEPT_HANDSHAKE_REQUEST,
-    data: requestId
+  Utils.Http.post(`/api/gun/put`, {
+    path: `$gun>handshakeNodes>${req.handshakeAddress}>${req.id}`,
+    value: null
   });
-
-  return data;
 };
 
 export const sendMessage = ({
