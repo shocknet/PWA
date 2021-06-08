@@ -487,7 +487,8 @@ export const sendHandshakeRequestNew = publicKey => async (_, getState) => {
         $$__ENCRYPT__FOR: publicKey,
         $$__EPUB__FOR: epub,
         value: `[ "${outgoingID}" , "${incomingID}" ]`
-      }
+      },
+      handshakeAddress
     }
   });
 
