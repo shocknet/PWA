@@ -2,6 +2,7 @@
 import Http from "../utils/Http";
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
+import * as Common from "shock-common";
 /**
  * @typedef {import('shock-common').Message} RawMessage
  */
@@ -405,4 +406,139 @@ export const subSentRequests = () => async dispatch => {
     alert(`Could not subscribe to sent requests: ${e.message}`);
     console.error(`Could not subscribe to sent requests: `, e);
   }
+};
+
+export const sendHandshakeRequestNew = publicKey => async (_, getState) => {
+  /**
+   * @type {Promise<string>}
+   */
+  const epubP = new Promise((res, rej) => {
+    const subscription = rifle({
+      onData(epub) {
+        if (Common.isPopulatedString(epub)) {
+          res(epub);
+          subscription.then(sub => sub.off());
+        } else {
+          rej(new TypeError(`Could not fetch epub`));
+          subscription.then(sub => sub.off());
+        }
+      },
+      query: `${publicKey}::epub::on`,
+      onError(e) {
+        if (typeof e === "string") {
+          rej(new Error(e));
+        } else {
+          rej(e);
+        }
+      }
+    });
+  });
+
+  /**
+   * @type {Promise<string>}
+   */
+  const handshakeAddressP = new Promise((res, rej) => {
+    const subscription = rifle({
+      onData(handshakeAddress) {
+        if (Common.isPopulatedString(handshakeAddress)) {
+          res(handshakeAddress);
+          subscription.then(sub => sub.off());
+        } else {
+          rej(new TypeError(`Could not fetch epub`));
+          subscription.then(sub => sub.off());
+        }
+      },
+      query: `${publicKey}::currentHandshakeAddress::on`,
+      onError(e) {
+        if (typeof e === "string") {
+          rej(new Error(e));
+        } else {
+          rej(e);
+        }
+      }
+    });
+  });
+
+  /**
+   * @type {Promise<string>}
+   */
+  const selfEpubP = new Promise((res, rej) => {
+    const subscription = rifle({
+      onData(epub) {
+        if (Common.isPopulatedString(epub)) {
+          res(epub);
+          subscription.then(sub => sub.off());
+        } else {
+          rej(new TypeError(`Could not fetch self epub`));
+          subscription.then(sub => sub.off());
+        }
+      },
+      query: `$user::epub::on`,
+      onError(e) {
+        if (typeof e === "string") {
+          rej(new Error(e));
+        } else {
+          rej(e);
+        }
+      }
+    });
+  });
+
+  const outgoingID = uuidv4();
+  const incomingID = uuidv4();
+  const requestID = uuidv4();
+  const [epub, handshakeAddress, selfEpub] = await Promise.all([
+    epubP,
+    handshakeAddressP,
+    selfEpubP
+  ]);
+
+  await Utils.Http.post(`/api/gun/set`, {
+    path: `$gun>handshakeNodes>${handshakeAddress}>${requestID}`,
+    value: {
+      id: requestID,
+      from: {
+        $$__ENCRYPT__FOR: publicKey,
+        $$__EPUB__FOR: epub,
+        value: getState().node.publicKey
+      },
+      epub: selfEpub,
+      timestamp: Date.now(),
+      response: {
+        $$__ENCRYPT__FOR: publicKey,
+        $$__EPUB__FOR: epub,
+        value: `[ "${outgoingID}" , "${incomingID}" ]`
+      }
+    }
+  });
+
+  // after request was sent let's now create our outgoing feed
+
+  await Utils.Http.post(`/api/gun/put`, {
+    path: `$user>outgoings>${outgoingID}`,
+    value: {
+      with: {
+        $$__ENCRYPT__FOR: "me",
+        value: {
+          messages: {
+            [uuidv4()]: {
+              body: {
+                $$__ENCRYPT__FOR: publicKey,
+                $$__EPUB__FOR: epub,
+                value: Common.INITIAL_MSG
+              }
+            }
+          },
+          with: {
+            $$__ENCRYPT__FOR: "me",
+            value: publicKey
+          },
+          incomingID: {
+            $$__ENCRYPT__FOR: "me",
+            value: incomingID
+          }
+        }
+      }
+    }
+  });
 };
