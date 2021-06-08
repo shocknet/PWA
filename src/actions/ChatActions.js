@@ -207,27 +207,6 @@ export const acceptHandshakeRequest = requestId => async dispatch => {
   return data;
 };
 
-export const sendHandshakeRequest = publicKey => async (dispatch, getState) => {
-  const { data } = await Http.post(`/api/gun/requests`, {
-    publicKey
-  });
-
-  /** @type {SentRequest[]} */
-  const sentRequests = getState().chat.sentRequests;
-  const [userExists] = sentRequests.filter(request => request.pk === publicKey);
-
-  if (!userExists) {
-    /** @type {SentRequestAction} */
-    const action = {
-      type: ACTIONS.SENT_REQUEST,
-      data: publicKey
-    };
-    dispatch(action);
-  }
-
-  return data;
-};
-
 export const sendMessage = ({
   publicKey,
   message,
