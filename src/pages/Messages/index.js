@@ -6,12 +6,7 @@ import {
   loadChatData,
   sendHandshakeRequest,
   subCurrentHandshakeAddress,
-  subHandshakeNode,
-  subRecipientToOutgoing,
-  subUserToIncoming,
-  subUserToLastReqSent,
-  subStoredReqs,
-  subPubToAddress
+  subHandshakeNode
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -25,32 +20,30 @@ import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
-import { useDispatch } from "../../utils";
+import * as Utils from "../../utils";
 import * as Schema from "../../schema";
 
 const MessagesPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Utils.useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
-  const [chatLoaded, setChatLoaded] = useState(false);
   const contacts = Store.useSelector(Store.selectContacts).map(user => ({
     pk: user.publicKey,
     avatar: user.avatar,
     displayName: user.displayName
   }));
   const messages = Store.useSelector(({ chat }) => chat.messages);
-  const sentRequests = Store.useSelector(Store.selectSentRequests);
+  const sentRequests = Utils.EMPTY_ARR;
   const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
   const currentHandshakeAddress = Store.useSelector(
     Store.selectCurrentHandshakeAddress
   );
-  const userToIncoming = Store.useSelector(Store.selectUserToIncoming);
+  const userToIncoming = Utils.EMPTY_ARR;
 
   const loadChat = useCallback(async () => {
     await dispatch(loadChatData());
-    setChatLoaded(true);
   }, [dispatch]);
 
   useEffect(() => {
@@ -72,47 +65,6 @@ const MessagesPage = () => {
       sub.then(sub => sub.off());
     };
   }, [currentHandshakeAddress, dispatch]);
-
-  useEffect(() => {
-    const sub = dispatch(subRecipientToOutgoing());
-    return () => {
-      sub.then(sub => sub.off());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    const sub = dispatch(subUserToIncoming());
-
-    return () => {
-      sub.then(sub => sub.off());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    const sub = dispatch(subUserToLastReqSent());
-
-    return () => {
-      sub.then(sub => sub.off());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    const sub = dispatch(subStoredReqs());
-
-    return () => {
-      sub.then(sub => sub.off());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    const sub = dispatch(
-      subPubToAddress(sentRequests.map(sentRequest => sentRequest.pk))
-    );
-
-    return () => {
-      sub.then(sub => sub.off());
-    };
-  }, [dispatch, sentRequests]);
 
   useEffect(() => {
     const subscriptions = [
@@ -295,7 +247,6 @@ const MessagesPage = () => {
                 publicKey={contact.pk}
                 subtitle={lastMessage.body}
                 time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
-                chatLoaded={chatLoaded}
               />
             );
           })}

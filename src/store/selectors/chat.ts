@@ -1,5 +1,4 @@
 import { createSelector } from "reselect";
-import * as Common from "shock-common";
 
 import { State } from "../../reducers";
 import * as Schema from "../../schema";
@@ -35,70 +34,4 @@ export const selectReceivedRequests = createSelector(
   }
 );
 
-export const selectUserToIncoming = (state: State) => state.chat.userToIncoming;
-
-export const selectSentRequests = createSelector(
-  (state: State) => state.chat.storedReqs,
-  (state: State) => state.chat.pubToAddress,
-  (state: State) => state.chat.userToLastReqSent,
-  selectUserToIncoming,
-  (
-    storedReqs,
-    pubToAddress,
-    userToLastReqSent,
-    userToIncoming
-  ): Schema.SentRequest[] => {
-    const sentRequests: Schema.SentRequest[] = [];
-
-    for (const storedReq of Object.values(storedReqs)) {
-      const {
-        handshakeAddress,
-        recipientPub,
-        sentReqID,
-        timestamp
-      } = storedReq;
-      const currAddress = pubToAddress[recipientPub];
-
-      const lastReqID = userToLastReqSent[recipientPub];
-      // invalidate if this stored request is not the last one sent to this
-      // particular pk
-      const isStale =
-        typeof lastReqID !== "undefined" && lastReqID !== sentReqID;
-      // invalidate if we are in a pub/sub state to this pk (handshake in place)
-      const isConnected = userToIncoming[recipientPub];
-
-      if (isStale || isConnected) {
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-
-      sentRequests.push({
-        id: sentReqID,
-        changedAddress:
-          // if we haven't received the other's user current handshake address,
-          // let's assume he hasn't changed it and that this request is still
-          // valid
-          typeof currAddress !== "undefined" &&
-          handshakeAddress !== currAddress,
-
-        avatar: null,
-        displayName: null,
-        loading: false,
-        pk: recipientPub,
-        timestamp
-      });
-    }
-
-    return sentRequests;
-  }
-);
-
-export const selectContacts = createSelector(
-  selectAllOtherUsers,
-  selectUserToIncoming,
-  (users, userToIncoming): Common.User[] => {
-    return Object.values(users).filter(
-      user => !!userToIncoming[user.publicKey]
-    );
-  }
-);
+export const selectContacts = selectAllOtherUsers;

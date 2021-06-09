@@ -44,7 +44,7 @@ const ChatPage = () => {
   const user = Store.useSelector(Store.selectUser(recipientPublicKey));
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
-  const userToIncoming = Store.useSelector(Store.selectUserToIncoming);
+  const userToIncoming = Utils.EMPTY_OBJ;
   const contacts = Store.useSelector(Store.selectContacts);
   /* ------------------------------------------------------------------------ */
   //#region dateBubble
@@ -129,7 +129,7 @@ const ChatPage = () => {
   const acceptRequest = useCallback(() => {
     console.log(receivedRequest);
     if (receivedRequest) {
-      acceptHandshakeRequest(receivedRequest.id)(dispatch);
+      dispatch(acceptHandshakeRequest(receivedRequest.id));
     }
   }, [receivedRequest, dispatch]);
 

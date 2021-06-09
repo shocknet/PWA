@@ -193,6 +193,10 @@ export const getContact = (
 
 export const EMPTY_FN: (...args: any[]) => void = () => {};
 
+export const EMPTY_ARR = [] as readonly Readonly<any>[];
+
+export const EMPTY_OBJ = {} as const;
+
 export const useBooleanState = (initialState: boolean) => {
   const [state, setState] = useState<boolean>(initialState);
   const toggle = useCallback(() => {

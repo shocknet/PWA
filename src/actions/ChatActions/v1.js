@@ -24,8 +24,6 @@ import * as Utils from "../../utils";
  * @typedef {import('../../schema').ChatMessage} ChatMessage
  */
 
-import { otherUserDisconnected } from "./v2";
-
 export const ACTIONS = {
   LOAD_CHAT_DATA: /** @type {"chat/loadData"} */ ("chat/loadData"),
   LOAD_SENT_REQUESTS: /** @type {"chat/loadSentRequests"} */ ("chat/loadSentRequests"),
@@ -150,7 +148,6 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 /**
  * @param {string} userPublicKey
  * @param {string} recipientPublicKey
- * @returns {(dispatch: (action: any) => void, getState: () => { chat: { userToIncoming: Record<string, string|null> } }) => Promise<Subscription>}
  */
 export const subscribeChatMessages = (
   userPublicKey,
@@ -207,11 +204,10 @@ export const subscribeChatMessages = (
       onData(incoming) {
         alert(JSON.stringify(incoming));
         if (!Common.isObj(incoming)) {
-          dispatch(
-            otherUserDisconnected({
-              recipientPublicKey
-            })
-          );
+          dispatch();
+          // otherUserDisconnected({
+          //   recipientPublicKey
+          // })
         }
       }
     });
