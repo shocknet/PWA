@@ -21,6 +21,8 @@ import {
 } from "../actions/ChatActions";
 /**
  * @typedef {import('../schema').ReceivedRequest} ReceivedRequest
+ * @typedef {import('../schema').FeedNew} FeedNew
+ * @typedef {import('../schema').MessageNew} MessageNew
  */
 
 const INITIAL_STATE = {
@@ -30,7 +32,10 @@ const INITIAL_STATE = {
   messages: {},
   receivedRequests: /** @type {ReceivedRequest[]} */ ([]),
   requestBlacklist: [],
-  currentHandshakeAddress: /** @type {string} */ ("DOES_NOT_EXIST")
+  currentHandshakeAddress: /** @type {string} */ ("DOES_NOT_EXIST"),
+  outgoingFeeds: /** @type {Record<string, FeedNew>} */ ({}),
+  incomingFeeds: /** @type {Record<string, FeedNew>} */ ({}),
+  messagesNew: /** @type {Record<string, MessageNew>} */ ({})
 };
 
 /**
