@@ -244,30 +244,46 @@ export const sendHandshakeRequest = (publicKey: string) => async (
 
   // after request was sent let's now create our outgoing feed
 
-  await Utils.Http.post(`/api/gun/put`, {
-    path: `$user>outgoings>${outgoingID}`,
-    value: {
-      with: {
-        value: {
-          messages: {
-            [uuidv4()]: {
-              body: {
-                $$__ENCRYPT__FOR: publicKey,
-                $$__EPUB__FOR: epub,
-                value: Common.INITIAL_MSG
-              }
-            }
-          },
-          with: {
-            $$__ENCRYPT__FOR: "me",
-            value: publicKey
-          },
-          incomingID: {
-            $$__ENCRYPT__FOR: "me",
-            value: incomingID
-          }
-        }
+  const msgID = uuidv4();
+
+  const newOutgoingFeed: {
+    [K in keyof Schema.FeedNew]: any;
+  } & {
+    messages: Record<
+      string,
+      {
+        [K in keyof Schema.MessageNew]: any;
+      }
+    >;
+  } = {
+    id: outgoingID,
+
+    with: {
+      $$__ENCRYPT__FOR: "me",
+      value: publicKey
+    },
+
+    incomingFeedID: {
+      $$__ENCRYPT__FOR: "me",
+      value: incomingID
+    },
+
+    messages: {
+      [msgID]: {
+        id: msgID,
+        body: {
+          $$__ENCRYPT__FOR: publicKey,
+          $$__EPUB__FOR: epub,
+          value: Common.INITIAL_MSG
+        },
+        timestamp: Date.now(),
+        feedID: outgoingID
       }
     }
+  };
+
+  await Utils.Http.post(`/api/gun/put`, {
+    path: `$user>outgoings>${outgoingID}`,
+    value: newOutgoingFeed
   });
 };

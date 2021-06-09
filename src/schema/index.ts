@@ -52,6 +52,19 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+export interface FeedNew {
+  id: string;
+  with: string;
+  incomingFeedID: string;
+}
+
+export interface MessageNew {
+  id: string;
+  body: string;
+  timestamp: number;
+  feedID: string;
+}
+
 export interface Post extends Common.RawPost {
   authorId: string;
   id: string;
