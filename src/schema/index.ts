@@ -14,6 +14,15 @@ export interface ReceivedRequest {
   timestamp: number;
 }
 
+export interface ReceivedRequestNew {
+  id: string;
+  from: string;
+  epub: string;
+  timestamp: number;
+  response: string;
+  handshakeAddress: string;
+}
+
 export interface SentRequest {
   id: string;
   pk: string;
