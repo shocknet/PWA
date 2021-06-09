@@ -312,14 +312,13 @@ export const otherUserDisconnected = createAction<{
   recipientPublicKey: string;
 }>("chat/otherUserDisconnected");
 
-/**
- * @param {string} requestId
- */
-export const acceptHandshakeRequest = requestId => async (_, getState) => {
-  /** @type {ReceivedRequestNew} */
-  const req = getState().requestsNew[requestId];
+export const acceptHandshakeRequest = (requestId: string) => async (
+  _: unknown,
+  getState: () => Record<string, any>
+) => {
+  const req: Schema.ReceivedRequestNew = getState().requestsNew[requestId];
 
-  const [incomingID, outgoingID] = JSON.parse(req.response);
+  const [incomingID, outgoingID] = JSON.parse(req.response) as [string, string];
 
   await Utils.Http.post(`/api/gun/put`, {
     path: `$user>outgoings>${outgoingID}`,
@@ -355,11 +354,11 @@ export const acceptHandshakeRequest = requestId => async (_, getState) => {
   });
 };
 
-export const sendHandshakeRequest = publicKey => async (_, getState) => {
-  /**
-   * @type {Promise<string>}
-   */
-  const epubP = new Promise((res, rej) => {
+export const sendHandshakeRequest = (publicKey: string) => async (
+  _: unknown,
+  getState: () => { node: { publicKey: string } }
+) => {
+  const epubP = Common.makePromise<string>((res, rej) => {
     const subscription = rifle({
       onData(epub) {
         if (Common.isPopulatedString(epub)) {
@@ -381,10 +380,7 @@ export const sendHandshakeRequest = publicKey => async (_, getState) => {
     });
   });
 
-  /**
-   * @type {Promise<string>}
-   */
-  const handshakeAddressP = new Promise((res, rej) => {
+  const handshakeAddressP = Common.makePromise<string>((res, rej) => {
     const subscription = rifle({
       onData(handshakeAddress) {
         if (Common.isPopulatedString(handshakeAddress)) {
@@ -406,10 +402,7 @@ export const sendHandshakeRequest = publicKey => async (_, getState) => {
     });
   });
 
-  /**
-   * @type {Promise<string>}
-   */
-  const selfEpubP = new Promise((res, rej) => {
+  const selfEpubP = Common.makePromise<string>((res, rej) => {
     const subscription = rifle({
       onData(epub) {
         if (Common.isPopulatedString(epub)) {
