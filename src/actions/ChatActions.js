@@ -529,7 +529,6 @@ export const sendHandshakeRequestNew = publicKey => async (_, getState) => {
     path: `$user>outgoings>${outgoingID}`,
     value: {
       with: {
-        $$__ENCRYPT__FOR: "me",
         value: {
           messages: {
             [uuidv4()]: {
