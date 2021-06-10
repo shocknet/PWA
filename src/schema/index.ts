@@ -14,14 +14,48 @@ export interface ReceivedRequest {
   timestamp: number;
 }
 
-export interface ReceivedRequestNew {
-  id: string;
-  from: string;
+export interface HandshakeReqNew {
   epub: string;
-  timestamp: number;
-  response: string;
+  from: string;
   handshakeAddress: string;
+  id: string;
+  response: string;
+  timestamp: number;
 }
+
+export const isHandshakeReqNew = (o: unknown): o is HandshakeReqNew => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+
+  const obj = (o as unknown) as HandshakeReqNew;
+
+  if (!Common.isPopulatedString(obj.epub)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.from)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.handshakeAddress)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.id)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.response)) {
+    return false;
+  }
+
+  if (typeof obj.timestamp) {
+    return false;
+  }
+
+  return true;
+};
 
 export interface SentRequest {
   id: string;
@@ -52,18 +86,63 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export interface FeedNew {
+export interface Convo {
+  counterpartConvoID: string;
   id: string;
   with: string;
-  incomingFeedID: string;
+  withEpub: string;
 }
 
-export interface MessageNew {
-  id: string;
+export const isConvo = (o: unknown): o is Convo => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+
+  const obj = (o as unknown) as Convo;
+
+  if (!Common.isPopulatedString(obj.counterpartConvoID)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.id)) {
+    return false;
+  }
+
+  return Common.isPopulatedString(obj.with);
+};
+
+export interface ConvoMsg {
   body: string;
+  convoID: string;
+  id: string;
   timestamp: number;
-  feedID: string;
 }
+
+export const isConvoMsg = (o: unknown): o is ConvoMsg => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+
+  const obj = (o as unknown) as ConvoMsg;
+
+  if (!Common.isPopulatedString(obj.body)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.convoID)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.convoID)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.timestamp)) {
+    return false;
+  }
+
+  return true;
+};
 
 export interface Post extends Common.RawPost {
   authorId: string;

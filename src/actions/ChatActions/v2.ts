@@ -49,7 +49,7 @@ export const subCurrentHandshakeAddress = () => (
  * node.
  */
 export const receivedHandshakeRequest = createAction<{
-  receivedRequest: Schema.ReceivedRequest;
+  receivedRequest: Schema.HandshakeReqNew;
 }>("chat/receivedHandshakeRequest");
 
 /**
@@ -63,25 +63,19 @@ export const subHandshakeNode = (handshakeAddress: string) => (
   try {
     return rifle({
       query: `$gun::handshakeNodes>${handshakeAddress}::map.on`,
-      onData: (handshakeRequest: Common.HandshakeRequest, id) => {
+      onData: (handshakeRequest: Schema.HandshakeReqNew) => {
         const {
           chat: { currentHandshakeAddress }
         } = getState();
         if (handshakeAddress !== currentHandshakeAddress) {
           return;
         }
-        if (!Common.isHandshakeRequest(handshakeRequest)) {
+        if (!Schema.isHandshakeReqNew(handshakeRequest)) {
           return;
         }
         dispatch(
           receivedHandshakeRequest({
-            receivedRequest: {
-              avatar: null,
-              displayName: null,
-              id,
-              pk: handshakeRequest.from,
-              timestamp: handshakeRequest.timestamp
-            }
+            receivedRequest: handshakeRequest
           })
         );
       }
@@ -101,40 +95,78 @@ export const subHandshakeNode = (handshakeAddress: string) => (
 
 //#endregion sentRequests
 
+const createOutgoingConversationFeed = (
+  outgoingConvoID: string,
+  publicKey: string,
+  epub: string,
+  incomingConvoID: string
+) => {
+  const msgID = uuidv4();
+
+  const newOutgoingConvo: {
+    [K in keyof Schema.Convo]: any;
+  } & {
+    messages: Record<
+      string,
+      {
+        [K in keyof Schema.ConvoMsg]: any;
+      }
+    >;
+  } = {
+    id: outgoingConvoID,
+
+    with: {
+      $$__ENCRYPT__FOR: "me",
+      value: publicKey
+    },
+
+    withEpub: {
+      $$__ENCRYPT__FOR: "me",
+      value: epub
+    },
+
+    counterpartConvoID: {
+      $$__ENCRYPT__FOR: "me",
+      value: incomingConvoID
+    },
+
+    messages: {
+      [msgID]: {
+        id: msgID,
+        body: {
+          $$__ENCRYPT__FOR: publicKey,
+          $$__EPUB__FOR: epub,
+          value: Common.INITIAL_MSG
+        },
+        timestamp: Date.now(),
+        convoID: outgoingConvoID
+      }
+    }
+  };
+
+  return newOutgoingConvo;
+};
+
 export const acceptHandshakeRequest = (requestId: string) => async (
   _: unknown,
-  getState: () => Record<string, any>
+  getState: () => {
+    chat: { receivedRequests: Record<string, Schema.HandshakeReqNew> };
+  }
 ) => {
-  const req: Schema.ReceivedRequestNew = getState().requestsNew[requestId];
+  const req: Schema.HandshakeReqNew = getState().chat.receivedRequests[
+    requestId
+  ];
 
   const [incomingID, outgoingID] = JSON.parse(req.response) as [string, string];
 
   await Utils.Http.post(`/api/gun/put`, {
-    path: `$user>outgoings>${outgoingID}`,
-    value: {
-      with: {
-        $$__ENCRYPT__FOR: "me",
-        value: {
-          messages: {
-            [uuidv4()]: {
-              body: {
-                $$__ENCRYPT__FOR: req.from,
-                $$__EPUB__FOR: req.epub,
-                value: Common.INITIAL_MSG
-              }
-            }
-          },
-          with: {
-            $$__ENCRYPT__FOR: "me",
-            value: req.from
-          },
-          incomingID: {
-            $$__ENCRYPT__FOR: "me",
-            value: incomingID
-          }
-        }
-      }
-    }
+    path: `$user>convos>${outgoingID}`,
+    value: createOutgoingConversationFeed(
+      outgoingID,
+      req.from,
+      req.epub,
+      incomingID
+    )
   });
 
   Utils.Http.post(`/api/gun/put`, {
@@ -213,8 +245,8 @@ export const sendHandshakeRequest = (publicKey: string) => async (
     });
   });
 
-  const outgoingID = uuidv4();
-  const incomingID = uuidv4();
+  const outgoingConvoID = uuidv4();
+  const incomingConvoID = uuidv4();
   const requestID = uuidv4();
   const [epub, handshakeAddress, selfEpub] = await Promise.all([
     epubP,
@@ -236,7 +268,7 @@ export const sendHandshakeRequest = (publicKey: string) => async (
       response: {
         $$__ENCRYPT__FOR: publicKey,
         $$__EPUB__FOR: epub,
-        value: `[ "${outgoingID}" , "${incomingID}" ]`
+        value: `[ "${outgoingConvoID}" , "${incomingConvoID}" ]`
       },
       handshakeAddress
     }
@@ -244,46 +276,64 @@ export const sendHandshakeRequest = (publicKey: string) => async (
 
   // after request was sent let's now create our outgoing feed
 
-  const msgID = uuidv4();
-
-  const newOutgoingFeed: {
-    [K in keyof Schema.FeedNew]: any;
-  } & {
-    messages: Record<
-      string,
-      {
-        [K in keyof Schema.MessageNew]: any;
-      }
-    >;
-  } = {
-    id: outgoingID,
-
-    with: {
-      $$__ENCRYPT__FOR: "me",
-      value: publicKey
-    },
-
-    incomingFeedID: {
-      $$__ENCRYPT__FOR: "me",
-      value: incomingID
-    },
-
-    messages: {
-      [msgID]: {
-        id: msgID,
-        body: {
-          $$__ENCRYPT__FOR: publicKey,
-          $$__EPUB__FOR: epub,
-          value: Common.INITIAL_MSG
-        },
-        timestamp: Date.now(),
-        feedID: outgoingID
-      }
-    }
-  };
-
   await Utils.Http.post(`/api/gun/put`, {
-    path: `$user>outgoings>${outgoingID}`,
-    value: newOutgoingFeed
+    path: `$user>convos>${outgoingConvoID}`,
+    value: createOutgoingConversationFeed(
+      outgoingConvoID,
+      publicKey,
+      epub,
+      incomingConvoID
+    )
   });
+};
+
+export const convoReceived = createAction<{ convo: Schema.Convo }>(
+  "chat/convoReceived"
+);
+
+export const convoDeleted = createAction<{ id: string }>("chat/convoDeleted");
+
+export const subConvos = () => async (
+  dispatch: (action: any) => void,
+  getState: () => { node: { publicKey: string } }
+) => {
+  try {
+    return rifle({
+      query: `$user::convos::map.on`,
+      onData: (convo: Schema.Convo, id: string) => {
+        console.log("--------------");
+        console.log(convo);
+        console.log("--------------");
+        if (convo === null) {
+          dispatch(
+            convoDeleted({
+              id
+            })
+          );
+          return;
+        }
+        if (!Schema.isConvo(convo)) {
+          return;
+        }
+        // @ts-expect-error
+        delete convo._;
+        // @ts-expect-error
+        delete convo.messages;
+        dispatch(
+          convoReceived({
+            convo
+          })
+        );
+      },
+      publicKey: getState().node.publicKey
+    });
+  } catch (e) {
+    alert(
+      `Could not establish a subscription to outgoing conversation feeds: ${e.message}`
+    );
+    Utils.logger.error(
+      `Could not establish a subscription to outgoing conversation feeds -> `,
+      e
+    );
+  }
 };

@@ -13,7 +13,6 @@ import Loader from "../../common/Loader";
 import {
   acceptHandshakeRequest,
   sendMessage,
-  subscribeChatMessages,
   chatWasDeleted
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
@@ -33,15 +32,17 @@ enableMapSet();
 
 /**
  * @typedef {object} ChatPageParams
- * @prop {string} publicKey
+ * @prop {string} convoID
  */
 
 const ChatPage = () => {
   const history = useHistory();
   const dispatch = Utils.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
-  const { publicKey: recipientPublicKey } = params;
-  const user = Store.useSelector(Store.selectUser(recipientPublicKey));
+  const { convoID } = params;
+  const convo = Store.useSelector(Store.selectSingleConvo(convoID));
+  const user = Store.useSelector(Store.selectUser(convo.with));
+  const { publicKey: recipientPublicKey } = user;
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
   const userToIncoming = Utils.EMPTY_OBJ;
@@ -106,20 +107,19 @@ const ChatPage = () => {
   /* ------------------------------------------------------------------------ */
 
   const messages = Store.useSelector(
-    ({ chat }) => chat.messages[recipientPublicKey]
+    ({ chat }) => chat.convoToMessages[recipientPublicKey] || {}
   );
 
   const isContact = !!contacts.find(
     user => user.publicKey === recipientPublicKey
   );
-  const sentRequest = Store.useSelector(({ chat }) =>
-    Utils.getContact(chat.sentRequests, recipientPublicKey)
+  const receivedRequest = Store.useSelector(({ chat }) =>
+    Object.values(chat.receivedRequests).find(
+      req => req.from === recipientPublicKey
+    )
   );
-  const receivedRequest = /** @type {ReceivedRequest} */ (Store.useSelector(
-    ({ chat }) => Utils.getContact(chat.receivedRequests, recipientPublicKey)
-  ));
-  const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
-  const pendingSentRequest = !isContact && sentRequest;
+
+  const pendingSentRequest = false;
   const pendingReceivedRequest = !isContact && receivedRequest;
 
   const handleInputChange = useCallback(e => {
@@ -155,15 +155,15 @@ const ChatPage = () => {
     [message, recipientPublicKey, dispatch]
   );
 
-  useEffect(() => {
-    const subscription = dispatch(
-      subscribeChatMessages(gunPublicKey, recipientPublicKey)
-    );
+  // useEffect(() => {
+  //   const subscription = dispatch(
+  //     subscribeChatMessages(gunPublicKey, recipientPublicKey)
+  //   );
 
-    return () => {
-      subscription.then(sub => sub.off());
-    };
-  }, [dispatch, gunPublicKey, recipientPublicKey]);
+  //   return () => {
+  //     subscription.then(sub => sub.off());
+  //   };
+  // }, [dispatch, gunPublicKey, recipientPublicKey]);
 
   // ------------------------------------------------------------------------ //
   // Date bubble
@@ -174,7 +174,7 @@ const ChatPage = () => {
 
   const [newestTimestampInView, oldestTimestampInView] = useMemo(() => {
     const sorted = Array.from(visibleMessages)
-      .map(id => messages.find(msg => msg.id === id))
+      .map(id => Object.values(messages).find(msg => msg.id === id))
       .filter(x => !!x)
       .sort((a, b) => b.timestamp - a.timestamp);
 
@@ -230,11 +230,11 @@ const ChatPage = () => {
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >
-        {messages?.map(message => (
+        {Object.values(messages).map(message => (
           <ChatMessage
             text={message.body}
-            receivedMessage={!message.outgoing}
-            publicKey={message.recipientPublicKey}
+            receivedMessage={true}
+            publicKey={recipientPublicKey}
             timestamp={message.timestamp}
             onInView={handleMessageInView}
             onOutView={handleMessageOutView}

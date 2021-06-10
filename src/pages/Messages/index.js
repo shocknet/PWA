@@ -1,12 +1,13 @@
 // @ts-check
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { DateTime } from "luxon";
 
 import {
   loadChatData,
   sendHandshakeRequest,
   subCurrentHandshakeAddress,
-  subHandshakeNode
+  subHandshakeNode,
+  subConvos
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -28,12 +29,8 @@ const MessagesPage = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
-  const contacts = Store.useSelector(Store.selectContacts).map(user => ({
-    pk: user.publicKey,
-    avatar: user.avatar,
-    displayName: user.displayName
-  }));
-  const messages = Store.useSelector(({ chat }) => chat.messages);
+  const convos = Store.useSelector(Store.selectConvos);
+  const messages = Store.useSelector(Store.selectAllMessages);
   const sentRequests = Utils.EMPTY_ARR;
   const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
@@ -67,17 +64,22 @@ const MessagesPage = () => {
   }, [currentHandshakeAddress, dispatch]);
 
   useEffect(() => {
-    const subscriptions = [
-      ...contacts,
-      ...sentRequests,
-      ...receivedRequests
-    ].map(entry => dispatch(subscribeUserProfile(entry.pk)));
+    const subscription = dispatch(subConvos());
 
     return () => {
-      // @ts-ignore
+      subscription.then(sub => sub.off());
+    };
+  });
+
+  useEffect(() => {
+    const subscriptions = convos.map(convo =>
+      dispatch(subscribeUserProfile(convo.with))
+    );
+
+    return () => {
       subscriptions.map(unsubscribe => unsubscribe());
     };
-  }, [contacts, sentRequests, receivedRequests, dispatch]);
+  }, [convos, dispatch]);
 
   const toggleModal = useCallback(() => {
     setAddModalOpen(!addModalOpen);
@@ -211,20 +213,19 @@ const MessagesPage = () => {
           ) : null}
           {receivedRequests.map(request => (
             <Request
-              publicKey={request.pk}
+              publicKey={request.from}
               key={request.id}
               sent={false}
               time={undefined}
             />
           ))}
-          {contacts.length > 0 ? (
+          {convos.length > 0 ? (
             <p className="messages-section-title">Messages</p>
           ) : null}
-          {contacts.map(contact => {
-            const contactMessages = messages[contact.pk] ?? [];
+          {convos.map(convo => {
+            const convoMessages = Object.values(messages[convo.id] ?? []);
             const lastMessage = (() => {
-              const didDisconnect =
-                userToIncoming[contact.pk] === Schema.DID_DISCONNECT;
+              const didDisconnect = false;
 
               if (didDisconnect) {
                 return {
@@ -234,7 +235,7 @@ const MessagesPage = () => {
               }
 
               return (
-                contactMessages[0] ?? {
+                convoMessages[0] ?? {
                   body: "Unable to preview last message...",
                   timestamp: Date.now()
                 }
@@ -243,10 +244,11 @@ const MessagesPage = () => {
 
             return (
               <Message
-                key={contact.pk}
-                publicKey={contact.pk}
+                key={convo.id}
+                publicKey={convo.with}
                 subtitle={lastMessage.body}
                 time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
+                id={convo.id}
               />
             );
           })}

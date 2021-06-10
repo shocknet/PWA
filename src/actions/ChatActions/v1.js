@@ -11,12 +11,8 @@ import * as Common from "shock-common";
 import {
   getChats,
   getReceivedRequests,
-  getSentRequests,
-  rifle
+  getSentRequests
 } from "../../utils/WebSocket";
-import { initialMessagePrefix } from "../../utils/String";
-import * as Schema from "../../schema";
-import * as Utils from "../../utils";
 /**
  * @typedef {import('../../schema').Contact} Contact
  * @typedef {import('../../schema').SentRequest} SentRequest
@@ -143,94 +139,6 @@ export const loadReceivedRequests = () => (dispatch, getState) => {
 
     dispatch(action);
   });
-};
-
-/**
- * @param {string} userPublicKey
- * @param {string} recipientPublicKey
- */
-export const subscribeChatMessages = (
-  userPublicKey,
-  recipientPublicKey
-) => async (dispatch, getState) => {
-  try {
-    alert("subbing to messages");
-    const {
-      chat: { userToIncoming }
-    } = getState();
-    /** @type {string|null} */
-    const incomingID = userToIncoming[userPublicKey];
-
-    if (incomingID) {
-      throw new Error(
-        `Unable to retrieve incoming ID (got: ${incomingID}) for selected contact (${userPublicKey}).`
-      );
-    }
-
-    const incomingMessagesPromise = rifle({
-      query: `${recipientPublicKey}::outgoings>${incomingID}>messages::map.on`,
-      publicKey: recipientPublicKey,
-      onData: (message, id) => {
-        if (!message.body || message.body === initialMessagePrefix) {
-          return;
-        }
-        /** @type {RawMessage} */
-        const rawMsg = message;
-
-        /** @type {ChatMessage} */
-        const msg = {
-          body: rawMsg.body,
-          id,
-          localId: id,
-          outgoing: false,
-          recipientPublicKey,
-          status: Schema.CHAT_MESSAGE_STATUS.SENT,
-          timestamp: rawMsg.timestamp
-        };
-
-        /** @type {ReceivedMessageAction} */
-        const action = {
-          type: ACTIONS.RECEIVED_MESSAGE,
-          data: msg
-        };
-
-        dispatch(action);
-      }
-    });
-
-    const didDisconnectPromise = rifle({
-      query: `${recipientPublicKey}::outgoings>${incomingID}::on`,
-      publicKey: recipientPublicKey,
-      onData(incoming) {
-        alert(JSON.stringify(incoming));
-        if (!Common.isObj(incoming)) {
-          dispatch();
-          // otherUserDisconnected({
-          //   recipientPublicKey
-          // })
-        }
-      }
-    });
-    const [incomingMessages, didDisconnect] = await Promise.all([
-      incomingMessagesPromise,
-      didDisconnectPromise
-    ]);
-
-    return {
-      off() {
-        incomingMessages.off();
-        didDisconnect.off();
-      }
-    };
-  } catch (e) {
-    Utils.logger.error(
-      `Error inside subscribeChatMessages, recipient public key: ${recipientPublicKey}: `,
-      e
-    );
-    return Promise.resolve({
-      off() {}
-    });
-  }
 };
 
 export const sendMessage = ({
