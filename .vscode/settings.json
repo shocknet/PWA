@@ -3,6 +3,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
+    "Convo",
     "Embla",
     "Millis",
     "Reqs",
@@ -13,6 +14,7 @@
     "autocorrect",
     "callout",
     "connectpeer",
+    "convos",
     "endregion",
     "epub",
     "healthz",
