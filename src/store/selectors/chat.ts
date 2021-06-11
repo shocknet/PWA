@@ -64,3 +64,22 @@ export const selectContacts = createSelector(
     });
   }
 );
+
+export const selectCommunication = (convoIDOrRequestID: string) => (
+  state: State
+): Schema.Convo | Schema.HandshakeReqNew => {
+  const maybeConvo = state.chat.convos[convoIDOrRequestID];
+  const maybeRequest = state.chat.receivedRequests[convoIDOrRequestID];
+
+  if (maybeRequest) {
+    return maybeRequest;
+  }
+
+  if (maybeConvo) {
+    return maybeConvo;
+  }
+
+  throw new ReferenceError(
+    `Tried to select a non existent communication, convoIDOrRequestID: ${convoIDOrRequestID}`
+  );
+};
