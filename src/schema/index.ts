@@ -50,7 +50,7 @@ export const isHandshakeReqNew = (o: unknown): o is HandshakeReqNew => {
     return false;
   }
 
-  if (typeof obj.timestamp) {
+  if (typeof obj.timestamp !== "number") {
     return false;
   }
 
