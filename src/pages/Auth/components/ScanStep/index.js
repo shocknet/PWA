@@ -6,6 +6,7 @@ import { connectSocket } from "../../../../utils/WebSocket";
 import QRCodeScanner from "../../../../common/QRCodeScanner";
 import Loader from "../../../../common/Loader";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
+import {ParseNodeIP} from '../../../../utils/relay'
 
 const ScanStep = () => {
   const dispatch = useDispatch();
@@ -18,12 +19,15 @@ const ScanStep = () => {
   },[setScan])
 
   const connectHostIP = useCallback(
-    async (hostIP, walletPort) => {
+    async (hostIdentifier, walletPort) => {
       try {
+        const [hostIP,relayId] = ParseNodeIP(hostIdentifier)
         console.log("connectHostIP:", hostIP);
         const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
         const { withProtocolHostIP } = await connectHost(
-          `${noProtocolHostIP}:${walletPort}`
+          `${noProtocolHostIP}:${walletPort}`,
+          true,
+          relayId
         )(dispatch);
         return true;
       } catch (error) {
