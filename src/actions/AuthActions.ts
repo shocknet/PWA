@@ -4,7 +4,9 @@ export const ACTIONS = {
   SET_AUTH_STEP: "auth/step/set",
   SET_AUTHENTICATED: "auth/authenticated/set",
   SET_AUTH_METHOD: "auth/method/set",
-  LOGOUT: "auth/logout"
+  LOGOUT: "auth/logout",
+  SET_RELAY_ID: 'auth/relay/set'
+
 };
 
 export const setAuthenticated = status => ({
@@ -24,4 +26,9 @@ export const setAuthMethod = method => ({
 
 export const logout = () => ({
   type: ACTIONS.LOGOUT
+});
+
+export const setRelayId = relayId => ({
+  type: ACTIONS.SET_RELAY_ID,
+  data: relayId
 });

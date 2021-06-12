@@ -20,6 +20,7 @@ import TiersStep from "./components/TiersStep";
 const AuthPage = () => {
   const dispatch = useDispatch();
   const cachedHostIP = Store.useSelector(({ node }) => node.hostIP);
+  const cachedRelayId = Store.useSelector(({ node }) => node.relayId);
   const [loading, setLoading] = useState(!!cachedHostIP);
   const [error, setError] = useState(null);
   const authTokenExpirationDate = Store.useSelector(
@@ -78,8 +79,7 @@ const AuthPage = () => {
     try {
       if (cachedHostIP) {
         console.log("Loading cached node IP");
-
-        const connected = !!(await connectHost(cachedHostIP, false)(dispatch));
+        const connected = !!(await connectHost(cachedHostIP, false, cachedRelayId)(dispatch));
 
         if (connected) {
           setLoading(false);
@@ -116,7 +116,7 @@ const AuthPage = () => {
       );
       setLoading(false);
     }
-  }, [cachedHostIP, dispatch, authToken, authTokenExpirationDate]);
+  }, [cachedHostIP,cachedRelayId, dispatch, authToken, authTokenExpirationDate]);
 
   useEffect(() => {
     loadCachedNode();

@@ -3,7 +3,8 @@ import { ACTIONS } from "../actions/AuthActions";
 const INITIAL_STATE = {
   authenticated: false,
   authStep: "host",
-  authMethod: null
+  authMethod: null,
+  relayId:null
 };
 
 const defaultSteps = {
