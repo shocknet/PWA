@@ -26,7 +26,10 @@ const INITIAL_STATE = {
   /**
    * Maps convo id to a set of the messages corresponding to it.
    */
-  convoToMessages: {} as Record<string, Record<string, Schema.ConvoMsg>>,
+  convoToMessages: {} as Record<
+    string,
+    Record<string, Schema.ConvoMsg & { err: string; state: "ok" | "error" }>
+  >,
   receivedRequests: {} as Record<string, Schema.HandshakeReqNew>
 };
 
