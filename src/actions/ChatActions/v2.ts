@@ -391,3 +391,74 @@ export const subConvos = () => async (
     );
   }
 };
+
+const messageTransmissionRequested = createAction<{
+  convoID: string;
+  id: string;
+  message: string;
+}>("chat/messageTransmissionRequested");
+
+const messageTransmissionSucceeded = createAction<{
+  convoID: string;
+  id: string;
+}>("chat/messageTransmissionSucceeded");
+
+const messageTransmissionFailed = createAction<{ id: string }>(
+  "chat/messageTransmissionFailed"
+);
+
+export const sendMessage = (convoID: string, messageBody: string) => async (
+  dispatch: (action: any) => void,
+  getState: () => {
+    chat: {
+      convos: Record<string, Schema.Convo>;
+    };
+  }
+) => {
+  const id = uuidv4(); // does not throw, ever...?
+
+  try {
+    const convo = getState().chat.convos[convoID];
+
+    if (messageBody.trim().length === 0) {
+      return;
+    }
+
+    dispatch(
+      messageTransmissionRequested({
+        convoID,
+        id,
+        message: messageBody.trim()
+      })
+    );
+
+    const message: Schema.ConvoMsg = {
+      body: ({
+        $$__ENCRYPT__FOR: convo.with,
+        $$__EPUB__FOR: convo.withEpub
+      } as unknown) as string,
+      convoID,
+      id,
+      timestamp: Date.now()
+    };
+
+    await Utils.Http.post(`/api/gun/put`, {
+      path: `$user>convos>${convoID}>messages>${id}`,
+      value: message
+    });
+
+    dispatch(
+      messageTransmissionSucceeded({
+        convoID,
+        id
+      })
+    );
+  } catch (e) {
+    Utils.logger.error(`Error inside sendMessage() -> `, e);
+    dispatch(
+      messageTransmissionFailed({
+        id
+      })
+    );
+  }
+};
