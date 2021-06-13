@@ -5,8 +5,6 @@ import * as Common from "shock-common";
 import { State } from "../../reducers";
 import * as Schema from "../../schema";
 
-import { selectAllOtherUsers } from "./users";
-
 export const selectConvos: (state: State) => Schema.Convo[] = createSelector(
   (state: State) => state.chat.convos,
   convos => {
