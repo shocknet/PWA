@@ -14,7 +14,11 @@ import {
   handshakeAddressUpdated,
   receivedHandshakeRequest,
   convoReceived,
-  convoDeleted
+  convoDeleted,
+  messageTransmissionFailed,
+  messageTransmissionRequested,
+  messageTransmissionRetried,
+  messageTransmissionSucceeded
 } from "../actions/ChatActions";
 
 const INITIAL_STATE = {
@@ -67,6 +71,33 @@ const chat = produce((draft, action) => {
     if (draft.convos[id]) {
       delete draft.convos[id];
     }
+  }
+
+  if (messageTransmissionFailed.match(action)) {
+    const { convoID, errorMessage, messageID } = action.payload;
+    draft.convoToMessages[convoID][messageID].err = errorMessage;
+    draft.convoToMessages[convoID][messageID].state = "error";
+  }
+  if (messageTransmissionRequested.match(action)) {
+    const { convoID, message, messageID } = action.payload;
+    draft.convoToMessages[convoID][messageID] = {
+      body: message,
+      convoID,
+      err: "",
+      id: messageID,
+      state: "sending",
+      timestamp: Date.now()
+    };
+  }
+  if (messageTransmissionRetried.match(action)) {
+    const { convoID, messageID } = action.payload;
+    draft.convoToMessages[convoID][messageID].err = "";
+    draft.convoToMessages[convoID][messageID].state = "sending";
+  }
+  if (messageTransmissionSucceeded.match(action)) {
+    const { convoID, messageID } = action.payload;
+    draft.convoToMessages[convoID][messageID].err = "";
+    draft.convoToMessages[convoID][messageID].state = "ok";
   }
 }, INITIAL_STATE);
 
