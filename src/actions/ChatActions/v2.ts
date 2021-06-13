@@ -22,6 +22,7 @@ export const handshakeAddressUpdated = createAction<{
 export const subCurrentHandshakeAddress = () => (
   dispatch: (action: any) => void
 ) => {
+  Utils.logger.debug(`Subscribing to current handshake address.`);
   try {
     return rifle({
       query: `$user::currentHandshakeAddress::on`,
@@ -60,18 +61,25 @@ export const subHandshakeNode = (handshakeAddress: string) => (
   dispatch: (action: any) => void,
   getState: () => { chat: { currentHandshakeAddress: string } }
 ): Promise<Schema.Subscription> => {
+  Utils.logger.debug(`Subscribing to handshake node: ${handshakeAddress} .`);
   try {
     return rifle({
       query: `$gun::handshakeNodes>${handshakeAddress}::map.on`,
       epubField: "epub",
       onData: (handshakeRequest: Schema.HandshakeReqNew) => {
+        Utils.logger.debug(
+          `Subscription to handshake node: ${handshakeAddress} -> `,
+          handshakeRequest
+        );
         const {
           chat: { currentHandshakeAddress }
         } = getState();
+        Utils.logger.debug(`Current address: ${currentHandshakeAddress}`);
         if (handshakeAddress !== currentHandshakeAddress) {
           return;
         }
         if (!Schema.isHandshakeReqNew(handshakeRequest)) {
+          Utils.logger.debug(`Not a handshake request -> `, handshakeRequest);
           return;
         }
         dispatch(
@@ -180,9 +188,15 @@ export const sendHandshakeRequest = (publicKey: string) => async (
   _: unknown,
   getState: () => { node: { publicKey: string } }
 ) => {
+  Utils.logger.debug(
+    `Sending handshake request to ${publicKey.slice(0, 8)}...`
+  );
   const epubP = Common.makePromise<string>((res, rej) => {
     const subscription = rifle({
       onData(epub) {
+        Utils.logger.debug(
+          `Got epub for public Key ${publicKey.slice(0, 8)}... : ${epub}`
+        );
         if (Common.isPopulatedString(epub)) {
           res(epub);
           subscription.then(sub => sub.off());
@@ -193,6 +207,13 @@ export const sendHandshakeRequest = (publicKey: string) => async (
       },
       query: `${publicKey}::epub::on`,
       onError(e) {
+        Utils.logger.debug(
+          `Error when fetch epub for public Key ${publicKey.slice(
+            0,
+            8
+          )}... : ${epub}`
+        );
+        Utils.logger.error(e);
         if (typeof e === "string") {
           rej(new Error(e));
         } else {
@@ -255,6 +276,13 @@ export const sendHandshakeRequest = (publicKey: string) => async (
     selfEpubP
   ]);
 
+  Utils.logger.debug(
+    `Got epub/handshakeaddress/selfEpub, sending request to public Key ${publicKey.slice(
+      0,
+      8
+    )}...`
+  );
+
   await Utils.Http.post(`/api/gun/put`, {
     path: `$gun>handshakeNodes>${handshakeAddress}>${requestID}`,
     value: {
@@ -276,6 +304,13 @@ export const sendHandshakeRequest = (publicKey: string) => async (
   });
 
   // after request was sent let's now create our outgoing feed
+
+  Utils.logger.debug(
+    `Sent request to public Key ${publicKey.slice(
+      0,
+      8
+    )}... will now create outgoing conversation feed`
+  );
 
   await Utils.Http.post(`/api/gun/put`, {
     path: `$user>convos>${outgoingConvoID}`,
