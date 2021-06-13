@@ -405,6 +405,7 @@ export const messageTransmissionSucceeded = createAction<{
 
 export const messageTransmissionFailed = createAction<{
   convoID: string;
+  errorMessage: string;
   messageID: string;
 }>("chat/messageTransmissionFailed");
 
@@ -459,6 +460,7 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
     dispatch(
       messageTransmissionFailed({
         convoID,
+        errorMessage: e.message,
         messageID
       })
     );
@@ -528,6 +530,7 @@ export const retryMessage = (convoID: string, messageID: string) => async (
     dispatch(
       messageTransmissionFailed({
         convoID,
+        errorMessage: e.message,
         messageID
       })
     );
