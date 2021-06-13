@@ -28,7 +28,10 @@ const INITIAL_STATE = {
    */
   convoToMessages: {} as Record<
     string,
-    Record<string, Schema.ConvoMsg & { err: string; state: "ok" | "error" }>
+    Record<
+      string,
+      Schema.ConvoMsg & { err: string; state: "ok" | "sending" | "error" }
+    >
   >,
   receivedRequests: {} as Record<string, Schema.HandshakeReqNew>
 };

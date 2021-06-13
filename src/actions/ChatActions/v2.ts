@@ -394,16 +394,16 @@ export const subConvos = () => async (
 
 const messageTransmissionRequested = createAction<{
   convoID: string;
-  id: string;
+  messageID: string;
   message: string;
 }>("chat/messageTransmissionRequested");
 
 const messageTransmissionSucceeded = createAction<{
   convoID: string;
-  id: string;
+  messageID: string;
 }>("chat/messageTransmissionSucceeded");
 
-const messageTransmissionFailed = createAction<{ id: string }>(
+const messageTransmissionFailed = createAction<{ messageID: string }>(
   "chat/messageTransmissionFailed"
 );
 
@@ -415,7 +415,7 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
     };
   }
 ) => {
-  const id = uuidv4(); // does not throw, ever...?
+  const messageID = uuidv4(); // does not throw, ever...?
 
   try {
     const convo = getState().chat.convos[convoID];
@@ -427,7 +427,7 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
     dispatch(
       messageTransmissionRequested({
         convoID,
-        id,
+        messageID,
         message: messageBody.trim()
       })
     );
@@ -438,26 +438,94 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
         $$__EPUB__FOR: convo.withEpub
       } as unknown) as string,
       convoID,
-      id,
+      id: messageID,
       timestamp: Date.now()
     };
 
     await Utils.Http.post(`/api/gun/put`, {
-      path: `$user>convos>${convoID}>messages>${id}`,
+      path: `$user>convos>${convoID}>messages>${messageID}`,
       value: message
     });
 
     dispatch(
       messageTransmissionSucceeded({
         convoID,
-        id
+        messageID
       })
     );
   } catch (e) {
     Utils.logger.error(`Error inside sendMessage() -> `, e);
     dispatch(
       messageTransmissionFailed({
-        id
+        messageID
+      })
+    );
+  }
+};
+
+const messageTransmissionRetried = createAction<{
+  convoID: string;
+  messageID: string;
+}>("chat/messageTransmissionRetried");
+
+const retryMessage = (convoID: string, messageID: string) => async (
+  dispatch: (action: any) => void,
+  getState: () => {
+    chat: {
+      convos: Record<string, Schema.Convo>;
+      convoToMessages: Record<
+        string,
+        Record<
+          string,
+          Schema.ConvoMsg & { err: string; state: "ok" | "sending" | "error" }
+        >
+      >;
+    };
+  }
+) => {
+  try {
+    const convo = getState().chat.convos[convoID];
+    const existingMessage = getState().chat.convoToMessages[convoID][messageID];
+
+    if (!existingMessage) {
+      throw new ReferenceError(
+        `Tried to retry sending a message that was not found in redux convoID: ${convoID} & messageID: ${messageID}`
+      );
+    }
+
+    dispatch(
+      messageTransmissionRetried({
+        convoID,
+        messageID
+      })
+    );
+
+    const message: Schema.ConvoMsg = {
+      body: ({
+        $$__ENCRYPT__FOR: convo.with,
+        $$__EPUB__FOR: convo.withEpub
+      } as unknown) as string,
+      convoID,
+      id: messageID,
+      timestamp: Date.now()
+    };
+
+    await Utils.Http.post(`/api/gun/put`, {
+      path: `$user>convos>${convoID}>messages>${messageID}`,
+      value: message
+    });
+
+    dispatch(
+      messageTransmissionSucceeded({
+        convoID,
+        messageID
+      })
+    );
+  } catch (e) {
+    Utils.logger.error(`Error inside retryMessage() -> `, e);
+    dispatch(
+      messageTransmissionFailed({
+        messageID
       })
     );
   }
