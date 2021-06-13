@@ -27,6 +27,10 @@ export const subCurrentHandshakeAddress = () => (
     return rifle({
       query: `$user::currentHandshakeAddress::on`,
       onData: handshakeAddress => {
+        Utils.logger.debug(
+          `Received current handshake address: ${handshakeAddress}`
+        );
+
         dispatch(
           handshakeAddressUpdated({
             handshakeAddress
