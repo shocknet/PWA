@@ -2,9 +2,9 @@ import { createAction } from "@reduxjs/toolkit";
 import * as Common from "shock-common";
 import { v4 as uuidv4 } from "uuid";
 
-import * as Utils from "../../utils";
-import * as Schema from "../../schema";
-import { rifle } from "../../utils/WebSocket";
+import * as Utils from "../utils";
+import * as Schema from "../schema";
+import { rifle } from "../utils/WebSocket";
 
 //#region receivedRequests
 
@@ -392,18 +392,18 @@ export const subConvos = () => async (
   }
 };
 
-const messageTransmissionRequested = createAction<{
+export const messageTransmissionRequested = createAction<{
   convoID: string;
   messageID: string;
   message: string;
 }>("chat/messageTransmissionRequested");
 
-const messageTransmissionSucceeded = createAction<{
+export const messageTransmissionSucceeded = createAction<{
   convoID: string;
   messageID: string;
 }>("chat/messageTransmissionSucceeded");
 
-const messageTransmissionFailed = createAction<{ messageID: string }>(
+export const messageTransmissionFailed = createAction<{ messageID: string }>(
   "chat/messageTransmissionFailed"
 );
 
@@ -463,12 +463,12 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
   }
 };
 
-const messageTransmissionRetried = createAction<{
+export const messageTransmissionRetried = createAction<{
   convoID: string;
   messageID: string;
 }>("chat/messageTransmissionRetried");
 
-const retryMessage = (convoID: string, messageID: string) => async (
+export const retryMessage = (convoID: string, messageID: string) => async (
   dispatch: (action: any) => void,
   getState: () => {
     chat: {
