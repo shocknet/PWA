@@ -10,11 +10,7 @@ import MainNav from "../../common/MainNav";
 import WithHeight from "../../common/WithHeight";
 import ChatMessage from "./components/ChatMessage";
 import Loader from "../../common/Loader";
-import {
-  acceptHandshakeRequest,
-  sendMessage,
-  chatWasDeleted
-} from "../../actions/ChatActions";
+import { acceptHandshakeRequest } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
@@ -32,21 +28,43 @@ enableMapSet();
 
 /**
  * @typedef {object} ChatPageParams
- * @prop {string} convoID
+ * @prop {string} convoOrReqID
  */
 
 const ChatPage = () => {
   const history = useHistory();
   const dispatch = Utils.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
-  const { convoID } = params;
-  const convo = Store.useSelector(Store.selectSingleConvo(convoID));
-  const user = Store.useSelector(Store.selectUser(convo.with));
+  const { convoOrReqID } = params;
+  const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
+  const isConvo = Schema.isConvo(convoOrReq);
+  const isReq = Schema.isHandshakeReqNew(convoOrReq);
+  const otherPublicKey = (() => {
+    if (Schema.isConvo(convoOrReq)) {
+      return convoOrReq.with;
+    }
+    if (Schema.isHandshakeReqNew(convoOrReq)) {
+      return convoOrReq.from;
+    }
+    throw new TypeError(
+      `Value obtained from Store.selectCommunication wasn't either a Convo or a HandshakeReqNew`
+    );
+  })();
+  const convos = Store.useSelector(Store.selectConvos);
+  useEffect(() => {
+    if (Schema.isHandshakeReqNew(convoOrReq)) {
+      const [, convoID] = JSON.parse(convoOrReq.response);
+      const convoExists = convos.find(convo => convo.id === convoID);
+      if (convoExists) {
+        history.replace(`/chat/${convoID}`);
+      }
+    }
+  }, [convoOrReq, convos, history]);
+  const user = Store.useSelector(Store.selectUser(otherPublicKey));
   const { publicKey: recipientPublicKey } = user;
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
-  const userToIncoming = Utils.EMPTY_OBJ;
-  const contacts = Store.useSelector(Store.selectContacts);
+
   /* ------------------------------------------------------------------------ */
   //#region dateBubble
   const [shouldShowDateBubble, setShouldShowDateBubble] = useState(false);
@@ -88,7 +106,6 @@ const ChatPage = () => {
     toggleIsDisconnecting();
     Utils.Http.delete(`/api/gun/chats/${recipientPublicKey}`)
       .then(() => {
-        dispatch(chatWasDeleted(recipientPublicKey));
         history.goBack();
       })
       .catch(e => {
@@ -96,13 +113,7 @@ const ChatPage = () => {
         alert(e.message);
       })
       .finally(toggleIsDisconnecting);
-  }, [
-    dispatch,
-    history,
-    recipientPublicKey,
-    toggleActionMenu,
-    toggleIsDisconnecting
-  ]);
+  }, [history, recipientPublicKey, toggleActionMenu, toggleIsDisconnecting]);
   //#endregion actionMenu
   /* ------------------------------------------------------------------------ */
 
@@ -110,9 +121,6 @@ const ChatPage = () => {
     ({ chat }) => chat.convoToMessages[recipientPublicKey] || {}
   );
 
-  const isContact = !!contacts.find(
-    user => user.publicKey === recipientPublicKey
-  );
   const receivedRequest = Store.useSelector(({ chat }) =>
     Object.values(chat.receivedRequests).find(
       req => req.from === recipientPublicKey
@@ -120,7 +128,6 @@ const ChatPage = () => {
   );
 
   const pendingSentRequest = false;
-  const pendingReceivedRequest = !isContact && receivedRequest;
 
   const handleInputChange = useCallback(e => {
     setMessage(e.target.value);
@@ -133,27 +140,29 @@ const ChatPage = () => {
     }
   }, [receivedRequest, dispatch]);
 
-  const submitMessage = useCallback(
-    e => {
-      if (e.key === "Enter" && e.ctrlKey) {
-        setMessage(message + "\r\n");
-        return;
-      }
+  // const submitMessage = useCallback(
+  //   e => {
+  //     if (e.key === "Enter" && e.ctrlKey) {
+  //       setMessage(message + "\r\n");
+  //       return;
+  //     }
 
-      if (e.key === "Enter") {
-        e.preventDefault();
-        dispatch(
-          sendMessage({
-            message,
-            publicKey: recipientPublicKey
-          })
-        );
-        setMessage("");
-        return;
-      }
-    },
-    [message, recipientPublicKey, dispatch]
-  );
+  //     if (e.key === "Enter") {
+  //       e.preventDefault();
+  //       dispatch(
+  //         sendMessage({
+  //           message,
+  //           publicKey: recipientPublicKey
+  //         })
+  //       );
+  //       setMessage("");
+  //       return;
+  //     }
+  //   },
+  //   [message, recipientPublicKey, dispatch]
+  // );
+
+  const submitMessage = Utils.EMPTY_FN;
 
   // useEffect(() => {
   //   const subscription = dispatch(
@@ -330,7 +339,7 @@ const ChatPage = () => {
         </span>
       </div>
 
-      {pendingReceivedRequest && (
+      {isReq && (
         <ChatBottomBar
           text={`Once you accept the request, you'll be able to chat and send
          invoices to ${contactName}`}
@@ -347,7 +356,7 @@ const ChatPage = () => {
         />
       )}
 
-      {isContact &&
+      {/* {isContact &&
         userToIncoming[recipientPublicKey] === Schema.DID_DISCONNECT && (
           <ChatBottomBar
             acceptLabel="Delete"
@@ -355,35 +364,34 @@ const ChatPage = () => {
             title="Other user disconnected"
             onAccept={handleDisconnect}
           />
-        )}
+        )} */}
 
-      {isContact &&
-        userToIncoming[recipientPublicKey] !== Schema.DID_DISCONNECT && (
-          <WithHeight
-            className="chat-bottom-bar"
-            onHeight={setBottomBarHeight}
-            onClick={actionMenuOpen ? toggleActionMenu : undefined}
-          >
-            <div className="chat-input-container">
-              <div
-                className="chat-input-btn unselectable"
-                onClick={toggleActionMenu}
-              >
-                <img src={BitcoinLightning} alt="Menu" />
-              </div>
-              <TextArea
-                className="chat-input"
-                // @ts-expect-error
-                type="text"
-                enterKeyHint="send"
-                onKeyPress={submitMessage}
-                onChange={handleInputChange}
-                value={message}
-                height={20}
-              />
+      {isConvo && (
+        <WithHeight
+          className="chat-bottom-bar"
+          onHeight={setBottomBarHeight}
+          onClick={actionMenuOpen ? toggleActionMenu : undefined}
+        >
+          <div className="chat-input-container">
+            <div
+              className="chat-input-btn unselectable"
+              onClick={toggleActionMenu}
+            >
+              <img src={BitcoinLightning} alt="Menu" />
             </div>
-          </WithHeight>
-        )}
+            <TextArea
+              className="chat-input"
+              // @ts-expect-error
+              type="text"
+              enterKeyHint="send"
+              onKeyPress={submitMessage}
+              onChange={handleInputChange}
+              value={message}
+              height={20}
+            />
+          </div>
+        </WithHeight>
+      )}
 
       <div
         className={classNames("action-menu", {

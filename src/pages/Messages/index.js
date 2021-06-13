@@ -1,9 +1,8 @@
 // @ts-check
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
 
 import {
-  loadChatData,
   sendHandshakeRequest,
   subCurrentHandshakeAddress,
   subHandshakeNode,
@@ -22,7 +21,6 @@ import Modal from "../../common/Modal";
 import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
 import * as Utils from "../../utils";
-import * as Schema from "../../schema";
 
 const MessagesPage = () => {
   const dispatch = Utils.useDispatch();
@@ -37,15 +35,6 @@ const MessagesPage = () => {
   const currentHandshakeAddress = Store.useSelector(
     Store.selectCurrentHandshakeAddress
   );
-  const userToIncoming = Utils.EMPTY_ARR;
-
-  const loadChat = useCallback(async () => {
-    await dispatch(loadChatData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    loadChat();
-  }, [loadChat]);
 
   useEffect(() => {
     const sub = dispatch(subCurrentHandshakeAddress());
@@ -76,10 +65,14 @@ const MessagesPage = () => {
       dispatch(subscribeUserProfile(convo.with))
     );
 
+    subscriptions.push(
+      ...receivedRequests.map(req => dispatch(subscribeUserProfile(req.from)))
+    );
+
     return () => {
       subscriptions.map(unsubscribe => unsubscribe());
     };
-  }, [convos, dispatch]);
+  }, [convos, dispatch, receivedRequests]);
 
   const toggleModal = useCallback(() => {
     setAddModalOpen(!addModalOpen);
@@ -144,8 +137,10 @@ const MessagesPage = () => {
 
   const sendRequestClipboard = useCallback(async () => {
     try {
-      const clipboardText = await navigator.clipboard.readText();
-      return sendRequest(clipboardText);
+      // @ts-ignore
+      const pk = document.querySelector("#reqpk").value;
+
+      return sendRequest(pk);
     } catch (e) {
       alert(e.message);
     }
@@ -206,6 +201,7 @@ const MessagesPage = () => {
               sent
               key={request.id}
               time={undefined}
+              id={request.id}
             />
           ))}
           {receivedRequests.length > 0 ? (
@@ -217,6 +213,7 @@ const MessagesPage = () => {
               key={request.id}
               sent={false}
               time={undefined}
+              id={request.id}
             />
           ))}
           {convos.length > 0 ? (
@@ -288,6 +285,8 @@ const MessagesPage = () => {
               </p>
             </div>
           </div>
+
+          <input type="text" id="reqpk" />
         </Modal>
       </div>
       <BottomBar />

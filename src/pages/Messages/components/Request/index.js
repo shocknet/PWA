@@ -7,11 +7,11 @@ import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 
 import "./css/index.scoped.css";
 
-const Request = ({ publicKey = "", time, sent }) => {
+const Request = ({ publicKey = "", time, sent, id }) => {
   const user = Store.useSelector(Store.selectUser(publicKey));
 
   return (
-    <Link to={`/chat/${publicKey}`} className="request-container">
+    <Link to={`/chat/${id}`} className="request-container">
       <div className="request-author-container">
         <div className="request-author-avatar" style={AVATAR_CONTAINER_STYLE}>
           <ShockAvatar publicKey={publicKey} height={AVATAR_SIZE} />
