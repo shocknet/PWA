@@ -62,6 +62,7 @@ const chat = produce((draft, action) => {
   if (convoReceived.match(action)) {
     const { convo } = action.payload;
     if (!draft.convos[convo.id]) {
+      draft.convoToMessages[convo.id] = {};
       draft.convos[convo.id] = convo;
     }
   }
