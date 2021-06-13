@@ -213,6 +213,12 @@ export const sendHandshakeRequest = (publicKey: string) => async (
           subscription.then(sub => sub.off());
           res(epub);
         } else {
+          Utils.logger.debug(
+            `Could not fetch epub for public Key ${publicKey.slice(
+              0,
+              8
+            )}... : ${epub}`
+          );
           subscription.then(sub => sub.off());
           rej(new TypeError(`Could not fetch epub`));
         }
