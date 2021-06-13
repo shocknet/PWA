@@ -31,6 +31,14 @@ export const subCurrentHandshakeAddress = () => (
           `Received current handshake address: ${handshakeAddress}`
         );
 
+        if (!Common.isPopulatedString(handshakeAddress)) {
+          Utils.logger.error(
+            `Current handshake address not an string -> `,
+            JSON.stringify(handshakeAddress)
+          );
+          return;
+        }
+
         dispatch(
           handshakeAddressUpdated({
             handshakeAddress
