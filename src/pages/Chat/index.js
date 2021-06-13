@@ -117,9 +117,12 @@ const ChatPage = () => {
   //#endregion actionMenu
   /* ------------------------------------------------------------------------ */
 
-  const messages = Store.useSelector(
-    ({ chat }) => chat.convoToMessages[recipientPublicKey] || {}
-  );
+  const messages = Store.useSelector(state => {
+    if (isConvo) {
+      return Store.selectConvoMessages(convoOrReqID)(state);
+    }
+    return {};
+  });
 
   const receivedRequest = Store.useSelector(({ chat }) =>
     Object.values(chat.receivedRequests).find(

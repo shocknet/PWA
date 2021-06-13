@@ -81,3 +81,7 @@ export const selectCommunication = (convoIDOrRequestID: string) => (
     `Tried to select a non existent communication, convoIDOrRequestID: ${convoIDOrRequestID}`
   );
 };
+
+export const selectConvoMessages = (convoID: string) => (
+  state: State
+): Record<string, Schema.ConvoMsg> => state.chat.convoToMessages[convoID];
