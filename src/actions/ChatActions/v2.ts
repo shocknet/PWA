@@ -63,6 +63,7 @@ export const subHandshakeNode = (handshakeAddress: string) => (
   try {
     return rifle({
       query: `$gun::handshakeNodes>${handshakeAddress}::map.on`,
+      epubField: "epub",
       onData: (handshakeRequest: Schema.HandshakeReqNew) => {
         const {
           chat: { currentHandshakeAddress }
