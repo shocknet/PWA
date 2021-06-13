@@ -403,9 +403,10 @@ export const messageTransmissionSucceeded = createAction<{
   messageID: string;
 }>("chat/messageTransmissionSucceeded");
 
-export const messageTransmissionFailed = createAction<{ messageID: string }>(
-  "chat/messageTransmissionFailed"
-);
+export const messageTransmissionFailed = createAction<{
+  convoID: string;
+  messageID: string;
+}>("chat/messageTransmissionFailed");
 
 export const sendMessage = (convoID: string, messageBody: string) => async (
   dispatch: (action: any) => void,
@@ -457,6 +458,7 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
     Utils.logger.error(`Error inside sendMessage() -> `, e);
     dispatch(
       messageTransmissionFailed({
+        convoID,
         messageID
       })
     );
@@ -525,6 +527,7 @@ export const retryMessage = (convoID: string, messageID: string) => async (
     Utils.logger.error(`Error inside retryMessage() -> `, e);
     dispatch(
       messageTransmissionFailed({
+        convoID,
         messageID
       })
     );
