@@ -210,11 +210,11 @@ export const sendHandshakeRequest = (publicKey: string) => async (
           `Got epub for public Key ${publicKey.slice(0, 8)}... : ${epub}`
         );
         if (Common.isPopulatedString(epub)) {
+          subscription.then(sub => sub.off());
           res(epub);
-          subscription.then(sub => sub.off());
         } else {
-          rej(new TypeError(`Could not fetch epub`));
           subscription.then(sub => sub.off());
+          rej(new TypeError(`Could not fetch epub`));
         }
       },
       query: `${publicKey}::epub::on`,
