@@ -13,7 +13,8 @@ export const ACTIONS = {
   SET_AUTHENTICATED_USER: "node/authenticatedUser",
   SET_CONNECTION_STATUS: "node/connectionStatus",
   SET_NODE_HEALTH: "node/health",
-  SET_WEBCLIENT_PREFIX:'node/setWebClientPrefix'
+  SET_WEBCLIENT_PREFIX:'node/setWebClientPrefix',
+  SET_RELAY_ID: 'auth/relay/set'
 };
 
 export const resetNodeInfo = () => dispatch => {
@@ -31,9 +32,15 @@ export const setHostId = hostId => dispatch => {
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-export const fetchNodeHealth = hostIP => async dispatch => {
+export const fetchNodeHealth = (hostIP,relayId) => async dispatch => {
   try {
-    const { data } = await Http.get(`${hostIP}/healthz`);
+    const headers = {}
+    if(relayId){
+      headers['x-shock-hybrid-relay-id-x'] = relayId
+    }
+    const { data } = await Http.get(`${hostIP}/healthz`,{
+      headers
+    });
     if (!data) {
       throw new Error(
         `NodeActions->fetchNodeHealth()->No data obtained from healthz endpoint`
@@ -78,7 +85,7 @@ export const fetchNodeUnlockStatus = () => async dispatch => {
   return "createWallet";
 };
 
-export const connectHost = (hostIP, resetData = true) => async dispatch => {
+export const connectHost = (hostIP, resetData = true, relayId = null) => async dispatch => {
   if (resetData) {
     dispatch({
       type: ACTIONS.RESET_NODE_INFO
@@ -89,7 +96,9 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
   }
   const done = async (host, health) => {
     Http.defaults.baseURL = `${host}`;
-
+    if(relayId){
+      dispatch(setRelayId(relayId))
+    }
     dispatch({
       type: ACTIONS.SET_HOST_IP,
       data: host
@@ -106,7 +115,7 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
   let nodeHealthHttps;
   const sanitizedHostIP = hostIP.replace(/^http(s)?:\/\//, "");
   try {
-    nodeHealthHttps = await fetchNodeHealth(`https://${sanitizedHostIP}`)(
+    nodeHealthHttps = await fetchNodeHealth(`https://${sanitizedHostIP}`,relayId)(
       dispatch
     );
     if (nodeHealthHttps) {
@@ -119,7 +128,7 @@ export const connectHost = (hostIP, resetData = true) => async dispatch => {
   }
 
   console.error("cannot establish https connection, will try http");
-  const nodeHealth = await fetchNodeHealth(`http://${sanitizedHostIP}`)(
+  const nodeHealth = await fetchNodeHealth(`http://${sanitizedHostIP}`,relayId)(
     dispatch
   );
   nodeHealth.withProtocolHostIP = `http://${sanitizedHostIP}`;
@@ -228,3 +237,8 @@ export const setWebclientPrefix = prefix => dispatch => {
     data:prefix
   })
 }
+
+export const setRelayId = relayId => ({
+  type: ACTIONS.SET_RELAY_ID,
+  data: relayId
+});

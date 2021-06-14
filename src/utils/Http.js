@@ -86,11 +86,17 @@ Http.interceptors.request.use(async config => {
     const { store } = await import("../store");
     const { authToken } = store.getState().node;
     const { deviceId } = store.getState().encryption;
+    const { relayId } = store.getState().node;
     const localRequest = config.url.indexOf("/") === 0;
 
     if (localRequest) {
       config.headers.common.Authorization = `Bearer ${authToken}`;
       config.headers.common["encryption-device-id"] = deviceId;
+      if(relayId){
+        /////
+        config.headers.common["x-shock-hybrid-relay-id-x"] = relayId;
+        /////
+      }
     }
 
     if (

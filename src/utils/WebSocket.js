@@ -46,6 +46,12 @@ export const connectSocket = async (host = "", reconnect = false) => {
 
   GunSocket = SocketIO(`${host}/gun`, socketOptions);
   LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
+  
+  const relayId = store.getState().node.relayId
+  if(relayId){
+    GunSocket.emit('hybridRelayId',{id:relayId})
+    LNDSocket.emit('hybridRelayId',{id:relayId})
+  }
 
   const GunOn = encryptedOn(GunSocket);
 
@@ -69,7 +75,7 @@ export const connectSocket = async (host = "", reconnect = false) => {
   GunSocket.on(Common.NOT_AUTH, () => {
     store.dispatch(setAuthenticated(false));
   });
-
+  //TODO listen on relay error
   GunSocket.on("encryption:error", async err => {
     if (err.field === "deviceId" || err.message === "Bad Mac") {
       const cachedNodeIP = store.getState().node.hostIP;

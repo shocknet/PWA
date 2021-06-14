@@ -4,7 +4,8 @@ const INITIAL_STATE = {
   authenticated: false,
   authStep: "host",
   authMethod: null,
-  invite:null
+  invite:null,
+  relayId:null
 };
 
 const defaultSteps = {

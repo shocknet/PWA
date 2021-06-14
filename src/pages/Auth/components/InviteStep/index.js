@@ -6,6 +6,7 @@ import { connectSocket } from "../../../../utils/WebSocket";
 import Http from "../../../../utils/Http";
 import Loader from "../../../../common/Loader";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
+import { ParseNodeIP } from "../../../../utils/relay";
 
 const HOSTING_SERVER = "pool.shock.network";
 
@@ -80,10 +81,12 @@ const InviteStep = () => {
         );
         const nodeURL = response.data.address;
         const tunnelURI = await getTunnelURI(nodeURL);
-        const noProtocolHostIP = tunnelURI.replace(/^http(s)?:\/\//gi, "");
+        const [nodeIP,relayID] = ParseNodeIP(tunnelURI)
+        const noProtocolHostIP = nodeIP.replace(/^http(s)?:\/\//gi, "");
         const { withProtocolHostIP } = await connectHost(
           noProtocolHostIP,
-          true
+          true,
+          relayID
         )(dispatch);
         connectSocket(withProtocolHostIP);
       } catch (error) {

@@ -19,20 +19,18 @@ export const loadFeeRates = () => async (dispatch, getState) => {
   return data;
 };
 
-export const setSource = source => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_SOURCE,
-    data: source
-  });
+/**
+ * @param {string} source
+ */
+export const setSource = source => ({
+  type: ACTIONS.SET_SOURCE,
+  data: source
+});
 
-  return source;
-};
-
-export const setRate = rate => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_RATE,
-    data: rate
-  });
-
-  return rate;
-};
+/**
+ * @param {import('../schema').FeeRate} rate
+ */
+export const setRate = rate => ({
+  type: ACTIONS.SET_RATE,
+  data: rate
+});

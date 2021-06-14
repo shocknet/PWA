@@ -5,7 +5,9 @@ export const ACTIONS = {
   SET_AUTHENTICATED: "auth/authenticated/set",
   SET_AUTH_METHOD: "auth/method/set",
   LOGOUT: "auth/logout",
-  SAVE_INVITE: "auth/save/invite"
+  SAVE_INVITE: "auth/save/invite",
+  SET_RELAY_ID: "auth/relay/set"
+
 };
 
 export const setAuthenticated = status => ({
@@ -30,4 +32,8 @@ export const logout = () => ({
 export const saveInvite = (invite) => ({
   type: ACTIONS.SAVE_INVITE,
   data:invite
+});
+export const setRelayId = relayId => ({
+  type: ACTIONS.SET_RELAY_ID,
+  data: relayId
 });

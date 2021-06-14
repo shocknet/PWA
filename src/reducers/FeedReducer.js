@@ -14,7 +14,7 @@ const INITIAL_STATE = {
   follows: /** @type {Follow[]} */ ([
     {
       user:
-        "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+        "JVz7h3yUnbgMwwKxSddGenBlrE9eeDJVYWlmOr941mI.LW5PEWM3Y-DRf-UApdSN76wH6id6zR4mXNyBApihoAA",
       status: "ok",
       private: false
     }
@@ -23,7 +23,7 @@ const INITIAL_STATE = {
    * Maps public key to posts/shared posts.
    */
   posts: /** @type {Record<string, Array<Post|SharedPost>>} */ ({}),
-  reloadDone:false
+  reloadDone: false
 };
 
 /**
@@ -151,10 +151,10 @@ const feed = (state = INITIAL_STATE, action) => {
       };
     }
     case ACTIONS.RELOAD_FEED: {
-      return {...state, reloadDone:true}
+      return { ...state, reloadDone: true };
     }
     case AUTH_ACTIONS.LOGOUT: {
-      return INITIAL_STATE
+      return INITIAL_STATE;
     }
     default:
       return state;

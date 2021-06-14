@@ -164,7 +164,7 @@ a.bottom-nav-btn.active-nav-btn {
   padding-left: 1rem;
   padding-right: 1rem;
   padding-bottom: 2rem;
-  border:2px solid var(--main-blue);
+  border: 2px solid var(--main-blue);
   border-radius: 1rem;
 }
 
@@ -185,4 +185,12 @@ a.bottom-nav-btn.active-nav-btn {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.red-text {
+  color: var(--failure-red);
+}
+
+.red-border {
+  border-color: var(--failure-red) !important;
 }

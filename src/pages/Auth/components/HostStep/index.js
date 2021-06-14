@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
+import { ParseNodeIP } from "../../../../utils/relay";
 
 const isIP = hostname => {
   const digits = hostname.split(".");
@@ -57,9 +58,9 @@ const HostStep = () => {
       }
       setConnecting(true);
       setError(null);
-
-      const noProtocolHostIP = parseUrl(hostIP);
-      const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
+      const [parsedHostIP, relayId] = ParseNodeIP(hostIP)
+      const noProtocolHostIP = parseUrl(parsedHostIP);
+      const { withProtocolHostIP } = await connectHost(noProtocolHostIP,true,relayId)(
         dispatch
       );
     } catch (error) {

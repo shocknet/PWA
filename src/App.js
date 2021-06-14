@@ -35,6 +35,7 @@ import { closeDialog } from "./actions/AppActions";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
+const WalletSettingsPage = React.lazy(() => import("./pages/WalletSettings"));
 const MessagesPage = React.lazy(() => import("./pages/Messages"));
 const ProfilePage = React.lazy(() => import("./pages/Profile"));
 const ChatPage = React.lazy(() => import("./pages/Chat"));
@@ -139,8 +140,8 @@ const App = () => {
     Http.post("/api/stopStream", {
       postId: streamPostId,
       contentId: streamContentId,
-      endUrl: `https://webtorrent.shock.network/api/stream/end`,
-      urlForMagnet: `https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`,
+      endUrl: `https://stream.shock.network/api/stream/end`,
+      urlForMagnet: `https://stream.shock.network/api/stream/torrent/${streamUserToken}`,
       obsToken: streamLiveToken
     });
     removeStream()(dispatch);
@@ -338,6 +339,11 @@ const App = () => {
           <Route path="/auth" exact component={AuthPage} />
           <PrivateRoute path="/overview" exact component={OverviewPage} />
           <PrivateRoute path="/advanced" exact component={AdvancedPage} />
+          <PrivateRoute
+            path="/walletSettings"
+            exact
+            component={WalletSettingsPage}
+          />
           <PrivateRoute path="/chat" exact component={MessagesPage} />
           <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
           <PrivateRoute path="/send" exact component={SendPage} />

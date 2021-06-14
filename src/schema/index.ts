@@ -141,3 +141,5 @@ export const isPublicContentItem = (o: unknown): o is PublicContentItem => {
 
   return typeof obj.timestamp === "number";
 };
+
+export type FeeRate = "hourFee" | "halfHourFee" | "fastestFee";
