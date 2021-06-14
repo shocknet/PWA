@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 import { createWallet } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
+import * as Store from "../../../../store";
 
 const CreateWalletStep = () => {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ const CreateWalletStep = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const invite = Store.useSelector(({ auth }) => auth.invite);
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -53,7 +55,7 @@ const CreateWalletStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(createWallet({ alias, password }));
+        const wallet = await dispatch(createWallet({ alias, password,invite }));
         console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);

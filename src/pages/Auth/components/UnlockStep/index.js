@@ -11,6 +11,7 @@ const UnlockStep = () => {
   const [error, setError] = useState();
   const [alias, setAlias] = useState("");
   const cachedAlias = Store.useSelector(({ node }) => node.alias);
+  const invite = Store.useSelector(({ auth }) => auth.invite);
   const [cachedAliasDismissed, setCachedAliasDismissed] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,8 @@ const UnlockStep = () => {
           unlockWallet({
             // Do not replace "||" with "??"
             alias: alias || cachedAlias,
-            password
+            password,
+            invite
           })
         );
         console.log("Wallet Response:", wallet);
