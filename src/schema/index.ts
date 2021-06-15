@@ -15,11 +15,42 @@ export interface ReceivedRequest {
 }
 
 export interface HandshakeReqNew {
+  /**
+   * Sender's epub.
+   */
   epub: string;
+  /**
+   * Sender's public key.
+   */
   from: string;
+  /**
+   * Handshake address where the request was written to.
+   */
   handshakeAddress: string;
+  /**
+   * The request's unique id.
+   */
   id: string;
-  response: string;
+
+  /**
+   * The ID for the receiver's conversation feed in their user graph. The sender
+   * will preemptively watch for messages in the receiver's conversation part of
+   * their user graph under this ID. When the receiver accepts, they will create
+   * the conversation feed under this ID and start sending messages. The initial
+   * $$__INITIAL__MSG sentinel message signals to the sender the request was
+   * accepted.
+   */
+  receiverConvoID: string;
+
+  /**
+   * The ID for the sender's conversation feed in their user graph. This
+   * conversation feed is already present upon sending the request.
+   */
+  senderConvoID: string;
+
+  /**
+   * Timestamp.
+   */
   timestamp: number;
 }
 
@@ -46,7 +77,11 @@ export const isHandshakeReqNew = (o: unknown): o is HandshakeReqNew => {
     return false;
   }
 
-  if (!Common.isPopulatedString(obj.response)) {
+  if (!Common.isPopulatedString(obj.receiverConvoID)) {
+    return false;
+  }
+
+  if (!Common.isPopulatedString(obj.senderConvoID)) {
     return false;
   }
 

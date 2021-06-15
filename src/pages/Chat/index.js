@@ -53,10 +53,11 @@ const ChatPage = () => {
   const convos = Store.useSelector(Store.selectConvos);
   useEffect(() => {
     if (Schema.isHandshakeReqNew(convoOrReq)) {
-      const [, convoID] = JSON.parse(convoOrReq.response);
-      const convoExists = convos.find(convo => convo.id === convoID);
+      const convoExists = convos.find(
+        convo => convo.id === convoOrReq.receiverConvoID
+      );
       if (convoExists) {
-        history.replace(`/chat/${convoID}`);
+        history.replace(`/chat/${convoOrReq.receiverConvoID}`);
       }
     }
   }, [convoOrReq, convos, history]);

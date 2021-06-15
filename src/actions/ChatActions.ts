@@ -178,15 +178,13 @@ export const acceptHandshakeRequest = (requestId: string) => async (
     requestId
   ];
 
-  const [incomingID, outgoingID] = JSON.parse(req.response) as [string, string];
-
   await Utils.Http.post(`/api/gun/put`, {
-    path: `$user>convos>${outgoingID}`,
+    path: `$user>convos>${req.receiverConvoID}`,
     value: createOutgoingConversationFeed(
-      outgoingID,
+      req.receiverConvoID,
       req.from,
       req.epub,
-      incomingID
+      req.senderConvoID
     )
   });
 
@@ -301,24 +299,33 @@ export const sendHandshakeRequest = (publicKey: string) => async (
     )}...`
   );
 
+  const handshakeReqForGun: {
+    [K in keyof Schema.HandshakeReqNew]: any;
+  } = {
+    id: requestID,
+    from: {
+      $$__ENCRYPT__FOR: publicKey,
+      $$__EPUB__FOR: epub,
+      value: getState().node.publicKey
+    },
+    epub: selfEpub,
+    timestamp: Date.now(),
+    receiverConvoID: {
+      $$__ENCRYPT__FOR: publicKey,
+      $$__EPUB__FOR: epub,
+      value: getState().node.publicKey
+    },
+    senderConvoID: {
+      $$__ENCRYPT__FOR: publicKey,
+      $$__EPUB__FOR: epub,
+      value: getState().node.publicKey
+    },
+    handshakeAddress
+  };
+
   await Utils.Http.post(`/api/gun/put`, {
     path: `$gun>handshakeNodes>${handshakeAddress}>${requestID}`,
-    value: {
-      id: requestID,
-      from: {
-        $$__ENCRYPT__FOR: publicKey,
-        $$__EPUB__FOR: epub,
-        value: getState().node.publicKey
-      },
-      epub: selfEpub,
-      timestamp: Date.now(),
-      response: {
-        $$__ENCRYPT__FOR: publicKey,
-        $$__EPUB__FOR: epub,
-        value: `[ "${outgoingConvoID}" , "${incomingConvoID}" ]`
-      },
-      handshakeAddress
-    }
+    value: handshakeReqForGun
   });
 
   // after request was sent let's now create our outgoing feed
