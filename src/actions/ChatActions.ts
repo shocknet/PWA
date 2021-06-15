@@ -66,6 +66,13 @@ export const receivedHandshakeRequest = createAction<{
 }>("chat/receivedHandshakeRequest");
 
 /**
+ * Dispatched when a handshake request is deleted after accepting  it.
+ */
+export const handshakeRequestDeleted = createAction<{
+  id: string;
+}>("chat/handshakeRequestDeleted");
+
+/**
  * Subscribe to received requests inside the specified handshake node.
  * @returns A thunk that returns a subscription.
  */
@@ -78,7 +85,7 @@ export const subHandshakeNode = (handshakeAddress: string) => (
     return rifle({
       query: `$gun::handshakeNodes>${handshakeAddress}::map.on`,
       epubField: "epub",
-      onData: (handshakeRequest: Schema.HandshakeReqNew) => {
+      onData: (handshakeRequest: Schema.HandshakeReqNew, id: string) => {
         Utils.logger.debug(
           `Subscription to handshake node: ${handshakeAddress} -> `,
           handshakeRequest
@@ -90,15 +97,21 @@ export const subHandshakeNode = (handshakeAddress: string) => (
         if (handshakeAddress !== currentHandshakeAddress) {
           return;
         }
-        if (!Schema.isHandshakeReqNew(handshakeRequest)) {
+        if (Schema.isHandshakeReqNew(handshakeRequest)) {
+          dispatch(
+            receivedHandshakeRequest({
+              receivedRequest: handshakeRequest
+            })
+          );
+        } else if (handshakeRequest === null) {
+          dispatch(
+            handshakeRequestDeleted({
+              id
+            })
+          );
+        } else {
           Utils.logger.debug(`Not a handshake request -> `, handshakeRequest);
-          return;
         }
-        dispatch(
-          receivedHandshakeRequest({
-            receivedRequest: handshakeRequest
-          })
-        );
       }
     });
   } catch (e) {
