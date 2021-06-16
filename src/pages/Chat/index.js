@@ -45,6 +45,7 @@ const ChatPage = () => {
   const isConvo = Schema.isConvo(convoOrReq);
   const isReq = Schema.isHandshakeReqNew(convoOrReq);
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const [isAccepting, toggleIsAccepting] = Utils.useBooleanState(false);
   const otherPublicKey = (() => {
     if (Schema.isConvo(convoOrReq)) {
       return convoOrReq.with;
@@ -159,9 +160,15 @@ const ChatPage = () => {
   const acceptRequest = useCallback(() => {
     console.log(receivedRequest);
     if (receivedRequest) {
-      dispatch(acceptHandshakeRequest(receivedRequest.id));
+      toggleIsAccepting();
+      dispatch(acceptHandshakeRequest(receivedRequest.id))
+        .catch(e => {
+          Utils.logger.error(`Could not accept request -> `, e);
+          alert(`Could not accept request: ${e.message}`);
+        })
+        .finally(toggleIsAccepting);
     }
-  }, [receivedRequest, dispatch]);
+  }, [receivedRequest, toggleIsAccepting, dispatch]);
 
   const submitMessage = useCallback(
     e => {
@@ -357,7 +364,9 @@ const ChatPage = () => {
         </span>
       </div>
 
-      {isReq && (
+      {isAccepting && <Loader text="Accepting request..." />}
+
+      {isReq && !isAccepting && (
         <ChatBottomBar
           text={`Once you accept the request, you'll be able to chat and send
          invoices to ${contactName}`}
