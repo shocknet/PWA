@@ -12,14 +12,11 @@ export const selectConvos: (state: State) => Schema.Convo[] = createSelector(
   }
 );
 
-export const selectSingleConvo = (convoID: string) => (state: State) => {
+export const selectSingleConvo = (convoID: string) => (
+  state: State
+): Schema.Convo | null => {
   const convo = state.chat.convos[convoID];
-  if (!convo) {
-    throw new ReferenceError(
-      `Tried to select invalid convo with convoID: ${convoID}`
-    );
-  }
-  return convo;
+  return convo ?? null;
 };
 
 /**
@@ -68,7 +65,7 @@ export const selectContacts = createSelector(
 
 export const selectCommunication = (convoIDOrRequestID: string) => (
   state: State
-): Schema.Convo | Schema.HandshakeReqNew => {
+): Schema.Convo | Schema.HandshakeReqNew | null => {
   const maybeConvo = state.chat.convos[convoIDOrRequestID];
   const maybeRequest = state.chat.receivedRequests[convoIDOrRequestID];
 
@@ -80,9 +77,7 @@ export const selectCommunication = (convoIDOrRequestID: string) => (
     return maybeConvo;
   }
 
-  throw new ReferenceError(
-    `Tried to select a non existent communication, convoIDOrRequestID: ${convoIDOrRequestID}`
-  );
+  return null;
 };
 
 export const selectConvoMessages = (convoID: string) => (

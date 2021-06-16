@@ -625,7 +625,9 @@ export const subConvoMessages = (convoID: string) => (
             receivedConvoMessage({
               message: {
                 ...message,
-                state: "received"
+                state: "received",
+                // Otherwise it will reference the other user's convo
+                convoID: convo.id
               }
             })
           );

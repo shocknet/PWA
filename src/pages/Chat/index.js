@@ -5,6 +5,7 @@ import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import produce, { enableMapSet } from "immer";
+import * as Common from "shock-common";
 
 import MainNav from "../../common/MainNav";
 import WithHeight from "../../common/WithHeight";
@@ -58,6 +59,11 @@ const ChatPage = () => {
     );
   })();
   const convos = Store.useSelector(Store.selectConvos);
+  useEffect(() => {
+    if (!convoOrReq) {
+      history.replace("/chat");
+    }
+  }, [convoOrReq, history]);
   useEffect(() => {
     const subscription = dispatch(subConvos());
 
@@ -144,6 +150,10 @@ const ChatPage = () => {
     }
     return [];
   });
+  const messagesWithoutInitial = useMemo(
+    () => messages.filter(msg => msg.body !== Common.INITIAL_MSG),
+    [messages]
+  );
   // At least the initial message should be there.
   const otherUserAccepted = useMemo(
     () => messages.some(msg => msg.state === "received"),
@@ -265,7 +275,7 @@ const ChatPage = () => {
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >
-        {messages.map(message => (
+        {messagesWithoutInitial.map(message => (
           <ChatMessage
             text={message.body}
             receivedMessage={message.state === "received"}
