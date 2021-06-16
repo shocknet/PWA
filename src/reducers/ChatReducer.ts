@@ -19,7 +19,8 @@ import {
   messageTransmissionRequested,
   messageTransmissionRetried,
   messageTransmissionSucceeded,
-  handshakeRequestDeleted
+  handshakeRequestDeleted,
+  receivedConvoMessage
 } from "../actions/ChatActions";
 
 const INITIAL_STATE = {
@@ -28,13 +29,7 @@ const INITIAL_STATE = {
   /**
    * Maps convo id to a set of the messages corresponding to it.
    */
-  convoToMessages: {} as Record<
-    string,
-    Record<
-      string,
-      Schema.ConvoMsg & { err: string; state: "ok" | "sending" | "error" }
-    >
-  >,
+  convoToMessages: {} as Record<string, Record<string, Schema.ConvoMsg>>,
   receivedRequests: {} as Record<string, Schema.HandshakeReqNew>
 };
 
@@ -102,6 +97,18 @@ const chat = produce((draft, action) => {
     const { id } = action.payload;
     if (draft.receivedRequests[id]) {
       delete draft.receivedRequests[id];
+    }
+  }
+  if (receivedConvoMessage.match(action)) {
+    const { message } = action.payload;
+    if (!draft.convoToMessages[message.convoID]) {
+      draft.convoToMessages[message.convoID] = {};
+    }
+    if (!draft.convoToMessages[message.convoID][message.id]) {
+      draft.convoToMessages[message.convoID][message.id] = {
+        ...message,
+        err: ""
+      };
     }
   }
 }, INITIAL_STATE);

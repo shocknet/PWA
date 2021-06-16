@@ -36,6 +36,7 @@ export const subscribeUserProfile = (publicKey: string) => (
     userProfiles: Record<string, Common.User>;
   }
 ) => {
+  return () => {};
   if (subscribedProfiles.has(publicKey)) {
     return () => {};
   }

@@ -161,7 +161,9 @@ export const isConvo = (o: unknown): o is Convo => {
 export interface ConvoMsg {
   body: string;
   convoID: string;
+  err: string;
   id: string;
+  state: "ok" | "error" | "received" | "sending";
   timestamp: number;
 }
 

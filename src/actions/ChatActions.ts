@@ -173,7 +173,9 @@ const createOutgoingConversationFeed = (
           value: Common.INITIAL_MSG
         },
         timestamp: Date.now(),
-        convoID: outgoingConvoID
+        convoID: outgoingConvoID,
+        state: "ok",
+        err: ""
       }
     }
   };
@@ -462,7 +464,9 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
       } as unknown) as string,
       convoID,
       id: messageID,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      state: "ok",
+      err: ""
     };
 
     await Utils.Http.post(`/api/gun/put`, {
@@ -532,7 +536,9 @@ export const retryMessage = (convoID: string, messageID: string) => async (
       } as unknown) as string,
       convoID,
       id: messageID,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      state: "ok",
+      err: ""
     };
 
     await Utils.Http.post(`/api/gun/put`, {
@@ -555,5 +561,100 @@ export const retryMessage = (convoID: string, messageID: string) => async (
         messageID
       })
     );
+  }
+};
+
+export const receivedConvoMessage = createAction<{
+  message: Schema.ConvoMsg;
+}>("chat/receivedConvoMessage");
+
+export const subConvoMessages = (convoID: string) => (
+  dispatch: (action: any) => void,
+  getState: () => {
+    chat: {
+      convos: Record<string, Schema.Convo>;
+    };
+  }
+) => {
+  try {
+    Utils.logger.debug(`Subscribing to messages for convo: ${convoID}`);
+
+    const convo = getState().chat.convos[convoID];
+
+    const outgoingSub = rifle({
+      query: `$user::convos>${convoID}>messages::map.on`,
+      onData: (message: unknown) => {
+        Utils.logger.debug(
+          `Outgoing subscription for convo: ${convoID} -> `,
+          message
+        );
+        if (Schema.isConvoMsg(message)) {
+          dispatch(
+            receivedConvoMessage({
+              message
+            })
+          );
+        } else if (message === null) {
+          // TODO: message deleted
+        } else {
+          Utils.logger.warn(
+            `Outgoing message in convo ${convo.id} does not correspond to schema -> `,
+            message
+          );
+        }
+      },
+      epubForDecryption: convo.withEpub,
+      onError(e) {
+        Utils.logger.error(
+          `Error inside subConvoMessages() outgoing sub -> `,
+          e
+        );
+        alert(`Error inside outgoing messages subscription: ${e.message}`);
+      }
+    });
+
+    const incomingSub = rifle({
+      query: `${convo.with}::convos>${convo.counterpartConvoID}>messages::map.on`,
+      onData: (message: unknown) => {
+        Utils.logger.debug(
+          `Incoming subscription for convo: ${convoID} -> `,
+          message
+        );
+        if (Schema.isConvoMsg(message)) {
+          dispatch(
+            receivedConvoMessage({
+              message: {
+                ...message,
+                state: "received"
+              }
+            })
+          );
+        } else if (message === null) {
+          // TODO: message deleted
+        } else {
+          Utils.logger.warn(
+            `Incoming message in convo ${convo.id} does not correspond to schema -> `,
+            message
+          );
+        }
+      },
+      epubForDecryption: convo.withEpub,
+      onError(e) {
+        Utils.logger.error(
+          `Error inside subConvoMessages() incoming sub -> `,
+          e
+        );
+        alert(`Error inside incoming messages subscription: ${e.message}`);
+      }
+    });
+
+    return () => {
+      Promise.all([outgoingSub, incomingSub]).then(subs =>
+        subs.forEach(sub => sub.off())
+      );
+    };
+  } catch (e) {
+    Utils.logger.error(`Error inside subConvoMessages() -> `, e);
+    alert(`Could not subscribe to conversation messages: ${e.message}`);
   }
 };

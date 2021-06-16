@@ -87,4 +87,8 @@ export const selectCommunication = (convoIDOrRequestID: string) => (
 
 export const selectConvoMessages = (convoID: string) => (
   state: State
-): Record<string, Schema.ConvoMsg> => state.chat.convoToMessages[convoID];
+): Schema.ConvoMsg[] => {
+  return Object.values(state.chat.convoToMessages[convoID]).sort((a, b) => {
+    return b.timestamp - a.timestamp;
+  });
+};

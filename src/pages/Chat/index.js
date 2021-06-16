@@ -10,7 +10,11 @@ import MainNav from "../../common/MainNav";
 import WithHeight from "../../common/WithHeight";
 import ChatMessage from "./components/ChatMessage";
 import Loader from "../../common/Loader";
-import { acceptHandshakeRequest, sendMessage } from "../../actions/ChatActions";
+import {
+  acceptHandshakeRequest,
+  sendMessage,
+  subConvoMessages
+} from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
@@ -39,6 +43,7 @@ const ChatPage = () => {
   const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
   const isConvo = Schema.isConvo(convoOrReq);
   const isReq = Schema.isHandshakeReqNew(convoOrReq);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const otherPublicKey = (() => {
     if (Schema.isConvo(convoOrReq)) {
       return convoOrReq.with;
@@ -118,11 +123,17 @@ const ChatPage = () => {
   //#endregion actionMenu
   /* ------------------------------------------------------------------------ */
 
+  useEffect(() => {
+    if (isConvo) {
+      return dispatch(subConvoMessages(convoOrReqID));
+    }
+    return Utils.EMPTY_FN;
+  }, [convoOrReqID, dispatch, isConvo]);
   const messages = Store.useSelector(state => {
     if (isConvo) {
       return Store.selectConvoMessages(convoOrReqID)(state);
     }
-    return {};
+    return [];
   });
 
   const receivedRequest = Store.useSelector(({ chat }) =>
@@ -180,7 +191,7 @@ const ChatPage = () => {
 
   const [newestTimestampInView, oldestTimestampInView] = useMemo(() => {
     const sorted = Array.from(visibleMessages)
-      .map(id => Object.values(messages).find(msg => msg.id === id))
+      .map(id => messages.find(msg => msg.id === id))
       .filter(x => !!x)
       .sort((a, b) => b.timestamp - a.timestamp);
 
@@ -236,11 +247,13 @@ const ChatPage = () => {
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >
-        {Object.values(messages).map(message => (
+        {messages.map(message => (
           <ChatMessage
             text={message.body}
-            receivedMessage={true}
-            publicKey={recipientPublicKey}
+            receivedMessage={message.state === "received"}
+            publicKey={
+              message.state === "received" ? recipientPublicKey : selfPublicKey
+            }
             timestamp={message.timestamp}
             onInView={handleMessageInView}
             onOutView={handleMessageOutView}
