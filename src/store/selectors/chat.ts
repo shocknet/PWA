@@ -40,8 +40,11 @@ export const selectReceivedRequests: (
   state: State
 ) => Schema.HandshakeReqNew[] = createSelector(
   (state: State) => state.chat.receivedRequests,
-  receivedRequests => {
-    return Object.values(receivedRequests);
+  selectConvos,
+  (receivedRequests, convos) => {
+    return Object.values(receivedRequests).filter(
+      req => !convos.find(convo => convo.id === req.receiverConvoID)
+    );
   }
 );
 
