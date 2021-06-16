@@ -144,14 +144,17 @@ const ChatPage = () => {
     }
     return [];
   });
+  // At least the initial message should be there.
+  const otherUserAccepted = useMemo(
+    () => messages.some(msg => msg.state === "received"),
+    [messages]
+  );
 
   const receivedRequest = Store.useSelector(({ chat }) =>
     Object.values(chat.receivedRequests).find(
       req => req.from === recipientPublicKey
     )
   );
-
-  const pendingSentRequest = false;
 
   const handleInputChange = useCallback(e => {
     setMessage(e.target.value);
@@ -375,7 +378,7 @@ const ChatPage = () => {
         />
       )}
 
-      {pendingSentRequest && (
+      {isConvo && !otherUserAccepted && (
         <ChatBottomBar
           text={`Once ${contactName} accepts the request, you'll be able to chat with
         them`}
