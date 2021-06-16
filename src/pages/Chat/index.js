@@ -54,9 +54,7 @@ const ChatPage = () => {
     if (Schema.isHandshakeReqNew(convoOrReq)) {
       return convoOrReq.from;
     }
-    throw new TypeError(
-      `Value obtained from Store.selectCommunication wasn't either a Convo or a HandshakeReqNew`
-    );
+    return ""; // was deleted
   })();
   const convos = Store.useSelector(Store.selectConvos);
   useEffect(() => {
