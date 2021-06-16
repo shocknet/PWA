@@ -184,7 +184,7 @@ export const isConvoMsg = (o: unknown): o is ConvoMsg => {
     return false;
   }
 
-  if (!Common.isPopulatedString(obj.timestamp)) {
+  if (typeof obj.timestamp !== "number") {
     return false;
   }
 
