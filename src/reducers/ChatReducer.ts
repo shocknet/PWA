@@ -24,10 +24,7 @@ import {
 
 const INITIAL_STATE = {
   currentHandshakeAddress: "DOES_NOT_EXIST" as string,
-  convos: /** @type {Record<string, FeedNew>} */ {} as Record<
-    string,
-    Schema.Convo
-  >,
+  convos: {} as Record<string, Schema.Convo>,
   /**
    * Maps convo id to a set of the messages corresponding to it.
    */
