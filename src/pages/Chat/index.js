@@ -10,7 +10,7 @@ import MainNav from "../../common/MainNav";
 import WithHeight from "../../common/WithHeight";
 import ChatMessage from "./components/ChatMessage";
 import Loader from "../../common/Loader";
-import { acceptHandshakeRequest } from "../../actions/ChatActions";
+import { acceptHandshakeRequest, sendMessage } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
@@ -144,29 +144,22 @@ const ChatPage = () => {
     }
   }, [receivedRequest, dispatch]);
 
-  // const submitMessage = useCallback(
-  //   e => {
-  //     if (e.key === "Enter" && e.ctrlKey) {
-  //       setMessage(message + "\r\n");
-  //       return;
-  //     }
+  const submitMessage = useCallback(
+    e => {
+      if (e.key === "Enter" && e.ctrlKey) {
+        setMessage(message + "\r\n");
+        return;
+      }
 
-  //     if (e.key === "Enter") {
-  //       e.preventDefault();
-  //       dispatch(
-  //         sendMessage({
-  //           message,
-  //           publicKey: recipientPublicKey
-  //         })
-  //       );
-  //       setMessage("");
-  //       return;
-  //     }
-  //   },
-  //   [message, recipientPublicKey, dispatch]
-  // );
-
-  const submitMessage = Utils.EMPTY_FN;
+      if (e.key === "Enter") {
+        e.preventDefault();
+        dispatch(sendMessage(convoOrReqID, message));
+        setMessage("");
+        return;
+      }
+    },
+    [message, dispatch, convoOrReqID]
+  );
 
   // useEffect(() => {
   //   const subscription = dispatch(
