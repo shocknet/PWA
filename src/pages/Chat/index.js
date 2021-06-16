@@ -13,7 +13,8 @@ import Loader from "../../common/Loader";
 import {
   acceptHandshakeRequest,
   sendMessage,
-  subConvoMessages
+  subConvoMessages,
+  subConvos
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
@@ -56,6 +57,13 @@ const ChatPage = () => {
     );
   })();
   const convos = Store.useSelector(Store.selectConvos);
+  useEffect(() => {
+    const subscription = dispatch(subConvos());
+
+    return () => {
+      subscription.then(sub => sub.off());
+    };
+  }, [dispatch]);
   useEffect(() => {
     if (Schema.isHandshakeReqNew(convoOrReq)) {
       const convoExists = convos.find(
