@@ -180,7 +180,7 @@ export const isConvoMsg = (o: unknown): o is ConvoMsg => {
     return false;
   }
 
-  if (!Common.isPopulatedString(obj.convoID)) {
+  if (!Common.isPopulatedString(obj.id)) {
     return false;
   }
 
