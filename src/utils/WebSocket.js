@@ -78,8 +78,8 @@ export const connectSocket = async (host = "", reconnect = false) => {
   //TODO listen on relay error
   GunSocket.on("encryption:error", async err => {
     if (err.field === "deviceId" || err.message === "Bad Mac") {
-      const cachedNodeIP = store.getState().node.hostIP;
-      await store.dispatch(connectHost(cachedNodeIP, false));
+      const {hostIP:cachedNodeIP,relayId} = store.getState().node;
+      await store.dispatch(connectHost(cachedNodeIP, false,relayId));
       store.dispatch(setAuthenticated(false));
     }
   });
