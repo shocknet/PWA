@@ -122,9 +122,21 @@ export interface ChatMessage {
 }
 
 export interface Convo {
+  /**
+   * The id for the conversation in the recipient's user graph.
+   */
   counterpartConvoID: string;
+  /**
+   * The id.
+   */
   id: string;
+  /**
+   * The recipient's public key.
+   */
   with: string;
+  /**
+   * The recipient's epub.
+   */
   withEpub: string;
 }
 
