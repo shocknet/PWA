@@ -328,12 +328,12 @@ export const sendHandshakeRequest = (publicKey: string) => async (
     receiverConvoID: {
       $$__ENCRYPT__FOR: publicKey,
       $$__EPUB__FOR: epub,
-      value: getState().node.publicKey
+      value: incomingConvoID
     },
     senderConvoID: {
       $$__ENCRYPT__FOR: publicKey,
       $$__EPUB__FOR: epub,
-      value: getState().node.publicKey
+      value: outgoingConvoID
     },
     handshakeAddress
   };
