@@ -457,7 +457,8 @@ export const sendMessage = (convoID: string, messageBody: string) => async (
     const message: Schema.ConvoMsg = {
       body: ({
         $$__ENCRYPT__FOR: convo.with,
-        $$__EPUB__FOR: convo.withEpub
+        $$__EPUB__FOR: convo.withEpub,
+        value: messageBody
       } as unknown) as string,
       convoID,
       id: messageID,
