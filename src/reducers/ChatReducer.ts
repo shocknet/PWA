@@ -18,7 +18,8 @@ import {
   messageTransmissionFailed,
   messageTransmissionRequested,
   messageTransmissionRetried,
-  messageTransmissionSucceeded
+  messageTransmissionSucceeded,
+  handshakeRequestDeleted
 } from "../actions/ChatActions";
 
 const INITIAL_STATE = {
@@ -99,6 +100,12 @@ const chat = produce((draft, action) => {
     const { convoID, messageID } = action.payload;
     draft.convoToMessages[convoID][messageID].err = "";
     draft.convoToMessages[convoID][messageID].state = "ok";
+  }
+  if (handshakeRequestDeleted.match(action)) {
+    const { id } = action.payload;
+    if (draft.receivedRequests[id]) {
+      delete draft.receivedRequests[id];
+    }
   }
 }, INITIAL_STATE);
 
