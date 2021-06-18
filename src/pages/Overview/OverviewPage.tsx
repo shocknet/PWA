@@ -1,8 +1,9 @@
 // @ts-check
-import { useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 
+import * as Utils from "../../utils";
 import {
   fetchWalletBalance,
   fetchUSDRate,
@@ -23,6 +24,7 @@ import * as Store from "../../store";
 
 const OverviewPage = () => {
   const dispatch = Store.useDispatch();
+  const forceUpdate = Utils.useForceUpdate();
   const totalBalance = Store.useSelector(
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
@@ -30,17 +32,51 @@ const OverviewPage = () => {
   const recentTransactions = Store.useSelector(
     Store.selectAllCoordinatesNewestToOldest
   );
+
+  const [deploymentType, setDeploymentType] = useState(
+    /** @type {'wizard'|'non-wizard'|'unknown'} */ "unknown"
+  );
+  const [
+    fetchingDeploymentType,
+    toggleFetchingDeploymentType
+  ] = Utils.useBooleanState(true);
   const introDismissed = Store.useSelector(
     ({ settings }) => settings.introDismissed
   );
-  const dismissIntro = useCallback(() => {
-    dispatch(
-      set({
-        key: "introDismissed",
-        value: true
+  const [introParagraphsIfError, setIntroParagraphsIfError] = useState(
+    /** @type {string[]} */ [
+      "There was an error fetching the deployment type of your ShockApi."
+    ]
+  );
+
+  useEffect(() => {
+    Utils.Http.get(`/healthz`)
+      .then(res => {
+        setDeploymentType(res.data.deploymentType);
       })
-    );
-  }, [dispatch]);
+      .catch(e => {
+        Utils.logger.error(`Error when fetching deployment type -> `, e);
+        setIntroParagraphsIfError([
+          "There was an error fetching the deployment type of your ShockApi:",
+          e.message
+        ]);
+      })
+      .finally(toggleFetchingDeploymentType);
+  }, [toggleFetchingDeploymentType]);
+
+  const dismissIntro = useCallback(() => {
+    if (deploymentType === "unknown") {
+      sessionStorage.setItem("introDismissed", "true");
+      forceUpdate(); // else the change to session storage won't be reflected
+    } else {
+      dispatch(
+        set({
+          key: "introDismissed",
+          value: true
+        })
+      );
+    }
+  }, [deploymentType, dispatch, forceUpdate]);
 
   useEffect(() => {
     fetchWalletBalance()(dispatch);
@@ -113,31 +149,45 @@ const OverviewPage = () => {
       <BottomBar />
 
       <Modal
-        modalOpen={!introDismissed && !!INTRO_PARAGRAPHS.length}
+        modalOpen={
+          !fetchingDeploymentType &&
+          !(introDismissed || sessionStorage.getItem("introDismissed"))
+        }
         modalTitle="Welcome"
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
       >
-        {PARAGRAPHS_NODE}
+        {(() => {
+          /** @type {string[]} */
+          let paragraphs = [];
+          if (deploymentType === "non-wizard") {
+            paragraphs = JSON.parse(
+              process.env.REACT_APP_INTRO_PARAGRAPHS || "[]"
+            );
+          }
+          if (deploymentType === "wizard") {
+            paragraphs = JSON.parse(
+              process.env.REACT_APP_INTRO_PARAGRAPHS_WIZARD || "[]"
+            );
+          }
+          if (deploymentType === "unknown") {
+            paragraphs = introParagraphsIfError;
+          }
+          return paragraphs.map((paragraph, i) => (
+            <React.Fragment key={paragraph + i}>
+              <p
+                className="intro-paragraph"
+                dangerouslySetInnerHTML={{ __html: paragraph }}
+              />
+
+              <br />
+            </React.Fragment>
+          ));
+        })()}
       </Modal>
     </div>
   );
 };
-
-/**
- * @type {Array<string> | null}
- */
-const INTRO_PARAGRAPHS = JSON.parse(
-  process.env.REACT_APP_INTRO_PARAGRAPHS || "[]"
-);
-
-const PARAGRAPHS_NODE = INTRO_PARAGRAPHS.map(p => (
-  <>
-    <p className="intro-paragraph" dangerouslySetInnerHTML={{ __html: p }}></p>
-
-    <br />
-  </>
-));
 
 /** @type {React.CSSProperties} */
 const INTRO_MODAL_STYLE = {
