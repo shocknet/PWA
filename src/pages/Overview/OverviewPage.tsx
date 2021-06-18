@@ -151,7 +151,12 @@ const OverviewPage = () => {
       <Modal
         modalOpen={
           !fetchingDeploymentType &&
-          !(introDismissed || sessionStorage.getItem("introDismissed"))
+          !(introDismissed || sessionStorage.getItem("introDismissed")) &&
+          // At least one gotta exist else why show the dialog
+          !!(
+            process.env.REACT_APP_INTRO_PARAGRAPHS ||
+            process.env.REACT_APP_INTRO_PARAGRAPHS_WIZARD
+          )
         }
         modalTitle="Welcome"
         toggleModal={dismissIntro}
