@@ -156,6 +156,7 @@ const OverviewPage = () => {
         modalTitle="Welcome"
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
+        disableBackdropClose
       >
         {(() => {
           /** @type {string[]} */
