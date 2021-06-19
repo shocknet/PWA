@@ -1,6 +1,4 @@
-// @ts-check
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DateTime } from "luxon";
@@ -22,7 +20,7 @@ import "./css/index.scoped.css";
 import * as Store from "../../store";
 
 const OverviewPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const totalBalance = Store.useSelector(
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
