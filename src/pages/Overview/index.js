@@ -9,6 +9,7 @@ import {
   fetchUnifiedTransactions,
   FetchLightningInfo
 } from "../../actions/WalletActions";
+import { subCoordinates } from "../../actions/CoordinateActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import { capitalizeText } from "../../utils/String";
 import BottomBar from "../../common/BottomBar";
@@ -36,6 +37,8 @@ const OverviewPage = () => {
     fetchUnifiedTransactions()(dispatch);
     FetchLightningInfo()(dispatch);
   }, [dispatch]);
+
+  useEffect(() => dispatch(subCoordinates()), [dispatch]);
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
