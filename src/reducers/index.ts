@@ -13,6 +13,7 @@ import EncryptionReducer from "./EncryptionReducer";
 import UserProfilesReducer from "./UserProfilesReducer";
 import OrdersReducer from "./OrdersReducer";
 import AppReducer from "./AppReducer";
+import CoordinatesReducer from "./CoordinatesReducer";
 
 const reducers = combineReducers({
   node: NodeReducer,
@@ -26,7 +27,8 @@ const reducers = combineReducers({
   feed: FeedReducer,
   userProfiles: UserProfilesReducer,
   orders: OrdersReducer,
-  app:AppReducer,
+  app: AppReducer,
+  coordinates: CoordinatesReducer,
   users: () => {
     return {} as Record<string, Common.User>;
   }
