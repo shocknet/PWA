@@ -1,5 +1,6 @@
 import React from "react";
 import { DateTime } from "luxon";
+import * as Common from "shock-common";
 
 export function useForceUpdate(): () => void {
   const [, setTick] = React.useState(0);
@@ -17,6 +18,8 @@ export const formatTimestamp = (timestamp: number): string => {
   if (timestamp === -1) {
     return "";
   }
-  const relativeTime = DateTime.fromMillis(timestamp).toRelative();
+  const relativeTime = DateTime.fromMillis(
+    Common.normalizeTimestampToMs(timestamp)
+  ).toRelative();
   return relativeTime === "in 0 seconds" ? "Just now" : relativeTime;
 };
