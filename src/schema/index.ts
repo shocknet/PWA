@@ -143,3 +143,7 @@ export const isPublicContentItem = (o: unknown): o is PublicContentItem => {
 };
 
 export type FeeRate = "hourFee" | "halfHourFee" | "fastestFee";
+
+export interface CoordinateWithHash extends Common.Coordinate {
+  coordinateSHA256: string;
+}
