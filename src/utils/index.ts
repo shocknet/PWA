@@ -6,6 +6,7 @@ import { Contact, ReceivedRequest, SentRequest } from "../schema";
 export * from "./Date";
 export { default as Http } from "./Http";
 export * from "./Error";
+export * from "./WebSocket";
 
 export const logger = {
   log: (...args: any[]) => console.log(...args),
