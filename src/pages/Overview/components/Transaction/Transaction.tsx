@@ -19,7 +19,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
   );
 
   const { username, message, publicKey } = Store.useSelector(state => {
-    const data = { username, message: "", publicKey: null };
+    const data = { username: "", message: "", publicKey: null };
 
     switch (coordinate.type) {
       case "chainTx":
