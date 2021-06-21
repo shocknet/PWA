@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { DateTime } from "luxon";
 
 import {
   fetchWalletBalance,
@@ -11,7 +10,6 @@ import {
 } from "../../actions/WalletActions";
 import { subCoordinates } from "../../actions/CoordinateActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
-import { capitalizeText } from "../../utils/String";
 import BottomBar from "../../common/BottomBar";
 import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
@@ -26,9 +24,7 @@ const OverviewPage = () => {
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
-  const recentTransactions = Store.useSelector(
-    ({ wallet }) => wallet.recentTransactions
-  );
+  const recentTransactions = Store.useSelector(Store.selectAllCoordinates);
 
   useEffect(() => {
     fetchWalletBalance()(dispatch);
@@ -90,23 +86,7 @@ const OverviewPage = () => {
         >
           <>
             {recentTransactions.map(transaction => (
-              <Transaction
-                time={
-                  transaction.date
-                    ? DateTime.fromSeconds(
-                        parseInt(transaction.date, 10)
-                      ).toRelative()
-                    : "unknown"
-                }
-                message={
-                  transaction.message ||
-                  `${capitalizeText(transaction.type)} Transaction`
-                }
-                username={capitalizeText(transaction.type)}
-                value={formatNumber(transaction.value)}
-                key={transaction.hash}
-                type={transaction.type}
-              />
+              <Transaction coordinateSHA256={transaction.coordinateSHA256} />
             ))}
           </>
         </PullToRefresh>
