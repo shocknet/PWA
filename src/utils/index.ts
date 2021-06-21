@@ -200,3 +200,19 @@ export const useBooleanState = (initialState: boolean) => {
 };
 
 export const parseJson = (o: string) => JSON.parse(o) as unknown;
+
+/**
+ * Returns null if the value provided is not a valid JSON string.
+ * @param o
+ */
+export const safeParseJson = (o: unknown): unknown => {
+  if (!Common.isPopulatedString(o)) {
+    return null;
+  }
+  try {
+    return JSON.parse(o);
+  } catch (e) {
+    logger.warn(`Error inside safeParseJson() -> `, e);
+    return null;
+  }
+};
