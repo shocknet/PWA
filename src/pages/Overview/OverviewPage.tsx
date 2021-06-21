@@ -86,7 +86,10 @@ const OverviewPage = () => {
         >
           <>
             {recentTransactions.map(transaction => (
-              <Transaction coordinateSHA256={transaction.coordinateSHA256} />
+              <Transaction
+                coordinateSHA256={transaction.coordinateSHA256}
+                key={transaction.coordinateSHA256}
+              />
             ))}
           </>
         </PullToRefresh>
