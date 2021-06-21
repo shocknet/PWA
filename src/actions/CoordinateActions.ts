@@ -17,7 +17,9 @@ export const subCoordinates = () => (dispatch: (action: any) => void) => {
   try {
     const subscription = Utils.rifle({
       query: `$user::coordinates::map.on`,
-      onData: (coordinate, coordinateSHA256) => {
+      onData: (unparsed, coordinateSHA256) => {
+        const coordinate = Utils.safeParseJson(unparsed);
+
         Utils.logger.debug(
           `Coordinate Subscription -> `,
           coordinateSHA256,
