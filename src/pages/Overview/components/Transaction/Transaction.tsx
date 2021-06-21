@@ -48,6 +48,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
         const user = Store.selectUser(publicKey)(state);
         data.publicKey = publicKey;
         data.username = user.displayName;
+        data.message = "tip";
         break;
       case "torrentSeed":
         break;
