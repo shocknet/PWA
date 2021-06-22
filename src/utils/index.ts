@@ -213,6 +213,7 @@ export const safeParseJson = (o: unknown): unknown => {
     return JSON.parse(o);
   } catch (e) {
     logger.warn(`Error inside safeParseJson() -> `, e);
+    logger.log(`Error inside safeParseJson(), string provided -> `, o);
     return null;
   }
 };
