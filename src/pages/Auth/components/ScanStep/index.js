@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
@@ -13,6 +13,7 @@ const ScanStep = () => {
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
   const [scan, setScan] = useState(false);
+  const [scanned, setScanned] = useState("");
 
   const openScanner = useCallback(()=>{
     setScan(true)
@@ -37,7 +38,21 @@ const ScanStep = () => {
     [dispatch]
   );
 
-  const onScan = useCallback(
+  const onScan = useCallback((data) => {
+    if (!data) {
+      return;
+    }
+    setScanned(data.text)
+  }, [setScanned])
+
+  useEffect(() => {
+    if(!scanned){
+      return
+    }
+    onScanCb(scanned)
+  },[scanned])
+
+  const onScanCb = useCallback(
     async data => {
       try {
         if (!data) {
@@ -46,7 +61,7 @@ const ScanStep = () => {
         setLoading(true);
         console.log("Scanned Code:", data);
         setError(null);
-        const { internalIP, externalIP, walletPort } = JSON.parse(data.text);
+        const { internalIP, externalIP, walletPort } = JSON.parse(data);
         const internalConnection = await connectHostIP(internalIP, walletPort);
 
         if (internalConnection) {
