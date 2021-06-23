@@ -21,6 +21,15 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
   const { username, message, publicKey } = Store.useSelector(state => {
     const data = { username: "", message: "", publicKey: null };
 
+    const publicKey = coordinate.inbound
+      ? coordinate.fromGunPub
+      : coordinate.toGunPub;
+
+    const user = Store.selectUser(publicKey)(state);
+
+    data.publicKey = publicKey;
+    data.username = user.displayName;
+
     switch (coordinate.type) {
       case "chainTx":
         data.username = "On-Chain";
@@ -42,12 +51,6 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
       case "streamSeed":
         break;
       case "tip":
-        const publicKey = coordinate.inbound
-          ? coordinate.fromGunPub
-          : coordinate.toGunPub;
-        const user = Store.selectUser(publicKey)(state);
-        data.publicKey = publicKey;
-        data.username = user.displayName;
         data.message = "Tipped";
         break;
       case "torrentSeed":
