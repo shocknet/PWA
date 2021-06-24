@@ -10,6 +10,15 @@ export const selectAllCoordinates = createSelector(
   }
 );
 
+export const selectAllCoordinatesNewestToOldest = createSelector(
+  selectAllCoordinates,
+  (coords): CoordinateWithHash[] => {
+    return coords.slice().sort((a, b) => {
+      return b.timestamp - a.timestamp;
+    });
+  }
+);
+
 export const selectSingleCoordinate = (coordinateSHA256: string) => (
   state: State
 ) => state.coordinates[coordinateSHA256];

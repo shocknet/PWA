@@ -24,7 +24,9 @@ const OverviewPage = () => {
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
-  const recentTransactions = Store.useSelector(Store.selectAllCoordinates);
+  const recentTransactions = Store.useSelector(
+    Store.selectAllCoordinatesNewestToOldest
+  );
 
   useEffect(() => {
     fetchWalletBalance()(dispatch);
