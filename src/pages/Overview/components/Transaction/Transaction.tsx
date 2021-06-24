@@ -5,6 +5,7 @@ import * as Utils from "../../../../utils";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import { subscribeUserProfile } from "../../../../actions/UserProfilesActions";
+import { subscribeUserPosts } from "../../../../actions/FeedActions";
 
 import "./css/index.scoped.css";
 
@@ -67,6 +68,17 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
   React.useEffect(() => {
     if (publicKey) {
       return dispatch(subscribeUserProfile(publicKey));
+    } else {
+      return Utils.EMPTY_FN;
+    }
+  }, [dispatch, publicKey]);
+
+  React.useEffect(() => {
+    if (publicKey) {
+      const subscription = dispatch(subscribeUserPosts(publicKey));
+      return () => {
+        subscription.then(sub => sub.off());
+      };
     } else {
       return Utils.EMPTY_FN;
     }
