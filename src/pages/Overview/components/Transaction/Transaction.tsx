@@ -91,6 +91,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
       case "service":
         break;
       case "spontaneousPayment":
+        data.message = coordinate.inbound ? "Sent you money" : "You sent money";
         break;
       case "streamSeed":
         break;
