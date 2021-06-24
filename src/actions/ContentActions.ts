@@ -137,7 +137,7 @@ export const unlockContent = (amt, owner, postID) => async dispatch => {
     feeLimit: 500,
     ackInfo: postID
   });
-  const revealRes = JSON.parse(data.orderAck.response);
+  const revealRes = data.orderAck.response;
   if (revealRes && revealRes.unlockedContents) {
     for (const contentID in revealRes.unlockedContents) {
       if (Object.hasOwnProperty.call(revealRes.unlockedContents, contentID)) {
