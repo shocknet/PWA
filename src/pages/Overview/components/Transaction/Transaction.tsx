@@ -96,7 +96,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
       case "streamSeed":
         break;
       case "tip":
-        data.message = "Tipped";
+        data.message = coordinate.inbound ? "You were tipped" : "You tipped";
         break;
       case "torrentSeed":
         break;
