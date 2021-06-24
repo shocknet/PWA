@@ -1,7 +1,9 @@
 import React from "react";
+import * as Common from "shock-common";
 
 import * as Store from "../../../../store";
 import * as Utils from "../../../../utils";
+import * as Schema from "../../../../schema";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import { subscribeUserProfile } from "../../../../actions/UserProfilesActions";
@@ -36,6 +38,47 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
         data.username = "On-Chain";
         break;
       case "contentReveal":
+        data.message = `Bought Post`;
+
+        if (coordinate.metadata) {
+          const metadata = Utils.safeParseJson(coordinate.metadata);
+          if (metadata) {
+            const author = coordinate.toGunPub;
+
+            const postID = (() => {
+              if (coordinate.inbound) {
+                return (metadata as Schema.ContentRevealCoordinateMetadataInbound)
+                  .ackInfo;
+              }
+
+              const {
+                response
+              } = metadata as Schema.ContentRevealCoordinateMetadataOutbound;
+
+              return response && response.ackInfo;
+            })();
+
+            // Cast: only can purchase normal posts not shared posts.
+            const post = Store.selectSinglePost(
+              author,
+              postID
+            )(state) as Schema.Post;
+
+            if (post) {
+              const paragraphs = Object.values(post.contentItems).filter(
+                ci => ci.type === "text/paragraph"
+              ) as Common.Paragraph[];
+              const text = paragraphs.map(p => p.text).join(" ");
+              // Poor man's ellipsis
+              if (text.length >= 18) {
+                data.message = `Bought "${text.slice(0, 18)}..."`;
+              } else {
+                // Looks good on iPhone 5
+                data.message = `Bought "${text}"`;
+              }
+            }
+          }
+        }
         break;
       case "invoice":
         break;
