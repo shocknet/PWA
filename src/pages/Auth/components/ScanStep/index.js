@@ -129,8 +129,10 @@ const ScanStep = () => {
               href="https://github.com/shocknet/Wizard"
               className="w-50 m-auto"
               style={{ marginBottom: "1rem" }}
+              rel="noreferrer"
             >
               <img
+                alt="Laptop running Shockwizard and phone running Shockwallet"
                 className="w-100"
                 src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900tr.png"
               ></img>
@@ -142,6 +144,7 @@ const ScanStep = () => {
                 target="_blank"
                 href="https://github.com/shocknet/Wizard"
                 className="color-text-blue"
+                rel="noreferrer"
               >
                 Here
               </a>
