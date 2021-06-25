@@ -81,24 +81,41 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
         }
         break;
       case "invoice":
+        if (coordinate.inbound) {
+          data.message = "Sent you money";
+        } else {
+          Utils.logger.warn(`Outbound invoice??`);
+          data.message = "You sent money";
+        }
         break;
       case "other":
+        data.message = "Other";
         break;
       case "payment":
+        if (coordinate.inbound) {
+          Utils.logger.warn(`Inbound payment??`);
+          data.message = "Payment Received";
+        } else {
+          data.message = "Payment Sent";
+        }
         break;
       case "product":
+        data.message = "Product";
         break;
       case "service":
+        data.message = "Service";
         break;
       case "spontaneousPayment":
-        data.message = coordinate.inbound ? "Sent you money" : "You sent money";
+        data.message = coordinate.inbound ? "Payment Received" : "Payment Sent";
         break;
       case "streamSeed":
+        data.message = "Seed Service";
         break;
       case "tip":
-        data.message = coordinate.inbound ? "You were tipped" : "You tipped";
+        data.message = coordinate.inbound ? "You were Tipped" : "You Tipped";
         break;
       case "torrentSeed":
+        data.message = "Seed Service";
         break;
 
       default:
