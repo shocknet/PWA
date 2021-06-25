@@ -20,6 +20,7 @@
     "listpeers",
     "luxon",
     "newaddress",
+    "noreferrer",
     "openchannel",
     "otheruser",
     "pendingchannels",
