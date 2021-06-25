@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
-import { connectSocket } from "../../../../utils/WebSocket";
 import QRCodeScanner from "../../../../common/QRCodeScanner";
 import Loader from "../../../../common/Loader";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
