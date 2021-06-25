@@ -6,23 +6,23 @@ import { connectSocket } from "../../../../utils/WebSocket";
 import QRCodeScanner from "../../../../common/QRCodeScanner";
 import Loader from "../../../../common/Loader";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
-import {ParseNodeIP} from '../../../../utils/relay'
+import { ParseNodeIP } from "../../../../utils/relay";
 
 const ScanStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = useState();
+  const [error, setError] = React.useState();
   const [loading, setLoading] = useState(false);
   const [scan, setScan] = useState(false);
   const [scanned, setScanned] = useState("");
 
-  const openScanner = useCallback(()=>{
-    setScan(true)
-  },[setScan])
+  const openScanner = useCallback(() => {
+    setScan(true);
+  }, [setScan]);
 
   const connectHostIP = useCallback(
     async (hostIdentifier, walletPort) => {
       try {
-        const [hostIP,relayId] = ParseNodeIP(hostIdentifier)
+        const [hostIP, relayId] = ParseNodeIP(hostIdentifier);
         console.log("connectHostIP:", hostIP);
         const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
         const { withProtocolHostIP } = await connectHost(
@@ -38,19 +38,22 @@ const ScanStep = () => {
     [dispatch]
   );
 
-  const onScan = useCallback((data) => {
-    if (!data) {
-      return;
-    }
-    setScanned(data.text)
-  }, [setScanned])
+  const onScan = useCallback(
+    data => {
+      if (!data) {
+        return;
+      }
+      setScanned(data.text);
+    },
+    [setScanned]
+  );
 
   useEffect(() => {
-    if(!scanned){
-      return
+    if (!scanned) {
+      return;
     }
-    onScanCb(scanned)
-  },[scanned])
+    onScanCb(scanned);
+  }, [scanned]);
 
   const onScanCb = useCallback(
     async data => {
@@ -108,30 +111,61 @@ const ScanStep = () => {
   return (
     <div className="auth-form-container">
       {loading ? <Loader fullScreen overlay text="Loading Host..." /> : null}
-      {scan && <QRCodeScanner
-        mode="wizard"
-        onScan={onScan}
-        onError={onError}
-        onClose={closeScanner}
-      />}
-      {!scan && <div className="vertical-flex-center">
-        <div className="m-b-1 vertical-flex-center">
-          <h2 className="m-auto" style={{marginBottom:"1rem"}}>Connect to ShockWizard</h2>
-          
-          <a target="_blank" href="https://github.com/shocknet/Wizard" className="w-50 m-auto" style={{marginBottom:"1rem"}}>
-            <img className="w-100" src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900tr.png"></img>
-          </a>
-          <p className="text-center m-b-5">ShockWizard is an easy to install Lightning node for your Desktop or Laptop.  Windows, MacOS and Desktop Linux users can download it  <a target="_blank" href="https://github.com/shocknet/Wizard" className="color-text-blue">Here</a></p>
-          <p className="text-center ">At the end of the Wizard, scan the QR code to pair it with your mobile device.</p>
+      {scan && (
+        <QRCodeScanner
+          mode="wizard"
+          onScan={onScan}
+          onError={onError}
+          onClose={closeScanner}
+        />
+      )}
+      {!scan && (
+        <div className="vertical-flex-center">
+          <div className="m-b-1 vertical-flex-center">
+            <h2 className="m-auto" style={{ marginBottom: "1rem" }}>
+              Connect to ShockWizard
+            </h2>
+
+            <a
+              target="_blank"
+              href="https://github.com/shocknet/Wizard"
+              className="w-50 m-auto"
+              style={{ marginBottom: "1rem" }}
+            >
+              <img
+                className="w-100"
+                src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900tr.png"
+              ></img>
+            </a>
+            <p className="text-center m-b-5">
+              ShockWizard is an easy to install Lightning node for your Desktop
+              or Laptop. Windows, MacOS and Desktop Linux users can download it{" "}
+              <a
+                target="_blank"
+                href="https://github.com/shocknet/Wizard"
+                className="color-text-blue"
+              >
+                Here
+              </a>
+            </p>
+            <p className="text-center ">
+              At the end of the Wizard, scan the QR code to pair it with your
+              mobile device.
+            </p>
+          </div>
         </div>
-      </div>}
-      <div style={{height:"15vh"}}></div>
-      {!scan && <button className="submit-btn" onClick={openScanner}>
-        Scan QR
-      </button>}
-      {!scan && <p className="inline-link" onClick={chooseAnotherMethod}>
-        Choose another method
-      </p>}
+      )}
+      <div style={{ height: "15vh" }}></div>
+      {!scan && (
+        <button className="submit-btn" onClick={openScanner}>
+          Scan QR
+        </button>
+      )}
+      {!scan && (
+        <p className="inline-link" onClick={chooseAnotherMethod}>
+          Choose another method
+        </p>
+      )}
     </div>
   );
 };
