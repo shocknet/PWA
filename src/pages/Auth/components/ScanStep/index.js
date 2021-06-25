@@ -46,13 +46,6 @@ const ScanStep = () => {
     [setScanned]
   );
 
-  useEffect(() => {
-    if (!scanned) {
-      return;
-    }
-    onScanCb(scanned);
-  }, [scanned]);
-
   const onScanCb = useCallback(
     async data => {
       try {
@@ -88,6 +81,13 @@ const ScanStep = () => {
     },
     [connectHostIP]
   );
+
+  useEffect(() => {
+    if (!scanned) {
+      return;
+    }
+    onScanCb(scanned);
+  }, [onScanCb, scanned]);
 
   const onError = useCallback(error => {
     console.error(error);
