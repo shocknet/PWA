@@ -120,7 +120,7 @@ const ScanStep = () => {
       {!scan && (
         <div className="vertical-flex-center">
           <div className="m-b-1 vertical-flex-center">
-            <h2 className="m-auto" style={{ marginBottom: "1rem" }}>
+            <h2 className="m-auto text-center" style={{ marginBottom: "1rem" }}>
               Connect to ShockWizard
             </h2>
 
