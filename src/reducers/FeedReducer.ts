@@ -1,39 +1,27 @@
-// @ts-check
-/**
- * @typedef {import('shock-common').Follow} Follow
- */
+import * as Common from "shock-common";
 
+import * as Schema from "../schema";
 import { ACTIONS } from "../actions/FeedActions";
 import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
-/**
- * @typedef {import('../schema').Post} Post
- * @typedef {import('../schema').SharedPost} SharedPost
- */
 
 const INITIAL_STATE = {
-  follows: /** @type {Follow[]} */ ([
+  follows: [
     {
       user:
         "tcUUzRkyzXYhIZQbmopiCLREyZ_kQJqQ-C4XesecOm4.GX1Dv-eGcfKuOPobBK9Q-Sc-o697XgVCQzOCfqfimIo",
       status: "ok",
       private: false
     }
-  ]),
+  ] as Common.Follow[],
   /**
    * Maps public key to posts/shared posts.
    */
-  posts: /** @type {Record<string, Array<Post|SharedPost>>} */ ({}),
+  posts: {} as Record<string, Array<Schema.Post | Schema.SharedPost>>,
   reloadDone: false
 };
 
-/**
- * @returns {typeof INITIAL_STATE}
- */
-const feed = (state = INITIAL_STATE, action) => {
+const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
   switch (action.type) {
-    case ACTIONS.RESET_FOLLOWS: {
-      return INITIAL_STATE;
-    }
     case ACTIONS.ADD_FOLLOW: {
       const { data } = action;
       const existingFollow = state.follows.find(
