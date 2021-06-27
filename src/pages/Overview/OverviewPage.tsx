@@ -1,9 +1,6 @@
-// @ts-check
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { DateTime } from "luxon";
 
 import {
   fetchWalletBalance,
@@ -11,8 +8,8 @@ import {
   fetchUnifiedTransactions,
   FetchLightningInfo
 } from "../../actions/WalletActions";
+import { subCoordinates } from "../../actions/CoordinateActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
-import { capitalizeText } from "../../utils/String";
 import BottomBar from "../../common/BottomBar";
 import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
@@ -22,13 +19,13 @@ import "./css/index.scoped.css";
 import * as Store from "../../store";
 
 const OverviewPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const totalBalance = Store.useSelector(
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const recentTransactions = Store.useSelector(
-    ({ wallet }) => wallet.recentTransactions
+    Store.selectAllCoordinatesNewestToOldest
   );
 
   useEffect(() => {
@@ -38,6 +35,8 @@ const OverviewPage = () => {
     fetchUnifiedTransactions()(dispatch);
     FetchLightningInfo()(dispatch);
   }, [dispatch]);
+
+  useEffect(() => dispatch(subCoordinates()), [dispatch]);
 
   const totalBalanceUSD = useMemo(
     () => formatNumber(convertSatsToUSD(totalBalance, USDRate).toFixed(2)),
@@ -90,21 +89,8 @@ const OverviewPage = () => {
           <>
             {recentTransactions.map(transaction => (
               <Transaction
-                time={
-                  transaction.date
-                    ? DateTime.fromSeconds(
-                        parseInt(transaction.date, 10)
-                      ).toRelative()
-                    : "unknown"
-                }
-                message={
-                  transaction.message ||
-                  `${capitalizeText(transaction.type)} Transaction`
-                }
-                username={capitalizeText(transaction.type)}
-                value={formatNumber(transaction.value)}
-                key={transaction.hash}
-                type={transaction.type}
+                coordinateSHA256={transaction.coordinateSHA256}
+                key={transaction.coordinateSHA256}
               />
             ))}
           </>

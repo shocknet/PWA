@@ -29,3 +29,4 @@ export * from "./users";
 export * from "./follows";
 export * from "./publishedContent";
 export * from "./feed";
+export * from "./coordinates";

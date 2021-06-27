@@ -143,3 +143,29 @@ export const isPublicContentItem = (o: unknown): o is PublicContentItem => {
 };
 
 export type FeeRate = "hourFee" | "halfHourFee" | "fastestFee";
+
+export interface CoordinateWithHash extends Common.Coordinate {
+  coordinateSHA256: string;
+}
+
+export interface ContentRevealCoordinateMetadataInbound {
+  /**
+   * The post ID.
+   */
+  ackInfo: string;
+  /**
+   * Content ID to magnet URI.
+   */
+  unlockedContents: Record<string, string>;
+}
+
+export interface ContentRevealCoordinateMetadataOutbound {
+  /**
+   * Same as ContentRevealCoordinateMetadataInbound.
+   */
+  response: ContentRevealCoordinateMetadataInbound;
+  /**
+   * Order type.
+   */
+  type: "orderAck";
+}
