@@ -1,6 +1,8 @@
-// @ts-check
-import { GUN_PROPS } from "../utils/Gun";
+import * as Common from "shock-common";
+
+import * as Schema from "../schema";
 import Http from "../utils/Http";
+import { GUN_PROPS } from "../utils/Gun";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
 
 import { subscribeUserProfile } from "./UserProfilesActions";
@@ -151,10 +153,8 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
               `invalid shared post provided for user ${publicKey}`
             );
           }
-          /** @type {import('shock-common').SharedPostRaw} */
-          const post = res.data.data;
+          const post = res.data.data as Common.SharedPostRaw;
 
-          /** @type {import('../schema').SharedPost} */
           const processedPost = {
             authorId: publicKey,
             id,
@@ -163,7 +163,7 @@ export const subscribeSharedUserPosts = publicKey => async dispatch => {
             sharerId: publicKey,
             originalPost: undefined,
             type: "shared"
-          };
+          } as Schema.SharedPost;
           dispatch({
             type: ACTIONS.ADD_USER_POST,
             data: processedPost
