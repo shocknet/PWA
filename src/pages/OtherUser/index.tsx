@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import QRCode from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
@@ -47,7 +47,7 @@ const AVATAR_SIZE = 122;
 
 const OtherUserPage = () => {
   //#region controller
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
