@@ -277,7 +277,7 @@ const ProfilePage = () => {
       if (!deletePostModalData || !deletePostModalData.id) {
         return;
       }
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log("deleting:");
       console.log(deletePostModalData);
       const key = deletePostModalData.shared ? "sharedPosts" : "posts";
@@ -292,14 +292,20 @@ const ProfilePage = () => {
         })
       );
       toggleDeleteModal(null);
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
     } catch (e) {
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log(`Error when deleting post:`);
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
     }
-  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal,setDeletePostModalLoading]);
+  }, [
+    deletePostModalData,
+    dispatch,
+    publicKey,
+    toggleDeleteModal,
+    setDeletePostModalLoading
+  ]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -338,7 +344,10 @@ const ProfilePage = () => {
           [streamContentId, streamItem] = item;
         }
         if (streamItem) {
-          if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
+          if (
+            streamItem.liveStatus === "wasLive" &&
+            streamItem.playbackMagnet
+          ) {
             post.originalPost.contentItems[streamContentId].type =
               "video/embedded";
             //@ts-expect-error
@@ -762,20 +771,22 @@ const ProfilePage = () => {
           >
             <div>You sure delete</div>
             {deletePostModalLoading && <Loader />}
-            {!deletePostModalLoading && <div className="flex-center" style={{ marginTop: "auto" }}>
-              <button
-                onClick={closeDeleteModal}
-                className="shock-form-button m-1"
-              >
-                CANCEL
-              </button>
-              <button
-                onClick={deletePost}
-                className="shock-form-button-confirm m-1"
-              >
-                DELETE
-              </button>
-            </div>}
+            {!deletePostModalLoading && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={closeDeleteModal}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={deletePost}
+                  className="shock-form-button-confirm m-1"
+                >
+                  DELETE
+                </button>
+              </div>
+            )}
           </Modal>
           <AddBtn
             onClick={toggleModal}
