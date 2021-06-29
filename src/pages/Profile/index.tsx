@@ -72,7 +72,7 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => {
+      const myP = posts[publicKey].slice().sort((a, b) => {
         const alpha = isSharedPost(a) ? a.shareDate : a.date;
         const beta = isSharedPost(b) ? b.shareDate : b.date;
 
@@ -157,7 +157,12 @@ const ProfilePage = () => {
     });
 
     return rifleCleanup(socket);
-  }, [hostIP, publicKey /* handles alias/hostIP switch */]);
+  }, [
+    currWebClientPrefix,
+    dispatch,
+    hostIP,
+    publicKey /* handles alias/hostIP switch */
+  ]);
 
   useEffect(() => {
     const unsubscribe = subscribeClientPrefix();
@@ -194,7 +199,7 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  }, [newWebClientPrefix, currWebClientPrefix, toggleConfigModal, dispatch]);
   //#endregion configModal -------------------------------------------------- //
   //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
@@ -277,7 +282,7 @@ const ProfilePage = () => {
       if (!deletePostModalData || !deletePostModalData.id) {
         return;
       }
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log("deleting:");
       console.log(deletePostModalData);
       const key = deletePostModalData.shared ? "sharedPosts" : "posts";
@@ -292,14 +297,20 @@ const ProfilePage = () => {
         })
       );
       toggleDeleteModal(null);
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
     } catch (e) {
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log(`Error when deleting post:`);
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
     }
-  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal,setDeletePostModalLoading]);
+  }, [
+    deletePostModalData,
+    dispatch,
+    publicKey,
+    toggleDeleteModal,
+    setDeletePostModalLoading
+  ]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -320,7 +331,7 @@ const ProfilePage = () => {
     } catch (e) {
       alert(`Could not copy to clipboard: ${e.message}`);
     }
-  }, [publicKey]);
+  }, [currWebClientPrefix, publicKey]);
 
   const AVATAR_SIZE = 122;
 
@@ -338,7 +349,10 @@ const ProfilePage = () => {
           [streamContentId, streamItem] = item;
         }
         if (streamItem) {
-          if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
+          if (
+            streamItem.liveStatus === "wasLive" &&
+            streamItem.playbackMagnet
+          ) {
             post.originalPost.contentItems[streamContentId].type =
               "video/embedded";
             //@ts-expect-error
@@ -762,20 +776,22 @@ const ProfilePage = () => {
           >
             <div>You sure delete</div>
             {deletePostModalLoading && <Loader />}
-            {!deletePostModalLoading && <div className="flex-center" style={{ marginTop: "auto" }}>
-              <button
-                onClick={closeDeleteModal}
-                className="shock-form-button m-1"
-              >
-                CANCEL
-              </button>
-              <button
-                onClick={deletePost}
-                className="shock-form-button-confirm m-1"
-              >
-                DELETE
-              </button>
-            </div>}
+            {!deletePostModalLoading && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={closeDeleteModal}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={deletePost}
+                  className="shock-form-button-confirm m-1"
+                >
+                  DELETE
+                </button>
+              </div>
+            )}
           </Modal>
           <AddBtn
             onClick={toggleModal}
