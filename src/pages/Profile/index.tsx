@@ -72,7 +72,7 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
   const myPosts = useMemo(() => {
     if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => {
+      const myP = posts[publicKey].slice().sort((a, b) => {
         const alpha = isSharedPost(a) ? a.shareDate : a.date;
         const beta = isSharedPost(b) ? b.shareDate : b.date;
 
