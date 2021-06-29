@@ -157,7 +157,12 @@ const ProfilePage = () => {
     });
 
     return rifleCleanup(socket);
-  }, [hostIP, publicKey /* handles alias/hostIP switch */]);
+  }, [
+    currWebClientPrefix,
+    dispatch,
+    hostIP,
+    publicKey /* handles alias/hostIP switch */
+  ]);
 
   useEffect(() => {
     const unsubscribe = subscribeClientPrefix();
@@ -194,7 +199,7 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  }, [newWebClientPrefix, currWebClientPrefix, toggleConfigModal, dispatch]);
   //#endregion configModal -------------------------------------------------- //
   //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
@@ -326,7 +331,7 @@ const ProfilePage = () => {
     } catch (e) {
       alert(`Could not copy to clipboard: ${e.message}`);
     }
-  }, [publicKey]);
+  }, [currWebClientPrefix, publicKey]);
 
   const AVATAR_SIZE = 122;
 
