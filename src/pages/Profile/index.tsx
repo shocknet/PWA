@@ -419,8 +419,8 @@ const ProfilePage = () => {
               profile?.displayName
             )}
             publicKey={post.authorId}
-            openTipModal={() => {}}
-            openUnlockModal={() => {}}
+            openTipModal={Utils.EMPTY_FN}
+            openUnlockModal={Utils.EMPTY_FN}
             //@ts-expect-error
             tipCounter={post.tipCounter || 0}
             //@ts-expect-error
