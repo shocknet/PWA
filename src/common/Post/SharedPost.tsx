@@ -1,18 +1,15 @@
-// @ts-check
 import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
 
 import Post from ".";
 
-import "../Post/css/index.scoped.css";
+import * as Schema from "../../schema";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
-/**
- * @typedef {import('../../schema').Post} Post
- */
+import "../Post/css/index.scoped.css";
 
 const SharedPost = ({
   sharerProfile,
@@ -23,10 +20,9 @@ const SharedPost = ({
   openTipModal,
   openUnlockModal,
   openDeleteModal = undefined,
-  openShareModal = _ => {}
+  openShareModal = () => {}
 }) => {
-  /** @type {Post|undefined} */
-  const originalPost = origPost;
+  const originalPost = origPost as Schema.Post | undefined;
   const loadPostMedia = useCallback(async () => {
     if (originalPost) {
       attachMedia([originalPost], false);
@@ -68,10 +64,8 @@ const SharedPost = ({
           <Post
             id={originalPost.id}
             timestamp={originalPost.date}
-            // @ts-expect-error tipCounter not wired right now I think
-            tipCounter={originalPost.tipCounter || 0}
-            // @ts-expect-error tipValue ??
-            tipValue={originalPost.tipValue || 0}
+            tipCounter={0}
+            tipValue={0}
             publicKey={postPublicKey}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}
