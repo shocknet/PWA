@@ -169,3 +169,15 @@ export interface ContentRevealCoordinateMetadataOutbound {
    */
   type: "orderAck";
 }
+
+const createValidator = <T extends Record<string, unknown>>(
+  valMap: Record<keyof T, (val: any) => void>
+) => (o: unknown): o is T => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+
+  return Object.entries(valMap).every(([key, validator]) => {
+    return validator(o[key]);
+  });
+};
