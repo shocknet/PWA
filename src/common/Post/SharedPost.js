@@ -2,14 +2,12 @@
 import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
-import * as Common from "shock-common";
 
 import Post from ".";
 
 import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
-import * as Store from "../../store";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
 /**
@@ -42,12 +40,6 @@ const SharedPost = ({
     Tooltip.rebuild();
     loadPostMedia();
   }, [loadPostMedia]);
-
-  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
-  const isOwn = sharerProfile.publicKey === selfPublicKey;
-  const isAppOnline = Common.isAppOnline(
-    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenApp
-  );
 
   return (
     <div className="post shared-post">
