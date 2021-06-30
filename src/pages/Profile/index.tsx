@@ -378,8 +378,8 @@ const ProfilePage = () => {
               sharedTimestamp={post.shareDate}
               sharerProfile={sharerProfile}
               postPublicKey={originalPublicKey}
-              openTipModal={() => {}}
-              openUnlockModal={() => {}}
+              openTipModal={Utils.EMPTY_FN}
+              openUnlockModal={Utils.EMPTY_FN}
               openDeleteModal={toggleDeleteModal}
               openShareModal={null}
             />
