@@ -242,14 +242,13 @@ export const removeStreamToken = (seedUrl, userToken) => dispatch => {
 const OWN_PUBLISHED_CONTENT_QUERY = "$user::publishedContent::map.on";
 
 export const subOwnPublishedContent = () => async (
-  dispatch: (action: any) => void,
-  getState: () => { node: { publicKey: string } }
+  dispatch: (action: any) => void
 ) => {
   console.debug(`Subscribing to own published content`);
   const subscription = await rifle({
     query: OWN_PUBLISHED_CONTENT_QUERY,
     reconnect: true,
-    publicKey: getState().node.publicKey,
+    publicKey: "me",
     onData: async (content: string, key) => {
       try {
         console.debug(`Received own content:`);
