@@ -59,12 +59,12 @@ const Post = ({
     );
     let status = "";
     if (videoContent) {
-      status = "Was Live"
+      status = "Was Live";
     }
     if (streamContent) {
-      status = "Is Live"
-      if(streamContent.viewersCounter){
-        setViewersCounter(streamContent.viewersCounter)
+      status = "Is Live";
+      if (streamContent.viewersCounter) {
+        setViewersCounter(streamContent.viewersCounter);
       }
     }
     if (status) {
@@ -278,7 +278,9 @@ const Post = ({
                       liveStatus === "Is Live" ? "liveIcon" : ""
                     }`}
                   ></i>  
-                  {liveStatus === 'Is Live' &&  <span> | {viewersCounter} watching</span>}
+                  {liveStatus === "Is Live" && (
+                    <span> | {viewersCounter} watching</span>
+                  )}
                 </p>
               )}
             </div>
