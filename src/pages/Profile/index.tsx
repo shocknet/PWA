@@ -95,7 +95,10 @@ const ProfilePage = () => {
       subscribeSharedUserPosts(publicKey)
     );
 
-    return rifleCleanup(postSubscription, sharedPostSubscription);
+    return () => {
+      postSubscription();
+      rifleCleanup(sharedPostSubscription)();
+    };
   }, [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {

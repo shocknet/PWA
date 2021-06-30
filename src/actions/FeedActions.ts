@@ -1,6 +1,8 @@
 import * as Common from "shock-common";
+import { createAction } from "@reduxjs/toolkit";
 
 import * as Schema from "../schema";
+import * as Utils from "../utils";
 import Http from "../utils/Http";
 import { GUN_PROPS } from "../utils/Gun";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
@@ -58,73 +60,162 @@ export const loadSharedPost = (
   });
 };
 
-const USER_POSTS_QUERY_SUFFIX = `::posts::on`;
+export const postDeleted = createAction<{
+  author: string;
+  id: string;
+}>("feed/postDeleted");
 
-export const subscribeUserPosts = publicKey => async dispatch => {
-  console.info("subbing to posts from:" + publicKey);
-  const subscription = await rifle({
-    query: publicKey + USER_POSTS_QUERY_SUFFIX,
-    onData: posts => {
-      console.debug(`posts from: ${publicKey}: `, posts);
-      const postEntries = Object.entries(posts);
-      const newPosts = postEntries
-        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
-      const deletedPosts = postEntries
-        .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
+export const postReceived = createAction<{
+  author: string;
+  id: string;
+  post: Schema.PostRaw;
+}>("feed/postReceived");
 
-      newPosts.forEach(async function fetchAndDispatchPost(id) {
-        try {
-          const { data: post } = await Http.get(
-            `/api/gun/otheruser/${publicKey}/load/posts>${id}`
+export const subscribeUserPosts = (publicKey: string) => (
+  dispatch: (action: any) => void
+): (() => void) => {
+  try {
+    Utils.logger.debug(`Subbing to posts from ...${publicKey.slice(-8)}`);
+
+    const subscription = rifle({
+      query: `${publicKey}::posts::map.on`,
+      onError(e) {
+        Utils.logger.error(
+          `Error inside posts subscription for ...${publicKey.slice(-8)} -> `,
+          e
+        );
+        alert(
+          `Error inside posts subscription for ...${publicKey.slice(-8)}: ${
+            e.message
+          }`
+        );
+      },
+      onData: (post: unknown, postID: string) => {
+        Utils.logger.debug(
+          `Post with id ${postID} from ...${publicKey.slice(-8)} `,
+          post
+        );
+
+        if (Schema.isPostRaw(post)) {
+          dispatch(
+            postReceived({
+              author: publicKey,
+              id: postID,
+              post
+            })
           );
-          console.info(`processing post: ${id} from ${publicKey}`);
-          const tipSet = post.data.tipsSet
-            ? Object.values(post.data.tipsSet)
-            : [];
-          const lenSet = tipSet.length;
-          const tot =
-            lenSet > 0
-              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
-              : 0;
-          dispatch({
-            type: ACTIONS.ADD_USER_POST,
-            data: {
-              ...post.data,
-              id,
-              authorId: publicKey,
-              type: "post",
-              tipCounter: lenSet,
-              tipValue: tot
-            }
-          });
-        } catch (e) {
-          console.error(
-            `When subscribed to posts from public key --| ${publicKey} |-- and trying to download the post with id: --| ${id} |-- an error ocurred:`,
-            e
+        } else if (post === null) {
+          dispatch(
+            postDeleted({
+              author: publicKey,
+              id: postID
+            })
+          );
+        } else {
+          Utils.logger.error(
+            `In posts subscription for user ...${publicKey.slice(
+              -8
+            )}, invalid data -> `,
+            post
           );
         }
-      });
+      }
+    });
 
-      deletedPosts.forEach(id =>
-        dispatch({
-          type: ACTIONS.DELETE_USER_POST,
-          data: {
-            id,
-            authorId: publicKey,
-            type: "post"
-          }
-        })
-      );
-    }
-  });
-  return subscription;
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  } catch (e) {
+    Utils.logger.error(
+      `Could not sub to posts for ...${publicKey.slice(-8)} -> `,
+      e
+    );
+    alert(`Could not sub to posts for ...${publicKey.slice(-8)}: ${e.message}`);
+
+    return () => {};
+  }
 };
 
-export const unsubUserPosts = publicKey => async () => {
-  console.info("unsubbing to posts from:" + publicKey);
-  unsubscribeRifleByQuery(publicKey + USER_POSTS_QUERY_SUFFIX);
+export const contentItemReceived = createAction<{
+  author: string;
+  contentItem: Common.ContentItem;
+  id: string;
+  postID: string;
+}>("feed/contentItemReceived");
+
+export const subPostContent = (author: string, postID: string) => (
+  dispatch: (action: any) => void
+): (() => void) => {
+  try {
+    Utils.logger.debug(
+      `Subbing to post content from ...${author.slice(-8)} for post ${postID}`
+    );
+
+    const subscription = rifle({
+      query: `${author}::posts>${postID}>contentItems::map.on`,
+      onData(contentItem: unknown, id: string) {
+        Utils.logger.debug(
+          `Post content subscription from ..${author.slice(
+            -8
+          )} for post ${postID} -> `,
+          contentItem
+        );
+
+        // CAST: unfortunate isContentItem typings
+        if (Common.isContentItem(contentItem)) {
+          dispatch(
+            contentItemReceived({
+              author,
+              contentItem,
+              id,
+              postID
+            })
+          );
+        } else {
+          Utils.logger.error(
+            `Invalid content item in post content subscription from ..${author.slice(
+              -8
+            )} for post ${postID} -> `,
+            contentItem
+          );
+        }
+      },
+      onError(e) {
+        Utils.logger.error(
+          `Error inside post content subscription from ...${author.slice(
+            -8
+          )} for post ${postID} -> `,
+          e
+        );
+        alert(
+          `Error inside post content subscription from ...${author.slice(
+            -8
+          )} for post ${postID}: ${e.message}`
+        );
+      }
+    });
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  } catch (e) {
+    Utils.logger.error(
+      `Could not sub to post content from ...${author.slice(
+        -8
+      )} for post ${postID} -> `,
+      e
+    );
+    alert(
+      `Could not sub to posts from ...${author.slice(-8)} for post ${postID}: ${
+        e.message
+      }`
+    );
+
+    return () => {};
+  }
 };
 
 const USER_SHARED_POSTS_QUERY_SUFFIX = `::sharedPosts::on`;

@@ -136,10 +136,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
 
   React.useEffect(() => {
     if (publicKey) {
-      const subscription = dispatch(subscribeUserPosts(publicKey));
-      return () => {
-        subscription.then(sub => sub.off());
-      };
+      return dispatch(subscribeUserPosts(publicKey));
     } else {
       return Utils.EMPTY_FN;
     }

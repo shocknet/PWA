@@ -132,7 +132,8 @@ const FeedPage = () => {
       return () => {
         // @ts-ignore
         profileSubscription();
-        rifleCleanup(postsSubscription, sharedPostsSubscription)();
+        postsSubscription();
+        rifleCleanup(sharedPostsSubscription)();
       };
     });
 
