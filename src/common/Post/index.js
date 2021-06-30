@@ -285,7 +285,7 @@ const Post = ({
                     className={`fas fa-circle liveStatusIcon ${
                       liveStatus === "Is Live" ? "liveIcon" : ""
                     }`}
-                  ></i>  
+                  ></i>
                   {liveStatus === "Is Live" && (
                     <span> | {viewersCounter} watching</span>
                   )}
