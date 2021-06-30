@@ -4,15 +4,10 @@ import QRCode from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
 
-import { GUN_PROPS } from "../../utils/Gun";
 import Http from "../../utils/Http";
 import { processDisplayName } from "../../utils/String";
 
-import {
-  subscribeUserProfile,
-  unsubscribeUserProfile
-} from "../../actions/UserProfilesActions";
-import { rifle, rifleCleanup } from "../../utils/WebSocket";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -37,7 +32,8 @@ import FollowBtn from "./components/FollowBtn";
 import SendReqBtn from "./components/SendReqBtn";
 import {
   subscribeFollows,
-  unsubscribeFollows
+  unsubscribeFollows,
+  subscribeUserPosts as subPosts
 } from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -58,9 +54,6 @@ const OtherUserPage = () => {
     selectedView: "posts" | "services" | "content";
   }>();
   const user = Store.useSelector(Store.selectUser(userPublicKey));
-  const [userPosts, setUserPosts] = useState([]);
-  const [userSharedPosts, setUserSharedPosts] = useState([]);
-  const [finalPosts, setFinalPosts] = useState([]);
   const [userServices, setUserServices] = useState({});
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
@@ -74,142 +67,16 @@ const OtherUserPage = () => {
       dispatch(unsubscribeFollows());
     };
   }, [dispatch]);
-  const subscribeUserPosts = useCallback(() => {
-    const query = `${userPublicKey}::posts::on`;
-    const subscription = rifle({
-      query,
-      reconnect: false,
-      onData: async posts => {
-        const postEntries = Object.entries(posts);
-        const newPosts = postEntries
-          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-          .map(([key]) => key);
 
-        const proms = newPosts.map(async id => {
-          const { data: post } = await Http.get(
-            `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
-          );
-          const tipSet = post.data.tipsSet
-            ? Object.values(post.data.tipsSet)
-            : [];
-          const lenSet = tipSet.length;
-          const tot =
-            lenSet > 0
-              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
-              : 0;
-          return {
-            ...post.data,
-            id,
-            authorId: userPublicKey,
-            tipCounter: lenSet,
-            tipValue: tot
-          };
-        });
-        const postsAlmostReady = await Promise.allSettled(proms);
-        const postsReady = postsAlmostReady
-          .filter(maybeOk => maybeOk.status === "fulfilled")
-          //@ts-expect-error
-          .map(res => res.value);
-        setUserPosts(postsReady);
-      }
-    });
-
-    return rifleCleanup(subscription);
-  }, [userPublicKey]);
-
-  const subscribeSharedPosts = useCallback(() => {
-    const query = `${userPublicKey}::sharedPosts::on`;
-    const subscription = rifle({
-      query,
-      reconnect: false,
-      onData: async posts => {
-        const postEntries = Object.entries(posts);
-        const newPosts = postEntries
-          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-          .map(([key]) => key);
-
-        const proms = newPosts.map(async id => {
-          const { data: shared } = await Http.get(
-            `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
-          );
-          if (!shared.data || !shared.data.originalAuthor) {
-            throw new Error(
-              "invalid shared post provided for user " + userPublicKey
-            );
-          }
-          const { data: post } = await Http.get(
-            `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
-          );
-          const tipSet = post.data.tipsSet
-            ? Object.values(post.data.tipsSet)
-            : [];
-          const lenSet = tipSet.length;
-          const tot =
-            lenSet > 0
-              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
-              : 0;
-          return {
-            ...shared.data,
-            originalPost: {
-              ...post.data,
-              id,
-              tipCounter: lenSet,
-              tipValue: tot
-            },
-            authorId: userPublicKey,
-            type: "shared"
-          };
-        });
-        const postsAlmostReady = await Promise.allSettled(proms);
-        const postsReady = postsAlmostReady
-          .filter(maybeOk => maybeOk.status === "fulfilled")
-          // @ts-expect-error
-          .map(res => res.value);
-        setUserSharedPosts(postsReady);
-      }
-    });
-
-    return rifleCleanup(subscription);
-  }, [userPublicKey]);
+  useEffect(() => dispatch(subPosts(userPublicKey)), [dispatch, userPublicKey]);
 
   // effect for user profile
-  // @ts-ignore
   useEffect(() => {
     const unsubscribe = dispatch(subscribeUserProfile(userPublicKey));
 
     return unsubscribe;
   }, [dispatch, userPublicKey]);
-  //effect for user posts
-  useEffect(() => {
-    const unsubscribe = subscribeUserPosts();
 
-    return unsubscribe;
-  }, [subscribeUserPosts]);
-  //effect for shared posts
-  useEffect(() => {
-    const unsubscribe = subscribeSharedPosts();
-
-    return unsubscribe;
-  }, [subscribeSharedPosts]);
-  //effect for merge posts and shared posts
-  useEffect(() => {
-    const final = [...userPosts, ...userSharedPosts].sort(
-      (a, b) => b.date - a.date
-    );
-    setFinalPosts(final);
-    const unSubProfiles = userSharedPosts
-      .filter(post => !userProfiles[post.originalAuthor])
-      .map(post => {
-        const pub = post.originalAuthor;
-        dispatch(subscribeUserProfile(pub));
-        return () => {
-          dispatch(unsubscribeUserProfile(pub));
-        };
-      });
-    return () => {
-      unSubProfiles.forEach(unSub => unSub());
-    };
-  }, [dispatch, userPosts, userProfiles, userSharedPosts]);
   //effect for services
   useEffect(() => {
     Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
@@ -267,14 +134,16 @@ const OtherUserPage = () => {
     [shareModalData]
   );
 
+  const posts = Store.useSelector(Store.selectPosts(userPublicKey));
+
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
   const renderPosts = () => {
-    if (finalPosts.length === 0) {
+    if (posts.length === 0) {
       return <Loader text="loading posts..." />;
     }
-    return finalPosts.map((post, index) => {
+    return posts.map((post, index) => {
       const profile = userProfiles[post.authorId];
       if (post.type === "shared") {
         if (!post.originalPost) {
@@ -282,7 +151,6 @@ const OtherUserPage = () => {
         }
 
         const item = Object.entries(post.originalPost.contentItems).find(
-          //@ts-expect-error
           ([_, item]) => item.type === "stream/embedded"
         );
         let streamContentId, streamItem;
@@ -302,6 +170,7 @@ const OtherUserPage = () => {
             }
             post.originalPost.contentItems[streamContentId].type =
               "video/embedded";
+            // @ts-expect-error
             post.originalPost.contentItems[streamContentId].magnetURI =
               streamItem.playbackMagnet;
           }
@@ -325,7 +194,6 @@ const OtherUserPage = () => {
         );
       }
       const item = Object.entries(post.contentItems).find(
-        //@ts-expect-error
         ([_, item]) => item.type === "stream/embedded"
       );
       let streamContentId, streamItem;
@@ -344,6 +212,7 @@ const OtherUserPage = () => {
             return null;
           }
           post.contentItems[streamContentId].type = "video/embedded";
+          // @ts-expect-error
           post.contentItems[streamContentId].magnetURI =
             streamItem.playbackMagnet;
         }
@@ -358,8 +227,8 @@ const OtherUserPage = () => {
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}
-            tipCounter={post.tipCounter || 0}
-            tipValue={post.tipValue || 0}
+            tipCounter={0}
+            tipValue={0}
             openDeleteModal={null}
             openShareModal={toggleShareModal}
           />

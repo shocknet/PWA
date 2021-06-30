@@ -42,7 +42,6 @@ import {
   subscribeSharedUserPosts,
   subscribeUserPosts
 } from "../../actions/FeedActions";
-import { isSharedPost } from "../../schema";
 import { setWebclientPrefix } from "../../actions/NodeActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -60,8 +59,8 @@ const ProfilePage = () => {
   const [deletePostModalData, setDeletePostModalData] = useState(null);
   const [deletePostModalLoading, setDeletePostModalLoading] = useState(false);
 
-  const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
 
@@ -70,18 +69,6 @@ const ProfilePage = () => {
     "posts"
   );
   const user = useSelector(Store.selectSelfUser);
-  const myPosts = useMemo(() => {
-    if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].slice().sort((a, b) => {
-        const alpha = isSharedPost(a) ? a.shareDate : a.date;
-        const beta = isSharedPost(b) ? b.shareDate : b.date;
-
-        return beta - alpha;
-      });
-      return myP;
-    }
-    return [];
-  }, [posts, publicKey]);
 
   useEffect(() => {
     const subscription = subscribeMyServices()(dispatch);
@@ -339,7 +326,7 @@ const ProfilePage = () => {
   const AVATAR_SIZE = 122;
 
   const renderPosts = () => {
-    return myPosts.map((post, index) => {
+    return posts.map(post => {
       if (post.type === "shared") {
         if (!post.originalPost) {
           return null;
