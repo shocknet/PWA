@@ -268,7 +268,11 @@ export const subOwnPublishedContent = () => async (
         }
 
         if (typeof content !== "string") {
-          throw new TypeError(`Invalid content received (${content})`);
+          throw new TypeError(
+            `Invalid content (in key ${key}) received (${JSON.stringify(
+              content
+            )})`
+          );
         }
 
         const parsed = parseJson(content);
