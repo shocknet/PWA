@@ -1,13 +1,11 @@
 // @ts-check
 import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
-import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip";
 import * as Common from "shock-common";
 
 import Post from ".";
 
-import av1 from "../../images/av1.jpg";
 import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
