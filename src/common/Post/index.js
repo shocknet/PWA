@@ -9,6 +9,7 @@ import { DateTime } from "luxon";
 import * as Store from "../../store";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
+import { subPostContent } from "../../actions/FeedActions";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
@@ -30,6 +31,7 @@ const Post = ({
   openDeleteModal = undefined,
   openShareModal = _ => {}
 }) => {
+  const dispatch = Store.useDispatch();
   const unlockedContent = Store.useSelector(
     ({ content }) => content.unlockedContent
   );
@@ -47,6 +49,12 @@ const Post = ({
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
+
+  useEffect(() => dispatch(subPostContent(publicKey, id)), [
+    dispatch,
+    id,
+    publicKey
+  ]);
 
   //effect for liveStatus and viewers counter
   useEffect(() => {
