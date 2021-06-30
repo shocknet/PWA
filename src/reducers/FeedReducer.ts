@@ -1,7 +1,14 @@
 import * as Common from "shock-common";
+import produce from "immer";
 
+import * as Utils from "../utils";
 import * as Schema from "../schema";
-import { ACTIONS } from "../actions/FeedActions";
+import {
+  ACTIONS,
+  postDeleted,
+  postReceived,
+  contentItemReceived
+} from "../actions/FeedActions";
 import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 
 const INITIAL_STATE = {
@@ -21,6 +28,73 @@ const INITIAL_STATE = {
 };
 
 const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
+  if (postDeleted.match(action)) {
+    const {
+      payload: { author, id }
+    } = action;
+    return produce(state, draft => {
+      if (!draft.posts[author]) {
+        draft.posts[author] = [];
+      }
+
+      const idx = draft.posts[author].findIndex(p => p.id !== id);
+
+      if (idx > -1) {
+        draft.posts[author].splice(idx, 1);
+      }
+    });
+  }
+  if (postReceived.match(action)) {
+    const {
+      payload: { author, id, post }
+    } = action;
+    return produce(state, draft => {
+      if (!draft.posts[author]) {
+        draft.posts[author] = [];
+      }
+      const idx = draft.posts[author].findIndex(p => p.id !== id);
+
+      if (idx === -1) {
+        const newPost: Schema.Post = {
+          authorId: author,
+          contentItems: {},
+          date: post.date,
+          id,
+          status: post.status,
+          tags: post.tags,
+          title: post.title,
+          type: "post"
+        };
+        draft.posts[author].push(newPost);
+      }
+    });
+  }
+  if (contentItemReceived.match(action)) {
+    const {
+      payload: { author, contentItem, id, postID }
+    } = action;
+    return produce(state, draft => {
+      if (!draft.posts[author]) {
+        Utils.logger.error(
+          `Error inside feed reducer, received a content item but post is not in existing state (no author found), post id ${postID} from author ...${author.slice(
+            -8
+          )}`
+        );
+        return;
+      }
+      const idx = draft.posts[author].findIndex(p => p.id === postID);
+      if (idx === -1) {
+        Utils.logger.error(
+          `Error inside feed reducer, received a content item but post is not in existing state, post id ${postID} from author ...${author.slice(
+            -8
+          )}`
+        );
+        return;
+      }
+      (draft.posts[author][idx] as Schema.Post).contentItems[id] = contentItem;
+    });
+  }
+
   switch (action.type) {
     case ACTIONS.ADD_FOLLOW: {
       const { data } = action;
@@ -66,45 +140,6 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
       return {
         ...state,
         follows
-      };
-    }
-    case ACTIONS.ADD_USER_POST: {
-      const { data } = action;
-      /** @type {SharedPost} */
-      const receivedPost = data;
-      const authorId = receivedPost.authorId;
-      const userPosts = state.posts[authorId] ?? [];
-      const existingPostIndex = userPosts.findIndex(
-        post => receivedPost.id === post.id
-      );
-
-      const tmp = [...userPosts];
-
-      if (existingPostIndex !== -1) {
-        tmp[existingPostIndex] = receivedPost;
-      } else {
-        tmp.push(receivedPost);
-      }
-      return {
-        ...state,
-        posts: {
-          ...state.posts,
-          [authorId]: tmp
-        }
-      };
-    }
-    case ACTIONS.DELETE_USER_POST: {
-      const { id, authorId } = action.data;
-      const userPosts = (state.posts[authorId] ?? []).filter(
-        post => post.id !== id
-      );
-
-      return {
-        ...state,
-        posts: {
-          ...state.posts,
-          [authorId]: userPosts
-        }
       };
     }
     case ACTIONS.LOAD_POSTS: {
