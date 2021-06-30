@@ -1,4 +1,5 @@
 import * as Common from "shock-common";
+import isFinite from "lodash/isFinite";
 
 export type Contact = {
   pk: string;
@@ -181,3 +182,15 @@ const createValidator = <T extends Record<string, unknown>>(
     return validator(o[key]);
   });
 };
+
+/**
+ * Post as stored in Gun. Without `contentItems`.
+ */
+export type PostRaw = Omit<Common.RawPost, "contentItems">;
+
+export const isPostRaw = createValidator<PostRaw>({
+  date: isFinite,
+  status: Common.isPopulatedString,
+  tags: (val: string) => typeof val === "string",
+  title: Common.isPopulatedString
+});
