@@ -27,7 +27,7 @@ const SharedPost = ({
   openTipModal,
   openUnlockModal,
   openDeleteModal = undefined,
-  openShareModal = (_)=>{}
+  openShareModal = _ => {}
 }) => {
   /** @type {Post|undefined} */
   const originalPost = origPost;
