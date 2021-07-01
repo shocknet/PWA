@@ -7,7 +7,9 @@ import {
   ACTIONS,
   postDeleted,
   postReceived,
-  contentItemReceived
+  contentItemReceived,
+  sharedPostDeleted,
+  sharedPostReceived
 } from "../actions/FeedActions";
 import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 
@@ -23,7 +25,8 @@ const INITIAL_STATE = {
   /**
    * Maps public key to posts/shared posts.
    */
-  posts: {} as Record<string, Array<Schema.Post | Schema.SharedPost>>,
+  posts: {} as Record<string, Schema.Post[]>,
+  sharedPosts: {} as Record<string, Record<string, Common.SharedPost>>,
   reloadDone: false
 };
 
@@ -37,7 +40,7 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
         draft.posts[author] = [];
       }
 
-      const idx = draft.posts[author].findIndex(p => p.id !== id);
+      const idx = draft.posts[author].findIndex(p => p.id === id);
 
       if (idx > -1) {
         draft.posts[author].splice(idx, 1);
@@ -52,7 +55,7 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
       if (!draft.posts[author]) {
         draft.posts[author] = [];
       }
-      const idx = draft.posts[author].findIndex(p => p.id !== id);
+      const idx = draft.posts[author].findIndex(p => p.id === id);
 
       if (idx === -1) {
         const newPost: Schema.Post = {
@@ -92,6 +95,39 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
         return;
       }
       (draft.posts[author][idx] as Schema.Post).contentItems[id] = contentItem;
+    });
+  }
+  if (sharedPostDeleted.match(action)) {
+    const { postID, sharerPublicKey } = action.payload;
+
+    return produce(state, draft => {
+      if (!draft.sharedPosts[sharerPublicKey]) {
+        draft.sharedPosts[sharerPublicKey] = {};
+      }
+      if (draft.sharedPosts[sharerPublicKey][postID]) {
+        delete draft.sharedPosts[sharerPublicKey][postID];
+      }
+    });
+  }
+  if (sharedPostReceived.match(action)) {
+    const {
+      originalAuthor,
+      postID,
+      shareDate,
+      sharerPublicKey
+    } = action.payload;
+
+    return produce(state, draft => {
+      if (!draft.sharedPosts[sharerPublicKey]) {
+        draft.sharedPosts[sharerPublicKey] = {};
+      }
+      draft.sharedPosts[sharerPublicKey][postID] = {
+        originalAuthor,
+        originalPostID: postID,
+        shareDate,
+        shareID: sharerPublicKey + postID,
+        sharedBy: sharerPublicKey
+      };
     });
   }
 
@@ -140,37 +176,6 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
       return {
         ...state,
         follows
-      };
-    }
-    case ACTIONS.LOAD_POSTS: {
-      const { data } = action;
-
-      return {
-        ...state,
-        posts: data
-      };
-    }
-    case ACTIONS.LOAD_SHARED_POST: {
-      const { data } = action;
-      const { id, sharerId } = data;
-      const userPosts = state.posts[sharerId] ?? [];
-      const updatedPosts = userPosts.map(post => {
-        if (post.id === id && post.type === "shared") {
-          return {
-            ...post,
-            originalPost: data
-          };
-        }
-
-        return post;
-      });
-
-      return {
-        ...state,
-        posts: {
-          ...state.posts,
-          [sharerId]: updatedPosts
-        }
       };
     }
     case ACTIONS.RELOAD_FEED: {

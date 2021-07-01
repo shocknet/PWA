@@ -1,11 +1,10 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import QRCode from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
+import * as Common from "shock-common";
 
 import Http from "../../utils/Http";
-import { processDisplayName } from "../../utils/String";
 
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
@@ -33,7 +32,8 @@ import SendReqBtn from "./components/SendReqBtn";
 import {
   subscribeFollows,
   unsubscribeFollows,
-  subscribeUserPosts as subPosts
+  subscribeUserPosts as subPosts,
+  subSharedPosts
 } from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -47,8 +47,7 @@ const OtherUserPage = () => {
   const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  //@ts-expect-error
-  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
+
   const { publicKey: userPublicKey, selectedView = "posts" } = useParams<{
     publicKey: string;
     selectedView: "posts" | "services" | "content";
@@ -69,6 +68,10 @@ const OtherUserPage = () => {
   }, [dispatch]);
 
   useEffect(() => dispatch(subPosts(userPublicKey)), [dispatch, userPublicKey]);
+  useEffect(() => dispatch(subSharedPosts(userPublicKey)), [
+    dispatch,
+    userPublicKey
+  ]);
 
   // effect for user profile
   useEffect(() => {
@@ -79,11 +82,13 @@ const OtherUserPage = () => {
 
   //effect for services
   useEffect(() => {
-    Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
-      ({ data }) => {
+    Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`)
+      .then(({ data }) => {
         setUserServices(data.data);
-      }
-    );
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }, [userPublicKey]);
 
   const toggleModal = useCallback(() => {
@@ -134,7 +139,9 @@ const OtherUserPage = () => {
     [shareModalData]
   );
 
-  const posts = Store.useSelector(Store.selectPosts(userPublicKey));
+  const posts = Store.useSelector(
+    Store.selectPostsNewestToOldest(userPublicKey)
+  );
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
@@ -143,52 +150,41 @@ const OtherUserPage = () => {
     if (posts.length === 0) {
       return <Loader text="loading posts..." />;
     }
-    return posts.map((post, index) => {
-      const profile = userProfiles[post.authorId];
-      if (post.type === "shared") {
-        if (!post.originalPost) {
-          return null;
-        }
-
-        const item = Object.entries(post.originalPost.contentItems).find(
-          ([_, item]) => item.type === "stream/embedded"
-        );
-        let streamContentId, streamItem;
-        if (item) {
-          [streamContentId, streamItem] = item;
-        }
-        if (streamItem) {
-          if (!streamItem.liveStatus) {
-            return null;
-          }
-          if (streamItem.liveStatus === "waiting") {
-            return null;
-          }
-          if (streamItem.liveStatus === "wasLive") {
-            if (!streamItem.playbackMagnet) {
-              return null;
-            }
-            post.originalPost.contentItems[streamContentId].type =
-              "video/embedded";
-            // @ts-expect-error
-            post.originalPost.contentItems[streamContentId].magnetURI =
-              streamItem.playbackMagnet;
-          }
-        }
-        const originalPublicKey = post.originalAuthor;
-        const originalProfile = userProfiles[originalPublicKey];
+    return posts.map(post => {
+      if (Common.isSharedPost(post)) {
+        // const item = Object.entries(post.originalPost.contentItems).find(
+        //   ([_, item]) => item.type === "stream/embedded"
+        // );
+        // let streamContentId, streamItem;
+        // if (item) {
+        //   [streamContentId, streamItem] = item;
+        // }
+        // if (streamItem) {
+        //   if (!streamItem.liveStatus) {
+        //     return null;
+        //   }
+        //   if (streamItem.liveStatus === "waiting") {
+        //     return null;
+        //   }
+        //   if (streamItem.liveStatus === "wasLive") {
+        //     if (!streamItem.playbackMagnet) {
+        //       return null;
+        //     }
+        //     post.originalPost.contentItems[streamContentId].type =
+        //       "video/embedded";
+        //     // @ts-expect-error
+        //     post.originalPost.contentItems[streamContentId].magnetURI =
+        //       streamItem.playbackMagnet;
+        //   }
+        // }
         return (
-          <Suspense fallback={<Loader />} key={index}>
+          <Suspense fallback={<Loader />} key={post.originalPostID}>
             <SharedPost
-              originalPost={post.originalPost}
-              originalPostProfile={originalProfile}
-              sharedTimestamp={post.shareDate}
-              sharerProfile={profile}
-              postPublicKey={originalPublicKey}
               openTipModal={toggleTipModal}
               openUnlockModal={toggleUnlockModal}
-              openDeleteModal={null}
               openShareModal={toggleShareModal}
+              postID={post.originalPostID}
+              sharerPublicKey={post.sharedBy}
             />
           </Suspense>
         );
@@ -218,12 +214,11 @@ const OtherUserPage = () => {
         }
       }
       return (
-        <Suspense fallback={<Loader />} key={index}>
+        <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
             timestamp={post.date}
             contentItems={post.contentItems}
-            username={processDisplayName(profile?.user, profile?.displayName)}
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}
@@ -242,7 +237,7 @@ const OtherUserPage = () => {
       .map(([id, service]) => {
         const buyCB = () => {
           setBuyServiceModalOpen({
-            //@ts-expect-error
+            // @ts-expect-error
             ...service,
             serviceID: id,
             owner: userPublicKey

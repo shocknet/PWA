@@ -4,7 +4,6 @@ import { createAction } from "@reduxjs/toolkit";
 import * as Schema from "../schema";
 import * as Utils from "../utils";
 import Http from "../utils/Http";
-import { GUN_PROPS } from "../utils/Gun";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
 
 import { subscribeUserProfile } from "./UserProfilesActions";
@@ -282,73 +281,6 @@ export const subPostContent = (author: string, postID: string) => (
   }
 };
 
-const USER_SHARED_POSTS_QUERY_SUFFIX = `::sharedPosts::on`;
-
-export const subscribeSharedUserPosts = publicKey => async dispatch => {
-  const subscription = await rifle({
-    query: publicKey + USER_SHARED_POSTS_QUERY_SUFFIX,
-    onData: posts => {
-      console.debug(`shared posts from ${publicKey}: `, posts);
-      const postEntries = Object.entries(posts);
-      const newPosts = postEntries
-        .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
-      const deletedPosts = postEntries
-        .filter(([key, value]) => value === null && !GUN_PROPS.includes(key))
-        .map(([key]) => key);
-
-      newPosts.forEach(async function fetchAndDispatchSharedPost(id) {
-        try {
-          const res = await Http.get(
-            `/api/gun/otheruser/${publicKey}/load/sharedPosts>${id}`
-          );
-          const { data: shared } = res;
-          if (!shared.data || !shared.data.originalAuthor) {
-            throw new Error(
-              `invalid shared post provided for user ${publicKey}`
-            );
-          }
-          const post = res.data.data as Common.SharedPostRaw;
-
-          const processedPost = {
-            authorId: publicKey,
-            id,
-            originalAuthor: post.originalAuthor,
-            shareDate: post.shareDate,
-            sharerId: publicKey,
-            originalPost: undefined,
-            type: "shared"
-          } as Schema.SharedPost;
-          dispatch({
-            type: ACTIONS.ADD_USER_POST,
-            data: processedPost
-          });
-
-          console.debug("dispatching shared post load");
-          dispatch(loadSharedPost(id, post.originalAuthor, publicKey));
-        } catch (e) {
-          console.error(`User: ${publicKey}\npostID: ${id}\n error:`, e);
-        }
-      });
-
-      deletedPosts.forEach(id =>
-        dispatch({
-          type: ACTIONS.DELETE_USER_POST,
-          data: {
-            id,
-            authorId: publicKey
-          }
-        })
-      );
-    }
-  });
-  return subscription;
-};
-
-export const unsubUserSharedPosts = publicKey => () => {
-  unsubscribeRifleByQuery(publicKey + USER_SHARED_POSTS_QUERY_SUFFIX);
-};
-
 const FOLLOWS_QUERY = "$user::follows::map.on";
 
 export const subscribeFollows = () => async dispatch => {
@@ -422,3 +354,95 @@ export const deleteUserPost = ({ id, authorId }) => ({
 export const reloadFeed = () => ({
   type: ACTIONS.RELOAD_FEED
 });
+
+// #region sharedPosts
+
+export const sharedPostDeleted = createAction<{
+  postID: string;
+  sharerPublicKey: string;
+}>("feed/sharedPostDeleted");
+
+export const sharedPostReceived = createAction<{
+  originalAuthor: string;
+  postID: string;
+  shareDate: number;
+  sharerPublicKey: string;
+}>("feed/sharedPostReceived");
+
+export const subSharedPosts = (sharerPublicKey: string) => (
+  dispatch: (action: any) => void
+): (() => void) => {
+  try {
+    Utils.logger.debug(
+      `Subbing to shared posts from ...${sharerPublicKey.slice(-8)}`
+    );
+
+    const subscription = rifle({
+      query: `${sharerPublicKey}::sharedPosts::map.on`,
+      onError(e) {
+        Utils.logger.error(
+          `Error inside shared posts subscription for ...${sharerPublicKey.slice(
+            -8
+          )} -> `,
+          e
+        );
+        alert(
+          `Error inside shared posts subscription for ...${sharerPublicKey.slice(
+            -8
+          )}: ${e.message}`
+        );
+      },
+      onData: (sharedPost: unknown, postID: string) => {
+        Utils.logger.debug(
+          `Shared post with id ${postID} from ...${sharerPublicKey.slice(-8)} `,
+          sharedPost
+        );
+
+        if (Common.isSharedPostRaw(sharedPost)) {
+          dispatch(
+            sharedPostReceived({
+              originalAuthor: sharedPost.originalAuthor,
+              postID,
+              shareDate: sharedPost.shareDate,
+              sharerPublicKey
+            })
+          );
+        } else if (sharedPost === null) {
+          dispatch(
+            sharedPostDeleted({
+              postID,
+              sharerPublicKey
+            })
+          );
+        } else {
+          Utils.logger.error(
+            `In shared posts subscription for user ...${sharerPublicKey.slice(
+              -8
+            )}, invalid data -> `,
+            sharedPost
+          );
+        }
+      }
+    });
+
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  } catch (e) {
+    Utils.logger.error(
+      `Could not sub to shared posts for ...${sharerPublicKey.slice(-8)} -> `,
+      e
+    );
+    alert(
+      `Could not sub to shared posts for ...${sharerPublicKey.slice(-8)}: ${
+        e.message
+      }`
+    );
+
+    return () => {};
+  }
+};
+
+// #endregion sharedPosts

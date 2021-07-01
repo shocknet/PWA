@@ -4,6 +4,7 @@ import produce from "immer";
 import { ACTIONS } from "../actions/UserProfilesActions";
 import { ACTIONS as NODE_ACTIONS } from "../actions/NodeActions";
 import { ACTIONS as CHAT_ACTIONS } from "../actions/ChatActions";
+import { sharedPostReceived } from "../actions/FeedActions";
 /**
  * @typedef {import('../actions/ChatActions').LoadChatDataAction} LoadChatDataAction
  * @typedef {import("../actions/ChatActions").LoadSentRequestsAction} LoadSentRequestsAction
@@ -26,6 +27,14 @@ const INITIAL_STATE = {};
  * @returns {UserProfilesState}
  */
 const userProfiles = (state = INITIAL_STATE, action) => {
+  if (sharedPostReceived.match(action)) {
+    const { originalAuthor } = action.payload;
+    return produce(state, draft => {
+      if (!draft[originalAuthor]) {
+        draft[originalAuthor] = Common.createEmptyUser(originalAuthor);
+      }
+    });
+  }
   switch (action.type) {
     case NODE_ACTIONS.SET_AUTHENTICATED_USER: {
       const { publicKey } = action.data;

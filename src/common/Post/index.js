@@ -27,7 +27,6 @@ const Post = ({
   openTipModal,
   openUnlockModal,
   contentItems = {},
-  username,
   openDeleteModal = undefined,
   openShareModal = _ => {}
 }) => {
@@ -39,6 +38,7 @@ const Post = ({
     slidesToScroll: 1,
     align: "center"
   });
+  const author = Store.useSelector(Store.selectUser(publicKey));
 
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -277,7 +277,7 @@ const Post = ({
 
           <div className="details">
             <div className="username">
-              <Link to={`/otherUser/${publicKey}`}>{username}</Link>
+              <Link to={`/otherUser/${publicKey}`}>{author.displayName}</Link>
               {liveStatus && (
                 <p className="liveStatus">
                   {liveStatus}

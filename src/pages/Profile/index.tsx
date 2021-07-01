@@ -13,8 +13,6 @@ import { Link } from "react-router-dom";
 import c from "classnames";
 import * as Common from "shock-common";
 
-import { processDisplayName } from "../../utils/String";
-
 import * as Utils from "../../utils";
 import {
   deleteService,
@@ -39,7 +37,7 @@ import { rifle, rifleCleanup } from "../../utils/WebSocket";
 import "./css/index.scoped.css";
 import {
   deleteUserPost,
-  subscribeSharedUserPosts,
+  subSharedPosts,
   subscribeUserPosts
 } from "../../actions/FeedActions";
 import { setWebclientPrefix } from "../../actions/NodeActions";
@@ -63,6 +61,7 @@ const ProfilePage = () => {
   const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const allPosts = Store.useSelector(Store.selectAllPosts);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
@@ -76,17 +75,12 @@ const ProfilePage = () => {
     return rifleCleanup(subscription);
   }, [dispatch]);
 
-  useEffect(() => {
-    const postSubscription = dispatch(subscribeUserPosts(publicKey));
-    const sharedPostSubscription = dispatch(
-      subscribeSharedUserPosts(publicKey)
-    );
+  useEffect(() => dispatch(subscribeUserPosts(publicKey)), [
+    dispatch,
+    publicKey
+  ]);
 
-    return () => {
-      postSubscription();
-      rifleCleanup(sharedPostSubscription)();
-    };
-  }, [dispatch, publicKey]);
+  useEffect(() => dispatch(subSharedPosts(publicKey)), [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -327,11 +321,11 @@ const ProfilePage = () => {
 
   const renderPosts = () => {
     return posts.map(post => {
-      if (post.type === "shared") {
-        if (!post.originalPost) {
-          return null;
-        }
-        const item = Object.entries(post.originalPost.contentItems).find(
+      if (Common.isSharedPost(post)) {
+        const originalPost = allPosts[post.originalAuthor]?.find(
+          p => p.id === post.originalPostID
+        );
+        const item = Object.entries(originalPost.contentItems).find(
           ([_, item]) => item.type === "stream/embedded"
         );
         let streamContentId, streamItem;
@@ -343,31 +337,18 @@ const ProfilePage = () => {
             streamItem.liveStatus === "wasLive" &&
             streamItem.playbackMagnet
           ) {
-            post.originalPost.contentItems[streamContentId].type =
-              "video/embedded";
+            originalPost.contentItems[streamContentId].type = "video/embedded";
             //@ts-expect-error
-            post.originalPost.contentItems[streamContentId].magnetURI =
+            originalPost.contentItems[streamContentId].magnetURI =
               streamItem.playbackMagnet;
           }
         }
-        // TODO: ensure users reducer receives sharer profiles
-        const sharerProfile =
-          userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
-        const originalPublicKey = post.originalAuthor;
-        const originalProfile =
-          userProfiles[originalPublicKey] ||
-          Common.createEmptyUser(originalPublicKey);
+
         return (
-          <Suspense
-            fallback={<Loader />}
-            key={post.sharerId + post.originalPost.id}
-          >
+          <Suspense fallback={<Loader />} key={post.shareID}>
             <SharedPost
-              originalPost={post.originalPost}
-              originalPostProfile={originalProfile}
-              sharedTimestamp={post.shareDate}
-              sharerProfile={sharerProfile}
-              postPublicKey={originalPublicKey}
+              postID={post.shareID}
+              sharerPublicKey={post.sharedBy}
               openTipModal={Utils.EMPTY_FN}
               openUnlockModal={Utils.EMPTY_FN}
               openDeleteModal={toggleDeleteModal}
@@ -392,19 +373,12 @@ const ProfilePage = () => {
         }
       }
 
-      const profile =
-        userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
-
       return (
         <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
             timestamp={post.date}
             contentItems={post.contentItems}
-            username={processDisplayName(
-              profile?.publicKey,
-              profile?.displayName
-            )}
             publicKey={post.authorId}
             openTipModal={Utils.EMPTY_FN}
             openUnlockModal={Utils.EMPTY_FN}

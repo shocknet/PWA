@@ -68,42 +68,6 @@ export interface Post extends Common.RawPost {
   type: "post";
 }
 
-/**
- * Different from the one in shock-common.
- */
-export interface SharedPost extends Common.SharedPostRaw {
-  authorId: string;
-  sharerId: string;
-  id: string;
-  type: "shared";
-  /**
-   * Undefined when loading it.
-   */
-  originalPost?: Post;
-}
-
-export const isSharedPost = (post: any): post is SharedPost => {
-  if (!Common.isObj(post)) {
-    return false;
-  }
-
-  const obj = (post as unknown) as SharedPost;
-
-  if (typeof obj.authorId !== "string") {
-    return false;
-  }
-
-  if (typeof obj.id !== "string") {
-    return false;
-  }
-
-  if (typeof obj.originalAuthor !== "string") {
-    return false;
-  }
-
-  return obj.type === "shared";
-};
-
 export interface PublishedContent {
   type: "image/embedded" | "video/embedded";
   magnetURI: string;
