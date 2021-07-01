@@ -222,8 +222,6 @@ const OtherUserPage = () => {
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}
-            tipCounter={0}
-            tipValue={0}
             openDeleteModal={null}
             openShareModal={toggleShareModal}
           />

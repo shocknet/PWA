@@ -240,15 +240,9 @@ const FeedPage = () => {
                 id={post.id}
                 timestamp={post.date}
                 contentItems={post.contentItems}
-                username={processDisplayName(
-                  profile?.publicKey,
-                  profile?.displayName
-                )}
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}
-                tipCounter={0}
-                tipValue={0}
                 openShareModal={toggleShareModal}
               />
             </Suspense>

@@ -101,8 +101,6 @@ const SharedPost = ({
           <Post
             id={originalPost.id}
             timestamp={originalPost.date}
-            tipCounter={0}
-            tipValue={0}
             publicKey={sharedPost.originalAuthor}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}

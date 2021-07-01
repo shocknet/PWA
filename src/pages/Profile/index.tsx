@@ -382,10 +382,6 @@ const ProfilePage = () => {
             publicKey={post.authorId}
             openTipModal={Utils.EMPTY_FN}
             openUnlockModal={Utils.EMPTY_FN}
-            //@ts-expect-error
-            tipCounter={post.tipCounter || 0}
-            //@ts-expect-error
-            tipValue={post.tipValue || 0}
             openDeleteModal={toggleDeleteModal}
             openShareModal={null}
           />
