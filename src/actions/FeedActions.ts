@@ -71,6 +71,70 @@ export const postReceived = createAction<{
   post: Schema.PostRaw;
 }>("feed/postReceived");
 
+export const subSinglePost = (author: string, postID: string) => (
+  dispatch: (action: any) => void
+): (() => void) => {
+  try {
+    const subscription = rifle({
+      query: `${author}::posts>${postID}::on`,
+      onData(post: string) {
+        Utils.logger.debug(
+          `Single post with id ${postID} from ...${author.slice(-8)} `,
+          post
+        );
+
+        if (Schema.isPostRaw(post)) {
+          dispatch(
+            postReceived({
+              author,
+              id: postID,
+              post
+            })
+          );
+        } else if (post === null) {
+          dispatch(
+            postDeleted({
+              author,
+              id: postID
+            })
+          );
+        }
+      },
+      onError(e) {
+        Utils.logger.error(
+          `Error inside single post sub ${postID} from ...${author.slice(
+            -8
+          )} -> `,
+          e
+        );
+        alert(
+          `Error inside single post sub ${postID} from ...${author.slice(
+            -8
+          )}: ${e.message}`
+        );
+      }
+    });
+
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  } catch (e) {
+    Utils.logger.error(
+      `Could not sub to single post ${postID} from ...${author.slice(-8)} -> `,
+      e
+    );
+    alert(
+      `Could not sub to single post ${postID} from ...${author.slice(-8)}: ${
+        e.message
+      }`
+    );
+
+    return () => {};
+  }
+};
+
 export const subscribeUserPosts = (publicKey: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
