@@ -1,4 +1,3 @@
-// @ts-check
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
@@ -21,8 +20,6 @@ import ShareIcon from "../../images/share.svg";
 const Post = ({
   id,
   timestamp,
-  tipCounter,
-  tipValue,
   publicKey,
   openTipModal,
   openUnlockModal,
@@ -60,9 +57,11 @@ const Post = ({
   useEffect(() => {
     const values = Object.values(contentItems);
     const videoContent = values.find(
+      // @ts-expect-error
       item => item.type === "video/embedded" && item.liveStatus === "wasLive"
     );
     const streamContent = values.find(
+      // @ts-expect-error
       item => item.type === "stream/embedded" && item.liveStatus === "live"
     );
     let status = "";
@@ -71,7 +70,9 @@ const Post = ({
     }
     if (streamContent) {
       status = "Is Live";
+      // @ts-expect-error
       if (streamContent.viewersCounter) {
+        // @ts-expect-error
         setViewersCounter(streamContent.viewersCounter);
       }
     }
@@ -82,12 +83,14 @@ const Post = ({
 
   const getMediaContent = useCallback(() => {
     return Object.entries(contentItems).filter(
+      // @ts-expect-error
       ([_, item]) => item.type !== "text/paragraph"
     );
   }, [contentItems]);
 
   const getTextContent = () => {
     return Object.entries(contentItems).filter(
+      // @ts-expect-error
       ([_, item]) => item.type === "text/paragraph"
     );
   };
@@ -95,6 +98,7 @@ const Post = ({
   useEffect(() => {
     getMediaContent().forEach(([k, e]) => {
       const path = `${publicKey}>posts>${k}`;
+      // @ts-expect-error
       if (e.isPrivate && !unlockedContent[path]) {
         setIsPrivate(true);
       }
@@ -127,8 +131,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
+          tipCounter={0}
+          tipValue={0}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
@@ -143,8 +147,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
+          tipCounter={0}
+          tipValue={0}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
@@ -158,8 +162,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
+          tipCounter={0}
+          tipValue={0}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
