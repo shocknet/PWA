@@ -232,7 +232,7 @@ const ProfilePage = () => {
 
       const [file] = files;
 
-      const imageObtained = await Utils.processImageFile(file, 320, 0.7);
+      const imageObtained = await Utils.processImageFile(file, 800, 0.9);
 
       const DATA_URL_TYPE_PREFIX = "data:image/jpeg;base64,";
       const base64 = imageObtained.slice(DATA_URL_TYPE_PREFIX.length);
