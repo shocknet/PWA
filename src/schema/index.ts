@@ -1,6 +1,23 @@
 import * as Common from "shock-common";
 import isFinite from "lodash/isFinite";
 
+const createValidator = <T extends Record<string, unknown>>(
+  valMap: Record<keyof T, (val: any) => void>,
+  baseValidator: (o: unknown) => boolean = () => true
+) => (o: unknown): o is T => {
+  if (!Common.isObj(o)) {
+    return false;
+  }
+
+  if (!baseValidator(o)) {
+    return false;
+  }
+
+  return Object.entries(valMap).every(([key, validator]) => {
+    return validator(o[key]);
+  });
+};
+
 export type Contact = {
   pk: string;
   avatar: string | null;
@@ -170,18 +187,6 @@ export interface ContentRevealCoordinateMetadataOutbound {
    */
   type: "orderAck";
 }
-
-const createValidator = <T extends Record<string, unknown>>(
-  valMap: Record<keyof T, (val: any) => void>
-) => (o: unknown): o is T => {
-  if (!Common.isObj(o)) {
-    return false;
-  }
-
-  return Object.entries(valMap).every(([key, validator]) => {
-    return validator(o[key]);
-  });
-};
 
 /**
  * Post as stored in Gun. Without `contentItems`.
