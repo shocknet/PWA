@@ -9,7 +9,8 @@ import {
   postReceived,
   contentItemReceived,
   sharedPostDeleted,
-  sharedPostReceived
+  sharedPostReceived,
+  postTipReceived
 } from "../actions/FeedActions";
 import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 
@@ -129,6 +130,28 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
         shareID: sharerPublicKey + postID,
         sharedBy: sharerPublicKey
       };
+    });
+  }
+
+  if (postTipReceived.match(action)) {
+    const { author, postID, tipAmt, tipID } = action.payload;
+
+    return produce(state, draft => {
+      const post = draft.posts[author].find(p => p.id === postID);
+      if (!post) {
+        Utils.logger.error(
+          `Got tip for non existent post ${postID} from author ...${author.slice(
+            -8
+          )}`
+        );
+      }
+      if (!post.tips) {
+        // cached data from previous app version won't have the tips object
+        post.tips = {};
+      }
+      if (!post.tips[tipID]) {
+        post.tips[tipID] = tipAmt;
+      }
     });
   }
 
