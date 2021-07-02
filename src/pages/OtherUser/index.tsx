@@ -217,8 +217,6 @@ const OtherUserPage = () => {
         <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
-            timestamp={post.date}
-            contentItems={post.contentItems}
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}

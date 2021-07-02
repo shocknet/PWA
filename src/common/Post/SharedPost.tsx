@@ -100,11 +100,9 @@ const SharedPost = ({
         {originalPost ? (
           <Post
             id={originalPost.id}
-            timestamp={originalPost.date}
             publicKey={sharedPost.originalAuthor}
             openTipModal={openTipModal}
             openUnlockModal={openUnlockModal}
-            contentItems={originalPost.contentItems}
             openShareModal={openShareModal}
           />
         ) : (

@@ -9,8 +9,6 @@ import React, {
 import * as Common from "shock-common";
 import { useHistory } from "react-router-dom";
 
-import * as Schema from "../../schema";
-import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
 import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
@@ -30,7 +28,6 @@ import {
   subSharedPosts
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
-import { rifleCleanup } from "../../utils/WebSocket";
 import styles from "./css/Feed.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -43,7 +40,6 @@ const FeedPage = () => {
   const posts = Store.useSelector(
     Store.selectAllPostsFromFollowedNewestToOldest
   );
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
@@ -230,16 +226,11 @@ const FeedPage = () => {
           //       streamItem.playbackMagnet;
           //   }
           // }
-          const profile =
-            userProfiles[post.authorId] ||
-            Common.createEmptyUser(post.authorId);
 
           return (
             <Suspense fallback={<Loader />} key={post.id}>
               <Post
                 id={post.id}
-                timestamp={post.date}
-                contentItems={post.contentItems}
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}

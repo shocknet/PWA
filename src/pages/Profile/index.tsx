@@ -60,7 +60,6 @@ const ProfilePage = () => {
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
   const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const allPosts = Store.useSelector(Store.selectAllPosts);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
@@ -377,8 +376,6 @@ const ProfilePage = () => {
         <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
-            timestamp={post.date}
-            contentItems={post.contentItems}
             publicKey={post.authorId}
             openTipModal={Utils.EMPTY_FN}
             openUnlockModal={Utils.EMPTY_FN}

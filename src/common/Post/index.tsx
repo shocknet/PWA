@@ -20,11 +20,9 @@ import ShareIcon from "../../images/share.svg";
 
 const Post = ({
   id,
-  timestamp,
   publicKey,
   openTipModal,
   openUnlockModal,
-  contentItems = {},
   openDeleteModal = undefined,
   openShareModal = _ => {}
 }) => {
@@ -39,10 +37,6 @@ const Post = ({
   const author = Store.useSelector(Store.selectUser(publicKey));
   const post = Store.useSelector(Store.selectSinglePost(publicKey, id));
   const [tipCounter, tipValue] = React.useMemo(() => {
-    if (!post) {
-      return [0, 0];
-    }
-
     const tips = Object.values(
       post.tips ||
         {} /* cached data from previous app version won't have the tips object */
@@ -75,7 +69,7 @@ const Post = ({
 
   //effect for liveStatus and viewers counter
   useEffect(() => {
-    const values = Object.values(contentItems);
+    const values = Object.values(post.contentItems);
     const videoContent = values.find(
       // @ts-expect-error
       item => item.type === "video/embedded" && item.liveStatus === "wasLive"
@@ -99,18 +93,16 @@ const Post = ({
     if (status) {
       setLiveStatus(status);
     }
-  }, [contentItems, setLiveStatus]);
+  }, [post.contentItems, setLiveStatus]);
 
   const getMediaContent = useCallback(() => {
-    return Object.entries(contentItems).filter(
-      // @ts-expect-error
+    return Object.entries(post.contentItems).filter(
       ([_, item]) => item.type !== "text/paragraph"
     );
-  }, [contentItems]);
+  }, [post.contentItems]);
 
   const getTextContent = () => {
-    return Object.entries(contentItems).filter(
-      // @ts-expect-error
+    return Object.entries(post.contentItems).filter(
       ([_, item]) => item.type === "text/paragraph"
     );
   };
@@ -123,7 +115,7 @@ const Post = ({
         setIsPrivate(true);
       }
     });
-  }, [contentItems, getMediaContent, publicKey, unlockedContent]);
+  }, [getMediaContent, publicKey, unlockedContent]);
 
   const parseContent = ([key, item], index) => {
     if (item.type === "text/paragraph") {
@@ -316,11 +308,7 @@ const Post = ({
                 </p>
               )}
             </div>
-            <p>
-              {timestamp && typeof timestamp === "number"
-                ? DateTime.fromMillis(timestamp).toRelative()
-                : "Loading..."}
-            </p>
+            <p>{DateTime.fromMillis(post.date).toRelative()}</p>
           </div>
         </div>
         {openDeleteModal && (
