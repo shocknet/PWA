@@ -446,3 +446,61 @@ export const subSharedPosts = (sharerPublicKey: string) => (
 };
 
 // #endregion sharedPosts
+
+export const postTipReceived = createAction<{
+  author: string;
+  postID: string;
+  tipAmt: number;
+  tipID: string;
+}>("feed/postTipReceived");
+
+export const subPostTips = (author: string, postID: string) => (
+  dispatch: (action: any) => void
+): (() => void) => {
+  try {
+    const subscription = rifle({
+      query: `${author}::posts>${postID}::map.on`,
+      onData(tipAmt: unknown, tipID: string) {
+        Utils.logger.debug(
+          `Post ${postID} tips sub, tipID ${tipID} -> `,
+          tipAmt
+        );
+
+        if (typeof tipAmt === "number") {
+          dispatch(
+            postTipReceived({
+              author,
+              postID,
+              tipAmt,
+              tipID
+            })
+          );
+        } else {
+          Utils.logger.error(
+            `Post ${postID} tips sub, tipID ${tipID} got non number value -> `,
+            tipAmt
+          );
+        }
+      }
+    });
+
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  } catch (e) {
+    Utils.logger.error(
+      `Could not subscribe to post tips from author ...${author.slice(
+        -8
+      )} with ID ${postID} -> `,
+      e
+    );
+    alert(
+      `Could not subscribe to post tips from author ...${author.slice(
+        -8
+      )} with ID ${postID}: ${e.message}`
+    );
+    return () => {};
+  }
+};
