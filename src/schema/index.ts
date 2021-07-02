@@ -65,6 +65,7 @@ export interface ChatMessage {
 export interface Post extends Common.RawPost {
   authorId: string;
   id: string;
+  tips: Record<string, number>;
   type: "post";
 }
 

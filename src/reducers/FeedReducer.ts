@@ -66,6 +66,7 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
           status: post.status,
           tags: post.tags,
           title: post.title,
+          tips: {},
           type: "post"
         };
         draft.posts[author].push(newPost);
