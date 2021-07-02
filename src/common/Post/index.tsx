@@ -1,14 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
+import sum from "lodash/sum";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
-import { subPostContent } from "../../actions/FeedActions";
+import { subPostContent, subPostTips } from "../../actions/FeedActions";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
@@ -36,6 +37,19 @@ const Post = ({
     align: "center"
   });
   const author = Store.useSelector(Store.selectUser(publicKey));
+  const post = Store.useSelector(Store.selectSinglePost(publicKey, id));
+  const [tipCounter, tipValue] = React.useMemo(() => {
+    if (!post) {
+      return [0, 0];
+    }
+
+    const tips = Object.values(
+      post.tips ||
+        {} /* cached data from previous app version won't have the tips object */
+    );
+
+    return [tips.length, sum(tips)];
+  }, [post]);
 
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -48,6 +62,12 @@ const Post = ({
   );*/ true;
 
   useEffect(() => dispatch(subPostContent(publicKey, id)), [
+    dispatch,
+    id,
+    publicKey
+  ]);
+
+  useEffect(() => dispatch(subPostTips(publicKey, id)), [
     dispatch,
     id,
     publicKey
@@ -131,8 +151,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={0}
-          tipValue={0}
+          tipCounter={tipCounter}
+          tipValue={tipValue}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
@@ -147,8 +167,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={0}
-          tipValue={0}
+          tipCounter={tipCounter}
+          tipValue={tipValue}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
@@ -162,8 +182,8 @@ const Post = ({
           item={finalItem}
           index={index}
           postId={id}
-          tipCounter={0}
-          tipValue={0}
+          tipCounter={tipCounter}
+          tipValue={tipValue}
           key={`${id}-${index}`}
           hideRibbon={undefined}
           width={undefined}
