@@ -347,7 +347,7 @@ const ProfilePage = () => {
         return (
           <Suspense fallback={<Loader />} key={post.shareID}>
             <SharedPost
-              postID={post.shareID}
+              postID={post.originalPostID}
               sharerPublicKey={post.sharedBy}
               openTipModal={Utils.EMPTY_FN}
               openUnlockModal={Utils.EMPTY_FN}
