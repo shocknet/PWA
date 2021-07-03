@@ -172,13 +172,25 @@ export const decryptMessage = async ({
   privateKey,
   encryptedMessage
 }: DecryptMessageArgs): Promise<string | object> => {
-  const processedPrivateKey = processKey(privateKey);
-  const decryptedMessageBuffer: Uint8Array = await ECCrypto.decrypt(
-    processedPrivateKey,
-    convertToEncryptedMessage(encryptedMessage)
-  );
-  const decryptedMessage = Buffer.from(decryptedMessageBuffer).toString();
-  const parsedMessage = safeParseJSON(decryptedMessage);
+  try {
+    const processedPrivateKey = processKey(privateKey);
+    const decryptedMessageBuffer: Uint8Array = await ECCrypto.decrypt(
+      processedPrivateKey,
+      convertToEncryptedMessage(encryptedMessage)
+    );
+    const decryptedMessage = Buffer.from(decryptedMessageBuffer).toString();
+    const parsedMessage = safeParseJSON(decryptedMessage);
 
-  return parsedMessage;
+    return parsedMessage;
+  } catch (err) {
+    if (err.message?.toLowerCase() === "bad mac") {
+      console.warn(
+        "Bad Mac!",
+        err,
+        convertToEncryptedMessage(encryptedMessage)
+      );
+    }
+
+    throw err;
+  }
 };
