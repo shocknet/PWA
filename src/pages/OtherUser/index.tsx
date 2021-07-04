@@ -152,31 +152,6 @@ const OtherUserPage = () => {
     }
     return posts.map(post => {
       if (Common.isSharedPost(post)) {
-        // const item = Object.entries(post.originalPost.contentItems).find(
-        //   ([_, item]) => item.type === "stream/embedded"
-        // );
-        // let streamContentId, streamItem;
-        // if (item) {
-        //   [streamContentId, streamItem] = item;
-        // }
-        // if (streamItem) {
-        //   if (!streamItem.liveStatus) {
-        //     return null;
-        //   }
-        //   if (streamItem.liveStatus === "waiting") {
-        //     return null;
-        //   }
-        //   if (streamItem.liveStatus === "wasLive") {
-        //     if (!streamItem.playbackMagnet) {
-        //       return null;
-        //     }
-        //     post.originalPost.contentItems[streamContentId].type =
-        //       "video/embedded";
-        //     // @ts-expect-error
-        //     post.originalPost.contentItems[streamContentId].magnetURI =
-        //       streamItem.playbackMagnet;
-        //   }
-        // }
         return (
           <Suspense fallback={<Loader />} key={post.originalPostID}>
             <SharedPost
@@ -189,30 +164,7 @@ const OtherUserPage = () => {
           </Suspense>
         );
       }
-      const item = Object.entries(post.contentItems).find(
-        ([_, item]) => item.type === "stream/embedded"
-      );
-      let streamContentId, streamItem;
-      if (item) {
-        [streamContentId, streamItem] = item;
-      }
-      if (streamItem) {
-        if (!streamItem.liveStatus) {
-          return null;
-        }
-        if (streamItem.liveStatus === "waiting") {
-          return null;
-        }
-        if (streamItem.liveStatus === "wasLive") {
-          if (!streamItem.playbackMagnet) {
-            return null;
-          }
-          post.contentItems[streamContentId].type = "video/embedded";
-          // @ts-expect-error
-          post.contentItems[streamContentId].magnetURI =
-            streamItem.playbackMagnet;
-        }
-      }
+
       return (
         <Suspense fallback={<Loader />} key={post.id}>
           <Post

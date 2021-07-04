@@ -321,28 +321,6 @@ const ProfilePage = () => {
   const renderPosts = () => {
     return posts.map(post => {
       if (Common.isSharedPost(post)) {
-        const originalPost = allPosts[post.originalAuthor]?.find(
-          p => p.id === post.originalPostID
-        );
-        const item = Object.entries(originalPost.contentItems).find(
-          ([_, item]) => item.type === "stream/embedded"
-        );
-        let streamContentId, streamItem;
-        if (item) {
-          [streamContentId, streamItem] = item;
-        }
-        if (streamItem) {
-          if (
-            streamItem.liveStatus === "wasLive" &&
-            streamItem.playbackMagnet
-          ) {
-            originalPost.contentItems[streamContentId].type = "video/embedded";
-            //@ts-expect-error
-            originalPost.contentItems[streamContentId].magnetURI =
-              streamItem.playbackMagnet;
-          }
-        }
-
         return (
           <Suspense fallback={<Loader />} key={post.shareID}>
             <SharedPost
@@ -355,21 +333,6 @@ const ProfilePage = () => {
             />
           </Suspense>
         );
-      }
-      const item = Object.entries(post.contentItems).find(
-        ([_, item]) => item.type === "stream/embedded"
-      );
-      let streamContentId, streamItem;
-      if (item) {
-        [streamContentId, streamItem] = item;
-      }
-      if (streamItem) {
-        if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
-          post.contentItems[streamContentId].type = "video/embedded";
-          //@ts-expect-error
-          post.contentItems[streamContentId].magnetURI =
-            streamItem.playbackMagnet;
-        }
       }
 
       return (
