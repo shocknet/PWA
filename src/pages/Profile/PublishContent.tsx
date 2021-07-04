@@ -94,9 +94,9 @@ const PublishContentPage = () => {
                 `${fileName}.${extension}`
               );
 
-              if (thumbnail) {
+              if (thumbnail && thumbnail.type) {
                 // extract extension from base64
-                const extension = thumbnail.type.replace(/.*\//gi, "");
+                const extension = thumbnail.type?.replace(/.*\//gi, "");
 
                 formData.append(
                   "files",

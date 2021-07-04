@@ -179,8 +179,10 @@ const App = () => {
     if (authenticated) {
       // Get current user's profile on login
       dispatch(subscribeUserProfile(publicKey));
-    } else {
-      dispatch(unsubscribeUserProfile(publicKey));
+
+      return () => {
+        dispatch(unsubscribeUserProfile(publicKey));
+      };
     }
   }, [authenticated, dispatch, publicKey]);
 
