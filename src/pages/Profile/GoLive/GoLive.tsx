@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import * as Common from "shock-common";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
@@ -93,17 +94,21 @@ const GoLive = () => {
             text: paragraph
           });
         }
-        contentItems.push({
-          type: "stream/embedded",
-          width: 0,
+
+        const streamContent: Common.EmbeddedStream = {
           height: 0,
-          magnetURI: streamPlaybackUrl,
           isPreview: false,
           isPrivate: false,
-          userToken: latestUserToken,
           liveStatus: "waiting",
-          statusUrl: stUrl
-        });
+          magnetURI: streamPlaybackUrl,
+          statusUrl: stUrl,
+          type: "stream/embedded",
+          userToken: latestUserToken,
+          viewersCounter: 0,
+          width: 0
+        };
+
+        contentItems.push(streamContent);
 
         const res = await Http.post(`/api/gun/wall`, {
           tags: [],
