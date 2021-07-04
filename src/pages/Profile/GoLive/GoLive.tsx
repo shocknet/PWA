@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
@@ -7,7 +7,6 @@ import { addStream, removeStream } from "../../../actions/ContentActions";
 import Loader from "../../../common/Loader";
 import Http from "../../../utils/Http";
 import obsLogo from "../../../images/obs-2.svg";
-import Stream from "../../../common/Post/components/Stream";
 import { RequestToken } from "../../../utils/seed";
 import { useHistory } from "react-router";
 import Modal from "../../../common/Modal";
@@ -17,8 +16,6 @@ import * as gStyles from "../../../styles";
 import Line from "../../../common/Line";
 import Pad from "../../../common/Pad";
 
-import Static from "./components/Static";
-import CamFeed from "./components/CamFeed";
 import styles from "./css/GoLive.module.css";
 import InputGroup from "../../../common/InputGroup";
 
@@ -47,7 +44,6 @@ const GoLive = () => {
     ({ content }) => content.streamContentId
   );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
-  const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
   const [loading, setLoading] = useState(false);
@@ -56,14 +52,13 @@ const GoLive = () => {
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
 
   const [error, setError] = useState<string | null>(null);
-  const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
   const [starting, setStarting] = useState(false);
 
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
 
-  const onSubmitCb = useCallback(
+  const onSubmitCb = React.useCallback(
     async (servicePrice?, serviceID?) => {
       try {
         setLoading(true);
