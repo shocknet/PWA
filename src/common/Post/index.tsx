@@ -181,10 +181,6 @@ const Post = ({
     return null;
   };
 
-  // useEffect(() => {
-  //   attachMedia();
-  // }, [contentItems.length]);
-
   const nextSlide = useCallback(() => {
     if (!carouselAPI) return;
 
