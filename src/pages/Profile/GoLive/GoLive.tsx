@@ -101,6 +101,7 @@ const GoLive = () => {
           isPrivate: false,
           liveStatus: "waiting",
           magnetURI: streamPlaybackUrl,
+          playbackMagnet: "",
           statusUrl: stUrl,
           type: "stream/embedded",
           userToken: latestUserToken,
