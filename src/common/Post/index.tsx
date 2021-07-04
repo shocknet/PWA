@@ -112,7 +112,7 @@ const Post = ({
     });
   }, [getMediaContent, publicKey, unlockedContent]);
 
-  const parseContent = ([key, item], index) => {
+  const parseContent = ([key, item]: [string, Common.ContentItem], index) => {
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
     }
@@ -162,7 +162,25 @@ const Post = ({
         />
       );
     }
-    if (item.type === "stream/embedded") {
+    if (Common.isEmbeddedStream(finalItem)) {
+      if (item.playbackMagnet) {
+        return (
+          <Video
+            id={key}
+            item={{
+              ...finalItem,
+              magnetURI: finalItem.playbackMagnet
+            }}
+            index={index}
+            postId={id}
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            key={`${id}-${index}`}
+            hideRibbon={undefined}
+            width={undefined}
+          />
+        );
+      }
       return (
         <Stream
           id={key}
