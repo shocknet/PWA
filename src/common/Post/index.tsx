@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import * as Common from "shock-common";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
@@ -48,8 +49,6 @@ const Post = ({
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [liveStatus, setLiveStatus] = useState("");
-  const [viewersCounter, setViewersCounter] = useState(0);
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
@@ -67,32 +66,29 @@ const Post = ({
     publicKey
   ]);
 
-  //effect for liveStatus and viewers counter
-  useEffect(() => {
-    const values = Object.values(post.contentItems);
-    const videoContent = values.find(
-      // @ts-expect-error
-      item => item.type === "video/embedded" && item.liveStatus === "wasLive"
-    );
-    const streamContent = values.find(
-      item => item.type === "stream/embedded" && item.liveStatus === "live"
-    );
-    let status = "";
-    if (videoContent) {
-      status = "Was Live";
+  const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
+    const stream = Object.values(post.contentItems).find(
+      item => item.type === "stream/embedded"
+    ) as Common.EmbeddedStream;
+
+    if (stream) {
+      return stream.liveStatus;
     }
-    if (streamContent) {
-      status = "Is Live";
-      // @ts-expect-error
-      if (streamContent.viewersCounter) {
-        // @ts-expect-error
-        setViewersCounter(streamContent.viewersCounter);
-      }
+
+    return null;
+  }, [post.contentItems]);
+
+  const viewersCounter = React.useMemo<number | null>(() => {
+    const stream = Object.values(post.contentItems).find(
+      item => item.type === "stream/embedded"
+    ) as Common.EmbeddedStream;
+
+    if (stream && stream.liveStatus === "live") {
+      return stream.viewersCounter;
     }
-    if (status) {
-      setLiveStatus(status);
-    }
-  }, [post.contentItems, setLiveStatus]);
+
+    return null;
+  }, [post.contentItems]);
 
   const getMediaContent = useCallback(() => {
     return Object.entries(post.contentItems).filter(
@@ -298,10 +294,10 @@ const Post = ({
                   {liveStatus}
                   <i
                     className={`fas fa-circle liveStatusIcon ${
-                      liveStatus === "Is Live" ? "liveIcon" : ""
+                      liveStatus === "live" ? "liveIcon" : ""
                     }`}
                   ></i>
-                  {liveStatus === "Is Live" && (
+                  {liveStatus === "live" && (
                     <span> | {viewersCounter} watching</span>
                   )}
                 </p>
