@@ -278,6 +278,12 @@ const Post = ({
     }
   }, []);
 
+  const readableLiveStatus: Record<Common.LiveStatus, string> = {
+    live: "Is Live",
+    waiting: "Waiting",
+    wasLive: "Was Live"
+  };
+
   return (
     <div className="post">
       <div className="head">
@@ -291,7 +297,7 @@ const Post = ({
               <Link to={`/otherUser/${publicKey}`}>{author.displayName}</Link>
               {liveStatus && (
                 <p className="liveStatus">
-                  {liveStatus}
+                  {readableLiveStatus[liveStatus]}
                   <i
                     className={`fas fa-circle liveStatusIcon ${
                       liveStatus === "live" ? "liveIcon" : ""
