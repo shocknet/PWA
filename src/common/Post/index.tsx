@@ -75,7 +75,6 @@ const Post = ({
       item => item.type === "video/embedded" && item.liveStatus === "wasLive"
     );
     const streamContent = values.find(
-      // @ts-expect-error
       item => item.type === "stream/embedded" && item.liveStatus === "live"
     );
     let status = "";
