@@ -117,11 +117,14 @@ const GoLive = () => {
         });
         if (res.status === 200) {
           const { data } = res;
-          const [postId, newPost] = data;
+
+          const [postId, newPost] = data as [string, Common.RawPost];
           console.log(newPost.contentItems);
+
           const [contentId] = Object.entries(newPost.contentItems).find(
-            //@ts-expect-error
-            ([_, item]) => item.magnetURI === streamPlaybackUrl
+            ([_, item]) =>
+              item.type === "stream/embedded" &&
+              item.magnetURI === streamPlaybackUrl
           );
           addStream({
             seedToken: latestUserToken,
