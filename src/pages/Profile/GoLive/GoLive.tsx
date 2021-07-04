@@ -253,7 +253,14 @@ const GoLive = () => {
     removeStream()(dispatch);
     console.info(streamUserToken);
     history.push("/profile");
-  }, [dispatch, removeStream]);
+  }, [
+    dispatch,
+    history,
+    streamContentId,
+    streamLiveToken,
+    streamPostId,
+    streamUserToken
+  ]);
   const btnClass = c(
     gStyles.col,
     gStyles.centerJustify,
