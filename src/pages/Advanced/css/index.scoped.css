@@ -149,3 +149,12 @@ p.advanced-transaction-author-name {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.open-info-btn {
+  float: right;
+  margin-right: 24px;
+}
+
+.open-info-btn:hover {
+  cursor: pointer;
+}
