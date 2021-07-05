@@ -33,6 +33,8 @@ import {
 } from "./actions/ContentActions";
 import { closeDialog } from "./actions/AppActions";
 
+import { ToastContainer } from "react-toastify";
+
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
 const WalletSettingsPage = React.lazy(() => import("./pages/WalletSettings"));
@@ -382,6 +384,19 @@ const App = () => {
           <Redirect to="/overview" />
         </Switch>
       </Suspense>
+
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        closeButton={false}
+      />
     </FullHeight>
   );
 };

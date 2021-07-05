@@ -153,6 +153,7 @@ export interface ContentRevealCoordinateMetadataOutbound {
   type: "orderAck";
 }
 
+
 /**
  * Post as stored in Gun. Without `contentItems`.
  */
@@ -164,3 +165,15 @@ export const isPostRaw = createValidator<PostRaw>({
   tags: (val: string) => typeof val === "string",
   title: Common.isPopulatedString
 });
+
+export interface NodeInfo {
+  uris: string[];
+  synced_to_chain: boolean;
+  synced_to_graph: boolean;
+  identity_pubkey: string;
+  best_header_timestamp: string;
+  block_height: number;
+  num_pending_channels: number;
+  version: string;
+}
+
