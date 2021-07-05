@@ -169,3 +169,14 @@ export interface ContentRevealCoordinateMetadataOutbound {
    */
   type: "orderAck";
 }
+
+export interface NodeInfo {
+  uris: string[];
+  synced_to_chain: boolean;
+  synced_to_graph: boolean;
+  identity_pubkey: string;
+  best_header_timestamp: string;
+  block_height: number;
+  num_pending_channels: number;
+  version: string;
+}
