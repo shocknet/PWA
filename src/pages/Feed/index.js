@@ -4,13 +4,11 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState
 } from "react";
 import * as Common from "shock-common";
 import { useHistory } from "react-router-dom";
 
-import { processDisplayName } from "../../utils/String";
 import { attachMedia } from "../../utils/Torrents";
 import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
@@ -20,19 +18,16 @@ import ShareModal from "../Feed/components/ShareModal";
 import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 
-import { isSharedPost } from "../../schema";
-
 import "./css/index.scoped.css";
 import UnlockModal from "./components/UnlockModal";
 import {
   subscribeFollows,
-  subscribeSharedUserPosts,
   subscribeUserPosts,
   unsubscribeFollows,
-  reloadFeed
+  reloadFeed,
+  subSharedPosts
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
-import { rifleCleanup } from "../../utils/WebSocket";
 import styles from "./css/Feed.module.css";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -42,8 +37,9 @@ const FeedPage = () => {
   const dispatch = Store.useDispatch();
   const history = useHistory();
   const follows = Store.useSelector(Store.selectFollows);
-  const posts = Store.useSelector(Store.selectFeedPosts);
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const posts = Store.useSelector(
+    Store.selectAllPostsFromFollowedNewestToOldest
+  );
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
@@ -56,28 +52,6 @@ const FeedPage = () => {
       dispatch(unsubscribeFollows());
     };
   }, [dispatch]);
-  const followedPosts = useMemo(() => {
-    if (posts) {
-      const feed = Object.values(posts)
-        .reduce((posts, userPosts) => [...posts, ...userPosts], [])
-        .filter(p => {
-          if (isSharedPost(p)) {
-            return !!follows.find(f => f.user === p.sharerId);
-          }
-          return !!follows.find(f => f.user === p.authorId);
-        })
-        .sort((a, b) => {
-          const alpha = isSharedPost(a) ? a.shareDate : a.date;
-          const beta = isSharedPost(b) ? b.shareDate : b.date;
-
-          return beta - alpha;
-        });
-
-      return feed;
-    }
-
-    return [];
-  }, [follows, posts]);
 
   const toggleTipModal = useCallback(
     tipData => {
@@ -116,23 +90,21 @@ const FeedPage = () => {
 
   useLayoutEffect(() => {
     attachMedia(
-      followedPosts.filter(post => post.type === "post"),
+      posts.filter(post => !Common.isSharedPost(post)),
       false
     );
-  }, [followedPosts]);
+  }, [posts]);
 
   useEffect(() => {
     const subscriptions = follows.map(follow => {
       const profileSubscription = dispatch(subscribeUserProfile(follow.user));
       const postsSubscription = dispatch(subscribeUserPosts(follow.user));
-      const sharedPostsSubscription = dispatch(
-        subscribeSharedUserPosts(follow.user)
-      );
+      const sharedPostsSubscription = dispatch(subSharedPosts(follow.user));
 
       return () => {
-        // @ts-ignore
         profileSubscription();
-        rifleCleanup(postsSubscription, sharedPostsSubscription)();
+        postsSubscription();
+        sharedPostsSubscription();
       };
     });
 
@@ -143,13 +115,13 @@ const FeedPage = () => {
 
   //effect to reload the feed once after a cache clear
   useEffect(() => {
-    if (followedPosts.length > 0 && !reloadDone) {
+    if (posts.length > 0 && !reloadDone) {
       dispatch(reloadFeed());
       setTimeout(() => {
         history.go(0);
       }, 3000);
     }
-  }, [followedPosts, reloadDone, history, reloadFeed, dispatch]);
+  }, [reloadDone, history, dispatch, posts.length]);
 
   return (
     <div className="page-container feed-page">
@@ -181,115 +153,29 @@ const FeedPage = () => {
         <p className="tab">Videos</p>
       </div>
       <div className="posts-holder">
-        {followedPosts.length === 0 && <Loader text="loading posts..." />}
-        {followedPosts.map((post, index) => {
-          if (post.type === "shared") {
-            if (!post.originalPost) {
-              return null;
-            }
-            const item = Object.entries(post.originalPost.contentItems).find(
-              ([_, item]) => item.type === "stream/embedded"
-            );
-            let streamContentId, streamItem;
-            if (item) {
-              [streamContentId, streamItem] = item;
-            }
-            if (streamItem) {
-              //@ts-expect-error
-              if (!streamItem.liveStatus) {
-                return null;
-              }
-              //@ts-expect-error
-              if (streamItem.liveStatus === "waiting") {
-                return null;
-              }
-              //@ts-expect-error
-              if (streamItem.liveStatus === "wasLive") {
-                //@ts-expect-error
-                if (!streamItem.playbackMagnet) {
-                  return null;
-                }
-                post.originalPost.contentItems[streamContentId].type =
-                  "video/embedded";
-                //@ts-expect-error
-                post.originalPost.contentItems[streamContentId].magnetURI =
-                  //@ts-expect-error
-                  streamItem.playbackMagnet;
-              }
-            }
-            const sharerProfile =
-              userProfiles[post.sharerId] ||
-              Common.createEmptyUser(post.sharerId);
-            const originalPublicKey = post.originalAuthor;
-            const originalProfile =
-              userProfiles[originalPublicKey] ||
-              Common.createEmptyUser(originalPublicKey);
+        {posts.length === 0 && <Loader text="loading posts..." />}
+        {posts.map(post => {
+          if (Common.isSharedPost(post)) {
             return (
-              <Suspense fallback={<Loader />} key={index}>
+              <Suspense fallback={<Loader />} key={post.shareID}>
                 <SharedPost
-                  originalPost={post.originalPost}
-                  originalPostProfile={originalProfile}
-                  sharedTimestamp={post.shareDate}
-                  sharerProfile={sharerProfile}
-                  postPublicKey={originalPublicKey}
                   openTipModal={toggleTipModal}
                   openUnlockModal={toggleUnlockModal}
                   openShareModal={toggleShareModal}
+                  postID={post.originalPostID}
+                  sharerPublicKey={post.sharedBy}
                 />
               </Suspense>
             );
           }
 
-          const item = Object.entries(post.contentItems).find(
-            ([_, item]) => item.type === "stream/embedded"
-          );
-          let streamContentId, streamItem;
-          if (item) {
-            [streamContentId, streamItem] = item;
-          }
-          if (streamItem) {
-            //@ts-expect-error
-            if (!streamItem.liveStatus) {
-              return null;
-            }
-            //@ts-expect-error
-            if (streamItem.liveStatus === "waiting") {
-              return null;
-            }
-            //@ts-expect-error
-            if (streamItem.liveStatus === "wasLive") {
-              //@ts-expect-error
-              if (!streamItem.playbackMagnet) {
-                return null;
-              }
-              post.contentItems[streamContentId].type = "video/embedded";
-              //@ts-expect-error
-              post.contentItems[streamContentId].magnetURI =
-                //@ts-expect-error
-                streamItem.playbackMagnet;
-            }
-          }
-          const profile =
-            userProfiles[post.authorId] ||
-            Common.createEmptyUser(post.authorId);
-
           return (
-            <Suspense fallback={<Loader />} key={index}>
+            <Suspense fallback={<Loader />} key={post.id}>
               <Post
                 id={post.id}
-                timestamp={post.date}
-                contentItems={post.contentItems}
-                username={processDisplayName(
-                  profile?.publicKey,
-                  profile?.displayName
-                )}
                 publicKey={post.authorId}
                 openTipModal={toggleTipModal}
                 openUnlockModal={toggleUnlockModal}
-                //@ts-expect-error
-                tipCounter={post.tipCounter || 0}
-                //@ts-expect-error
-                tipValue={post.tipValue || 0}
                 openShareModal={toggleShareModal}
               />
             </Suspense>

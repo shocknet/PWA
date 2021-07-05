@@ -131,7 +131,7 @@ const CreatePostPage = () => {
   const parseContent = ([key, item], index) => {
     if (item.type === "image/embedded") {
       return (
-        <div className="preview-container">
+        <div className="preview-container" key={key}>
           <div className="preview-image-container">
             <ImagePreview
               id={key}
@@ -160,6 +160,7 @@ const CreatePostPage = () => {
           onClick={() => {
             setSelectedContent(key);
           }}
+          key={key}
         >
           <div className="relative">
             <div className="video-placeholder width-100-px">

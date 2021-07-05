@@ -58,11 +58,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
               return response && response.ackInfo;
             })();
 
-            // Cast: only can purchase normal posts not shared posts.
-            const post = Store.selectSinglePost(
-              author,
-              postID
-            )(state) as Schema.Post;
+            const post = Store.selectSinglePost(author, postID)(state);
 
             if (post) {
               const paragraphs = Object.values(post.contentItems).filter(
@@ -136,10 +132,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
 
   React.useEffect(() => {
     if (publicKey) {
-      const subscription = dispatch(subscribeUserPosts(publicKey));
-      return () => {
-        subscription.then(sub => sub.off());
-      };
+      return dispatch(subscribeUserPosts(publicKey));
     } else {
       return Utils.EMPTY_FN;
     }

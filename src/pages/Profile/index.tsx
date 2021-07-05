@@ -13,8 +13,6 @@ import { Link } from "react-router-dom";
 import c from "classnames";
 import * as Common from "shock-common";
 
-import { processDisplayName } from "../../utils/String";
-
 import * as Utils from "../../utils";
 import {
   deleteService,
@@ -39,10 +37,9 @@ import { rifle, rifleCleanup } from "../../utils/WebSocket";
 import "./css/index.scoped.css";
 import {
   deleteUserPost,
-  subscribeSharedUserPosts,
+  subSharedPosts,
   subscribeUserPosts
 } from "../../actions/FeedActions";
-import { isSharedPost } from "../../schema";
 import { setWebclientPrefix } from "../../actions/NodeActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -60,28 +57,16 @@ const ProfilePage = () => {
   const [deletePostModalData, setDeletePostModalData] = useState(null);
   const [deletePostModalLoading, setDeletePostModalLoading] = useState(false);
 
-  const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const allPosts = Store.useSelector(Store.selectAllPosts);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
   const user = useSelector(Store.selectSelfUser);
-  const myPosts = useMemo(() => {
-    if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].slice().sort((a, b) => {
-        const alpha = isSharedPost(a) ? a.shareDate : a.date;
-        const beta = isSharedPost(b) ? b.shareDate : b.date;
-
-        return beta - alpha;
-      });
-      return myP;
-    }
-    return [];
-  }, [posts, publicKey]);
 
   useEffect(() => {
     const subscription = subscribeMyServices()(dispatch);
@@ -89,14 +74,12 @@ const ProfilePage = () => {
     return rifleCleanup(subscription);
   }, [dispatch]);
 
-  useEffect(() => {
-    const postSubscription = dispatch(subscribeUserPosts(publicKey));
-    const sharedPostSubscription = dispatch(
-      subscribeSharedUserPosts(publicKey)
-    );
+  useEffect(() => dispatch(subscribeUserPosts(publicKey)), [
+    dispatch,
+    publicKey
+  ]);
 
-    return rifleCleanup(postSubscription, sharedPostSubscription);
-  }, [dispatch, publicKey]);
+  useEffect(() => dispatch(subSharedPosts(publicKey)), [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -336,92 +319,29 @@ const ProfilePage = () => {
   const AVATAR_SIZE = 122;
 
   const renderPosts = () => {
-    return myPosts.map((post, index) => {
-      if (post.type === "shared") {
-        if (!post.originalPost) {
-          return null;
-        }
-        const item = Object.entries(post.originalPost.contentItems).find(
-          ([_, item]) => item.type === "stream/embedded"
-        );
-        let streamContentId, streamItem;
-        if (item) {
-          [streamContentId, streamItem] = item;
-        }
-        if (streamItem) {
-          if (
-            streamItem.liveStatus === "wasLive" &&
-            streamItem.playbackMagnet
-          ) {
-            post.originalPost.contentItems[streamContentId].type =
-              "video/embedded";
-            //@ts-expect-error
-            post.originalPost.contentItems[streamContentId].magnetURI =
-              streamItem.playbackMagnet;
-          }
-        }
-        // TODO: ensure users reducer receives sharer profiles
-        const sharerProfile =
-          userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
-        const originalPublicKey = post.originalAuthor;
-        const originalProfile =
-          userProfiles[originalPublicKey] ||
-          Common.createEmptyUser(originalPublicKey);
+    return posts.map(post => {
+      if (Common.isSharedPost(post)) {
         return (
-          <Suspense
-            fallback={<Loader />}
-            key={post.sharerId + post.originalPost.id}
-          >
+          <Suspense fallback={<Loader />} key={post.shareID}>
             <SharedPost
-              originalPost={post.originalPost}
-              originalPostProfile={originalProfile}
-              sharedTimestamp={post.shareDate}
-              sharerProfile={sharerProfile}
-              postPublicKey={originalPublicKey}
-              openTipModal={() => {}}
-              openUnlockModal={() => {}}
+              postID={post.originalPostID}
+              sharerPublicKey={post.sharedBy}
+              openTipModal={Utils.EMPTY_FN}
+              openUnlockModal={Utils.EMPTY_FN}
               openDeleteModal={toggleDeleteModal}
               openShareModal={null}
             />
           </Suspense>
         );
       }
-      const item = Object.entries(post.contentItems).find(
-        ([_, item]) => item.type === "stream/embedded"
-      );
-      let streamContentId, streamItem;
-      if (item) {
-        [streamContentId, streamItem] = item;
-      }
-      if (streamItem) {
-        if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
-          post.contentItems[streamContentId].type = "video/embedded";
-          //@ts-expect-error
-          post.contentItems[streamContentId].magnetURI =
-            streamItem.playbackMagnet;
-        }
-      }
-
-      const profile =
-        userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
 
       return (
         <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
-            timestamp={post.date}
-            contentItems={post.contentItems}
-            username={processDisplayName(
-              profile?.publicKey,
-              profile?.displayName
-            )}
             publicKey={post.authorId}
-            openTipModal={() => {}}
-            openUnlockModal={() => {}}
-            //@ts-expect-error
-            tipCounter={post.tipCounter || 0}
-            //@ts-expect-error
-            tipValue={post.tipValue || 0}
+            openTipModal={Utils.EMPTY_FN}
+            openUnlockModal={Utils.EMPTY_FN}
             openDeleteModal={toggleDeleteModal}
             openShareModal={null}
           />
