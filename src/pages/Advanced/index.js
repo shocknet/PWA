@@ -20,6 +20,8 @@ import Channel from "./components/Channel";
 import Peer from "./components/Peer";
 import AddPeerModal from "./components/AddPeerModal";
 import AddChannelModal from "./components/AddChannelModal";
+import InfoModal from "./components/InfoModal";
+import * as Utils from "../../utils";
 import Http from "../../utils/Http";
 import * as Store from "../../store";
 import "./css/index.scoped.css";
@@ -33,6 +35,7 @@ const AdvancedPage = () => {
   const [page] = useState(1);
   const [addPeerOpen, setAddPeerOpen] = useState(false);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
+  const [infoModalOpen, toggleInfoModal] = Utils.useBooleanState(false);
 
   const [pendingChannels, setPendingChannels] = useState(
     /** @type {readonly PendingChannel[]} */ ([])
@@ -155,6 +158,9 @@ const AdvancedPage = () => {
             <p className="advanced-balance-usd">{channelBalanceUSD} USD</p>
           </div>
         </div>
+        <span className="open-info-btn" onClick={toggleInfoModal}>
+          Node Info <i className="fas fa-info-circle" />
+        </span>
       </div>
       <div className="advanced-accordions-container">
         <div
@@ -295,6 +301,7 @@ const AdvancedPage = () => {
         open={addChannelOpen}
         toggleModal={toggleAddChannelOpen}
       />
+      <InfoModal modalOpen={infoModalOpen} toggleModal={toggleInfoModal} />
     </div>
   );
 };
