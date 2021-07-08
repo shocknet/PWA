@@ -87,6 +87,7 @@ const GoLive = () => {
         const rtmp = finalSeedUrl.replace("https", "rtmp");
         const rtmpUrl = `${rtmp}/live`;
         const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`;
+        const viewersSocketUrl = `${finalSeedUrl.replace("https", "wss")}/websocket`
         let contentItems = [];
         if (paragraph !== "") {
           contentItems.push({
@@ -106,7 +107,9 @@ const GoLive = () => {
           type: "stream/embedded",
           userToken: latestUserToken,
           viewersCounter: 0,
-          width: 0
+          width: 0,
+          //@ts-expect-error
+          viewersSocketUrl
         };
 
         contentItems.push(streamContent);

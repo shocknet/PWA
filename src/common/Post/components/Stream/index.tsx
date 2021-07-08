@@ -39,8 +39,17 @@ const Stream = ({
     player.play();
   },[item])
   useEffect(()=>{
-    console.log("status:",liveStatus)
+    if(item.viewersSocketUrl){
+      const socket = new WebSocket(`${item.viewersSocketUrl}/stream/watch/${item.userToken}`);
+      socket.addEventListener("open", () => {
+        console.log("viewer socket open")
+      });
+      return () => {
+        socket.close()
+      }
+    }
   },[item])
+
   return (
     <div className="media-container w-100">
       <div
