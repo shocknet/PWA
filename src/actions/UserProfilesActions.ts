@@ -1,4 +1,5 @@
 import * as Common from "shock-common";
+import { DateTime } from "luxon";
 
 import * as Utils from "../utils";
 import {
@@ -33,13 +34,16 @@ export const updateUserProfile = (
 export const subscribeUserProfile = (publicKey: string) => (
   dispatch: (action: object) => void,
   getState: () => {
+    node: { publicKey: string };
     userProfiles: Record<string, Common.User>;
   }
 ) => {
   if (subscribedProfiles.has(publicKey)) {
     return () => {};
   }
-
+  if (publicKey === getState().node.publicKey) {
+    console.debug(`Subbing to self data`);
+  }
   console.info("subbing user..." + publicKey);
   subscribedProfiles.add(publicKey);
 
@@ -48,6 +52,38 @@ export const subscribeUserProfile = (publicKey: string) => (
     reconnect: true,
     onData: profile => {
       const { [publicKey]: existingUser } = getState().userProfiles;
+      const isSelf = publicKey === getState().node.publicKey;
+      //#region loggingPresence
+      let lastSeenNodeFormatted = DateTime.fromMillis(
+        profile.lastSeenNode
+      ).toRelativeCalendar({
+        unit: "seconds"
+      });
+      // ugh
+      if (lastSeenNodeFormatted === "in 0 seconds") {
+        lastSeenNodeFormatted = "Just now";
+      }
+      let lastSeenAppFormatted = DateTime.fromMillis(
+        profile.lastSeenApp
+      ).toRelativeCalendar({
+        unit: "seconds"
+      });
+      // ugh
+      if (lastSeenAppFormatted === "in 0 seconds") {
+        lastSeenAppFormatted = "Just now";
+      }
+
+      console.debug(
+        `${
+          isSelf ? "self" : publicKey.slice(0, 6) + "..."
+        } lastSeenNode: ${lastSeenNodeFormatted}`
+      );
+      console.debug(
+        `${
+          isSelf ? "self" : publicKey.slice(0, 6) + "..."
+        } lastSeenApp: ${lastSeenAppFormatted}`
+      );
+      //#endregion loggingPresence
 
       if (existingUser) {
         dispatch({
@@ -101,6 +137,14 @@ export const subscribeUserProfile = (publicKey: string) => (
   });
 
   return () => {
+    const isSelf = publicKey === getState().node.publicKey;
+
+    console.debug(
+      isSelf
+        ? `unsubbing from self data`
+        : `unsubbing from ${publicKey.slice(0, 6)}...`
+    );
+
     rifleCleanup(subscription, binarySub)();
     subscribedProfiles.delete(publicKey);
   };
