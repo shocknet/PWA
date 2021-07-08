@@ -1,4 +1,4 @@
-// @ts-check
+import * as Common from "shock-common";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
+import * as Utils from "../../utils";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
 
@@ -44,9 +45,9 @@ const Post = ({
   const [liveStatus, setLiveStatus] = useState("");
   const [viewersCounter, setViewersCounter] = useState(0);
 
-  const isOnlineNode = /*Utils.isOnline(
-    Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
-  );*/ true;
+  const { lastSeenNode } = Utils.useLastSeen(publicKey);
+
+  const isOnlineNode = Common.isNodeOnline(lastSeenNode);
 
   //effect for liveStatus and viewers counter
   useEffect(() => {
@@ -59,12 +60,12 @@ const Post = ({
     );
     let status = "";
     if (videoContent) {
-      status = "Was Live"
+      status = "Was Live";
     }
     if (streamContent) {
-      status = "Is Live"
-      if(streamContent.viewersCounter){
-        setViewersCounter(streamContent.viewersCounter)
+      status = "Is Live";
+      if (streamContent.viewersCounter) {
+        setViewersCounter(streamContent.viewersCounter);
       }
     }
     if (status) {
@@ -277,8 +278,10 @@ const Post = ({
                     className={`fas fa-circle liveStatusIcon ${
                       liveStatus === "Is Live" ? "liveIcon" : ""
                     }`}
-                  ></i>  
-                  {liveStatus === 'Is Live' &&  <span> | {viewersCounter} watching</span>}
+                  ></i>
+                  {liveStatus === "Is Live" && (
+                    <span> | {viewersCounter} watching</span>
+                  )}
                 </p>
               )}
             </div>

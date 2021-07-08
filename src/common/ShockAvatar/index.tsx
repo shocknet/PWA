@@ -53,15 +53,13 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isSelf = publicKey === selfPublicKey;
+  const { lastSeenApp, lastSeenNode } = Utils.useLastSeen(publicKey);
 
   const history = useHistory();
   const forceUpdate = Utils.useForceUpdate();
-  const {
-    avatar: image,
-    displayName,
-    lastSeenApp,
-    lastSeenNode
-  } = Store.useSelector(Store.selectUser(publicKey));
+  const { avatar: image, displayName } = Store.useSelector(
+    Store.selectUser(publicKey)
+  );
   const story = Hooks.useStory(publicKey);
 
   React.useEffect(() => {
