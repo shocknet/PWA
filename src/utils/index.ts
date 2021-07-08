@@ -1,7 +1,9 @@
 import * as Common from "shock-common";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
+
+import { rifle } from "./WebSocket";
 
 export * from "./Date";
 export { default as Http } from "./Http";
@@ -216,4 +218,50 @@ export const safeParseJson = (o: unknown): unknown => {
     logger.log(`Error inside safeParseJson(), string provided -> `, o);
     return null;
   }
+};
+
+export const useLastSeen = (publicKey: string) => {
+  const [lastSeenApp, setLastSeenApp] = useState(0);
+  const [lastSeenNode, setLastSeenNode] = useState(0);
+
+  useEffect(() => {
+    const appSub = rifle({
+      query: `${publicKey}::Profile>lastSeenApp::on`,
+      onData(lastSeen) {
+        if (typeof lastSeen === "number") {
+          setLastSeenApp(lastSeen);
+        } else {
+          logger.error(`useLastSeen() -> got non-number lastSeenApp`);
+        }
+      },
+      onError(e) {
+        logger.error(`useLastSeen() -> lastSeenApp rifle -> `, e);
+      }
+    });
+
+    const nodeSub = rifle({
+      query: `${publicKey}::Profile>lastSeenNode::on`,
+      onData(lastSeen) {
+        if (typeof lastSeen === "number") {
+          setLastSeenNode(lastSeen);
+        } else {
+          logger.error(`useLastSeen() -> got non-number lastSeenNode`);
+        }
+      },
+      onError(e) {
+        logger.error(`useLastSeen() -> lastSeenNode rifle -> `, e);
+      }
+    });
+
+    return () => {
+      appSub.then(sub => {
+        sub.off();
+      });
+      nodeSub.then(sub => {
+        sub.off();
+      });
+    };
+  }, [publicKey]);
+
+  return { lastSeenApp, lastSeenNode };
 };
