@@ -1,17 +1,15 @@
 // @ts-check
 import { useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
-import { Link } from "react-router-dom";
+
 import Tooltip from "react-tooltip";
-import * as Common from "shock-common";
 
 import Post from ".";
 
-import av1 from "../../images/av1.jpg";
 import "../Post/css/index.scoped.css";
 import { attachMedia } from "../../utils/Torrents";
 import Loader from "../Loader";
-import * as Store from "../../store";
+
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
 /**
@@ -27,7 +25,7 @@ const SharedPost = ({
   openTipModal,
   openUnlockModal,
   openDeleteModal = undefined,
-  openShareModal = (_)=>{}
+  openShareModal = _ => {}
 }) => {
   /** @type {Post|undefined} */
   const originalPost = origPost;
@@ -44,12 +42,6 @@ const SharedPost = ({
     Tooltip.rebuild();
     loadPostMedia();
   }, [loadPostMedia]);
-
-  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
-  const isOwn = sharerProfile.publicKey === selfPublicKey;
-  const isAppOnline = Common.isAppOnline(
-    Store.useSelector(Store.selectUser(sharerProfile.publicKey)).lastSeenApp
-  );
 
   return (
     <div className="post shared-post">
