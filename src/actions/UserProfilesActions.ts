@@ -1,4 +1,5 @@
 import * as Common from "shock-common";
+import { createAction } from "@reduxjs/toolkit";
 
 import * as Utils from "../utils";
 import {
@@ -9,23 +10,15 @@ import {
 
 export const ACTIONS = {
   RESET_USER_PROFILES: "userProfiles/profiles/reset",
-  LOAD_USER_PROFILE: "userProfiles/profiles/load",
-  REMOVE_USER_PROFILE: "userProfiles/profiles/remove",
-  UPDATE_USER_PROFILE: "userProfiles/profiles/update"
+  REMOVE_USER_PROFILE: "userProfiles/profiles/remove"
 };
 
 const subscribedProfiles = new Set();
 
-export const updateUserProfile = (
-  publicKey: string,
-  profile: Partial<Common.User>
-) => ({
-  type: ACTIONS.UPDATE_USER_PROFILE,
-  data: {
-    publicKey,
-    profile
-  }
-});
+export const updatedUserProfile = createAction<{
+  profile: Partial<Common.User>;
+  publicKey: string;
+}>("userProfiles/profiles/update");
 
 /**
  * Returns an un subscription function.
@@ -44,23 +37,29 @@ export const subscribeUserProfile = (publicKey: string) => (
   subscribedProfiles.add(publicKey);
 
   const subscription = rifle({
-    query: `${publicKey}::Profile::on`,
+    query: `${publicKey}::Profile::map.on`,
     reconnect: true,
-    onData: profile => {
-      const { [publicKey]: existingUser } = getState().userProfiles;
-
-      if (existingUser) {
-        dispatch({
-          type: ACTIONS.UPDATE_USER_PROFILE,
-          data: { publicKey, profile }
-        });
-        return profile;
+    onData: (data: any, key: string) => {
+      if (key === "bio") {
+        dispatch(
+          updatedUserProfile({
+            profile: {
+              bio: data
+            },
+            publicKey
+          })
+        );
       }
-
-      dispatch({
-        type: ACTIONS.LOAD_USER_PROFILE,
-        data: { publicKey, profile }
-      });
+      if (key === "displayName") {
+        dispatch(
+          updatedUserProfile({
+            profile: {
+              displayName: data
+            },
+            publicKey
+          })
+        );
+      }
     }
   });
 
@@ -76,8 +75,11 @@ export const subscribeUserProfile = (publicKey: string) => (
           return;
         }
         dispatch(
-          updateUserProfile(publicKey, {
-            avatar: data
+          updatedUserProfile({
+            profile: {
+              avatar: data
+            },
+            publicKey
           })
         );
       } else if (key === "header") {
@@ -88,8 +90,11 @@ export const subscribeUserProfile = (publicKey: string) => (
           return;
         }
         dispatch(
-          updateUserProfile(publicKey, {
-            header: data
+          updatedUserProfile({
+            profile: {
+              header: data
+            },
+            publicKey
           })
         );
       } else {
