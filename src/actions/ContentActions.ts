@@ -158,7 +158,8 @@ export const addStream = (
     streamPostId,
     streamContentId,
     streamStatusUrl,
-    streamBroadcasterUrl
+    streamBroadcasterUrl,
+    tipOverlayUrl,
   },
   dontBackup = false
 ) => async dispatch => {
@@ -174,7 +175,8 @@ export const addStream = (
           streamPostId,
           streamContentId,
           streamStatusUrl,
-          streamBroadcasterUrl
+          streamBroadcasterUrl,
+          tipOverlayUrl
         })
       }
     });
@@ -188,7 +190,8 @@ export const addStream = (
       streamPostId,
       streamContentId,
       streamStatusUrl,
-      streamBroadcasterUrl
+      streamBroadcasterUrl,
+      tipOverlayUrl
     }
   });
 };
