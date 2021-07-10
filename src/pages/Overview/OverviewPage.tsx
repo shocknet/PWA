@@ -164,8 +164,7 @@ const OverviewPage = () => {
         disableBackdropClose
       >
         {(() => {
-          /** @type {string[]} */
-          let paragraphs = [];
+          let paragraphs: string[] = [];
           if (deploymentType === "non-wizard") {
             paragraphs = JSON.parse(
               process.env.REACT_APP_INTRO_PARAGRAPHS || "[]"
