@@ -151,12 +151,7 @@ const OverviewPage = () => {
       <Modal
         modalOpen={
           !fetchingDeploymentType &&
-          !(introDismissed || sessionStorage.getItem("introDismissed")) &&
-          // At least one gotta exist else why show the dialog
-          !!(
-            process.env.REACT_APP_INTRO_PARAGRAPHS ||
-            process.env.REACT_APP_INTRO_PARAGRAPHS_WIZARD
-          )
+          !(introDismissed || sessionStorage.getItem("introDismissed"))
         }
         modalTitle="Welcome"
         toggleModal={dismissIntro}
@@ -166,14 +161,10 @@ const OverviewPage = () => {
         {(() => {
           let paragraphs: string[] = [];
           if (deploymentType === "non-wizard") {
-            paragraphs = JSON.parse(
-              process.env.REACT_APP_INTRO_PARAGRAPHS || "[]"
-            );
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS;
           }
           if (deploymentType === "wizard") {
-            paragraphs = JSON.parse(
-              process.env.REACT_APP_INTRO_PARAGRAPHS_WIZARD || "[]"
-            );
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS_WIZARD;
           }
           if (deploymentType === "unknown") {
             paragraphs = introParagraphsIfError;
@@ -200,5 +191,14 @@ const INTRO_MODAL_STYLE = {
   paddingRight: 24,
   paddingTop: 24
 };
+
+const REACT_APP_INTRO_PARAGRAPHS = [
+  "If you bought a node and didn't get a channel please email us or contact us through telegram",
+  'Telegram: <a href="https://t.me/Shockwallet">click here</a>',
+  'email: <a href="mailto:fake@email.com">fake@email.com</a>'
+];
+const REACT_APP_INTRO_PARAGRAPHS_WIZARD = [
+  "Welcome to Shocknet (using Wizard)"
+];
 
 export default OverviewPage;
