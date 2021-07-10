@@ -23,6 +23,8 @@ import InputGroup from "../../../common/InputGroup";
 const GoLive = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const nodeIP = Store.useSelector(({node}) => node.hostIP)
+  const relayId = Store.useSelector(({node}) => node.relayId)
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
@@ -44,6 +46,9 @@ const GoLive = () => {
   const streamContentId = Store.useSelector(
     ({ content }) => content.streamContentId
   );
+  const tipOverlayUrl = Store.useSelector(
+    ({ content }) => content.tipOverlayUrl
+  );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
@@ -58,7 +63,8 @@ const GoLive = () => {
 
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
-
+  const [copiedOverlayUrl, setCopiedOverlayUrl] = useState(false);
+  const [enableTipsOverlay, setEnableTipsOverlay] = useState(true);
   const onSubmitCb = React.useCallback(
     async (servicePrice?, serviceID?) => {
       try {
@@ -117,12 +123,18 @@ const GoLive = () => {
         const res = await Http.post(`/api/gun/wall`, {
           tags: [],
           title: "Post",
-          contentItems
+          contentItems,
+          enableTipsOverlay
         });
         if (res.status === 200) {
           const { data } = res;
 
-          const [postId, newPost] = data as [string, Common.RawPost];
+          const [postId, newPost, overlayAccessId] = data as [string, Common.RawPost, string];
+          let tipsNotificationsOverlayUrl = ""
+          if(overlayAccessId){
+            const  relayIdParam = relayId ? `&x-shock-hybrid-relay-id-x=${relayId}` : ""
+            tipsNotificationsOverlayUrl =  `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}${relayIdParam}`
+          }
           console.log(newPost.contentItems);
 
           const [contentId] = Object.entries(newPost.contentItems).find(
@@ -137,7 +149,8 @@ const GoLive = () => {
             streamPostId: postId,
             streamContentId: contentId,
             streamStatusUrl: stUrl,
-            streamBroadcasterUrl: rtmpUrl
+            streamBroadcasterUrl: rtmpUrl,
+            tipOverlayUrl:tipsNotificationsOverlayUrl
           })(dispatch);
           await Http.post(`/api/listenStream`, {
             postId,
@@ -156,7 +169,7 @@ const GoLive = () => {
         setLoading(false);
       }
     },
-    [availableTokens, seedProviderPub, seedToken, seedUrl, dispatch, paragraph]
+    [availableTokens, seedProviderPub, seedToken, seedUrl,enableTipsOverlay, dispatch, paragraph]
   );
   const closePrompt = useCallback(() => {
     setPromptInfo(null);
@@ -223,10 +236,17 @@ const GoLive = () => {
     navigator.clipboard.writeText(streamToken);
     setCopiedToken(true);
   }, [streamToken, setCopiedToken]);
+
+  const copyOverlayUrl = useCallback(() => {
+    navigator.clipboard.writeText(tipOverlayUrl);
+    setCopiedOverlayUrl(true);
+  }, [tipOverlayUrl, setCopiedOverlayUrl]);
+
   const copyUri = useCallback(() => {
     navigator.clipboard.writeText(streamBroadcasterUrl);
     setCopiedUrl(true);
   }, [streamBroadcasterUrl, setCopiedUrl]);
+
   const onInputChange = useCallback(
     e => {
       const { value, name } = e.target;
@@ -245,6 +265,10 @@ const GoLive = () => {
     },
     [setParagraph, setSelectedSource]
   );
+  
+  const toggleEnableTipsOverlay = useCallback(() => {
+    setEnableTipsOverlay(!enableTipsOverlay)
+  },[enableTipsOverlay, setEnableTipsOverlay])
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
@@ -379,6 +403,25 @@ const GoLive = () => {
                       onClick={copyToken}
                     ></i>
                   </div>
+                  { tipOverlayUrl && <p>Tips notifications overlay Url:</p>}
+                  { tipOverlayUrl && <div className="d-flex flex-align-center">
+                    {/*@ts-expect-error*/}
+                    <InputGroup
+                      name="Overlay Url"
+                      value={tipOverlayUrl}
+                      disabled
+                    />
+                    <i
+                      className={
+                        !copiedOverlayUrl
+                          ? "far fa-copy fa-lg m-1"
+                          : "fas fa-check fa-lg m-1"
+                      }
+                      onClick={copyOverlayUrl}
+                    ></i>
+                  </div>
+                    
+                  }
                   <div className="flex-center">
                     <button
                       onClick={stopStream}
@@ -401,6 +444,8 @@ const GoLive = () => {
                   value={paragraph}
                   onChange={onInputChange}
                 />
+                <label htmlFor="enable-tips-notifications">Enable Tips notifications overlay </label>
+                <input type="checkbox" name="enable-tips-notifications" id="enable-tips-notifications" checked={enableTipsOverlay} onClick={toggleEnableTipsOverlay} />
                 <button
                   onClick={onSubmit}
                   className={c(gStyles.width100, "shock-form-button-confirm")}

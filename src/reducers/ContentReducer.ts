@@ -23,7 +23,8 @@ const INITIAL_STATE = {
   unlockedContent: {},
   seedInfo: {} as { seedUrl?: string; seedToken?: string },
   availableTokens: {},
-  availableStreamTokens: {}
+  availableStreamTokens: {},
+  tipOverlayUrl:""
 };
 
 const content = (state = INITIAL_STATE, action): typeof INITIAL_STATE => {
@@ -73,7 +74,8 @@ const content = (state = INITIAL_STATE, action): typeof INITIAL_STATE => {
         streamPostId: data.streamPostId,
         streamContentId: data.streamContentId,
         streamStatusUrl: data.streamStatusUrl,
-        streamBroadcasterUrl: data.streamBroadcasterUrl
+        streamBroadcasterUrl: data.streamBroadcasterUrl,
+        tipOverlayUrl:data.tipOverlayUrl,
       };
     }
     case ACTIONS.REMOVE_STREAM: {
