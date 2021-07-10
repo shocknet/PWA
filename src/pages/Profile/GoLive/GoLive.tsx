@@ -24,6 +24,7 @@ const GoLive = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const nodeIP = Store.useSelector(({node}) => node.hostIP)
+  const relayId = Store.useSelector(({node}) => node.relayId)
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
@@ -128,7 +129,8 @@ const GoLive = () => {
           const [postId, newPost, overlayAccessId] = data as [string, Common.RawPost, string];
           let tipsNotificationsOverlayUrl = ""
           if(overlayAccessId){
-            tipsNotificationsOverlayUrl =  `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}`
+            const  relayIdParam = relayId ? `&x-shock-hybrid-relay-id-x=${relayId}` : ""
+            tipsNotificationsOverlayUrl =  `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}${relayIdParam}`
           }
           console.log(newPost.contentItems);
 
