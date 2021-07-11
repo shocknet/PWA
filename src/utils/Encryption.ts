@@ -4,10 +4,10 @@ import FieldError from "./FieldError";
 import { safeParseJSON } from "./JSON";
 
 interface EncryptedMessage {
-  ciphertext: Uint8Array;
-  ephemPublicKey: Uint8Array;
-  iv: Uint8Array;
-  mac: Uint8Array;
+  ciphertext: Buffer;
+  ephemPublicKey: Buffer;
+  iv: Buffer;
+  mac: Buffer;
 }
 
 interface EncryptedMessageResponse {
@@ -18,12 +18,12 @@ interface EncryptedMessageResponse {
 }
 
 interface EncryptMessageArgs {
-  publicKey: Uint8Array | string;
+  publicKey: Buffer | string;
   message: string;
 }
 
 interface DecryptMessageArgs {
-  privateKey: Uint8Array | string;
+  privateKey: Buffer | string;
   encryptedMessage: EncryptedMessage;
 }
 
@@ -47,12 +47,12 @@ export const convertUTF8ToBuffer = (value: string) => {
   return Buffer.from(value, "utf-8");
 };
 
-export const convertBufferToBase64 = (value: Uint8Array) => {
+export const convertBufferToBase64 = (value: Buffer) => {
   return Buffer.from(value).toString("base64");
 };
 
-export const processKey = (key: Uint8Array | string): Uint8Array => {
-  if (key instanceof Uint8Array) {
+export const processKey = (key: Buffer | string): Buffer => {
+  if (Buffer.isBuffer(key)) {
     return key;
   }
 
@@ -74,10 +74,10 @@ export const convertToEncryptedMessageResponse = (
   }
 
   if (
-    encryptedMessage.ciphertext instanceof Uint8Array &&
-    encryptedMessage.iv instanceof Uint8Array &&
-    encryptedMessage.mac instanceof Uint8Array &&
-    encryptedMessage.ephemPublicKey instanceof Uint8Array
+    Buffer.isBuffer(encryptedMessage.ciphertext) &&
+    Buffer.isBuffer(encryptedMessage.iv) &&
+    Buffer.isBuffer(encryptedMessage.mac) &&
+    Buffer.isBuffer(encryptedMessage.ephemPublicKey)
   ) {
     return {
       ciphertext: convertBufferToBase64(encryptedMessage.ciphertext),
@@ -97,10 +97,10 @@ export const convertToEncryptedMessage = (
   encryptedMessage: EncryptedMessage | EncryptedMessageResponse
 ): EncryptedMessage => {
   if (
-    encryptedMessage.ciphertext instanceof Uint8Array &&
-    encryptedMessage.iv instanceof Uint8Array &&
-    encryptedMessage.mac instanceof Uint8Array &&
-    encryptedMessage.ephemPublicKey instanceof Uint8Array
+    Buffer.isBuffer(encryptedMessage.ciphertext) &&
+    Buffer.isBuffer(encryptedMessage.iv) &&
+    Buffer.isBuffer(encryptedMessage.mac) &&
+    Buffer.isBuffer(encryptedMessage.ephemPublicKey)
   ) {
     // @ts-ignore
     return encryptedMessage;
@@ -134,8 +134,8 @@ export const isNonEncrypted = (eventName: string) =>
   process.env.REACT_APP_SHOCK_ENCRYPTION_ECC === "false";
 
 export const generateKeyPair = () => {
-  const privateKey: Uint8Array = ECCrypto.generatePrivate();
-  const publicKey: Uint8Array = ECCrypto.getPublic(privateKey);
+  const privateKey: Buffer = ECCrypto.generatePrivate();
+  const publicKey: Buffer = ECCrypto.getPublic(privateKey);
 
   const privateKeyBase64 = convertBufferToBase64(privateKey);
   const publicKeyBase64 = convertBufferToBase64(publicKey);
@@ -172,13 +172,25 @@ export const decryptMessage = async ({
   privateKey,
   encryptedMessage
 }: DecryptMessageArgs): Promise<string | object> => {
-  const processedPrivateKey = processKey(privateKey);
-  const decryptedMessageBuffer: Uint8Array = await ECCrypto.decrypt(
-    processedPrivateKey,
-    convertToEncryptedMessage(encryptedMessage)
-  );
-  const decryptedMessage = Buffer.from(decryptedMessageBuffer).toString();
-  const parsedMessage = safeParseJSON(decryptedMessage);
+  try {
+    const processedPrivateKey = processKey(privateKey);
+    const decryptedMessageBuffer: Buffer = await ECCrypto.decrypt(
+      processedPrivateKey,
+      convertToEncryptedMessage(encryptedMessage)
+    );
+    const decryptedMessage = decryptedMessageBuffer.toString("utf-8");
+    const parsedMessage = safeParseJSON(decryptedMessage);
 
-  return parsedMessage;
+    return parsedMessage;
+  } catch (err) {
+    if (err.message?.toLowerCase() === "bad mac") {
+      console.warn(
+        "Bad Mac!",
+        err,
+        convertToEncryptedMessage(encryptedMessage)
+      );
+    }
+
+    throw err;
+  }
 };

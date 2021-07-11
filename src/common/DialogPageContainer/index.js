@@ -9,7 +9,7 @@ import "./css/index.scoped.css";
 const DialogPageContainer = ({
   containerClassName = "",
   contentClassName = "",
-  title,
+  title = "",
   children,
   disableNav = false,
   onBack = Utils.EMPTY_FN,
