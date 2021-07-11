@@ -12,7 +12,7 @@ import LogoSection from "./components/LogoSection";
 import ChoicesStep from "./components/ChoicesStep";
 import InviteStep from "./components/InviteStep";
 import ScanStep from "./components/ScanStep";
-import * as Store from "../../store"
+import * as Store from "../../store";
 import "./css/index.css";
 import CreateAliasStep from "./components/CreateAliasStep";
 import TiersStep from "./components/TiersStep";
@@ -56,7 +56,7 @@ const AuthPage = () => {
 
     if (authMethod === "hostingTiers") {
       if (authStep === "chooseTier") {
-        return <TiersStep />
+        return <TiersStep />;
       }
     }
 
@@ -78,19 +78,15 @@ const AuthPage = () => {
   const loadCachedNode = useCallback(async () => {
     try {
       if (cachedHostIP) {
+        setLoading(true);
         console.log("Loading cached node IP");
-        const connected = !!(await connectHost(cachedHostIP, false, cachedRelayId)(dispatch));
-
-        if (connected) {
-          setLoading(false);
-        }
+        await connectHost(cachedHostIP, false, cachedRelayId)(dispatch);
 
         if (
           authToken &&
           DateTime.fromSeconds(authTokenExpirationDate).diffNow().milliseconds >
             0
         ) {
-          setLoading(true);
           const { data: authenticated } = await Http.get(`/api/gun/auth`);
           if (!authenticated.data) {
             const { data: walletStatus } = await Http.get(
@@ -105,7 +101,6 @@ const AuthPage = () => {
         }
 
         if (authToken) {
-          setLoading(true);
           setAuthStep("unlockWallet");
           setLoading(false);
         }
@@ -116,7 +111,13 @@ const AuthPage = () => {
       );
       setLoading(false);
     }
-  }, [cachedHostIP,cachedRelayId, dispatch, authToken, authTokenExpirationDate]);
+  }, [
+    cachedHostIP,
+    cachedRelayId,
+    dispatch,
+    authToken,
+    authTokenExpirationDate
+  ]);
 
   useEffect(() => {
     loadCachedNode();
