@@ -136,3 +136,11 @@ button.submit-btn {
 .blue > span {
   background-image: linear-gradient(var(--text-blue), var(--main-blue));
 }
+
+.error-info-container {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 1px solid var(--main-blue)
+}

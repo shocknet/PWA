@@ -281,6 +281,9 @@ p.shock-form-button-text {
 .m-r-1{
   margin-right: 1em;
 }
+.p-1{
+  padding: 1em;
+}
 
 .text-center {
   text-align: center;
@@ -368,4 +371,14 @@ p.shock-form-button-text {
 
 .text-align-left {
   text-align: left;
+}
+.btn-primary:hover {
+  color:black
+}
+.btn-secondary:hover {
+  color:var(--main-blue)
+}
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--main-blue);
 }
