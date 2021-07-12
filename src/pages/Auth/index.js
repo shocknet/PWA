@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { DateTime } from "luxon";
 import Http from "../../utils/Http";
 import { connectHost } from "../../actions/NodeActions";
-import { setAuthenticated, setAuthStep } from "../../actions/AuthActions";
+import { logout, setAuthenticated, setAuthStep } from "../../actions/AuthActions";
 import DialogPageContainer from "../../common/DialogPageContainer";
 import HostStep from "./components/HostStep";
 import UnlockStep from "./components/UnlockStep";
@@ -16,19 +16,28 @@ import * as Store from "../../store";
 import "./css/index.css";
 import CreateAliasStep from "./components/CreateAliasStep";
 import TiersStep from "./components/TiersStep";
+import InputGroup from "../../common/InputGroup";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
   const cachedHostIP = Store.useSelector(({ node }) => node.hostIP);
+  const cachedAlias = Store.useSelector(({ node }) => node.alias);
   const cachedRelayId = Store.useSelector(({ node }) => node.relayId);
   const [loading, setLoading] = useState(!!cachedHostIP);
   const [error, setError] = useState(null);
+  const [retryHostIP, setRetryHostIP] = useState(cachedHostIP)
   const authTokenExpirationDate = Store.useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authStep = Store.useSelector(({ auth }) => auth.authStep);
   const authMethod = Store.useSelector(({ auth }) => auth.authMethod);
+  useEffect(()=>{
+    setRetryHostIP(cachedHostIP)
+  }, [cachedHostIP,setRetryHostIP])
+  const updateRetryHostIP = useCallback((e) => {
+    setRetryHostIP(e.target.value)
+  },[setRetryHostIP])
 
   const handleBackOnError = useCallback(() => {
     setError(null);
@@ -75,12 +84,14 @@ const AuthPage = () => {
     return <ChoicesStep />;
   }, [authStep, authMethod]);
 
-  const loadCachedNode = useCallback(async () => {
+  const loadCachedNode = useCallback(async (hostIPParam) => {
+    setError(null)
+    const hostIP = hostIPParam || cachedHostIP
     try {
-      if (cachedHostIP) {
+      if (hostIP) {
         setLoading(true);
         console.log("Loading cached node IP");
-        await connectHost(cachedHostIP, false, cachedRelayId)(dispatch);
+        await connectHost(hostIP, false, cachedRelayId)(dispatch);
 
         if (
           authToken &&
@@ -122,7 +133,13 @@ const AuthPage = () => {
   useEffect(() => {
     loadCachedNode();
   }, [loadCachedNode]);
-
+  const retry = useCallback(() => {
+    loadCachedNode(retryHostIP)
+  },[retryHostIP, loadCachedNode])
+  const clearCache = useCallback(() => {
+    dispatch(logout())
+    handleBackOnError()
+  },[dispatch, logout,handleBackOnError])
   return (
     <DialogPageContainer
       disableNav
@@ -132,8 +149,27 @@ const AuthPage = () => {
     >
       <LogoSection />
       {loading && <span>Loading...</span>}
-
       {error && <span>There was an error: {error}</span>}
+      {error && <div className="error-info-container">
+        <div className="p-1">
+          {/*@ts-expect-error*/}
+          <InputGroup
+            label="Cached node Url"
+            value={retryHostIP}
+            onChange={updateRetryHostIP}
+          />
+        </div>
+        <div className="p-1">
+          {/*@ts-expect-error*/}
+          <InputGroup
+            label="Cached alias"
+            value={cachedAlias}
+          />
+        </div>
+        <button className="p-1 btn-primary" onClick={retry}>RETRY</button>
+        <button className="p-1 m-t-1 btn-secondary" onClick={clearCache}>CLEAR</button>
+      </div>}
+      
 
       {!loading && !error && currentStep}
     </DialogPageContainer>
