@@ -143,15 +143,13 @@ export const connectHost = (
 export const unlockWallet = ({
   alias,
   password,
-  invite = null
 }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/auth",
       {
         alias,
-        password,
-        invite
+        password
       },
       {
         // Unlocking can take significantly longer than other endpoints
@@ -181,13 +179,11 @@ export const unlockWallet = ({
 export const createAlias = ({
   alias,
   password,
-  invite = null
 }) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/wallet/existing", {
       alias,
-      password,
-      invite
+      password
     });
 
     dispatch(setAuthenticated(true));
@@ -211,16 +207,14 @@ export const createAlias = ({
 
 export const createWallet = ({
   alias,
-  password,
-  invite = null
+  password
 }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/wallet",
       {
         alias,
-        password,
-        invite
+        password
       },
       {
         // Creating a wallet can take longer than any other endpoints.

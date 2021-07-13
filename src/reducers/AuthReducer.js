@@ -4,7 +4,6 @@ const INITIAL_STATE = {
   authenticated: false,
   authStep: "host",
   authMethod: null,
-  invite:null,
   relayId:null
 };
 
@@ -32,12 +31,6 @@ const auth = (state = INITIAL_STATE, action) => {
         ...state,
         authMethod: method,
         authStep: defaultSteps[method]
-      };
-    }
-    case ACTIONS.SAVE_INVITE: {
-      return {
-        ...state,
-        invite:action.data
       };
     }
     case ACTIONS.LOGOUT: {
