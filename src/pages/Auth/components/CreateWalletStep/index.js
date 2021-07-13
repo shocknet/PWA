@@ -12,7 +12,6 @@ const CreateWalletStep = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const invite = Store.useSelector(({ auth }) => auth.invite);
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -55,7 +54,7 @@ const CreateWalletStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(createWallet({ alias, password,invite }));
+        const wallet = await dispatch(createWallet({ alias, password }));
         console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
