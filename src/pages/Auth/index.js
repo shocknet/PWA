@@ -115,6 +115,8 @@ const AuthPage = () => {
           setAuthStep("unlockWallet");
           setLoading(false);
         }
+
+        setLoading(false);
       }
     } catch (err) {
       setError(
