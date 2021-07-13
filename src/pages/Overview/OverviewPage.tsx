@@ -33,9 +33,9 @@ const OverviewPage = () => {
     Store.selectAllCoordinatesNewestToOldest
   );
 
-  const [deploymentType, setDeploymentType] = useState(
-    /** @type {'wizard'|'non-wizard'|'unknown'} */ "unknown"
-  );
+  const [deploymentType, setDeploymentType] = useState<
+    "hosting" | "default" | "unknown"
+  >("unknown");
   const [
     fetchingDeploymentType,
     toggleFetchingDeploymentType
@@ -43,11 +43,9 @@ const OverviewPage = () => {
   const introDismissed = Store.useSelector(
     ({ settings }) => settings.introDismissed
   );
-  const [introParagraphsIfError, setIntroParagraphsIfError] = useState(
-    /** @type {string[]} */ [
-      "There was an error fetching the deployment type of your ShockApi."
-    ]
-  );
+  const [introParagraphsIfError, setIntroParagraphsIfError] = useState<
+    string[]
+  >(["There was an error fetching the deployment type of your ShockApi."]);
 
   useEffect(() => {
     Utils.Http.get(`/healthz`)
@@ -160,11 +158,11 @@ const OverviewPage = () => {
       >
         {(() => {
           let paragraphs: string[] = [];
-          if (deploymentType === "non-wizard") {
-            paragraphs = REACT_APP_INTRO_PARAGRAPHS;
+          if (deploymentType === "hosting") {
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS_HOSTING;
           }
-          if (deploymentType === "wizard") {
-            paragraphs = REACT_APP_INTRO_PARAGRAPHS_WIZARD;
+          if (deploymentType === "default") {
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS_DEFAULT;
           }
           if (deploymentType === "unknown") {
             paragraphs = introParagraphsIfError;
@@ -192,13 +190,11 @@ const INTRO_MODAL_STYLE = {
   paddingTop: 24
 };
 
-const REACT_APP_INTRO_PARAGRAPHS = [
+const REACT_APP_INTRO_PARAGRAPHS_HOSTING = [
   "If you bought a node and didn't get a channel please email us or contact us through telegram",
   'Telegram: <a href="https://t.me/Shockwallet">click here</a>',
   'email: <a href="mailto:fake@email.com">fake@email.com</a>'
 ];
-const REACT_APP_INTRO_PARAGRAPHS_WIZARD = [
-  "Welcome to Shocknet (using Wizard)"
-];
+const REACT_APP_INTRO_PARAGRAPHS_DEFAULT = ["Welcome to Shocknet"];
 
 export default OverviewPage;
