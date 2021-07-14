@@ -1,7 +1,9 @@
-import { useEffect, useMemo } from "react";
+// @ts-check
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 
+import * as Utils from "../../utils";
 import {
   fetchWalletBalance,
   fetchUSDRate,
@@ -9,10 +11,12 @@ import {
   FetchLightningInfo
 } from "../../actions/WalletActions";
 import { subCoordinates } from "../../actions/CoordinateActions";
+import { set } from "../../actions/SettingsActions";
 import { convertSatsToUSD, formatNumber } from "../../utils/Number";
 import BottomBar from "../../common/BottomBar";
 import Loader from "../../common/Loader";
 import MainNav from "../../common/MainNav";
+import Modal from "../../common/Modal";
 import Transaction from "./components/Transaction";
 import "./css/index.scoped.css";
 
@@ -20,6 +24,7 @@ import * as Store from "../../store";
 
 const OverviewPage = () => {
   const dispatch = Store.useDispatch();
+  const forceUpdate = Utils.useForceUpdate();
   const totalBalance = Store.useSelector(
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
@@ -27,6 +32,49 @@ const OverviewPage = () => {
   const recentTransactions = Store.useSelector(
     Store.selectAllCoordinatesNewestToOldest
   );
+
+  const [deploymentType, setDeploymentType] = useState<
+    "hosting" | "default" | "unknown"
+  >("unknown");
+  const [
+    fetchingDeploymentType,
+    toggleFetchingDeploymentType
+  ] = Utils.useBooleanState(true);
+  const introDismissed = Store.useSelector(
+    ({ settings }) => settings.introDismissed
+  );
+  const [introParagraphsIfError, setIntroParagraphsIfError] = useState<
+    string[]
+  >(["There was an error fetching the deployment type of your ShockApi."]);
+
+  useEffect(() => {
+    Utils.Http.get(`/healthz`)
+      .then(res => {
+        setDeploymentType(res.data.deploymentType);
+      })
+      .catch(e => {
+        Utils.logger.error(`Error when fetching deployment type -> `, e);
+        setIntroParagraphsIfError([
+          "There was an error fetching the deployment type of your ShockApi:",
+          e.message
+        ]);
+      })
+      .finally(toggleFetchingDeploymentType);
+  }, [toggleFetchingDeploymentType]);
+
+  const dismissIntro = useCallback(() => {
+    if (deploymentType === "unknown") {
+      sessionStorage.setItem("introDismissed", "true");
+      forceUpdate(); // else the change to session storage won't be reflected
+    } else {
+      dispatch(
+        set({
+          key: "introDismissed",
+          value: true
+        })
+      );
+    }
+  }, [deploymentType, dispatch, forceUpdate]);
 
   useEffect(() => {
     fetchWalletBalance()(dispatch);
@@ -97,8 +145,56 @@ const OverviewPage = () => {
         </PullToRefresh>
       </div>
       <BottomBar />
+
+      <Modal
+        modalOpen={
+          !fetchingDeploymentType &&
+          !(introDismissed || sessionStorage.getItem("introDismissed"))
+        }
+        modalTitle="Welcome"
+        toggleModal={dismissIntro}
+        contentStyle={INTRO_MODAL_STYLE}
+        disableBackdropClose
+      >
+        {(() => {
+          let paragraphs: string[] = [];
+          if (deploymentType === "hosting") {
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS_HOSTING;
+          }
+          if (deploymentType === "default") {
+            paragraphs = REACT_APP_INTRO_PARAGRAPHS_DEFAULT;
+          }
+          if (deploymentType === "unknown") {
+            paragraphs = introParagraphsIfError;
+          }
+          return paragraphs.map((paragraph, i) => (
+            <React.Fragment key={paragraph + i}>
+              <p
+                className="intro-paragraph"
+                dangerouslySetInnerHTML={{ __html: paragraph }}
+              />
+
+              <br />
+            </React.Fragment>
+          ));
+        })()}
+      </Modal>
     </div>
   );
 };
+
+/** @type {React.CSSProperties} */
+const INTRO_MODAL_STYLE = {
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 24
+};
+
+const REACT_APP_INTRO_PARAGRAPHS_HOSTING = [
+  "If you bought a node and didn't get a channel please email us or contact us through telegram",
+  'Telegram: <a href="https://t.me/Shockwallet">click here</a>',
+  'email: <a href="mailto:fake@email.com">fake@email.com</a>'
+];
+const REACT_APP_INTRO_PARAGRAPHS_DEFAULT = ["Welcome to Shocknet"];
 
 export default OverviewPage;

@@ -14,6 +14,7 @@ import UserProfilesReducer from "./UserProfilesReducer";
 import OrdersReducer from "./OrdersReducer";
 import AppReducer from "./AppReducer";
 import CoordinatesReducer from "./CoordinatesReducer";
+import settings from "./settings";
 
 const reducers = combineReducers({
   node: NodeReducer,
@@ -29,6 +30,7 @@ const reducers = combineReducers({
   orders: OrdersReducer,
   app: AppReducer,
   coordinates: CoordinatesReducer,
+  settings,
   users: () => {
     return {} as Record<string, Common.User>;
   }

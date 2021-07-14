@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import Http from "../../utils/Http";
 import { connectHost } from "../../actions/NodeActions";
