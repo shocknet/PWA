@@ -50,7 +50,6 @@ const CreateAliasStep = () => {
       try {
         setLoading(true);
         const wallet = await dispatch(createAlias({ alias, password }));
-        console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
       } finally {

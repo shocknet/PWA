@@ -43,7 +43,6 @@ const UnlockStep = () => {
             password
           })
         );
-        console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
         setLoading(false);
