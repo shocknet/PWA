@@ -55,7 +55,6 @@ const CreateWalletStep = () => {
       try {
         setLoading(true);
         const wallet = await dispatch(createWallet({ alias, password }));
-        console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
       } finally {
