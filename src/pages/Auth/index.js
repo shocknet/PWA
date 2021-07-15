@@ -17,27 +17,33 @@ import "./css/index.css";
 import CreateAliasStep from "./components/CreateAliasStep";
 import TiersStep from "./components/TiersStep";
 import InputGroup from "../../common/InputGroup";
+import { ParseNodeIP } from "../../utils/relay";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
   const cachedHostIP = Store.useSelector(({ node }) => node.hostIP);
+  const relayId = Store.useSelector(({ node }) => node.relayId);
   const cachedAlias = Store.useSelector(({ node }) => node.alias);
   const cachedRelayId = Store.useSelector(({ node }) => node.relayId);
   const [loading, setLoading] = useState(!!cachedHostIP);
   const [error, setError] = useState(null);
-  const [retryHostIP, setRetryHostIP] = useState(cachedHostIP)
+  const [retryHostIP, setRetryHostIP] = useState("")
+
   const authTokenExpirationDate = Store.useSelector(
     ({ node }) => node.authTokenExpirationDate
   );
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authStep = Store.useSelector(({ auth }) => auth.authStep);
   const authMethod = Store.useSelector(({ auth }) => auth.authMethod);
-  useEffect(()=>{
-    setRetryHostIP(cachedHostIP)
-  }, [cachedHostIP,setRetryHostIP])
+
   const updateRetryHostIP = useCallback((e) => {
     setRetryHostIP(e.target.value)
   },[setRetryHostIP])
+
+  useEffect(()=>{
+    const setTo = relayId ? `${relayId}@${cachedHostIP.replace("https://","").replace("http://","")}` : cachedHostIP
+    setRetryHostIP(setTo)
+  },[relayId,cachedHostIP,setRetryHostIP])
 
   const handleBackOnError = useCallback(() => {
     setError(null);
@@ -84,14 +90,14 @@ const AuthPage = () => {
     return <ChoicesStep />;
   }, [authStep, authMethod]);
 
-  const loadCachedNode = useCallback(async (hostIPParam) => {
+  const loadCachedNode = useCallback(async (hostIPParam, relayIdParam) => {
     setError(null)
     const hostIP = hostIPParam || cachedHostIP
     try {
       if (hostIP) {
         setLoading(true);
         console.log("Loading cached node IP");
-        await connectHost(hostIP, false, cachedRelayId)(dispatch);
+        await connectHost(hostIP, false,relayIdParam || cachedRelayId)(dispatch);
 
         if (
           authToken &&
@@ -136,7 +142,8 @@ const AuthPage = () => {
     loadCachedNode();
   }, [loadCachedNode]);
   const retry = useCallback(() => {
-    loadCachedNode(retryHostIP)
+    const [parsed, relay] = ParseNodeIP(retryHostIP)
+    loadCachedNode(parsed, relay)
   },[retryHostIP, loadCachedNode])
   const clearCache = useCallback(() => {
     dispatch(logout())
