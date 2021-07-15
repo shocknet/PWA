@@ -41,7 +41,7 @@ const AuthPage = () => {
   },[setRetryHostIP])
 
   useEffect(()=>{
-    const cleanHostIP = cachedHostIP ? "" : cachedHostIP.replace("https://","").replace("http://","")
+    const cleanHostIP = !cachedHostIP ? "" : cachedHostIP.replace("https://","").replace("http://","")
     const setTo = relayId ? `${relayId}@${cleanHostIP}` : cachedHostIP
     setRetryHostIP(setTo)
   },[relayId,cachedHostIP,setRetryHostIP])
