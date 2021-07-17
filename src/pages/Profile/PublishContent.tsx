@@ -364,7 +364,7 @@ const PublishContentPage = () => {
       ) : null}
 
       <h2>
-        Say Something<div className="line"></div>
+        Add to Library<div className="line"></div>
       </h2>
 
       <form
