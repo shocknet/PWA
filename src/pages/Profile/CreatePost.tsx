@@ -194,7 +194,7 @@ const CreatePostPage = () => {
         onReset={onDiscard}
       >
         <h2>
-          Say Something<div className="line"></div>
+          Share to Wallhing<div className="line"></div>
         </h2>
 
         <textarea
