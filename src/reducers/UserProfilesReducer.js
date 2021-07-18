@@ -5,6 +5,12 @@ import { ACTIONS, updatedUserProfile } from "../actions/UserProfilesActions";
 import { ACTIONS as NODE_ACTIONS } from "../actions/NodeActions";
 import { sharedPostReceived } from "../actions/FeedActions";
 
+import anon from "./anon.jpg";
+import rothbard from "./rothbard.jpg";
+import mencken from "./mencken.jpg";
+import smith from "./smith.jpg";
+import lightningPage from "./lightningPage.jpg";
+
 /**
  * @typedef {Record<string, Common.User>} UserProfilesState
  */
@@ -12,7 +18,32 @@ import { sharedPostReceived } from "../actions/FeedActions";
 /**
  * @type {UserProfilesState}
  */
-const INITIAL_STATE = {};
+const INITIAL_STATE = {
+  anon: {
+    ...Common.createEmptyUser("anon"),
+    avatar: anon
+  },
+  rothbard: {
+    ...Common.createEmptyUser("rothbard"),
+    avatar: rothbard,
+    displayName: `Murray Roth`
+  },
+  mencken: {
+    ...Common.createEmptyUser("mencken"),
+    avatar: mencken,
+    displayName: "HL Mencken"
+  },
+  smith: {
+    ...Common.createEmptyUser("smith"),
+    avatar: smith,
+    displayName: "Adan Smith"
+  },
+  lightningPage: {
+    ...Common.createEmptyUser("lightningPage"),
+    avatar: lightningPage,
+    displayName: "Lightning.Page"
+  }
+};
 
 /**
  * @param {UserProfilesState} state

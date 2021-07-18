@@ -11,47 +11,26 @@ import {
   useSelector as origUseSelector,
   useDispatch as originalUseDispatch
 } from "react-redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import Migrations from "./Migrations";
-import createMigrate from "redux-persist/es/createMigrate";
-import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
-
-const persistConfig = {
-  key: "root",
-  storage,
-  blacklist: ["auth"],
-  version: 1,
-  stateReconciler: autoMergeLevel2,
-  migrate: createMigrate(Migrations, {
-    debug: process.env.NODE_ENV === "development"
-  })
-};
-
-const persistedReducer = persistReducer<State, AnyAction>(
-  persistConfig,
-  rootReducer
-);
 
 const initializeStore = () => {
   const appliedMiddleware = applyMiddleware(thunk);
   // @ts-expect-error
   const store = window.__REDUX_DEVTOOLS_EXTENSION__
     ? createStore(
-        persistedReducer,
+        rootReducer,
         // @ts-expect-error
         compose(appliedMiddleware, window.__REDUX_DEVTOOLS_EXTENSION__())
       )
-    : createStore(persistedReducer, appliedMiddleware);
-  let persistor = persistStore(store);
-  return { store, persistor };
+    : createStore(rootReducer, appliedMiddleware);
+
+  return { store };
 };
 
 const initializedStore = initializeStore();
 
 export const store = initializedStore.store;
 
-export const persistor = initializedStore.persistor;
+export const persistor = {};
 
 /**
  * React-redux 's useSelector with our state type pre-specified.

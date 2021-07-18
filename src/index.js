@@ -14,13 +14,11 @@ Http.defaults.timeout = 20000;
 
 ReactDOM.render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <React.StrictMode>
-        <Router>
-          <App />
-        </Router>
-      </React.StrictMode>
-    </PersistGate>
+    <React.StrictMode>
+      <Router>
+        <App />
+      </Router>
+    </React.StrictMode>
   </Provider>,
   document.getElementById("root")
 );

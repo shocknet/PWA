@@ -29,6 +29,7 @@ export const subscribeUserProfile = (publicKey: string) => (
     userProfiles: Record<string, Common.User>;
   }
 ) => {
+  return () => {};
   if (subscribedProfiles.has(publicKey)) {
     return () => {};
   }
@@ -112,6 +113,7 @@ export const subscribeUserProfile = (publicKey: string) => (
 };
 
 export const unsubscribeUserProfile = (publicKey: string) => async () => {
+  return;
   unsubscribeRifleByQuery(`${publicKey}::Profile::on`);
   unsubscribeRifleByQuery(`${publicKey}::profileBinary::map.on`);
 };

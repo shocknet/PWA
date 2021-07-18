@@ -25,9 +25,7 @@ import * as Store from "../../store";
 const OverviewPage = () => {
   const dispatch = Store.useDispatch();
   const forceUpdate = Utils.useForceUpdate();
-  const totalBalance = Store.useSelector(
-    ({ wallet }) => wallet.totalBalance ?? "0"
-  );
+  const totalBalance = "21000000";
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate ?? "0");
   const recentTransactions = Store.useSelector(
     Store.selectAllCoordinatesNewestToOldest

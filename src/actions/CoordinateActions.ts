@@ -14,6 +14,7 @@ export const coordinateReceived = createAction<{
 
 export const subCoordinates = () => (dispatch: (action: any) => void) => {
   Utils.logger.debug(`Subscribing to coordinates.`);
+  return () => {};
   try {
     const subscription = Utils.rifle({
       query: `$user::coordinates::map.on`,

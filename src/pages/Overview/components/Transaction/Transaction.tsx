@@ -24,6 +24,10 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
   const { username, message, publicKey } = Store.useSelector(state => {
     const data = { username: "", message: "", publicKey: null };
 
+    if (!coordinate) {
+      alert(`could not find coordinate ${coordinateSHA256}`);
+    }
+
     const publicKey = coordinate.inbound
       ? coordinate.fromGunPub
       : coordinate.toGunPub;
@@ -31,7 +35,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
     const user = Store.selectUser(publicKey)(state);
 
     data.publicKey = publicKey;
-    data.username = user.displayName;
+    data.username = user.displayName || "Anon";
 
     switch (coordinate.type) {
       case "chainTx":
@@ -108,7 +112,21 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
         data.message = "Seed Service";
         break;
       case "tip":
-        data.message = coordinate.inbound ? "You were Tipped" : "You Tipped";
+        if (publicKey === "anon") {
+          data.message = "Tipped your livestream";
+        }
+        if (publicKey === "rothbard") {
+          data.message = "Unlocked Carne Asada Recipe";
+        }
+        if (publicKey === "mencken") {
+          data.message = "You subscribed";
+        }
+        if (publicKey === "smith") {
+          data.message = "Replied to your post";
+        }
+        if (publicKey === "lightningPage") {
+          data.message = "Content Hosting";
+        }
         break;
       case "torrentSeed":
         data.message = "Seed Service";
@@ -154,14 +172,16 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
           {publicKey && <ShockAvatar height={60} publicKey={publicKey} />}
         </div>
         <div className="transaction-type" />
-        <div className="transaction-author-details">
+        <div>
           <p className="transaction-author-username">{username}</p>
           <p className="transaction-author-text">{message}</p>
         </div>
       </div>
       <div className="transaction-value-container">
         <p className="transaction-timestamp">
-          {Utils.formatTimestamp(coordinate.timestamp) || "unknown"}
+          {Utils.formatTimestamp(
+            publicKey === "anon" ? Date.now() : coordinate.timestamp
+          ) || "unknown"}
         </p>
         <p className="transaction-value-btc">
           {symbol} {sanitizedValue.replace(symbol, "")}
