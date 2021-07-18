@@ -9,7 +9,7 @@ import "./css/index.scoped.css";
 const DialogPageContainer = ({
   containerClassName = "",
   contentClassName = "",
-  title,
+  title = "",
   children,
   disableNav = false,
   onBack = Utils.EMPTY_FN,
@@ -17,7 +17,7 @@ const DialogPageContainer = ({
 }) => {
   return (
     <div
-      className={`page-container dialog-page ${containerClassName} no-scrollbar`}
+      className={`page-container dialog-page ${containerClassName}`}
       style={
         disableNav
           ? {

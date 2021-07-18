@@ -1,14 +1,16 @@
-// @ts-check
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import * as Common from "shock-common";
 import { Link } from "react-router-dom";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
+import sum from "lodash/sum";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
+import { subPostContent, subPostTips } from "../../actions/FeedActions";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
@@ -19,17 +21,13 @@ import ShareIcon from "../../images/share.svg";
 
 const Post = ({
   id,
-  timestamp,
-  tipCounter,
-  tipValue,
   publicKey,
   openTipModal,
   openUnlockModal,
-  contentItems = {},
-  username,
   openDeleteModal = undefined,
   openShareModal = _ => {}
 }) => {
+  const dispatch = Store.useDispatch();
   const unlockedContent = Store.useSelector(
     ({ content }) => content.unlockedContent
   );
@@ -37,49 +35,69 @@ const Post = ({
     slidesToScroll: 1,
     align: "center"
   });
+  const author = Store.useSelector(Store.selectUser(publicKey));
+  const post = Store.useSelector(Store.selectSinglePost(publicKey, id));
+  const [tipCounter, tipValue] = React.useMemo(() => {
+    const tips = Object.values(
+      post.tips ||
+        {} /* cached data from previous app version won't have the tips object */
+    );
+
+    return [tips.length, sum(tips)];
+  }, [post]);
 
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [liveStatus, setLiveStatus] = useState("");
-  const [viewersCounter, setViewersCounter] = useState(0);
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
 
-  //effect for liveStatus and viewers counter
-  useEffect(() => {
-    const values = Object.values(contentItems);
-    const videoContent = values.find(
-      item => item.type === "video/embedded" && item.liveStatus === "wasLive"
-    );
-    const streamContent = values.find(
-      item => item.type === "stream/embedded" && item.liveStatus === "live"
-    );
-    let status = "";
-    if (videoContent) {
-      status = "Was Live"
+  useEffect(() => dispatch(subPostContent(publicKey, id)), [
+    dispatch,
+    id,
+    publicKey
+  ]);
+
+  useEffect(() => dispatch(subPostTips(publicKey, id)), [
+    dispatch,
+    id,
+    publicKey
+  ]);
+
+  const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
+    const stream = Object.values(post.contentItems).find(
+      item => item.type === "stream/embedded"
+    ) as Common.EmbeddedStream;
+
+    if (stream) {
+      return stream.liveStatus;
     }
-    if (streamContent) {
-      status = "Is Live"
-      if(streamContent.viewersCounter){
-        setViewersCounter(streamContent.viewersCounter)
-      }
+
+    return null;
+  }, [post.contentItems]);
+
+  const viewersCounter = React.useMemo<number | null>(() => {
+    const stream = Object.values(post.contentItems).find(
+      item => item.type === "stream/embedded"
+    ) as Common.EmbeddedStream;
+
+    if (stream && stream.liveStatus === "live") {
+      return stream.viewersCounter;
     }
-    if (status) {
-      setLiveStatus(status);
-    }
-  }, [contentItems, setLiveStatus]);
+
+    return null;
+  }, [post.contentItems]);
 
   const getMediaContent = useCallback(() => {
-    return Object.entries(contentItems).filter(
+    return Object.entries(post.contentItems).filter(
       ([_, item]) => item.type !== "text/paragraph"
     );
-  }, [contentItems]);
+  }, [post.contentItems]);
 
   const getTextContent = () => {
-    return Object.entries(contentItems).filter(
+    return Object.entries(post.contentItems).filter(
       ([_, item]) => item.type === "text/paragraph"
     );
   };
@@ -87,13 +105,14 @@ const Post = ({
   useEffect(() => {
     getMediaContent().forEach(([k, e]) => {
       const path = `${publicKey}>posts>${k}`;
+      // @ts-expect-error
       if (e.isPrivate && !unlockedContent[path]) {
         setIsPrivate(true);
       }
     });
-  }, [contentItems, getMediaContent, publicKey, unlockedContent]);
+  }, [getMediaContent, publicKey, unlockedContent]);
 
-  const parseContent = ([key, item], index) => {
+  const parseContent = ([key, item]: [string, Common.ContentItem], index) => {
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
     }
@@ -143,7 +162,25 @@ const Post = ({
         />
       );
     }
-    if (item.type === "stream/embedded") {
+    if (Common.isEmbeddedStream(finalItem)) {
+      if (item.playbackMagnet) {
+        return (
+          <Video
+            id={key}
+            item={{
+              ...finalItem,
+              magnetURI: finalItem.playbackMagnet
+            }}
+            index={index}
+            postId={id}
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            key={`${id}-${index}`}
+            hideRibbon={undefined}
+            width={undefined}
+          />
+        );
+      }
       return (
         <Stream
           id={key}
@@ -161,10 +198,6 @@ const Post = ({
 
     return null;
   };
-
-  // useEffect(() => {
-  //   attachMedia();
-  // }, [contentItems.length]);
 
   const nextSlide = useCallback(() => {
     if (!carouselAPI) return;
@@ -259,6 +292,12 @@ const Post = ({
     }
   }, []);
 
+  const readableLiveStatus: Record<Common.LiveStatus, string> = {
+    live: "Is Live",
+    waiting: "Waiting",
+    wasLive: "Was Live"
+  };
+
   return (
     <div className="post">
       <div className="head">
@@ -269,24 +308,22 @@ const Post = ({
 
           <div className="details">
             <div className="username">
-              <Link to={`/otherUser/${publicKey}`}>{username}</Link>
+              <Link to={`/otherUser/${publicKey}`}>{author.displayName}</Link>
               {liveStatus && (
                 <p className="liveStatus">
-                  {liveStatus}
+                  {readableLiveStatus[liveStatus]}
                   <i
                     className={`fas fa-circle liveStatusIcon ${
-                      liveStatus === "Is Live" ? "liveIcon" : ""
+                      liveStatus === "live" ? "liveIcon" : ""
                     }`}
-                  ></i>  
-                  {liveStatus === 'Is Live' &&  <span> | {viewersCounter} watching</span>}
+                  ></i>
+                  {liveStatus === "live" && (
+                    <span> | {viewersCounter} watching</span>
+                  )}
                 </p>
               )}
             </div>
-            <p>
-              {timestamp && typeof timestamp === "number"
-                ? DateTime.fromMillis(timestamp).toRelative()
-                : "Loading..."}
-            </p>
+            <p>{DateTime.fromMillis(post.date).toRelative()}</p>
           </div>
         </div>
         {openDeleteModal && (

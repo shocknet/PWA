@@ -15,3 +15,5 @@ export * from "./users";
 export * from "./follows";
 export * from "./publishedContent";
 export * from "./chat";
+export * from "./feed";
+export * from "./coordinates";

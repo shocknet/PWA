@@ -3,13 +3,15 @@ import { ACTIONS } from "../actions/AuthActions";
 const INITIAL_STATE = {
   authenticated: false,
   authStep: "host",
-  authMethod: null
+  authMethod: null,
+  relayId:null
 };
 
 const defaultSteps = {
   manual: "host",
   shockWizard: "scan",
-  shockCloud: "inviteCode"
+  shockCloud: "inviteCode",
+  hostingTiers: "chooseTier"
 };
 
 const auth = (state = INITIAL_STATE, action) => {

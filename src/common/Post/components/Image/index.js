@@ -7,14 +7,16 @@ import "./css/index.scoped.css";
 const IMAGE_TRANSITION_MS = 200;
 
 const Image = ({
-  id,
+  id = "",
   item,
-  index,
-  postId,
-  tipValue,
-  tipCounter,
-  hideRibbon,
-  width
+  index = 0,
+  postId = "",
+  tipValue = 0,
+  tipCounter = 0,
+  hideRibbon = false,
+  width = null,
+  disableZoom = false,
+  style = /** @type {import('react').CSSProperties} */ ({})
 }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zoomLoaded, setZoomLoaded] = useState(false);
@@ -50,48 +52,58 @@ const Image = ({
   const contentURL = decodeURIComponent(
     item.magnetURI.replace(/.*(ws=)/gi, "")
   );
-  const mainImageStyle = { opacity: previewVisible ? 1 : 0 };
+  const mainImageStyle = { ...style, opacity: previewVisible ? 1 : 0 };
   if (width) {
     mainImageStyle.width = width;
   }
 
+  const imgNode = (
+    <>
+      <img
+        className={`image torrent-img torrent-img-${postId}-${id}`}
+        alt="Post Media"
+        data-torrent={item.magnetURI}
+        data-file-key={index}
+        style={mainImageStyle}
+        src={contentURL}
+      />
+      <img
+        className={`image enlarged-img enlarged-img-${postId}-${id}`}
+        alt="Post Media"
+        data-file-key={index}
+        onLoad={() => {
+          setZoomLoaded(true);
+        }}
+        style={{
+          opacity: zoomed ? 1 : 0,
+          display: zoomed ? "block" : "none"
+        }}
+        src={contentURL}
+      />
+      {!hideRibbon && (
+        <TipRibbon
+          tipCounter={tipCounter}
+          tipValue={tipValue}
+          zoomed={zoomed}
+        />
+      )}
+    </>
+  );
+
   return (
     <div className="media-container">
-      <ControlledZoom
-        isZoomed={zoomed}
-        onZoomChange={handleZoomChange}
-        overlayBgColorStart="#16191c00"
-        overlayBgColorEnd="#16191c"
-      >
-        <img
-          className={`image torrent-img torrent-img-${postId}-${id}`}
-          alt="Post Media"
-          data-torrent={item.magnetURI}
-          data-file-key={index}
-          style={mainImageStyle}
-          src={contentURL}
-        />
-        <img
-          className={`image enlarged-img enlarged-img-${postId}-${id}`}
-          alt="Post Media"
-          data-file-key={index}
-          onLoad={() => {
-            setZoomLoaded(true);
-          }}
-          style={{
-            opacity: zoomed ? 1 : 0,
-            display: zoomed ? "block" : "none"
-          }}
-          src={contentURL}
-        />
-        {!hideRibbon && (
-          <TipRibbon
-            tipCounter={tipCounter}
-            tipValue={tipValue}
-            zoomed={zoomed}
-          />
-        )}
-      </ControlledZoom>
+      {disableZoom ? (
+        imgNode
+      ) : (
+        <ControlledZoom
+          isZoomed={zoomed}
+          onZoomChange={handleZoomChange}
+          overlayBgColorStart="#16191c00"
+          overlayBgColorEnd="#16191c"
+        >
+          {imgNode}
+        </ControlledZoom>
+      )}
     </div>
   );
 };

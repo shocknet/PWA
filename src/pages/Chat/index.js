@@ -15,7 +15,10 @@ import {
   acceptHandshakeRequest,
   sendMessage,
   subConvoMessages,
-  subConvos
+  subConvos,
+  subscribeChatMessages,
+  chatWasDeleted,
+  subChats
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
@@ -39,7 +42,7 @@ enableMapSet();
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = Utils.useDispatch();
+  const dispatch = Store.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { convoOrReqID } = params;
   const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
@@ -208,6 +211,15 @@ const ChatPage = () => {
   //   };
   // }, [dispatch, gunPublicKey, recipientPublicKey]);
 
+  useEffect(() => {
+    // listen to didDisconnect
+    const subscription = dispatch(subChats());
+
+    return () => {
+      subscription.then(sub => sub.off());
+    };
+  }, [dispatch]);
+
   // ------------------------------------------------------------------------ //
   // Date bubble
 
@@ -269,7 +281,7 @@ const ChatPage = () => {
       />
 
       <div
-        className="chat-messages-container no-scrollbar"
+        className="chat-messages-container"
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >

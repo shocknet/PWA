@@ -1,5 +1,5 @@
 import * as Common from "shock-common";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Action } from "redux";
 import { useDispatch as originalUseDispatch } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -7,9 +7,12 @@ import { ThunkDispatch } from "redux-thunk";
 import { State } from "../reducers";
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
 
+import { rifle } from "./WebSocket";
+
 export * from "./Date";
 export { default as Http } from "./Http";
 export * from "./Error";
+export * from "./WebSocket";
 
 export const logger = {
   log: (...args: any[]) => console.log(...args),
@@ -210,4 +213,67 @@ export const parseJson = (o: string) => JSON.parse(o) as unknown;
 
 export const useDispatch = (): ThunkDispatch<State, undefined, Action> => {
   return originalUseDispatch() as ThunkDispatch<State, undefined, Action>;
+};
+
+/**
+ * Returns null if the value provided is not a valid JSON string.
+ * @param o
+ */
+export const safeParseJson = (o: unknown): unknown => {
+  if (!Common.isPopulatedString(o)) {
+    return null;
+  }
+  try {
+    return JSON.parse(o);
+  } catch (e) {
+    logger.warn(`Error inside safeParseJson() -> `, e);
+    logger.log(`Error inside safeParseJson(), string provided -> `, o);
+    return null;
+  }
+};
+
+export const useLastSeen = (publicKey: string) => {
+  const [lastSeenApp, setLastSeenApp] = useState(0);
+  const [lastSeenNode, setLastSeenNode] = useState(0);
+
+  useEffect(() => {
+    const appSub = rifle({
+      query: `${publicKey}::Profile>lastSeenApp::on`,
+      onData(lastSeen) {
+        if (typeof lastSeen === "number") {
+          setLastSeenApp(lastSeen);
+        } else {
+          logger.error(`useLastSeen() -> got non-number lastSeenApp`);
+        }
+      },
+      onError(e) {
+        logger.error(`useLastSeen() -> lastSeenApp rifle -> `, e);
+      }
+    });
+
+    const nodeSub = rifle({
+      query: `${publicKey}::Profile>lastSeenNode::on`,
+      onData(lastSeen) {
+        if (typeof lastSeen === "number") {
+          setLastSeenNode(lastSeen);
+        } else {
+          logger.error(`useLastSeen() -> got non-number lastSeenNode`);
+        }
+      },
+      onError(e) {
+        logger.error(`useLastSeen() -> lastSeenNode rifle -> `, e);
+      }
+    });
+
+    return () => {
+      appSub.then(sub => {
+        sub.off();
+      });
+      nodeSub.then(sub => {
+        sub.off();
+      });
+    };
+  }, [publicKey]);
+
+  return { lastSeenApp, lastSeenNode };
 };

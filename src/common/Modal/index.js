@@ -10,14 +10,20 @@ const Modal = ({
   toggleModal,
   modalTitle = "",
   children,
-  contentStyle = {}
+  contentStyle = {},
+  disableBackdropClose = false
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
   }, [toggleModal]);
+  const handleBackdropClick = useCallback(() => {
+    if (!disableBackdropClose) {
+      toggleModal();
+    }
+  }, [disableBackdropClose, toggleModal]);
   return (
-    <div className={classNames({ modal: true, "open": modalOpen })}>
-      <div className="backdrop" onClick={closeModal} />
+    <div className={classNames({ modal: true, open: modalOpen })}>
+      <div className="backdrop" onClick={handleBackdropClick} />
       <div className="container">
         <ModalTitle title={modalTitle} toggleModal={closeModal} />
         <ModalContent style={contentStyle}>{children}</ModalContent>

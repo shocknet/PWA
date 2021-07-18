@@ -1,3 +1,13 @@
+import { createSelector } from "reselect";
+
 import { State } from "../../reducers";
 
-export const selectFollows = (state: State) => state.feed.follows;
+import { selectSelfPublicKey } from "./auth";
+
+export const selectFollows = createSelector(
+  selectSelfPublicKey,
+  (state: State) => state.feed.follows,
+  (selfPublicKey, follows) => {
+    return follows.filter(f => f.user !== selfPublicKey);
+  }
+);

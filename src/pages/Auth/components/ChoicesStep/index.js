@@ -31,7 +31,7 @@ const ChoicesStep = () => {
         <ChoiceMethod
           icon="cloud"
           details="I'd like a personal cloud node provided as a service"
-          method="shockCloud"
+          method="hostingTiers"
         />
         <p className="inline-link" onClick={selectCloudChoice}>
           I have a guest invite

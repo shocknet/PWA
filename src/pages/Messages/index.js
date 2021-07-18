@@ -1,6 +1,5 @@
 // @ts-check
 import { useCallback, useEffect, useState } from "react";
-import { DateTime } from "luxon";
 
 import {
   sendHandshakeRequest,
@@ -187,11 +186,12 @@ const MessagesPage = () => {
     );
   }
   console.log(sendError);
+
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
       <div className="messages-container">
-        <div className="message-list-container no-scrollbar">
+        <div className="message-list-container">
           {sentRequests.length > 0 ? (
             <p className="messages-section-title">Sent Requests</p>
           ) : null}
@@ -244,8 +244,8 @@ const MessagesPage = () => {
                 key={convo.id}
                 publicKey={convo.with}
                 subtitle={lastMessage.body}
-                time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
                 id={convo.id}
+                lastMessageTimestamp={lastMessage.timestamp}
               />
             );
           })}

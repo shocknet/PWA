@@ -1,23 +1,22 @@
 import { useCallback, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 
 import Loader from "../../common/Loader";
 import Http from "../../utils/Http";
 import ImagePreview from "../../common/Post/components/ImagePreview";
-import VideoPreview from "../../common/Post/components/VideoPreview";
 import DarkPage from "../../common/DarkPage";
 import Pad from "../../common/Pad";
 import * as Store from "../../store";
 import {
   subOwnPublishedContent,
-  unsubOwnPublishedContent
+  unsubOwnPublishedContent,
+  subOwnPublicContent
 } from "../../actions/ContentActions";
 
 import "./css/index.scoped.css";
 
 const CreatePostPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const history = useHistory();
   const publishedContent = Store.useSelector(Store.selectOwnPublishedContent);
   const [loading, setLoading] = useState(false);
@@ -31,6 +30,14 @@ const CreatePostPage = () => {
 
     return () => {
       dispatch(unsubOwnPublishedContent());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    const subscription = dispatch(subOwnPublicContent());
+
+    return () => {
+      subscription.then(sub => sub.off());
     };
   }, [dispatch]);
 
@@ -124,7 +131,7 @@ const CreatePostPage = () => {
   const parseContent = ([key, item], index) => {
     if (item.type === "image/embedded") {
       return (
-        <div className="preview-container">
+        <div className="preview-container" key={key}>
           <div className="preview-image-container">
             <ImagePreview
               id={key}
@@ -148,17 +155,24 @@ const CreatePostPage = () => {
 
     if (item.type === "video/embedded") {
       return (
-        <div style={{ width: 100 }}>
-          <VideoPreview
-            id={key}
-            item={item}
-            index={index}
-            postId={"content"}
-            key={`${index}`}
-            width="100px"
-            selected={selectedContent}
-            updateSelection={setSelectedContent}
-          />
+        <div
+          className="width-100-px margin-1-em"
+          onClick={() => {
+            setSelectedContent(key);
+          }}
+          key={key}
+        >
+          <div className="relative">
+            <div className="video-placeholder width-100-px">
+              <i className="fas fa-video video-icon" />
+            </div>
+
+            {selectedContent === key && (
+              <div className="checkmark-container">
+                <i className="far fa-check-circle fa-3x" />
+              </div>
+            )}
+          </div>
 
           <Pad amt={24} />
 
@@ -180,7 +194,7 @@ const CreatePostPage = () => {
         onReset={onDiscard}
       >
         <h2>
-          Say Something<div className="line"></div>
+          Share to Wall<div className="line"></div>
         </h2>
 
         <textarea

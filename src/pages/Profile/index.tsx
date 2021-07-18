@@ -7,13 +7,11 @@ import React, {
   useRef,
   InputHTMLAttributes
 } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 import c from "classnames";
 import * as Common from "shock-common";
-
-import { processDisplayName } from "../../utils/String";
 
 import * as Utils from "../../utils";
 import {
@@ -39,10 +37,9 @@ import { rifle, rifleCleanup } from "../../utils/WebSocket";
 import "./css/index.scoped.css";
 import {
   deleteUserPost,
-  subscribeSharedUserPosts,
+  subSharedPosts,
   subscribeUserPosts
 } from "../../actions/FeedActions";
-import { isSharedPost } from "../../schema";
 import { setWebclientPrefix } from "../../actions/NodeActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -55,33 +52,21 @@ export type WebClientPrefix =
   | "https://satoshi.watch";
 
 const ProfilePage = () => {
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [deletePostModalData, setDeletePostModalData] = useState(null);
   const [deletePostModalLoading, setDeletePostModalLoading] = useState(false);
 
-  const posts = Store.useSelector(({ feed }) => feed.posts);
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
+  const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const allPosts = Store.useSelector(Store.selectAllPosts);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
     "posts"
   );
   const user = useSelector(Store.selectSelfUser);
-  const myPosts = useMemo(() => {
-    if (posts && posts[publicKey]) {
-      const myP = posts[publicKey].sort((a, b) => {
-        const alpha = isSharedPost(a) ? a.shareDate : a.date;
-        const beta = isSharedPost(b) ? b.shareDate : b.date;
-
-        return beta - alpha;
-      });
-      return myP;
-    }
-    return [];
-  }, [posts, publicKey]);
 
   useEffect(() => {
     const subscription = subscribeMyServices()(dispatch);
@@ -89,14 +74,12 @@ const ProfilePage = () => {
     return rifleCleanup(subscription);
   }, [dispatch]);
 
-  useEffect(() => {
-    const postSubscription = dispatch(subscribeUserPosts(publicKey));
-    const sharedPostSubscription = dispatch(
-      subscribeSharedUserPosts(publicKey)
-    );
+  useEffect(() => dispatch(subscribeUserPosts(publicKey)), [
+    dispatch,
+    publicKey
+  ]);
 
-    return rifleCleanup(postSubscription, sharedPostSubscription);
-  }, [dispatch, publicKey]);
+  useEffect(() => dispatch(subSharedPosts(publicKey)), [dispatch, publicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -157,7 +140,12 @@ const ProfilePage = () => {
     });
 
     return rifleCleanup(socket);
-  }, [hostIP, publicKey /* handles alias/hostIP switch */]);
+  }, [
+    currWebClientPrefix,
+    dispatch,
+    hostIP,
+    publicKey /* handles alias/hostIP switch */
+  ]);
 
   useEffect(() => {
     const unsubscribe = subscribeClientPrefix();
@@ -194,7 +182,7 @@ const ProfilePage = () => {
       });
     }
     toggleConfigModal();
-  }, [toggleConfigModal, newWebClientPrefix, currWebClientPrefix]);
+  }, [newWebClientPrefix, currWebClientPrefix, toggleConfigModal, dispatch]);
   //#endregion configModal -------------------------------------------------- //
   //#region header ---------------------------------------------------------- //
   const headerImageFileInput = useRef<HTMLInputElement>(null);
@@ -227,7 +215,7 @@ const ProfilePage = () => {
 
       const [file] = files;
 
-      const imageObtained = await Utils.processImageFile(file, 320, 0.7);
+      const imageObtained = await Utils.processImageFile(file, 800, 0.9);
 
       const DATA_URL_TYPE_PREFIX = "data:image/jpeg;base64,";
       const base64 = imageObtained.slice(DATA_URL_TYPE_PREFIX.length);
@@ -277,7 +265,7 @@ const ProfilePage = () => {
       if (!deletePostModalData || !deletePostModalData.id) {
         return;
       }
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log("deleting:");
       console.log(deletePostModalData);
       const key = deletePostModalData.shared ? "sharedPosts" : "posts";
@@ -292,14 +280,20 @@ const ProfilePage = () => {
         })
       );
       toggleDeleteModal(null);
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
     } catch (e) {
-      setDeletePostModalLoading(true)
+      setDeletePostModalLoading(true);
       console.log(`Error when deleting post:`);
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
     }
-  }, [deletePostModalData, dispatch, publicKey, toggleDeleteModal,setDeletePostModalLoading]);
+  }, [
+    deletePostModalData,
+    dispatch,
+    publicKey,
+    toggleDeleteModal,
+    setDeletePostModalLoading
+  ]);
   const copyClipboard = useCallback(() => {
     try {
       // some browsers/platforms don't support navigator.clipboard
@@ -320,94 +314,34 @@ const ProfilePage = () => {
     } catch (e) {
       alert(`Could not copy to clipboard: ${e.message}`);
     }
-  }, [publicKey]);
+  }, [currWebClientPrefix, publicKey]);
 
   const AVATAR_SIZE = 122;
 
   const renderPosts = () => {
-    return myPosts.map((post, index) => {
-      if (post.type === "shared") {
-        if (!post.originalPost) {
-          return null;
-        }
-        const item = Object.entries(post.originalPost.contentItems).find(
-          ([_, item]) => item.type === "stream/embedded"
-        );
-        let streamContentId, streamItem;
-        if (item) {
-          [streamContentId, streamItem] = item;
-        }
-        if (streamItem) {
-          if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
-            post.originalPost.contentItems[streamContentId].type =
-              "video/embedded";
-            //@ts-expect-error
-            post.originalPost.contentItems[streamContentId].magnetURI =
-              streamItem.playbackMagnet;
-          }
-        }
-        // TODO: ensure users reducer receives sharer profiles
-        const sharerProfile =
-          userProfiles[post.sharerId] || Common.createEmptyUser(post.sharerId);
-        const originalPublicKey = post.originalAuthor;
-        const originalProfile =
-          userProfiles[originalPublicKey] ||
-          Common.createEmptyUser(originalPublicKey);
+    return posts.map(post => {
+      if (Common.isSharedPost(post)) {
         return (
-          <Suspense
-            fallback={<Loader />}
-            key={post.sharerId + post.originalPost.id}
-          >
+          <Suspense fallback={<Loader />} key={post.shareID}>
             <SharedPost
-              originalPost={post.originalPost}
-              originalPostProfile={originalProfile}
-              sharedTimestamp={post.shareDate}
-              sharerProfile={sharerProfile}
-              postPublicKey={originalPublicKey}
-              openTipModal={() => {}}
-              openUnlockModal={() => {}}
+              postID={post.originalPostID}
+              sharerPublicKey={post.sharedBy}
+              openTipModal={Utils.EMPTY_FN}
+              openUnlockModal={Utils.EMPTY_FN}
               openDeleteModal={toggleDeleteModal}
               openShareModal={null}
             />
           </Suspense>
         );
       }
-      const item = Object.entries(post.contentItems).find(
-        ([_, item]) => item.type === "stream/embedded"
-      );
-      let streamContentId, streamItem;
-      if (item) {
-        [streamContentId, streamItem] = item;
-      }
-      if (streamItem) {
-        if (streamItem.liveStatus === "wasLive" && streamItem.playbackMagnet) {
-          post.contentItems[streamContentId].type = "video/embedded";
-          //@ts-expect-error
-          post.contentItems[streamContentId].magnetURI =
-            streamItem.playbackMagnet;
-        }
-      }
-
-      const profile =
-        userProfiles[post.authorId] || Common.createEmptyUser(post.authorId);
 
       return (
         <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
-            timestamp={post.date}
-            contentItems={post.contentItems}
-            username={processDisplayName(
-              profile?.publicKey,
-              profile?.displayName
-            )}
             publicKey={post.authorId}
-            openTipModal={() => {}}
-            openUnlockModal={() => {}}
-            //@ts-expect-error
-            tipCounter={post.tipCounter || 0}
-            //@ts-expect-error
-            tipValue={post.tipValue || 0}
+            openTipModal={Utils.EMPTY_FN}
+            openUnlockModal={Utils.EMPTY_FN}
             openDeleteModal={toggleDeleteModal}
             openShareModal={null}
           />
@@ -549,7 +483,7 @@ const ProfilePage = () => {
   return (
     <>
       <div className="page-container profile-page">
-        <div className="profile-container no-scrollbar">
+        <div className="profile-container">
           <div className="profile-cover" onClick={onPressHeader}>
             {user.header && (
               <img
@@ -762,20 +696,22 @@ const ProfilePage = () => {
           >
             <div>You sure delete</div>
             {deletePostModalLoading && <Loader />}
-            {!deletePostModalLoading && <div className="flex-center" style={{ marginTop: "auto" }}>
-              <button
-                onClick={closeDeleteModal}
-                className="shock-form-button m-1"
-              >
-                CANCEL
-              </button>
-              <button
-                onClick={deletePost}
-                className="shock-form-button-confirm m-1"
-              >
-                DELETE
-              </button>
-            </div>}
+            {!deletePostModalLoading && (
+              <div className="flex-center" style={{ marginTop: "auto" }}>
+                <button
+                  onClick={closeDeleteModal}
+                  className="shock-form-button m-1"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={deletePost}
+                  className="shock-form-button-confirm m-1"
+                >
+                  DELETE
+                </button>
+              </div>
+            )}
           </Modal>
           <AddBtn
             onClick={toggleModal}
