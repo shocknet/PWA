@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 import { createAlias, createWallet } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
+import * as Store from "../../../../store";
 
 const CreateAliasStep = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,6 @@ const CreateAliasStep = () => {
       try {
         setLoading(true);
         const wallet = await dispatch(createAlias({ alias, password }));
-        console.log("Wallet Response:", wallet);
       } catch (err) {
         setError(err.message);
       } finally {

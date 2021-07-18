@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import c from "classnames";
+import { v1 as uuid } from "uuid";
 
 import "./css/index.scoped.css";
 
@@ -15,7 +16,10 @@ import { useHistory } from "react-router";
 import * as Store from "../../store";
 import Modal from "../../common/Modal";
 import DarkPage from "../../common/DarkPage";
+import UploadThumbnail from "./components/UploadThumbnail";
 import * as gStyles from "../../styles";
+import * as Schema from "../../schema";
+import { base64toBlob } from "../../utils/Media";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -34,18 +38,22 @@ const PublishContentPage = () => {
   const [loading, setLoading] = useState(false);
   const [mediaPreviews, setMediaPreviews] = useState([]);
   const [title, setTitle] = useState("");
+  const [thumbnailOpen, setThumbnailOpen] = useState(false);
+  const [videoThumbnails, setVideoThumbnails] = useState({});
+  const [thumbnailTarget, setThumbnailTarget] = useState(null);
   const [titleMissing, setTitleMissing] = useState(false);
   const [description, setDescription] = useState("");
-  const [postType, setPostType] = useState("public");
+  const [postType, setPostType] = useState<"public" | "private">("public");
   const imageFile = useRef(null);
   const videoFile = useRef(null);
   const [promptInfo, setPromptInfo] = useState(null);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
-      console.log([title, description, selectedFiles]);
+      console.log([title, description, mediaPreviews, videoThumbnails]);
       if (!title) {
         setError("Please input a title");
         setTitleMissing(true);
@@ -72,11 +80,40 @@ const PublishContentPage = () => {
         });
         const formData = new FormData();
         //TODO support public/private content by requesting two tokens and doing this req twice
-        Array.from(selectedFiles).forEach(file =>
-          formData.append("files", file)
+        await Promise.all(
+          mediaPreviews.map(async preview => {
+            const extension = preview.file.type.replace(`${preview.type}/`, "");
+            const fileName = `${preview.type}-${preview.index}`;
+
+            if (preview.type === "video") {
+              const thumbnail = videoThumbnails[fileName];
+
+              formData.append(
+                "files",
+                preview.file,
+                `${fileName}.${extension}`
+              );
+
+              if (thumbnail && thumbnail.type) {
+                // extract extension from base64
+                const extension = thumbnail.type?.replace(/.*\//gi, "");
+
+                formData.append(
+                  "files",
+                  thumbnail,
+                  `${fileName}-thumb.${extension}`
+                );
+              }
+
+              return;
+            }
+
+            formData.append("files", preview.file);
+          })
         );
         formData.append("info", "extraInfo");
         formData.append("comment", "comment");
+        console.log("Form Data:", formData);
         res = await fetch(`${finalSeedUrl}/api/put_file`, {
           method: "POST",
           headers: {
@@ -107,7 +144,10 @@ const PublishContentPage = () => {
             ? ("video/embedded" as const)
             : ("image/embedded" as const);
 
-        const contentItem = {
+        const contentItem: Schema.PublicContentItem = {
+          id: uuid(),
+          timestamp: Date.now(),
+          author: selfPublicKey,
           type,
           magnetURI: magnet,
           width: 0,
@@ -115,7 +155,10 @@ const PublishContentPage = () => {
           title,
           description
         };
-        const published = await addPublishedContent(contentItem)(dispatch);
+        const published = await addPublishedContent(
+          contentItem,
+          postType
+        )(dispatch);
         console.log("content publish complete");
         console.log(published);
         setLoading(false);
@@ -140,17 +183,19 @@ const PublishContentPage = () => {
       }
     },
     [
-      title,
-      description,
-      selectedFiles,
-      mediaPreviews,
       availableTokens,
-      seedUrl,
-      seedToken,
-      history,
+      description,
       dispatch,
-      setError,
-      seedProviderPub
+      history,
+      mediaPreviews,
+      postType,
+      seedProviderPub,
+      seedToken,
+      seedUrl,
+      selectedFiles,
+      selfPublicKey,
+      title,
+      videoThumbnails
     ]
   );
 
@@ -269,10 +314,10 @@ const PublishContentPage = () => {
 
           reader.onload = function (e) {
             if (type.startsWith("image/")) {
-              res({ type: "image", uri: e.target.result, index });
+              res({ type: "image", uri: e.target.result, index, file });
             }
             if (type.startsWith("video/")) {
-              res({ type: "video", uri: e.target.result, index });
+              res({ type: "video", uri: e.target.result, index, file });
             }
           };
           //@ts-expect-error
@@ -307,6 +352,11 @@ const PublishContentPage = () => {
     },
     [videoFile]
   );
+
+  const toggleModal = useCallback(() => {
+    setThumbnailOpen(!thumbnailOpen);
+  }, [thumbnailOpen]);
+
   return (
     <DarkPage padding pageTitle="PUBLISH CONTENT" scrolls>
       {loading ? (
@@ -314,7 +364,7 @@ const PublishContentPage = () => {
       ) : null}
 
       <h2>
-        Say Something<div className="line"></div>
+        Add to Library<div className="line"></div>
       </h2>
 
       <form
@@ -416,18 +466,30 @@ const PublishContentPage = () => {
                     key={prev.index.toString()}
                     width={288}
                     className="m-1"
-                  ></img>
+                  />
                 );
               }
+
               if (prev.type === "video") {
                 return (
-                  <video
-                    src={prev.uri}
-                    key={prev.index.toString()}
-                    controls
-                    width={288}
-                    className="m-1"
-                  ></video>
+                  <div className="video-preview">
+                    <div
+                      className="change-thumbnail-btn"
+                      onClick={() => {
+                        toggleModal();
+                        setThumbnailTarget(prev);
+                      }}
+                    >
+                      <i className="fas fa-images" />
+                    </div>
+                    <video
+                      src={prev.uri}
+                      key={prev.index.toString()}
+                      controls
+                      width={288}
+                      className="m-1"
+                    />
+                  </div>
                 );
               }
 
@@ -437,6 +499,15 @@ const PublishContentPage = () => {
               return null;
             })}
 
+          <div
+            className="remove-btn"
+            onClick={useCallback(() => {
+              setSelectedFiles([]);
+              setMediaPreviews([]);
+            }, [])}
+          >
+            <i className="far fa-trash-alt" />
+          </div>
           <div
             className="remove-btn"
             onClick={useCallback(() => {
@@ -491,6 +562,12 @@ const PublishContentPage = () => {
           </div>
         </Modal>
       )}
+      <UploadThumbnail
+        open={thumbnailOpen}
+        toggleModal={toggleModal}
+        target={thumbnailTarget}
+        setVideoThumbnails={setVideoThumbnails}
+      />
 
       <input
         type="file"

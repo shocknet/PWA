@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-import * as Common from "shock-common";
 
 import NodeReducer from "./NodeReducer";
 import AuthReducer from "./AuthReducer";

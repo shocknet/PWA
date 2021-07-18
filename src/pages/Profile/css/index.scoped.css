@@ -265,7 +265,8 @@ p.profile-clipboard-text {
     );
 }
 
-.remove-btn {
+.remove-btn,
+.change-thumbnail-btn {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -279,7 +280,50 @@ p.profile-clipboard-text {
   height: 48px;
 }
 
+.change-thumbnail-btn {
+  right: 80px;
+}
+
 .remove-btn > i {
   color: white;
   font-size: 12px;
+}
+
+.video-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-color: var(--main-blue);
+  border-style: solid;
+  border-width: 1px;
+  height: 100px;
+}
+
+.video-icon {
+  font-size: 24px;
+  opacity: 0.3;
+}
+
+.width-100-px {
+  width: 100px;
+}
+
+.margin-1-em {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.relative {
+  position: relative;
+}
+
+.checkmark-container {
+  position: absolute;
+  top: 0;
+  background-color: rgb(255, 255, 255, 0.2);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

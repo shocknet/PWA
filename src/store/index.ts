@@ -1,7 +1,16 @@
-import { createStore, applyMiddleware, compose, AnyAction } from "redux";
-import thunk from "redux-thunk";
+import {
+  createStore,
+  applyMiddleware,
+  compose,
+  AnyAction,
+  Action
+} from "redux";
+import thunk, { ThunkDispatch } from "redux-thunk";
 import rootReducer, { State } from "../reducers";
-import { useSelector as origUseSelector } from "react-redux";
+import {
+  useSelector as origUseSelector,
+  useDispatch as originalUseDispatch
+} from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import Migrations from "./Migrations";
@@ -50,5 +59,9 @@ export const persistor = initializedStore.persistor;
 export const useSelector = <TSelected = unknown>(
   selector: (state: State) => TSelected
 ): TSelected => origUseSelector<State, TSelected>(selector);
+
+export const useDispatch = (): ThunkDispatch<State, undefined, Action> => {
+  return originalUseDispatch() as ThunkDispatch<State, undefined, Action>;
+};
 
 export * from "./selectors";

@@ -1,8 +1,19 @@
+import * as Schema from "../schema";
 import { ACTIONS } from "../actions/FeesActions";
 
-const INITIAL_STATE = {
+export interface FeesState {
+  source: string;
+
+  rate: Schema.FeeRate;
+
+  feeRates: Record<Schema.FeeRate, number>;
+}
+
+const INITIAL_STATE: FeesState = {
   source: "https://mempool.space/api/v1/fees/recommended",
+
   rate: "halfHourFee",
+
   feeRates: {
     fastestFee: 0,
     halfHourFee: 0,
@@ -10,7 +21,10 @@ const INITIAL_STATE = {
   }
 };
 
-const fees = (state = INITIAL_STATE, action) => {
+const fees = (
+  state: FeesState = INITIAL_STATE,
+  action: { type: string; data: any }
+): FeesState => {
   switch (action.type) {
     case ACTIONS.RESET_FEES: {
       return INITIAL_STATE;
@@ -26,6 +40,7 @@ const fees = (state = INITIAL_STATE, action) => {
       const source = action.data;
       return {
         ...state,
+        feeRates: INITIAL_STATE["feeRates"],
         source
       };
     }

@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { connectHost } from "../../../../actions/NodeActions";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
+import { ParseNodeIP } from "../../../../utils/relay";
 
 const isIP = hostname => {
   const digits = hostname.split(".");
@@ -57,9 +58,9 @@ const HostStep = () => {
       }
       setConnecting(true);
       setError(null);
-
-      const noProtocolHostIP = parseUrl(hostIP);
-      const { withProtocolHostIP } = await connectHost(noProtocolHostIP)(
+      const [parsedHostIP, relayId] = ParseNodeIP(hostIP)
+      const noProtocolHostIP = parseUrl(parsedHostIP);
+      const { withProtocolHostIP } = await connectHost(noProtocolHostIP,true,relayId)(
         dispatch
       );
     } catch (error) {
@@ -78,7 +79,7 @@ const HostStep = () => {
       <div className="vertical-flex-center">
         <h2>Configure Your Node</h2>
         <p className="text-center m-b-1">Shockwallet can connect to your own Lightning node, your node must be running <a target="_blank" href="https://github.com/shocknet/api" className="color-text-blue">ShockAPI</a> with LND</p>
-        <p className="text-center">Umbrel, MyNode and Command Line instructions can be found <a target="_blank" href="" className="color-text-blue">Here</a></p>
+        <p className="text-center">Umbrel, MyNode and Command Line instructions can be found <a target="_blank" href="https://github.com/shocknet/api" className="color-text-blue">Here</a></p>
       </div>
       <div style={{height:"15vh"}}></div>
       {!connecting && (

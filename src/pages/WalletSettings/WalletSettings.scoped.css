@@ -1,0 +1,26 @@
+.fee-preference {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.fee-preference:hover {
+  cursor: pointer;
+}
+
+.fee-preference-selected {
+  background-color: var(--hovered-blue);
+}
+
+.reset-input-style {
+  width: unset;
+  padding: 8px 0px;
+  margin: 0;
+}

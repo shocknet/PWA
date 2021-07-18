@@ -2,7 +2,7 @@ import SocketIO from "socket.io-client";
 import binaryParser from "socket.io-msgpack-parser";
 import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
-import { initialMessagePrefix } from "../utils/String";
+import { initialMessagePrefix } from "./String";
 import { setAuthenticated } from "../actions/AuthActions";
 import { connectHost } from "../actions/NodeActions";
 /**
@@ -20,12 +20,22 @@ const options = {
 
 const rifleSubscriptions = new Map();
 
+/** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let GunSocket = null;
 
+/** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let LNDSocket = null;
 
 export const connectSocket = async (host = "", reconnect = false) => {
-  if (GunSocket && LNDSocket && !reconnect) {
+  const { store } = await import("../store");
+  const socketOptions = {
+    ...options,
+    auth: {
+      encryptionId: store.getState().encryption.deviceId
+    }
+  };
+
+  if (GunSocket?.connected && LNDSocket?.connected && !reconnect) {
     return { GunSocket, LNDSocket };
   }
 
@@ -34,15 +44,14 @@ export const connectSocket = async (host = "", reconnect = false) => {
     disconnectSocket(LNDSocket);
   }
 
-  const { store } = await import("../store");
-  const socketOptions = {
-    ...options,
-    auth: {
-      encryptionId: store.getState().encryption.deviceId
-    }
-  };
-  GunSocket = SocketIO.connect(`${host}/gun`, socketOptions);
-  LNDSocket = SocketIO.connect(`${host}/lndstreaming`, socketOptions);
+  GunSocket = SocketIO(`${host}/gun`, socketOptions);
+  LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
+  
+  const relayId = store.getState().node.relayId
+  if(relayId){
+    GunSocket.emit('hybridRelayId',{id:relayId})
+    LNDSocket.emit('hybridRelayId',{id:relayId})
+  }
 
   const GunOn = encryptedOn(GunSocket);
 
@@ -66,11 +75,10 @@ export const connectSocket = async (host = "", reconnect = false) => {
   GunSocket.on(Common.NOT_AUTH, () => {
     store.dispatch(setAuthenticated(false));
   });
-
+  //TODO listen on relay error
   GunSocket.on("encryption:error", async err => {
-    if (err.field === "deviceId") {
-      const cachedNodeIP = store.getState().node.hostIP;
-      await store.dispatch(connectHost(cachedNodeIP, false));
+    if (err.field === "deviceId" || err.message === "Bad Mac") {
+      const {hostIP:cachedNodeIP,relayId} = store.getState().node;
       store.dispatch(setAuthenticated(false));
     }
   });
@@ -192,7 +200,10 @@ const encryptedOn = socket => async (eventName, callback) => {
   });
 };
 
-const subscribeSocket = ({ eventName, callback }) =>
+/**
+ * @returns {Promise<Subscription>}
+ */
+export const subscribeSocket = ({ eventName, callback }) =>
   new Promise((resolve, reject) => {
     try {
       import("../store").then(({ store }) => {
@@ -213,12 +224,16 @@ const subscribeSocket = ({ eventName, callback }) =>
           }
         );
 
-        on(eventName, data => {
-          if (callback) {
+        if (callback) {
+          on(eventName, data => {
             callback(null, data);
-            return;
+          });
+        }
+
+        resolve({
+          off() {
+            emit(`unsubscribe:${eventName}`);
           }
-          resolve(data);
         });
       });
     } catch (err) {
@@ -353,7 +368,7 @@ export const rifle = ({
   });
 
 /**
- * @param {Promise<() => void>} subscription
+ * @param {Promise<Subscription>[]} subscriptions
  */
 export const rifleCleanup = (...subscriptions) => () => {
   subscriptions.map(subscription =>
@@ -364,11 +379,19 @@ export const rifleCleanup = (...subscriptions) => () => {
 };
 
 /**
- * @returns {{ messages: any , contacts: Contact[]}}
+ * @returns {Promise<{ messages: any , contacts: Contact[]}>}
  */
-export const getChats = async ({ authToken }) => {
+export const getChats = async () => {
   try {
-    const chats = await subscribeSocket({ authToken, eventName: "chats" });
+    const chats = await new Promise(res => {
+      const subscription = subscribeSocket({
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        },
+        eventName: "chats"
+      });
+    });
 
     const contacts = chats.map(chat => ({
       pk: chat.recipientPublicKey,
@@ -402,13 +425,19 @@ export const getChats = async ({ authToken }) => {
   }
 };
 
-export const getSentRequests = async ({ hostIP, authToken }, callback) => {
+/**
+ * @returns {Promise<Common.SimpleSentRequest[]>}
+ */
+export const getSentRequests = async () => {
   try {
-    const sentRequests = await subscribeSocket({
-      hostIP,
-      authToken,
-      eventName: "sentRequests",
-      callback
+    const sentRequests = await new Promise(res => {
+      const subscription = subscribeSocket({
+        eventName: "sentRequests",
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        }
+      });
     });
 
     return sentRequests;
@@ -417,13 +446,19 @@ export const getSentRequests = async ({ hostIP, authToken }, callback) => {
   }
 };
 
-export const getReceivedRequests = async ({ hostIP, authToken }, callback) => {
+/**
+ * @returns {Promise<Common.SimpleReceivedRequest[]>}
+ */
+export const getReceivedRequests = async () => {
   try {
-    const receivedRequests = await subscribeSocket({
-      hostIP,
-      authToken,
-      eventName: "receivedRequests",
-      callback
+    const receivedRequests = await new Promise(res => {
+      const subscription = subscribeSocket({
+        eventName: "receivedRequests",
+        callback(_, data) {
+          subscription.then(sub => sub.off());
+          res(data);
+        }
+      });
     });
 
     return receivedRequests.map(request => ({
