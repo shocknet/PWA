@@ -70,7 +70,7 @@ const MessagesPage = () => {
     );
 
     return () => {
-      subscriptions.map(unsubscribe => unsubscribe());
+      subscriptions.forEach(unsubscribe => unsubscribe());
     };
   }, [convos, dispatch, receivedRequests]);
 
