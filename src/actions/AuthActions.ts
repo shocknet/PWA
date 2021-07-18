@@ -4,30 +4,30 @@ export const ACTIONS = {
   SET_AUTH_STEP: "auth/step/set",
   SET_AUTHENTICATED: "auth/authenticated/set",
   SET_AUTH_METHOD: "auth/method/set",
-  LOGOUT: "auth/logout"
+  LOGOUT: "auth/logout",
+  SET_RELAY_ID: "auth/relay/set"
+
 };
 
-export const setAuthenticated = status => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTHENTICATED,
-    data: status
-  });
-};
+export const setAuthenticated = status => ({
+  type: ACTIONS.SET_AUTHENTICATED,
+  data: status
+});
 
-export const setAuthStep = step => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTH_STEP,
-    data: step
-  });
-};
+export const setAuthStep = step => ({
+  type: ACTIONS.SET_AUTH_STEP,
+  data: step
+});
 
-export const setAuthMethod = method => dispatch => {
-  dispatch({
-    type: ACTIONS.SET_AUTH_METHOD,
-    data: method
-  });
-};
+export const setAuthMethod = method => ({
+  type: ACTIONS.SET_AUTH_METHOD,
+  data: method
+});
 
 export const logout = () => ({
   type: ACTIONS.LOGOUT
+});
+export const setRelayId = relayId => ({
+  type: ACTIONS.SET_RELAY_ID,
+  data: relayId
 });

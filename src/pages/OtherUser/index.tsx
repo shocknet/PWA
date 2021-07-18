@@ -1,18 +1,12 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
+import * as Common from "shock-common";
 
-import { GUN_PROPS } from "../../utils/Gun";
 import Http from "../../utils/Http";
-import { processDisplayName } from "../../utils/String";
 
-import {
-  subscribeUserProfile,
-  unsubscribeUserProfile
-} from "../../actions/UserProfilesActions";
-import { rifle, rifleCleanup } from "../../utils/WebSocket";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import BottomBar from "../../common/BottomBar";
 import AddBtn from "../../common/AddBtn";
@@ -21,6 +15,7 @@ import Loader from "../../common/Loader";
 import ShockAvatar from "../../common/ShockAvatar";
 import ProfileDivider from "../../common/ProfileDivider";
 import Pad from "../../common/Pad";
+import ContentWall from "../../common/ContentWall";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -36,7 +31,9 @@ import FollowBtn from "./components/FollowBtn";
 import SendReqBtn from "./components/SendReqBtn";
 import {
   subscribeFollows,
-  unsubscribeFollows
+  unsubscribeFollows,
+  subscribeUserPosts as subPosts,
+  subSharedPosts
 } from "../../actions/FeedActions";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -46,24 +43,21 @@ const AVATAR_SIZE = 122;
 
 const OtherUserPage = () => {
   //#region controller
-  const dispatch = useDispatch();
+  const dispatch = Store.useDispatch();
+  const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  //@ts-expect-error
-  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
-  const { publicKey: userPublicKey } = useParams<{ publicKey: string }>();
+
+  const { publicKey: userPublicKey, selectedView = "posts" } = useParams<{
+    publicKey: string;
+    selectedView: "posts" | "services" | "content";
+  }>();
   const user = Store.useSelector(Store.selectUser(userPublicKey));
-  const [userPosts, setUserPosts] = useState([]);
-  const [userSharedPosts, setUserSharedPosts] = useState([]);
-  const [finalPosts, setFinalPosts] = useState([]);
   const [userServices, setUserServices] = useState({});
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [buyServiceModalData, setBuyServiceModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
-  const [selectedView, setSelectedView] = useState<"posts" | "services">(
-    "posts"
-  );
   const isMe = myGunPub === user.publicKey;
   // Effect to sub follows
   useEffect(() => {
@@ -72,149 +66,29 @@ const OtherUserPage = () => {
       dispatch(unsubscribeFollows());
     };
   }, [dispatch]);
-  const subscribeUserPosts = useCallback(() => {
-    const query = `${userPublicKey}::posts::on`;
-    const subscription = rifle({
-      query,
-      reconnect: false,
-      onData: async posts => {
-        const postEntries = Object.entries(posts);
-        const newPosts = postEntries
-          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-          .map(([key]) => key);
 
-        const proms = newPosts.map(async id => {
-          const { data: post } = await Http.get(
-            `/api/gun/otheruser/${userPublicKey}/load/posts>${id}`
-          );
-          const tipSet = post.data.tipsSet
-            ? Object.values(post.data.tipsSet)
-            : [];
-          const lenSet = tipSet.length;
-          const tot =
-            lenSet > 0
-              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
-              : 0;
-          return {
-            ...post.data,
-            id,
-            authorId: userPublicKey,
-            tipCounter: lenSet,
-            tipValue: tot
-          };
-        });
-        const postsAlmostReady = await Promise.allSettled(proms);
-        const postsReady = postsAlmostReady
-          .filter(maybeOk => maybeOk.status === "fulfilled")
-          //@ts-expect-error
-          .map(res => res.value);
-        setUserPosts(postsReady);
-      }
-    });
-
-    return rifleCleanup(subscription);
-  }, [userPublicKey]);
-
-  const subscribeSharedPosts = useCallback(() => {
-    const query = `${userPublicKey}::sharedPosts::on`;
-    const subscription = rifle({
-      query,
-      reconnect: false,
-      onData: async posts => {
-        const postEntries = Object.entries(posts);
-        const newPosts = postEntries
-          .filter(([key, value]) => value !== null && !GUN_PROPS.includes(key))
-          .map(([key]) => key);
-
-        const proms = newPosts.map(async id => {
-          const { data: shared } = await Http.get(
-            `/api/gun/otheruser/${userPublicKey}/load/sharedPosts>${id}`
-          );
-          if (!shared.data || !shared.data.originalAuthor) {
-            throw new Error(
-              "invalid shared post provided for user " + userPublicKey
-            );
-          }
-          const { data: post } = await Http.get(
-            `/api/gun/otheruser/${shared.data.originalAuthor}/load/posts>${id}`
-          );
-          const tipSet = post.data.tipsSet
-            ? Object.values(post.data.tipsSet)
-            : [];
-          const lenSet = tipSet.length;
-          const tot =
-            lenSet > 0
-              ? tipSet.reduce((acc, val) => Number(val) + Number(acc))
-              : 0;
-          return {
-            ...shared.data,
-            originalPost: {
-              ...post.data,
-              id,
-              tipCounter: lenSet,
-              tipValue: tot
-            },
-            authorId: userPublicKey,
-            type: "shared"
-          };
-        });
-        const postsAlmostReady = await Promise.allSettled(proms);
-        const postsReady = postsAlmostReady
-          .filter(maybeOk => maybeOk.status === "fulfilled")
-          // @ts-expect-error
-          .map(res => res.value);
-        setUserSharedPosts(postsReady);
-      }
-    });
-
-    return rifleCleanup(subscription);
-  }, [userPublicKey]);
+  useEffect(() => dispatch(subPosts(userPublicKey)), [dispatch, userPublicKey]);
+  useEffect(() => dispatch(subSharedPosts(userPublicKey)), [
+    dispatch,
+    userPublicKey
+  ]);
 
   // effect for user profile
-  // @ts-ignore
   useEffect(() => {
     const unsubscribe = dispatch(subscribeUserProfile(userPublicKey));
 
     return unsubscribe;
   }, [dispatch, userPublicKey]);
-  //effect for user posts
-  useEffect(() => {
-    const unsubscribe = subscribeUserPosts();
 
-    return unsubscribe;
-  }, [subscribeUserPosts]);
-  //effect for shared posts
-  useEffect(() => {
-    const unsubscribe = subscribeSharedPosts();
-
-    return unsubscribe;
-  }, [subscribeSharedPosts]);
-  //effect for merge posts and shared posts
-  useEffect(() => {
-    const final = [...userPosts, ...userSharedPosts].sort(
-      (a, b) => b.date - a.date
-    );
-    setFinalPosts(final);
-    const unSubProfiles = userSharedPosts
-      .filter(post => !userProfiles[post.originalAuthor])
-      .map(post => {
-        const pub = post.originalAuthor;
-        dispatch(subscribeUserProfile(pub));
-        return () => {
-          dispatch(unsubscribeUserProfile(pub));
-        };
-      });
-    return () => {
-      unSubProfiles.forEach(unSub => unSub());
-    };
-  }, [dispatch, userPosts, userProfiles, userSharedPosts]);
   //effect for services
   useEffect(() => {
-    Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`).then(
-      ({ data }) => {
+    Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`)
+      .then(({ data }) => {
         setUserServices(data.data);
-      }
-    );
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }, [userPublicKey]);
 
   const toggleModal = useCallback(() => {
@@ -265,99 +139,39 @@ const OtherUserPage = () => {
     [shareModalData]
   );
 
+  const posts = Store.useSelector(
+    Store.selectPostsNewestToOldest(userPublicKey)
+  );
+
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
   const renderPosts = () => {
-    if (finalPosts.length === 0) {
+    if (posts.length === 0) {
       return <Loader text="loading posts..." />;
     }
-    return finalPosts.map((post, index) => {
-      const profile = userProfiles[post.authorId];
-      if (post.type === "shared") {
-        if (!post.originalPost) {
-          return null;
-        }
-
-        const item = Object.entries(post.originalPost.contentItems).find(
-          //@ts-expect-error
-          ([_, item]) => item.type === "stream/embedded"
-        );
-        let streamContentId, streamItem;
-        if (item) {
-          [streamContentId, streamItem] = item;
-        }
-        if (streamItem) {
-          if (!streamItem.liveStatus) {
-            return null;
-          }
-          if (streamItem.liveStatus === "waiting") {
-            return null;
-          }
-          if (streamItem.liveStatus === "wasLive") {
-            if (!streamItem.playbackMagnet) {
-              return null;
-            }
-            post.originalPost.contentItems[streamContentId].type =
-              "video/embedded";
-            post.originalPost.contentItems[streamContentId].magnetURI =
-              streamItem.playbackMagnet;
-          }
-        }
-        const originalPublicKey = post.originalAuthor;
-        const originalProfile = userProfiles[originalPublicKey];
+    return posts.map(post => {
+      if (Common.isSharedPost(post)) {
         return (
-          <Suspense fallback={<Loader />} key={index}>
+          <Suspense fallback={<Loader />} key={post.originalPostID}>
             <SharedPost
-              originalPost={post.originalPost}
-              originalPostProfile={originalProfile}
-              sharedTimestamp={post.shareDate}
-              sharerProfile={profile}
-              postPublicKey={originalPublicKey}
               openTipModal={toggleTipModal}
               openUnlockModal={toggleUnlockModal}
-              openDeleteModal={null}
               openShareModal={toggleShareModal}
+              postID={post.originalPostID}
+              sharerPublicKey={post.sharedBy}
             />
           </Suspense>
         );
       }
-      const item = Object.entries(post.contentItems).find(
-        //@ts-expect-error
-        ([_, item]) => item.type === "stream/embedded"
-      );
-      let streamContentId, streamItem;
-      if (item) {
-        [streamContentId, streamItem] = item;
-      }
-      if (streamItem) {
-        if (!streamItem.liveStatus) {
-          return null;
-        }
-        if (streamItem.liveStatus === "waiting") {
-          return null;
-        }
-        if (streamItem.liveStatus === "wasLive") {
-          if (!streamItem.playbackMagnet) {
-            return null;
-          }
-          post.contentItems[streamContentId].type = "video/embedded";
-          post.contentItems[streamContentId].magnetURI =
-            streamItem.playbackMagnet;
-        }
-      }
+
       return (
-        <Suspense fallback={<Loader />} key={index}>
+        <Suspense fallback={<Loader />} key={post.id}>
           <Post
             id={post.id}
-            timestamp={post.date}
-            contentItems={post.contentItems}
-            username={processDisplayName(profile?.user, profile?.displayName)}
             publicKey={post.authorId}
             openTipModal={toggleTipModal}
             openUnlockModal={toggleUnlockModal}
-            tipCounter={post.tipCounter || 0}
-            tipValue={post.tipValue || 0}
             openDeleteModal={null}
             openShareModal={toggleShareModal}
           />
@@ -371,7 +185,7 @@ const OtherUserPage = () => {
       .map(([id, service]) => {
         const buyCB = () => {
           setBuyServiceModalOpen({
-            //@ts-expect-error
+            // @ts-expect-error
             ...service,
             serviceID: id,
             owner: userPublicKey
@@ -401,14 +215,24 @@ const OtherUserPage = () => {
         );
       });
   };
-  const handleViewChange = useCallback((selected: "posts" | "services") => {
-    setSelectedView(selected);
-  }, []);
+  const renderContent = () => {
+    return (
+      <div className={styles["content-container"]}>
+        <ContentWall publicKey={userPublicKey} />
+      </div>
+    );
+  };
+  const handleViewChange = useCallback(
+    (selected: "posts" | "services" | "content") => {
+      history.replace(`/otherUser/${userPublicKey}/${selected}`);
+    },
+    [history, userPublicKey]
+  );
   //#endregion controller
 
   return (
     <div className={classNames("page-container", styles["profile-page"])}>
-      <div className={classNames(styles["profile-container"], "no-scrollbar")}>
+      <div className={classNames(styles["profile-container"])}>
         <div className="profile-cover">
           {user.header && (
             <img
@@ -449,11 +273,16 @@ const OtherUserPage = () => {
           </div>
         </div>
 
-        <ProfileDivider onChange={handleViewChange} selected={selectedView} />
+        <ProfileDivider
+          onChange={handleViewChange}
+          selected={selectedView}
+          showContentBtn
+        />
 
         <div>
           {selectedView === "posts" && renderPosts()}
           {selectedView === "services" && renderServices()}
+          {selectedView === "content" && renderContent()}
         </div>
 
         {/* Allow some wiggle room to avoid the QR btn covering the view selector */}

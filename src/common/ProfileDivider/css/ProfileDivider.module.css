@@ -18,8 +18,10 @@
   color: var(--text-gray);
 }
 
-.divider {
-  height: 100%;
-  width: 1px;
-  color: white;
+.left-line {
+  left: 33%;
+}
+
+.right-line {
+  right: 33%;
 }

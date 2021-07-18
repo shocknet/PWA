@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
+import * as Common from "shock-common";
 import { useDispatch } from "react-redux";
 import c from "classnames";
 
@@ -7,7 +8,6 @@ import { addStream, removeStream } from "../../../actions/ContentActions";
 import Loader from "../../../common/Loader";
 import Http from "../../../utils/Http";
 import obsLogo from "../../../images/obs-2.svg";
-import Stream from "../../../common/Post/components/Stream";
 import { RequestToken } from "../../../utils/seed";
 import { useHistory } from "react-router";
 import Modal from "../../../common/Modal";
@@ -17,14 +17,14 @@ import * as gStyles from "../../../styles";
 import Line from "../../../common/Line";
 import Pad from "../../../common/Pad";
 
-import Static from "./components/Static";
-import CamFeed from "./components/CamFeed";
 import styles from "./css/GoLive.module.css";
 import InputGroup from "../../../common/InputGroup";
 
 const GoLive = () => {
   const dispatch = useDispatch();
-  const history = useHistory()
+  const history = useHistory();
+  const nodeIP = Store.useSelector(({node}) => node.hostIP)
+  const relayId = Store.useSelector(({node}) => node.relayId)
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
@@ -43,26 +43,29 @@ const GoLive = () => {
   const streamBroadcasterUrl = Store.useSelector(
     ({ content }) => content.streamBroadcasterUrl
   );
-  const streamContentId = Store.useSelector(({ content }) => content.streamContentId);
+  const streamContentId = Store.useSelector(
+    ({ content }) => content.streamContentId
+  );
+  const tipOverlayUrl = Store.useSelector(
+    ({ content }) => content.tipOverlayUrl
+  );
   const streamPostId = Store.useSelector(({ content }) => content.streamPostId);
-  const streamUrl = Store.useSelector(({ content }) => content.streamUrl);
   const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
   const [selectedSource, setSelectedSource] = useState<"camera" | "obs">("obs");
   const [loading, setLoading] = useState(false);
   const [streamToken, setStreamToken] = useState(streamLiveToken);
   const [, setUserToken] = useState(streamUserToken);
   const [paragraph, setParagraph] = useState("Look I'm streaming!");
-  
+
   const [error, setError] = useState<string | null>(null);
-  const [rtmpUri, setRtmpUri] = useState("");
   const [promptInfo, setPromptInfo] = useState(null);
   const [starting, setStarting] = useState(false);
 
-  const [copiedUrl,setCopiedUrl] = useState(false)
-  const [copiedToken,setCopiedToken] = useState(false)
-  
-  
-  const onSubmitCb = useCallback(
+  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(false);
+  const [copiedOverlayUrl, setCopiedOverlayUrl] = useState(false);
+  const [enableTipsOverlay, setEnableTipsOverlay] = useState(true);
+  const onSubmitCb = React.useCallback(
     async (servicePrice?, serviceID?) => {
       try {
         setLoading(true);
@@ -88,8 +91,9 @@ const GoLive = () => {
         setStreamToken(`${latestUserToken}?key=${obsToken}`);
         const streamPlaybackUrl = `${finalSeedUrl}/rtmpapi/live/${latestUserToken}/index.m3u8`;
         const rtmp = finalSeedUrl.replace("https", "rtmp");
-        const rtmpUrl = `${rtmp}/live`
-        const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
+        const rtmpUrl = `${rtmp}/live`;
+        const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`;
+        const viewersSocketUrl = `${finalSeedUrl.replace("https", "wss")}/websocket`
         let contentItems = [];
         if (paragraph !== "") {
           contentItems.push({
@@ -97,42 +101,62 @@ const GoLive = () => {
             text: paragraph
           });
         }
-        contentItems.push({
-          type: "stream/embedded",
-          width: 0,
+
+        const streamContent: Common.EmbeddedStream = {
           height: 0,
-          magnetURI: streamPlaybackUrl,
           isPreview: false,
           isPrivate: false,
+          liveStatus: "waiting",
+          magnetURI: streamPlaybackUrl,
+          playbackMagnet: "",
+          statusUrl: stUrl,
+          type: "stream/embedded",
           userToken: latestUserToken,
-          liveStatus:'waiting',
-          statusUrl: stUrl
-        });
-        
+          viewersCounter: 0,
+          width: 0,
+          //@ts-expect-error
+          viewersSocketUrl
+        };
+
+        contentItems.push(streamContent);
+
         const res = await Http.post(`/api/gun/wall`, {
           tags: [],
           title: "Post",
-          contentItems
+          contentItems,
+          enableTipsOverlay
         });
         if (res.status === 200) {
-          const {data} = res
-          const [postId,newPost] = data
-          console.log(newPost.contentItems)
-          //@ts-expect-error
-          const [contentId] = Object.entries(newPost.contentItems).find(([_,item]) => item.magnetURI === streamPlaybackUrl)
+          const { data } = res;
+
+          const [postId, newPost, overlayAccessId] = data as [string, Common.RawPost, string];
+          let tipsNotificationsOverlayUrl = ""
+          if(overlayAccessId){
+            const  relayIdParam = relayId ? `&x-shock-hybrid-relay-id-x=${relayId}` : ""
+            tipsNotificationsOverlayUrl =  `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}${relayIdParam}`
+          }
+          console.log(newPost.contentItems);
+
+          const [contentId] = Object.entries(newPost.contentItems).find(
+            ([_, item]) =>
+              item.type === "stream/embedded" &&
+              item.magnetURI === streamPlaybackUrl
+          );
           addStream({
-            seedToken:latestUserToken, 
-            liveToken, 
-            streamUrl:streamPlaybackUrl,
-            streamPostId:postId,
-            streamContentId:contentId,
-            streamStatusUrl:stUrl,
-            streamBroadcasterUrl:rtmpUrl})(dispatch);
-          await Http.post(`/api/listenStream`,{
+            seedToken: latestUserToken,
+            liveToken,
+            streamUrl: streamPlaybackUrl,
+            streamPostId: postId,
+            streamContentId: contentId,
+            streamStatusUrl: stUrl,
+            streamBroadcasterUrl: rtmpUrl,
+            tipOverlayUrl:tipsNotificationsOverlayUrl
+          })(dispatch);
+          await Http.post(`/api/listenStream`, {
             postId,
             contentId,
             statusUrl: `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`
-          })
+          });
           console.log("post created successfully");
           setLoading(false);
         } else {
@@ -145,7 +169,7 @@ const GoLive = () => {
         setLoading(false);
       }
     },
-    [availableTokens, seedProviderPub, seedToken, seedUrl, dispatch, paragraph]
+    [availableTokens, seedProviderPub, seedToken, seedUrl,enableTipsOverlay, dispatch, paragraph]
   );
   const closePrompt = useCallback(() => {
     setPromptInfo(null);
@@ -210,12 +234,19 @@ const GoLive = () => {
   );
   const copyToken = useCallback(() => {
     navigator.clipboard.writeText(streamToken);
-    setCopiedToken(true)
-  }, [streamToken,setCopiedToken]);
+    setCopiedToken(true);
+  }, [streamToken, setCopiedToken]);
+
+  const copyOverlayUrl = useCallback(() => {
+    navigator.clipboard.writeText(tipOverlayUrl);
+    setCopiedOverlayUrl(true);
+  }, [tipOverlayUrl, setCopiedOverlayUrl]);
+
   const copyUri = useCallback(() => {
     navigator.clipboard.writeText(streamBroadcasterUrl);
-    setCopiedUrl(true)
-  }, [streamBroadcasterUrl,setCopiedUrl]);
+    setCopiedUrl(true);
+  }, [streamBroadcasterUrl, setCopiedUrl]);
+
   const onInputChange = useCallback(
     e => {
       const { value, name } = e.target;
@@ -234,19 +265,30 @@ const GoLive = () => {
     },
     [setParagraph, setSelectedSource]
   );
+  
+  const toggleEnableTipsOverlay = useCallback(() => {
+    setEnableTipsOverlay(!enableTipsOverlay)
+  },[enableTipsOverlay, setEnableTipsOverlay])
 
   const stopStream = useCallback(() => {
-    Http.post("/api/stopStream",{
-      postId:streamPostId, 
-      contentId:streamContentId, 
-      endUrl:`https://webtorrent.shock.network/api/stream/end`, 
-      urlForMagnet:`https://webtorrent.shock.network/api/stream/torrent/${streamUserToken}`, 
-      obsToken:streamLiveToken
-    })
+    Http.post("/api/stopStream", {
+      postId: streamPostId,
+      contentId: streamContentId,
+      endUrl: `https://stream.shock.network/api/stream/end`,
+      urlForMagnet: `https://stream.shock.network/api/stream/torrent/${streamUserToken}`,
+      obsToken: streamLiveToken
+    });
     removeStream()(dispatch);
-    console.info(streamUserToken)
+    console.info(streamUserToken);
     history.push("/profile");
-  }, [dispatch,removeStream]);
+  }, [
+    dispatch,
+    history,
+    streamContentId,
+    streamLiveToken,
+    streamPostId,
+    streamUserToken
+  ]);
   const btnClass = c(
     gStyles.col,
     gStyles.centerJustify,
@@ -257,7 +299,7 @@ const GoLive = () => {
   return (
     <>
       <DarkPage pageTitle="GO LIVE" scrolls>
-        {/*hide for now since it's not implemented and causes a duplication*/ }
+        {/*hide for now since it's not implemented and causes a duplication*/}
         {/*!isLive && selectedSource === "camera" ? <CamFeed /> : <Static /> */}
 
         <div className={c(gStyles.rowCentered, gStyles.width100)}>
@@ -326,28 +368,60 @@ const GoLive = () => {
                   )}
 
                   <p>Broadcaster:</p>
-                    
+
                   <div className="d-flex flex-align-center">
-                    {/*@ts-expect-error*/ }
+                    {/*@ts-expect-error*/}
                     <InputGroup
                       name="Streamer Url"
                       value={streamBroadcasterUrl}
                       disabled
                     />
-                    <i className={!copiedUrl ? "far fa-copy fa-lg m-1" : "fas fa-check fa-lg m-1"} onClick={copyUri}></i>
+                    <i
+                      className={
+                        !copiedUrl
+                          ? "far fa-copy fa-lg m-1"
+                          : "fas fa-check fa-lg m-1"
+                      }
+                      onClick={copyUri}
+                    ></i>
                   </div>
                   <p>Stream Key:</p>
-                  
+
                   <div className="d-flex flex-align-center">
-                    {/*@ts-expect-error*/ }
+                    {/*@ts-expect-error*/}
                     <InputGroup
                       name="Stream Key"
                       value={streamToken}
                       disabled
-                      
                     />
-                  <i className={!copiedToken ? "far fa-copy fa-lg m-1" : "fas fa-check fa-lg m-1"} onClick={copyToken}></i>
+                    <i
+                      className={
+                        !copiedToken
+                          ? "far fa-copy fa-lg m-1"
+                          : "fas fa-check fa-lg m-1"
+                      }
+                      onClick={copyToken}
+                    ></i>
                   </div>
+                  { tipOverlayUrl && <p>Tips notifications overlay Url:</p>}
+                  { tipOverlayUrl && <div className="d-flex flex-align-center">
+                    {/*@ts-expect-error*/}
+                    <InputGroup
+                      name="Overlay Url"
+                      value={tipOverlayUrl}
+                      disabled
+                    />
+                    <i
+                      className={
+                        !copiedOverlayUrl
+                          ? "far fa-copy fa-lg m-1"
+                          : "fas fa-check fa-lg m-1"
+                      }
+                      onClick={copyOverlayUrl}
+                    ></i>
+                  </div>
+                    
+                  }
                   <div className="flex-center">
                     <button
                       onClick={stopStream}
@@ -370,6 +444,8 @@ const GoLive = () => {
                   value={paragraph}
                   onChange={onInputChange}
                 />
+                <label htmlFor="enable-tips-notifications">Enable Tips notifications overlay </label>
+                <input type="checkbox" name="enable-tips-notifications" id="enable-tips-notifications" checked={enableTipsOverlay} onClick={toggleEnableTipsOverlay} />
                 <button
                   onClick={onSubmit}
                   className={c(gStyles.width100, "shock-form-button-confirm")}

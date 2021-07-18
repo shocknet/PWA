@@ -9,7 +9,7 @@ export const ACTIONS = {
   SET_DEVICE_ID: "encryption/deviceId"
 };
 
-let exchangingKeypair = null;
+let exchangeSource = Http.CancelToken.source();
 
 export const generateDeviceId = () => dispatch => {
   const deviceId = uuidv4();
@@ -50,13 +50,27 @@ const getDeviceId = () => (dispatch, getState) => {
 
 export const exchangeKeyPair = () => async dispatch => {
   try {
+    if (exchangeSource) {
+      exchangeSource.cancel(
+        "Key Pair exchange operation is preceded by another one"
+      );
+      exchangeSource = null;
+    }
+
+    exchangeSource = Http.CancelToken.source();
     const deviceId = dispatch(getDeviceId());
 
     const keyPair = generateKeyPair();
-    const { data } = await Http.post(`/api/encryption/exchange`, {
-      publicKey: keyPair.publicKeyBase64,
-      deviceId
-    });
+    const { data } = await Http.post(
+      `/api/encryption/exchange`,
+      {
+        publicKey: keyPair.publicKeyBase64,
+        deviceId
+      },
+      {
+        cancelToken: exchangeSource.token
+      }
+    );
 
     dispatch(
       addUserKeyPair({
@@ -80,25 +94,6 @@ export const exchangeKeyPair = () => async dispatch => {
     };
   } catch (err) {
     console.error("[ENCRYPTION] Key Exchange Error:", err);
-    throw err;
-  }
-};
-
-export const throttledExchangeKeyPair = () => async dispatch => {
-  try {
-    if (!exchangingKeypair) {
-      exchangingKeypair = dispatch(exchangeKeyPair());
-    }
-
-    const result = await exchangingKeypair;
-
-    // eslint-disable-next-line require-atomic-updates
-    exchangingKeypair = null;
-
-    return result;
-  } catch (err) {
-    console.error(err);
-    exchangingKeypair = null;
     throw err;
   }
 };

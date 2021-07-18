@@ -4,9 +4,6 @@ import "./css/index.scoped.css";
 import videojs from "video.js";
 import Http from "../../../../utils/Http";
 
-const REACT_APP_SL_SEED_URI = "https://webtorrent.shock.network";
-const STREAM_STATUS_URI = `${REACT_APP_SL_SEED_URI}/rtmpapi/api/streams/live`;
-
 const Stream = ({
   id,
   item,
@@ -42,8 +39,17 @@ const Stream = ({
     player.play();
   },[item])
   useEffect(()=>{
-    console.log("status:",liveStatus)
+    if(item.viewersSocketUrl){
+      const socket = new WebSocket(`${item.viewersSocketUrl}/stream/watch/${item.userToken}`);
+      socket.addEventListener("open", () => {
+        console.log("viewer socket open")
+      });
+      return () => {
+        socket.close()
+      }
+    }
   },[item])
+
   return (
     <div className="media-container w-100">
       <div

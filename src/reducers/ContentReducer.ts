@@ -3,13 +3,14 @@ import produce from "immer";
 import {
   ACTIONS,
   publishedContentAdded,
-  publishedContentRemoved
+  publishedContentRemoved,
+  publicContentAdded
 } from "../actions/ContentActions";
-import { PublishedContent } from "../schema";
+import { PublishedContent, PublicContentItem } from "../schema";
 
 const INITIAL_STATE = {
   seedProviderPub:
-    "qsgziGQS99sPUxV1CRwwRckn9cG6cJ3prbDsrbL7qko.oRbCaVKwJFQURWrS1pFhkfAzrkEvkQgBRIUz9uoWtrg",
+    "tcUUzRkyzXYhIZQbmopiCLREyZ_kQJqQ-C4XesecOm4.GX1Dv-eGcfKuOPobBK9Q-Sc-o697XgVCQzOCfqfimIo",
   streamUserToken: "",
   streamLiveToken: "",
   streamUrl: "",
@@ -18,13 +19,23 @@ const INITIAL_STATE = {
   streamStatusUrl: "",
   streamBroadcasterUrl: "",
   publishedContent: {} as Record<string, PublishedContent>,
+  publicContent: {} as Record<string, PublicContentItem>,
   unlockedContent: {},
   seedInfo: {} as { seedUrl?: string; seedToken?: string },
   availableTokens: {},
-  availableStreamTokens: {}
+  availableStreamTokens: {},
+  tipOverlayUrl:""
 };
 
 const content = (state = INITIAL_STATE, action): typeof INITIAL_STATE => {
+  if (publicContentAdded.match(action)) {
+    return produce(state, draft => {
+      const { item } = action.payload;
+      if (!draft.publicContent[item.id]) {
+        draft.publicContent[item.id] = item;
+      }
+    });
+  }
   if (publishedContentAdded.match(action)) {
     return produce(state, draft => {
       const {
@@ -63,7 +74,8 @@ const content = (state = INITIAL_STATE, action): typeof INITIAL_STATE => {
         streamPostId: data.streamPostId,
         streamContentId: data.streamContentId,
         streamStatusUrl: data.streamStatusUrl,
-        streamBroadcasterUrl: data.streamBroadcasterUrl
+        streamBroadcasterUrl: data.streamBroadcasterUrl,
+        tipOverlayUrl:data.tipOverlayUrl,
       };
     }
     case ACTIONS.REMOVE_STREAM: {

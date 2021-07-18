@@ -71,7 +71,7 @@ export const RequestToken = async ({
     }
     console.log(data);
     const { orderAck } = data;
-    tokenInfo = JSON.parse(orderAck.response);
+    tokenInfo = orderAck.response;
   } else {
     throw new Error("provide the token data or use default seed provider");
   }

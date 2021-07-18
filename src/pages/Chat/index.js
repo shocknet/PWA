@@ -39,7 +39,7 @@ enableMapSet();
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = Utils.useDispatch();
+  const dispatch = Store.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { convoOrReqID } = params;
   const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
@@ -198,16 +198,6 @@ const ChatPage = () => {
     [message, dispatch, convoOrReqID]
   );
 
-  // useEffect(() => {
-  //   const subscription = dispatch(
-  //     subscribeChatMessages(gunPublicKey, recipientPublicKey)
-  //   );
-
-  //   return () => {
-  //     subscription.then(sub => sub.off());
-  //   };
-  // }, [dispatch, gunPublicKey, recipientPublicKey]);
-
   // ------------------------------------------------------------------------ //
   // Date bubble
 
@@ -269,7 +259,7 @@ const ChatPage = () => {
       />
 
       <div
-        className="chat-messages-container no-scrollbar"
+        className="chat-messages-container"
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >

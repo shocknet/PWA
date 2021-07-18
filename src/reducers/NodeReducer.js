@@ -11,7 +11,8 @@ const INITIAL_STATE = {
   authTokenExpirationDate: null,
   authMethod: null,
   hostingAttemptsDone: false,
-  webClientPrefix:"https://shock.pub"
+  webClientPrefix:"https://lightning.page",
+  relayId:null
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -56,7 +57,12 @@ const node = (state = INITIAL_STATE, action) => {
     case ACTIONS.SET_ATTEMPTS_DONE: {
       return { ...state, hostingAttemptsDone: true };
     }
-
+    case ACTIONS.SET_RELAY_ID:{
+      return {
+        ...state,
+        relayId:action.data
+      }
+    }
     case AUTH_ACTIONS.LOGOUT: {
       return {
         ...state,
