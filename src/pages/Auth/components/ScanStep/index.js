@@ -142,7 +142,7 @@ const ScanStep = () => {
               or Laptop. Windows, MacOS and Desktop Linux users can download it{" "}
               <a
                 target="_blank"
-                href="https://github.com/shocknet/Wizard"
+                href="https://github.com/shocknet/Wizard/releases"
                 className="color-text-blue"
                 rel="noreferrer"
               >
