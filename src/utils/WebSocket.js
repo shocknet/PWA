@@ -290,6 +290,9 @@ export const rifleSocketExists = subscriptionId => {
  * @typedef {object} RifleParams
  * @prop {string} query
  * @prop {string=} publicKey Alias for publicKeyForDecryption
+ * @prop {string=} epubForDecryption If epub is known before hand.
+ * @prop {string=} epubField If the epub is included in the received data
+ * itself. Handshake requests for example, have an epub field.
  * @prop {boolean=} reconnect
  * @prop {(data, key) => void} onData
  * @prop {((error) => void)=} onError
@@ -314,9 +317,17 @@ export const rifleSocketExists = subscriptionId => {
  * gun.get('handshakeNodes').on(...)
  * ```
  * @param {RifleParams} args
- * @returns {Promise<{ off: () => void }>}
+ * @returns {Promise<Subscription>}
  */
-export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
+export const rifle = ({
+  query,
+  publicKey,
+  epubForDecryption,
+  epubField,
+  reconnect,
+  onData,
+  onError
+}) =>
   new Promise((resolve, reject) => {
     import("../store").then(({ store }) => {
       if (reconnect) {
@@ -330,7 +341,9 @@ export const rifle = ({ query, publicKey, reconnect, onData, onError }) =>
         {
           $shock: query,
           token: store.getState().node.authToken,
-          publicKey
+          publicKey,
+          epubForDecryption,
+          epubField
         },
         (err, data) => {
           if (err) {

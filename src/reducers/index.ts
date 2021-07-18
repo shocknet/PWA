@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-import * as Common from "shock-common";
 
 import NodeReducer from "./NodeReducer";
 import AuthReducer from "./AuthReducer";
@@ -13,8 +12,6 @@ import EncryptionReducer from "./EncryptionReducer";
 import UserProfilesReducer from "./UserProfilesReducer";
 import OrdersReducer from "./OrdersReducer";
 import AppReducer from "./AppReducer";
-import CoordinatesReducer from "./CoordinatesReducer";
-import settings from "./settings";
 
 const reducers = combineReducers({
   node: NodeReducer,
@@ -28,12 +25,7 @@ const reducers = combineReducers({
   feed: FeedReducer,
   userProfiles: UserProfilesReducer,
   orders: OrdersReducer,
-  app: AppReducer,
-  coordinates: CoordinatesReducer,
-  settings,
-  users: () => {
-    return {} as Record<string, Common.User>;
-  }
+  app: AppReducer
 });
 
 export type State = ReturnType<typeof reducers>;

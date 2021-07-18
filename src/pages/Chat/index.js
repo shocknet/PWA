@@ -5,6 +5,7 @@ import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import produce, { enableMapSet } from "immer";
+import * as Common from "shock-common";
 
 import MainNav from "../../common/MainNav";
 import WithHeight from "../../common/WithHeight";
@@ -13,16 +14,15 @@ import Loader from "../../common/Loader";
 import {
   acceptHandshakeRequest,
   sendMessage,
-  subscribeChatMessages,
-  chatWasDeleted,
-  subChats
+  subConvoMessages,
+  subConvos
 } from "../../actions/ChatActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
-import { rifleCleanup } from "../../utils/WebSocket";
 import * as Utils from "../../utils";
 import * as gStyles from "../../styles";
+import * as Schema from "../../schema";
 /**
  * @typedef {import('../../schema').ReceivedRequest} ReceivedRequest
  * @typedef {import('../../schema').Contact} Contact
@@ -34,17 +34,56 @@ enableMapSet();
 
 /**
  * @typedef {object} ChatPageParams
- * @prop {string} publicKey
+ * @prop {string} convoOrReqID
  */
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = Store.useDispatch();
+  const dispatch = Utils.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
-  const { publicKey: recipientPublicKey } = params;
-  const user = Store.useSelector(Store.selectUser(recipientPublicKey));
+  const { convoOrReqID } = params;
+  const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
+  const isConvo = Schema.isConvo(convoOrReq);
+  const isReq = Schema.isHandshakeReqNew(convoOrReq);
+  const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
+  const [isAccepting, toggleIsAccepting] = Utils.useBooleanState(false);
+  const otherPublicKey = (() => {
+    if (Schema.isConvo(convoOrReq)) {
+      return convoOrReq.with;
+    }
+    if (Schema.isHandshakeReqNew(convoOrReq)) {
+      return convoOrReq.from;
+    }
+    return ""; // was deleted
+  })();
+  const convos = Store.useSelector(Store.selectConvos);
+  useEffect(() => {
+    if (!convoOrReq) {
+      history.replace("/chat");
+    }
+  }, [convoOrReq, history]);
+  useEffect(() => {
+    const subscription = dispatch(subConvos());
+
+    return () => {
+      subscription.then(sub => sub.off());
+    };
+  }, [dispatch]);
+  useEffect(() => {
+    if (Schema.isHandshakeReqNew(convoOrReq)) {
+      const convoExists = convos.find(
+        convo => convo.id === convoOrReq.receiverConvoID
+      );
+      if (convoExists) {
+        history.replace(`/chat/${convoOrReq.receiverConvoID}`);
+      }
+    }
+  }, [convoOrReq, convos, history]);
+  const user = Store.useSelector(Store.selectUser(otherPublicKey));
+  const { publicKey: recipientPublicKey } = user;
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
+
   /* ------------------------------------------------------------------------ */
   //#region dateBubble
   const [shouldShowDateBubble, setShouldShowDateBubble] = useState(false);
@@ -86,7 +125,6 @@ const ChatPage = () => {
     toggleIsDisconnecting();
     Utils.Http.delete(`/api/gun/chats/${recipientPublicKey}`)
       .then(() => {
-        dispatch(chatWasDeleted(recipientPublicKey));
         history.goBack();
       })
       .catch(e => {
@@ -94,32 +132,37 @@ const ChatPage = () => {
         alert(e.message);
       })
       .finally(toggleIsDisconnecting);
-  }, [
-    dispatch,
-    history,
-    recipientPublicKey,
-    toggleActionMenu,
-    toggleIsDisconnecting
-  ]);
+  }, [history, recipientPublicKey, toggleActionMenu, toggleIsDisconnecting]);
   //#endregion actionMenu
   /* ------------------------------------------------------------------------ */
 
-  const messages = Store.useSelector(
-    ({ chat }) => chat.messages[recipientPublicKey]
+  useEffect(() => {
+    if (isConvo) {
+      return dispatch(subConvoMessages(convoOrReqID));
+    }
+    return Utils.EMPTY_FN;
+  }, [convoOrReqID, dispatch, isConvo]);
+  const messages = Store.useSelector(state => {
+    if (isConvo) {
+      return Store.selectConvoMessages(convoOrReqID)(state);
+    }
+    return [];
+  });
+  const messagesWithoutInitial = useMemo(
+    () => messages.filter(msg => msg.body !== Common.INITIAL_MSG),
+    [messages]
+  );
+  // At least the initial message should be there.
+  const otherUserAccepted = useMemo(
+    () => messages.some(msg => msg.state === "received"),
+    [messages]
   );
 
-  const contact = /** @type {Contact} */ (Store.useSelector(({ chat }) =>
-    Utils.getContact(chat.contacts, recipientPublicKey)
-  ));
-  const sentRequest = Store.useSelector(({ chat }) =>
-    Utils.getContact(chat.sentRequests, recipientPublicKey)
+  const receivedRequest = Store.useSelector(({ chat }) =>
+    Object.values(chat.receivedRequests).find(
+      req => req.from === recipientPublicKey
+    )
   );
-  const receivedRequest = /** @type {ReceivedRequest} */ (Store.useSelector(
-    ({ chat }) => Utils.getContact(chat.receivedRequests, recipientPublicKey)
-  ));
-  const gunPublicKey = Store.useSelector(({ node }) => node.publicKey);
-  const pendingSentRequest = !contact && sentRequest;
-  const pendingReceivedRequest = !contact && receivedRequest;
 
   const handleInputChange = useCallback(e => {
     setMessage(e.target.value);
@@ -128,9 +171,15 @@ const ChatPage = () => {
   const acceptRequest = useCallback(() => {
     console.log(receivedRequest);
     if (receivedRequest) {
-      acceptHandshakeRequest(receivedRequest.id)(dispatch);
+      toggleIsAccepting();
+      dispatch(acceptHandshakeRequest(receivedRequest.id))
+        .catch(e => {
+          Utils.logger.error(`Could not accept request -> `, e);
+          alert(`Could not accept request: ${e.message}`);
+        })
+        .finally(toggleIsAccepting);
     }
-  }, [receivedRequest, dispatch]);
+  }, [receivedRequest, toggleIsAccepting, dispatch]);
 
   const submitMessage = useCallback(
     e => {
@@ -141,41 +190,23 @@ const ChatPage = () => {
 
       if (e.key === "Enter") {
         e.preventDefault();
-        dispatch(
-          sendMessage({
-            message,
-            publicKey: recipientPublicKey
-          })
-        );
+        dispatch(sendMessage(convoOrReqID, message));
         setMessage("");
         return;
       }
     },
-    [message, recipientPublicKey, dispatch]
+    [message, dispatch, convoOrReqID]
   );
 
-  const subscribeIncomingMessages = useCallback(() => {
-    const subscription = dispatch(
-      subscribeChatMessages(gunPublicKey, recipientPublicKey)
-    );
+  // useEffect(() => {
+  //   const subscription = dispatch(
+  //     subscribeChatMessages(gunPublicKey, recipientPublicKey)
+  //   );
 
-    return rifleCleanup(subscription);
-  }, [dispatch, gunPublicKey, recipientPublicKey]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeIncomingMessages();
-
-    return unsubscribe;
-  }, [subscribeIncomingMessages]);
-
-  useEffect(() => {
-    // listen to didDisconnect
-    const subscription = dispatch(subChats());
-
-    return () => {
-      subscription.then(sub => sub.off());
-    };
-  }, [dispatch]);
+  //   return () => {
+  //     subscription.then(sub => sub.off());
+  //   };
+  // }, [dispatch, gunPublicKey, recipientPublicKey]);
 
   // ------------------------------------------------------------------------ //
   // Date bubble
@@ -238,15 +269,17 @@ const ChatPage = () => {
       />
 
       <div
-        className="chat-messages-container"
+        className="chat-messages-container no-scrollbar"
         onClick={actionMenuOpen ? toggleActionMenu : undefined}
         onScroll={handleScroll}
       >
-        {messages?.map(message => (
+        {messagesWithoutInitial.map(message => (
           <ChatMessage
             text={message.body}
-            receivedMessage={!message.outgoing}
-            publicKey={message.recipientPublicKey}
+            receivedMessage={message.state === "received"}
+            publicKey={
+              message.state === "received" ? recipientPublicKey : selfPublicKey
+            }
             timestamp={message.timestamp}
             onInView={handleMessageInView}
             onOutView={handleMessageOutView}
@@ -342,7 +375,9 @@ const ChatPage = () => {
         </span>
       </div>
 
-      {pendingReceivedRequest && (
+      {isAccepting && <Loader text="Accepting request..." />}
+
+      {isReq && !isAccepting && (
         <ChatBottomBar
           text={`Once you accept the request, you'll be able to chat and send
          invoices to ${contactName}`}
@@ -351,7 +386,7 @@ const ChatPage = () => {
         />
       )}
 
-      {pendingSentRequest && (
+      {isConvo && !otherUserAccepted && (
         <ChatBottomBar
           text={`Once ${contactName} accepts the request, you'll be able to chat with
         them`}
@@ -359,16 +394,17 @@ const ChatPage = () => {
         />
       )}
 
-      {contact && contact.didDisconnect && (
-        <ChatBottomBar
-          acceptLabel="Delete"
-          text="Delete this chat?"
-          title="Other user disconnected"
-          onAccept={handleDisconnect}
-        />
-      )}
+      {/* {isContact &&
+        userToIncoming[recipientPublicKey] === Schema.DID_DISCONNECT && (
+          <ChatBottomBar
+            acceptLabel="Delete"
+            text="Delete this chat?"
+            title="Other user disconnected"
+            onAccept={handleDisconnect}
+          />
+        )} */}
 
-      {contact && !contact.didDisconnect && (
+      {isConvo && (
         <WithHeight
           className="chat-bottom-bar"
           onHeight={setBottomBarHeight}

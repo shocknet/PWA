@@ -347,7 +347,7 @@ const App = () => {
             component={WalletSettingsPage}
           />
           <PrivateRoute path="/chat" exact component={MessagesPage} />
-          <PrivateRoute path="/chat/:publicKey" component={ChatPage} />
+          <PrivateRoute path="/chat/:convoOrReqID" component={ChatPage} />
           <PrivateRoute path="/send" exact component={SendPage} />
           <PrivateRoute path="/request" exact component={RequestPage} />
           <PrivateRoute path="/profile" exact component={ProfilePage} />

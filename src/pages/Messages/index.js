@@ -1,15 +1,12 @@
 // @ts-check
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DateTime } from "luxon";
 
 import {
-  loadChatData,
   sendHandshakeRequest,
-  loadReceivedRequests,
-  loadSentRequests,
-  subChats,
-  subReceivedRequests,
-  subSentRequests
+  subCurrentHandshakeAddress,
+  subHandshakeNode,
+  subConvos
 } from "../../actions/ChatActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BottomBar from "../../common/BottomBar";
@@ -23,67 +20,59 @@ import "./css/index.scoped.css";
 import Modal from "../../common/Modal";
 import * as Store from "../../store";
 import QRCodeScanner from "../../common/QRCodeScanner";
+import * as Utils from "../../utils";
 
 const MessagesPage = () => {
-  const dispatch = Store.useDispatch();
+  const dispatch = Utils.useDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
-  const [chatLoaded, setChatLoaded] = useState(false);
-  const contacts = Store.useSelector(({ chat }) => chat.contacts);
-  const messages = Store.useSelector(({ chat }) => chat.messages);
-  const orderedContacts = useMemo(() => {
-    return contacts.slice().sort((a, b) => {
-      const lastMsgA = messages[a.pk][0] || { timestamp: -1 };
-      const lastMsgB = messages[b.pk][0] || { timestamp: -1 };
-
-      return lastMsgB.timestamp - lastMsgA.timestamp;
-    });
-  }, [contacts, messages]);
-  const sentRequests = Store.useSelector(({ chat }) => chat.sentRequests);
-  const receivedRequests = Store.useSelector(
-    ({ chat }) => chat.receivedRequests
-  );
+  const convos = Store.useSelector(Store.selectConvos);
+  const messages = Store.useSelector(Store.selectAllMessages);
+  const sentRequests = Utils.EMPTY_ARR;
+  const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
-
-  const loadChat = useCallback(async () => {
-    await dispatch(loadChatData());
-    setChatLoaded(true);
-  }, [dispatch]);
+  const currentHandshakeAddress = Store.useSelector(
+    Store.selectCurrentHandshakeAddress
+  );
 
   useEffect(() => {
-    loadChat();
-  }, [loadChat]);
-
-  useEffect(() => {
-    dispatch(loadReceivedRequests());
-    dispatch(loadSentRequests());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const subscriptions = [
-      dispatch(subChats()),
-      dispatch(subSentRequests()),
-      dispatch(subReceivedRequests())
-    ];
+    const sub = dispatch(subCurrentHandshakeAddress());
 
     return () => {
-      Promise.all(subscriptions).then(subs => subs.forEach(sub => sub.off()));
+      sub.then(sub => sub.off());
     };
   }, [dispatch]);
 
   useEffect(() => {
-    const subscriptions = [
-      ...contacts,
-      ...sentRequests,
-      ...receivedRequests
-    ].map(entry => dispatch(subscribeUserProfile(entry.pk)));
+    const sub = dispatch(subHandshakeNode(currentHandshakeAddress));
 
     return () => {
-      // @ts-ignore
+      sub.then(sub => sub.off());
+    };
+  }, [currentHandshakeAddress, dispatch]);
+
+  useEffect(() => {
+    const subscription = dispatch(subConvos());
+
+    return () => {
+      subscription.then(sub => sub.off());
+    };
+  });
+
+  useEffect(() => {
+    const subscriptions = convos.map(convo =>
+      dispatch(subscribeUserProfile(convo.with))
+    );
+
+    subscriptions.push(
+      ...receivedRequests.map(req => dispatch(subscribeUserProfile(req.from)))
+    );
+
+    return () => {
       subscriptions.map(unsubscribe => unsubscribe());
     };
-  }, [contacts, sentRequests, receivedRequests, dispatch]);
+  }, [convos, dispatch, receivedRequests]);
 
   const toggleModal = useCallback(() => {
     setAddModalOpen(!addModalOpen);
@@ -148,8 +137,10 @@ const MessagesPage = () => {
 
   const sendRequestClipboard = useCallback(async () => {
     try {
-      const clipboardText = await navigator.clipboard.readText();
-      return sendRequest(clipboardText);
+      // @ts-ignore
+      const pk = document.querySelector("#reqpk").value;
+
+      return sendRequest(pk);
     } catch (e) {
       alert(e.message);
     }
@@ -183,37 +174,6 @@ const MessagesPage = () => {
     [sendRequest, setScanQR]
   );
 
-  const messagesNode = useMemo(() => {
-    return orderedContacts.map(contact => {
-      const contactMessages = messages[contact.pk] ?? [];
-      const lastMessage = (() => {
-        if (contact.didDisconnect) {
-          return {
-            body: "User disconnected from you.",
-            timestamp: -1
-          };
-        }
-
-        return (
-          contactMessages[0] ?? {
-            body: "",
-            timestamp: -1
-          }
-        );
-      })();
-
-      return (
-        <Message
-          key={contact.pk}
-          publicKey={contact.pk}
-          subtitle={lastMessage.body}
-          lastMessageTimestamp={lastMessage.timestamp}
-          chatLoaded={chatLoaded}
-        />
-      );
-    });
-  }, [chatLoaded, messages, orderedContacts]);
-
   if (scanQR) {
     return (
       <div>
@@ -227,12 +187,11 @@ const MessagesPage = () => {
     );
   }
   console.log(sendError);
-
   return (
     <div className="page-container messages-page">
       <MainNav solid pageTitle="MESSAGES" />
       <div className="messages-container">
-        <div className="message-list-container">
+        <div className="message-list-container no-scrollbar">
           {sentRequests.length > 0 ? (
             <p className="messages-section-title">Sent Requests</p>
           ) : null}
@@ -242,6 +201,7 @@ const MessagesPage = () => {
               sent
               key={request.id}
               time={undefined}
+              id={request.id}
             />
           ))}
           {receivedRequests.length > 0 ? (
@@ -249,18 +209,46 @@ const MessagesPage = () => {
           ) : null}
           {receivedRequests.map(request => (
             <Request
-              publicKey={request.pk}
+              publicKey={request.from}
               key={request.id}
               sent={false}
               time={undefined}
+              id={request.id}
             />
           ))}
-
-          {contacts.length > 0 ? (
+          {convos.length > 0 ? (
             <p className="messages-section-title">Messages</p>
           ) : null}
+          {convos.map(convo => {
+            const convoMessages = Object.values(messages[convo.id] ?? []);
+            const lastMessage = (() => {
+              const didDisconnect = false;
 
-          {messagesNode}
+              if (didDisconnect) {
+                return {
+                  body: "User disconnected from you.",
+                  timestamp: Date.now()
+                };
+              }
+
+              return (
+                convoMessages[0] ?? {
+                  body: "Unable to preview last message...",
+                  timestamp: Date.now()
+                }
+              );
+            })();
+
+            return (
+              <Message
+                key={convo.id}
+                publicKey={convo.with}
+                subtitle={lastMessage.body}
+                time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
+                id={convo.id}
+              />
+            );
+          })}
         </div>
         <AddBtn onClick={toggleModal} label="REQUEST" />
         {/* TODO: Extract to a separate component */}
@@ -297,6 +285,8 @@ const MessagesPage = () => {
               </p>
             </div>
           </div>
+
+          <input type="text" id="reqpk" />
         </Modal>
       </div>
       <BottomBar />

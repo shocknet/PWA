@@ -115,10 +115,10 @@ const InvoiceStep = ({
     if (contact) {
       try {
         setLoading(true);
-        await sendMessage({
-          publicKey: contact.pk,
-          message: "$$__SHOCKWALLET__INVOICE__" + paymentRequest
-        })(dispatch);
+        // await sendMessage({
+        //   publicKey: contact.pk,
+        //   message: "$$__SHOCKWALLET__INVOICE__" + paymentRequest
+        // })(dispatch);
         setLoading(false);
         history.push("/overview");
       } catch (err) {
