@@ -21,12 +21,6 @@ export const subCoordinates = () => (dispatch: (action: any) => void) => {
       onData: (unparsed, coordinateSHA256) => {
         const coordinate = Utils.safeParseJson(unparsed);
 
-        Utils.logger.debug(
-          `Coordinate Subscription -> `,
-          coordinateSHA256,
-          coordinate
-        );
-
         if (Common.isCoordinate(coordinate)) {
           dispatch(
             coordinateReceived({

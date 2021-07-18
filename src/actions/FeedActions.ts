@@ -77,10 +77,6 @@ export const subSinglePost = (author: string, postID: string) => (
     const subscription = rifle({
       query: `${author}::posts>${postID}::on`,
       onData(post: string) {
-        Utils.logger.debug(
-          `Single post with id ${postID} from ...${author.slice(-8)} `,
-          post
-        );
 
         if (Schema.isPostRaw(post)) {
           dispatch(
@@ -138,7 +134,6 @@ export const subscribeUserPosts = (publicKey: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-    Utils.logger.debug(`Subbing to posts from ...${publicKey.slice(-8)}`);
 
     const subscription = rifle({
       query: `${publicKey}::posts::map.on`,
@@ -154,10 +149,6 @@ export const subscribeUserPosts = (publicKey: string) => (
         );
       },
       onData: (post: unknown, postID: string) => {
-        Utils.logger.debug(
-          `Post with id ${postID} from ...${publicKey.slice(-8)} `,
-          post
-        );
 
         if (Schema.isPostRaw(post)) {
           dispatch(
@@ -212,19 +203,10 @@ export const subPostContent = (author: string, postID: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-    Utils.logger.debug(
-      `Subbing to post content from ...${author.slice(-8)} for post ${postID}`
-    );
 
     const subscription = rifle({
       query: `${author}::posts>${postID}>contentItems::map.on`,
       onData(contentItem: unknown, id: string) {
-        Utils.logger.debug(
-          `Post content subscription from ..${author.slice(
-            -8
-          )} for post ${postID} -> `,
-          contentItem
-        );
 
         // CAST: unfortunate isContentItem typings
         if (Common.isContentItem(contentItem)) {
@@ -373,9 +355,6 @@ export const subSharedPosts = (sharerPublicKey: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-    Utils.logger.debug(
-      `Subbing to shared posts from ...${sharerPublicKey.slice(-8)}`
-    );
 
     const subscription = rifle({
       query: `${sharerPublicKey}::sharedPosts::map.on`,
@@ -393,10 +372,6 @@ export const subSharedPosts = (sharerPublicKey: string) => (
         );
       },
       onData: (sharedPost: unknown, postID: string) => {
-        Utils.logger.debug(
-          `Shared post with id ${postID} from ...${sharerPublicKey.slice(-8)} `,
-          sharedPost
-        );
 
         if (Common.isSharedPostRaw(sharedPost)) {
           dispatch(
@@ -459,19 +434,15 @@ export const subPostTips = (author: string, postID: string) => (
 ): (() => void) => {
   try {
     const subscription = rifle({
-      query: `${author}::posts>${postID}::map.on`,
+      query: `${author}::posts>${postID}>tipsSet::map.on`,
       onData(tipAmt: unknown, tipID: string) {
-        Utils.logger.debug(
-          `Post ${postID} tips sub, tipID ${tipID} -> `,
-          tipAmt
-        );
-
-        if (typeof tipAmt === "number") {
+          const nTipAmount = Number(tipAmt)
+        if (nTipAmount !== NaN) {
           dispatch(
             postTipReceived({
               author,
               postID,
-              tipAmt,
+              tipAmt:nTipAmount,
               tipID
             })
           );
