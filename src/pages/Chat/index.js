@@ -17,6 +17,7 @@ import {
   subConvoMessages,
   subConvos
 } from "../../actions/ChatActions";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
@@ -80,6 +81,10 @@ const ChatPage = () => {
     }
   }, [convoOrReq, convos, history]);
   const user = Store.useSelector(Store.selectUser(otherPublicKey));
+  useEffect(() => dispatch(subscribeUserProfile(otherPublicKey)), [
+    dispatch,
+    otherPublicKey
+  ]);
   const { publicKey: recipientPublicKey } = user;
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
