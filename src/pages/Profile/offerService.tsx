@@ -54,13 +54,7 @@ const OfferService = () => {
       }
       try {
         setLoading(true);
-        let serviceID = "";
-        if (
-          userProfiles[publicKey] &&
-          userProfiles[publicKey].SeedServiceProvided
-        ) {
-          serviceID = userProfiles[publicKey].SeedServiceProvided;
-        }
+        const serviceID = "defaultContentService";
         const clear = {
           serviceType,
           serviceTitle: "Content Seeding",
