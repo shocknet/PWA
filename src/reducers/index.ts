@@ -13,6 +13,7 @@ import UserProfilesReducer from "./UserProfilesReducer";
 import OrdersReducer from "./OrdersReducer";
 import AppReducer from "./AppReducer";
 import settings from "./settings";
+import coordinates from "./CoordinatesReducer";
 
 const reducers = combineReducers({
   node: NodeReducer,
@@ -27,7 +28,8 @@ const reducers = combineReducers({
   userProfiles: UserProfilesReducer,
   orders: OrdersReducer,
   app: AppReducer,
-  settings
+  settings,
+  coordinates
 });
 
 export type State = ReturnType<typeof reducers>;
