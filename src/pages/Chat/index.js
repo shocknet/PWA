@@ -39,7 +39,7 @@ enableMapSet();
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = Utils.useDispatch();
+  const dispatch = Store.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { convoOrReqID } = params;
   const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
