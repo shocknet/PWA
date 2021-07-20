@@ -203,16 +203,6 @@ const ChatPage = () => {
     [message, dispatch, convoOrReqID]
   );
 
-  // useEffect(() => {
-  //   const subscription = dispatch(
-  //     subscribeChatMessages(gunPublicKey, recipientPublicKey)
-  //   );
-
-  //   return () => {
-  //     subscription.then(sub => sub.off());
-  //   };
-  // }, [dispatch, gunPublicKey, recipientPublicKey]);
-
   // ------------------------------------------------------------------------ //
   // Date bubble
 
