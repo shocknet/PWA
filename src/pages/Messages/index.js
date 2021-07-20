@@ -137,10 +137,8 @@ const MessagesPage = () => {
 
   const sendRequestClipboard = useCallback(async () => {
     try {
-      // @ts-ignore
-      const pk = document.querySelector("#reqpk").value;
-
-      return sendRequest(pk);
+      const clipboardText = await navigator.clipboard.readText();
+      return sendRequest(clipboardText);
     } catch (e) {
       alert(e.message);
     }
@@ -285,8 +283,6 @@ const MessagesPage = () => {
               </p>
             </div>
           </div>
-
-          <input type="text" id="reqpk" />
         </Modal>
       </div>
       <BottomBar />
