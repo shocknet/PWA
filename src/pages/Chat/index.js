@@ -17,6 +17,7 @@ import {
   subConvoMessages,
   subConvos
 } from "../../actions/ChatActions";
+import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import BitcoinLightning from "../../images/bitcoin-lightning.svg";
 import "./css/index.scoped.css";
 import * as Store from "../../store";
@@ -39,7 +40,7 @@ enableMapSet();
 
 const ChatPage = () => {
   const history = useHistory();
-  const dispatch = Utils.useDispatch();
+  const dispatch = Store.useDispatch();
   const params = /** @type {ChatPageParams} */ (useParams());
   const { convoOrReqID } = params;
   const convoOrReq = Store.useSelector(Store.selectCommunication(convoOrReqID));
@@ -80,6 +81,10 @@ const ChatPage = () => {
     }
   }, [convoOrReq, convos, history]);
   const user = Store.useSelector(Store.selectUser(otherPublicKey));
+  useEffect(() => dispatch(subscribeUserProfile(otherPublicKey)), [
+    dispatch,
+    otherPublicKey
+  ]);
   const { publicKey: recipientPublicKey } = user;
   const [message, setMessage] = useState("");
   const [bottomBarHeight, setBottomBarHeight] = useState(20);
@@ -197,16 +202,6 @@ const ChatPage = () => {
     },
     [message, dispatch, convoOrReqID]
   );
-
-  // useEffect(() => {
-  //   const subscription = dispatch(
-  //     subscribeChatMessages(gunPublicKey, recipientPublicKey)
-  //   );
-
-  //   return () => {
-  //     subscription.then(sub => sub.off());
-  //   };
-  // }, [dispatch, gunPublicKey, recipientPublicKey]);
 
   // ------------------------------------------------------------------------ //
   // Date bubble
