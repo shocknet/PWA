@@ -9,10 +9,10 @@ import * as Store from "../../../../store";
 const UnlockStep = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState();
-  const [alias, setAlias] = useState("");
+  const [alias, setAlias] = useState("boblazar");
   const cachedAlias = Store.useSelector(({ node }) => node.alias);
   const [cachedAliasDismissed, setCachedAliasDismissed] = useState(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("boblazar123");
   const [loading, setLoading] = useState(false);
 
   const onInputChange = useCallback(e => {
@@ -55,7 +55,7 @@ const UnlockStep = () => {
     dispatch(setAuthMethod(null));
     dispatch(setAuthStep(null));
   }, [dispatch]);
-  
+
   const createNewAlias = useCallback(() => {
     dispatch(setAuthStep("createGun"));
   }, [dispatch]);
