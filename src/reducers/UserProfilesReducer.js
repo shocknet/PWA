@@ -10,6 +10,7 @@ import rothbard from "./rothbard.jpg";
 import mencken from "./mencken.jpg";
 import smith from "./smith.jpg";
 import lightningPage from "./lightningPage.jpg";
+import mises from "./mises.jpg";
 
 /**
  * @typedef {Record<string, Common.User>} UserProfilesState
@@ -36,12 +37,17 @@ const INITIAL_STATE = {
   smith: {
     ...Common.createEmptyUser("smith"),
     avatar: smith,
-    displayName: "Adan Smith"
+    displayName: "Adam Smith"
   },
   lightningPage: {
     ...Common.createEmptyUser("lightningPage"),
     avatar: lightningPage,
     displayName: "Lightning.Page"
+  },
+  mises: {
+    ...Common.createEmptyUser("mises"),
+    avatar: mises,
+    displayName: "Ludwig von Mises"
   }
 };
 

@@ -103,6 +103,25 @@ const INITIAL_STATE = {
     toBtcPub: "asdazxvzxvzsd",
     toGunPub: "lightningPage",
     toLndPub: "jkashdfkjabssjkfb"
+  },
+  mises: {
+    amount: 2100,
+    coordinateHash: "kbjkbjkbjkbjbkj",
+    coordinateIndex: 123,
+    coordinateSHA256: "mises",
+    inbound: true,
+    timestamp: DateTime.fromSQL("2021-07-16 10:33").valueOf(),
+    type: "tip",
+    description: "Tipped your livestream",
+    fromBtcPub: "nbkmnnmkjjkhkjh",
+    fromGunPub: "mises",
+    fromLndPub: "juiohuohn40202983u4u",
+    invoiceMemo: "invoiceMemo",
+    metadata: "",
+    ownerGunPub: "asdasfjkjfhj",
+    toBtcPub: "asdazxvzxvzsdhihkjikhjf",
+    toGunPub: "esklfajklasjflk",
+    toLndPub: "kjvlkjhoi320932"
   }
 } as Record<string, CoordinateWithHash>;
 

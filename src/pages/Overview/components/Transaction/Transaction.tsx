@@ -112,7 +112,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
         data.message = "Seed Service";
         break;
       case "tip":
-        if (publicKey === "anon") {
+        if (publicKey === "anon" || publicKey === "mises") {
           data.message = "Tipped your livestream";
         }
         if (publicKey === "rothbard") {

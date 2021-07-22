@@ -16,6 +16,7 @@ import * as Hooks from "../../hooks";
 
 import "./css/index.scoped.css";
 import lightningPage from "./lightningPage.jpg";
+import satoshi from "./satoshi.jpg";
 
 export interface ShockAvatarProps {
   height: number;
@@ -194,6 +195,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
         <img
           alt={`Avatar for ${displayName || "an user"}`}
           src={
+            (isSelf && satoshi) ||
             (publicKey.length > 10 && lightningPage) ||
             image ||
             DEFAULT_USER_IMAGE
