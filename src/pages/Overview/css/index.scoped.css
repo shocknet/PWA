@@ -13,7 +13,7 @@
 }
 
 .overview-balance-container {
-  padding: 25px;
+  padding: 25px 25px;
 }
 
 p.overview-balance-btc {
@@ -78,7 +78,7 @@ p.overview-action-text {
 .recent-activity-title {
   padding: 0px 22px;
   opacity: 0.7;
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
 .lds-ellipsis div {
