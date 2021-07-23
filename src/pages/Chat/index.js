@@ -399,7 +399,7 @@ const ChatPage = () => {
           />
         )} */}
 
-      {isConvo && (
+      {isConvo && otherUserAccepted && (
         <WithHeight
           className="chat-bottom-bar"
           onHeight={setBottomBarHeight}
