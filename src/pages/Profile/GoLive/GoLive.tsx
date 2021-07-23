@@ -23,8 +23,8 @@ import InputGroup from "../../../common/InputGroup";
 const GoLive = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const nodeIP = Store.useSelector(({node}) => node.hostIP)
-  const relayId = Store.useSelector(({node}) => node.relayId)
+  const nodeIP = Store.useSelector(({ node }) => node.hostIP);
+  const relayId = Store.useSelector(({ node }) => node.relayId);
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
@@ -93,7 +93,10 @@ const GoLive = () => {
         const rtmp = finalSeedUrl.replace("https", "rtmp");
         const rtmpUrl = `${rtmp}/live`;
         const stUrl = `${finalSeedUrl}/rtmpapi/api/streams/live/${latestUserToken}`;
-        const viewersSocketUrl = `${finalSeedUrl.replace("https", "wss")}/websocket`
+        const viewersSocketUrl = `${finalSeedUrl.replace(
+          "https",
+          "wss"
+        )}/websocket`;
         let contentItems = [];
         if (paragraph !== "") {
           contentItems.push({
@@ -129,15 +132,21 @@ const GoLive = () => {
         if (res.status === 200) {
           const { data } = res;
 
-          const [postId, newPost, overlayAccessId] = data as [string, Common.RawPost, string];
-          let tipsNotificationsOverlayUrl = ""
-          if(overlayAccessId){
-            const  relayIdParam = relayId ? `&x-shock-hybrid-relay-id-x=${relayId}` : ""
-            tipsNotificationsOverlayUrl =  `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}${relayIdParam}`
+          const [postId, newPost, overlayAccessId] = data as [
+            string,
+            Common.RawPost,
+            string
+          ];
+          let tipsNotificationsOverlayUrl = "";
+          if (overlayAccessId) {
+            const relayIdParam = relayId
+              ? `&x-shock-hybrid-relay-id-x=${relayId}`
+              : "";
+            tipsNotificationsOverlayUrl = `${nodeIP}/api/subscribeStream?accessId=${overlayAccessId}${relayIdParam}`;
           }
           console.log(newPost.contentItems);
 
-          const [contentId] = Object.entries(newPost.contentItems).find(
+          const [contentId] = Object.entries(newPost.contentItems ?? {}).find(
             ([_, item]) =>
               item.type === "stream/embedded" &&
               item.magnetURI === streamPlaybackUrl
@@ -150,7 +159,7 @@ const GoLive = () => {
             streamContentId: contentId,
             streamStatusUrl: stUrl,
             streamBroadcasterUrl: rtmpUrl,
-            tipOverlayUrl:tipsNotificationsOverlayUrl
+            tipOverlayUrl: tipsNotificationsOverlayUrl
           })(dispatch);
           await Http.post(`/api/listenStream`, {
             postId,
@@ -169,7 +178,15 @@ const GoLive = () => {
         setLoading(false);
       }
     },
-    [availableTokens, seedProviderPub, seedToken, seedUrl,enableTipsOverlay, dispatch, paragraph]
+    [
+      availableTokens,
+      seedProviderPub,
+      seedToken,
+      seedUrl,
+      enableTipsOverlay,
+      dispatch,
+      paragraph
+    ]
   );
   const closePrompt = useCallback(() => {
     setPromptInfo(null);
@@ -265,10 +282,10 @@ const GoLive = () => {
     },
     [setParagraph, setSelectedSource]
   );
-  
+
   const toggleEnableTipsOverlay = useCallback(() => {
-    setEnableTipsOverlay(!enableTipsOverlay)
-  },[enableTipsOverlay, setEnableTipsOverlay])
+    setEnableTipsOverlay(!enableTipsOverlay);
+  }, [enableTipsOverlay, setEnableTipsOverlay]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
@@ -403,25 +420,25 @@ const GoLive = () => {
                       onClick={copyToken}
                     ></i>
                   </div>
-                  { tipOverlayUrl && <p>Tips notifications overlay Url:</p>}
-                  { tipOverlayUrl && <div className="d-flex flex-align-center">
-                    {/*@ts-expect-error*/}
-                    <InputGroup
-                      name="Overlay Url"
-                      value={tipOverlayUrl}
-                      disabled
-                    />
-                    <i
-                      className={
-                        !copiedOverlayUrl
-                          ? "far fa-copy fa-lg m-1"
-                          : "fas fa-check fa-lg m-1"
-                      }
-                      onClick={copyOverlayUrl}
-                    ></i>
-                  </div>
-                    
-                  }
+                  {tipOverlayUrl && <p>Tips notifications overlay Url:</p>}
+                  {tipOverlayUrl && (
+                    <div className="d-flex flex-align-center">
+                      {/*@ts-expect-error*/}
+                      <InputGroup
+                        name="Overlay Url"
+                        value={tipOverlayUrl}
+                        disabled
+                      />
+                      <i
+                        className={
+                          !copiedOverlayUrl
+                            ? "far fa-copy fa-lg m-1"
+                            : "fas fa-check fa-lg m-1"
+                        }
+                        onClick={copyOverlayUrl}
+                      ></i>
+                    </div>
+                  )}
                   <div className="flex-center">
                     <button
                       onClick={stopStream}
@@ -444,8 +461,16 @@ const GoLive = () => {
                   value={paragraph}
                   onChange={onInputChange}
                 />
-                <label htmlFor="enable-tips-notifications">Enable Tips notifications overlay </label>
-                <input type="checkbox" name="enable-tips-notifications" id="enable-tips-notifications" checked={enableTipsOverlay} onClick={toggleEnableTipsOverlay} />
+                <label htmlFor="enable-tips-notifications">
+                  Enable Tips notifications overlay{" "}
+                </label>
+                <input
+                  type="checkbox"
+                  name="enable-tips-notifications"
+                  id="enable-tips-notifications"
+                  checked={enableTipsOverlay}
+                  onClick={toggleEnableTipsOverlay}
+                />
                 <button
                   onClick={onSubmit}
                   className={c(gStyles.width100, "shock-form-button-confirm")}

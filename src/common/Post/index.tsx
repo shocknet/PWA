@@ -67,7 +67,7 @@ const Post = ({
   ]);
 
   const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
-    const stream = Object.values(post.contentItems).find(
+    const stream = Object.values(post.contentItems ?? {}).find(
       item => item.type === "stream/embedded"
     ) as Common.EmbeddedStream;
 
@@ -79,7 +79,7 @@ const Post = ({
   }, [post.contentItems]);
 
   const viewersCounter = React.useMemo<number | null>(() => {
-    const stream = Object.values(post.contentItems).find(
+    const stream = Object.values(post.contentItems ?? {}).find(
       item => item.type === "stream/embedded"
     ) as Common.EmbeddedStream;
 
@@ -91,13 +91,13 @@ const Post = ({
   }, [post.contentItems]);
 
   const getMediaContent = useCallback(() => {
-    return Object.entries(post.contentItems).filter(
+    return Object.entries(post.contentItems ?? {}).filter(
       ([_, item]) => item.type !== "text/paragraph"
     );
   }, [post.contentItems]);
 
   const getTextContent = () => {
-    return Object.entries(post.contentItems).filter(
+    return Object.entries(post.contentItems ?? {}).filter(
       ([_, item]) => item.type === "text/paragraph"
     );
   };

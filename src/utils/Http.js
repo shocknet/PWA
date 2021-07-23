@@ -1,5 +1,8 @@
 import Http from "axios";
+import { setAuthenticated } from "../actions/AuthActions";
+import { exchangeKeyPair } from "../actions/EncryptionActions";
 import * as Encryption from "./Encryption";
+import { safeParseJSON } from "./JSON";
 
 const unprotectedRoutes = {
   GET: [
@@ -59,7 +62,7 @@ const decryptResponse = async response => {
   const { data } = response;
 
   if (!Encryption.isEncryptedMessage(data)) {
-    return response;
+    return { ...response, data: safeParseJSON(response.data) };
   }
 
   const localPrivateKey = userKeys[hostId]?.privateKey;
@@ -92,12 +95,15 @@ Http.interceptors.request.use(async config => {
     if (localRequest) {
       config.headers.common.Authorization = `Bearer ${authToken}`;
       config.headers.common["encryption-device-id"] = deviceId;
-      if(relayId){
+      if (relayId) {
         /////
         config.headers.common["x-shock-hybrid-relay-id-x"] = relayId;
         /////
       }
     }
+
+    // @ts-ignore
+    config.originalData = config.originalData || config.data;
 
     if (
       localRequest &&
@@ -118,8 +124,25 @@ Http.interceptors.response.use(
   },
   async error => {
     try {
+      const { store } = await import("../store");
       const response = await decryptResponse(error.response);
       error.response = response;
+      if (
+        response?.data.field === "deviceId" &&
+        (error.config.retries ?? 0) < 2
+      ) {
+        store.dispatch(setAuthenticated(false));
+        const keyPair = await exchangeKeyPair()(store.dispatch);
+        error.config.retries = (error.config.retries ?? 0) + 1;
+        return Http({
+          ...error.config,
+          data: error.config.originalData,
+          headers: {
+            ...error.config.headers,
+            "encryption-device-id": keyPair.deviceId
+          }
+        });
+      }
       return Promise.reject(error);
     } catch (err) {
       console.error(err);
