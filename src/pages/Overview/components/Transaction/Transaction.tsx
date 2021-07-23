@@ -61,7 +61,7 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
             const post = Store.selectSinglePost(author, postID)(state);
 
             if (post) {
-              const paragraphs = Object.values(post.contentItems).filter(
+              const paragraphs = Object.values(post.contentItems ?? {}).filter(
                 ci => ci.type === "text/paragraph"
               ) as Common.Paragraph[];
               const text = paragraphs.map(p => p.text).join(" ");

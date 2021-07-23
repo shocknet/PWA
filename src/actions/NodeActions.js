@@ -5,6 +5,7 @@ import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
 import { parseError } from "../utils/Error";
 import { exchangeKeyPair } from "./EncryptionActions";
 import { connectSocket } from "../utils/WebSocket";
+import { safeParseJSON } from "../utils/JSON";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
@@ -140,10 +141,7 @@ export const connectHost = (
   return nodeHealthHttps || nodeHealth;
 };
 
-export const unlockWallet = ({
-  alias,
-  password,
-}) => async dispatch => {
+export const unlockWallet = ({ alias, password }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/auth",
@@ -176,10 +174,7 @@ export const unlockWallet = ({
   }
 };
 
-export const createAlias = ({
-  alias,
-  password,
-}) => async dispatch => {
+export const createAlias = ({ alias, password }) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/wallet/existing", {
       alias,
@@ -205,10 +200,7 @@ export const createAlias = ({
   }
 };
 
-export const createWallet = ({
-  alias,
-  password
-}) => async dispatch => {
+export const createWallet = ({ alias, password }) => async dispatch => {
   try {
     const { data } = await Http.post(
       "/api/lnd/wallet",

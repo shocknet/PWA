@@ -45,7 +45,7 @@ export const attachMedia = (
   const torrentTasks = posts
     .map(post => {
       const { contentItems, id } = post;
-      return Object.entries(contentItems)
+      return Object.entries(contentItems ?? {})
         .filter(([key, item]) => supportedFileTypes[item.type])
         .map(([key, item]) => () =>
           new Promise(resolve => {

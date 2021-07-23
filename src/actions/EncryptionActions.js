@@ -89,6 +89,7 @@ export const exchangeKeyPair = () => async dispatch => {
     dispatch(setHostId(data.hostId));
 
     return {
+      deviceId,
       user: keyPair,
       host: data
     };
