@@ -2,6 +2,7 @@ import * as Common from "shock-common";
 import { createAction } from "@reduxjs/toolkit";
 
 import * as Utils from "../utils";
+import { fetchWalletBalance } from "./WalletActions";
 
 export const coordinateDeleted = createAction<{
   coordinateSHA256: string;
@@ -28,6 +29,7 @@ export const subCoordinates = () => (dispatch: (action: any) => void) => {
               coordinateSHA256
             })
           );
+          fetchWalletBalance()(dispatch)
         } else if (coordinate === null) {
           dispatch(
             coordinateDeleted({
