@@ -15,14 +15,7 @@ import {
 import { ACTIONS as AUTH_ACTIONS } from "../actions/AuthActions";
 
 const INITIAL_STATE = {
-  follows: [
-    {
-      user:
-        "tcUUzRkyzXYhIZQbmopiCLREyZ_kQJqQ-C4XesecOm4.GX1Dv-eGcfKuOPobBK9Q-Sc-o697XgVCQzOCfqfimIo",
-      status: "ok",
-      private: false
-    }
-  ] as Common.Follow[],
+  follows: [],
   /**
    * Maps public key to posts/shared posts.
    */
@@ -204,6 +197,10 @@ const feed = (state = INITIAL_STATE, action: any): typeof INITIAL_STATE => {
     }
     case ACTIONS.RELOAD_FEED: {
       return { ...state, reloadDone: true };
+    }
+    case ACTIONS.RESET_DEFAULT_FOLLOWS: {
+      const {data} = action
+      return {...state, follows:data}
     }
     case AUTH_ACTIONS.LOGOUT: {
       return INITIAL_STATE;
