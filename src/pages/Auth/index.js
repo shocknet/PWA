@@ -18,6 +18,7 @@ import CreateAliasStep from "./components/CreateAliasStep";
 import TiersStep from "./components/TiersStep";
 import InputGroup from "../../common/InputGroup";
 import { ParseNodeIP } from "../../utils/relay";
+import { reloadFollows } from "../../actions/FeedActions";
 
 const AuthPage = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,20 @@ const AuthPage = () => {
   const authToken = Store.useSelector(({ node }) => node.authToken);
   const authStep = Store.useSelector(({ auth }) => auth.authStep);
   const authMethod = Store.useSelector(({ auth }) => auth.authMethod);
+
+  // reset follows token present
+  useEffect(() => {
+    if(!authToken){
+      dispatch(reloadFollows([
+        {
+          user:
+            "tcUUzRkyzXYhIZQbmopiCLREyZ_kQJqQ-C4XesecOm4.GX1Dv-eGcfKuOPobBK9Q-Sc-o697XgVCQzOCfqfimIo",
+          status: "ok",
+          private: false
+        }
+      ]))
+    }
+  },[])
 
   const updateRetryHostIP = useCallback((e) => {
     setRetryHostIP(e.target.value)
