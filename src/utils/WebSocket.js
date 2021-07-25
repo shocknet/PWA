@@ -31,7 +31,12 @@ export const connectSocket = async (host = "", reconnect = false) => {
   const socketOptions = {
     ...options,
     auth: {
-      encryptionId: store.getState().encryption.deviceId
+      encryptionId: store.getState().encryption.deviceId,
+      /**
+       * Signals LND rpc socket handling that this is just the intial handshake
+       * and to not try to process non-existent arguments.
+       */
+      isInitial: true
     }
   };
 
