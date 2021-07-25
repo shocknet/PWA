@@ -1,7 +1,5 @@
 // @ts-check
 import { useCallback, useEffect, useState } from "react";
-import * as Common from "shock-common";
-import { DateTime } from "luxon";
 
 import {
   sendHandshakeRequest,
@@ -29,7 +27,6 @@ const MessagesPage = () => {
   const [sendError, setSendError] = useState("");
   const [sendRequestLoading, setSendRequestLoading] = useState(false);
   const convos = Store.useSelector(Store.selectConvos);
-  const messages = Store.useSelector(Store.selectAllMessages);
   const sentRequests = Utils.EMPTY_ARR;
   const receivedRequests = Store.useSelector(Store.selectReceivedRequests);
   const [scanQR, setScanQR] = useState(false);
@@ -219,32 +216,7 @@ const MessagesPage = () => {
             <p className="messages-section-title">Messages</p>
           ) : null}
           {convos.map(convo => {
-            const convoMessages = Object.values(messages[convo.id] ?? []);
-            /** @type {import('../../schema').ConvoMsg | undefined} */
-            const latestMsg = convoMessages[convoMessages.length - 1];
-
-            return (
-              <Message
-                key={convo.id}
-                publicKey={convo.with}
-                subtitle={(() => {
-                  if (
-                    convoMessages.length === 0 ||
-                    latestMsg?.body === Common.INITIAL_MSG
-                  ) {
-                    return "No messages yet";
-                  }
-                  if (latestMsg?.state === "received") {
-                    return "> " + latestMsg.body;
-                  }
-                  return latestMsg.body;
-                })()}
-                time={DateTime.fromMillis(
-                  latestMsg?.timestamp || Date.now()
-                ).toRelative()}
-                id={convo.id}
-              />
-            );
+            return <Message key={convo.id} id={convo.id} />;
           })}
         </div>
         <AddBtn onClick={toggleModal} label="REQUEST" />
