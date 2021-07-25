@@ -7,6 +7,7 @@ import * as Store from "../../../../store";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 import { processDisplayName } from "../../../../utils/String";
+import { subConvoMessages } from "../../../../actions/ChatActions";
 
 import "./css/index.scoped.css";
 
@@ -19,6 +20,7 @@ import "./css/index.scoped.css";
  * @type {React.FC<Props>}
  */
 const Message = ({ id }) => {
+  const dispatch = Store.useDispatch();
   const convo = Store.useSelector(Store.selectSingleConvo(id));
   const convoMessages = Store.useSelector(Store.selectConvoMessages(id));
   /** @type {import('../../../../schema').ConvoMsg | undefined} */
@@ -38,6 +40,8 @@ const Message = ({ id }) => {
   const time = DateTime.fromMillis(
     latestMsg?.timestamp || Date.now()
   ).toRelative();
+
+  React.useEffect(() => dispatch(subConvoMessages(id)), [dispatch, id]);
 
   return (
     <Link to={`/chat/${id}`} className="container">
