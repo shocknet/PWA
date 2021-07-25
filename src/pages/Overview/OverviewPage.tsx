@@ -117,9 +117,10 @@ const OverviewPage = () => {
             <p className="overview-action-text">Request</p>
           </Link>
         </div>
+
+        <p className="recent-activity-title">Recent Activity</p>
       </div>
       <div className="recent-activity-container">
-        <p className="recent-activity-title">Recent Activity</p>
         <PullToRefresh
           className="recent-activity-entries"
           pullingContent={
