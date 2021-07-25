@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 
 import * as Store from "../../../../store";
+import * as Utils from "../../../../utils";
 import ShockAvatar from "../../../../common/ShockAvatar";
 import { AVATAR_CONTAINER_STYLE, AVATAR_SIZE } from "../common";
 import { processDisplayName } from "../../../../utils/String";
@@ -37,9 +38,6 @@ const Message = ({ id }) => {
     }
     return latestMsg.body;
   })();
-  const time = DateTime.fromMillis(
-    latestMsg?.timestamp || Date.now()
-  ).toRelative();
 
   React.useEffect(() => dispatch(subConvoMessages(id)), [dispatch, id]);
 
@@ -57,7 +55,9 @@ const Message = ({ id }) => {
           <p className="author-text">{subtitle}</p>
         </div>
       </div>
-      <p className="timestamp">{time}</p>
+      <p className="timestamp">
+        {Utils.formatTimestamp(latestMsg?.timestamp || Date.now())}
+      </p>
     </Link>
   );
 };
