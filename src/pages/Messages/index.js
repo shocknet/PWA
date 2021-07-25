@@ -1,5 +1,6 @@
 // @ts-check
 import { useCallback, useEffect, useState } from "react";
+import * as Common from "shock-common";
 import { DateTime } from "luxon";
 
 import {
@@ -219,30 +220,28 @@ const MessagesPage = () => {
           ) : null}
           {convos.map(convo => {
             const convoMessages = Object.values(messages[convo.id] ?? []);
-            const lastMessage = (() => {
-              const didDisconnect = false;
-
-              if (didDisconnect) {
-                return {
-                  body: "User disconnected from you.",
-                  timestamp: Date.now()
-                };
-              }
-
-              return (
-                convoMessages[0] ?? {
-                  body: "Unable to preview last message...",
-                  timestamp: Date.now()
-                }
-              );
-            })();
+            /** @type {import('../../schema').ConvoMsg | undefined} */
+            const latestMsg = convoMessages[convoMessages.length - 1];
 
             return (
               <Message
                 key={convo.id}
                 publicKey={convo.with}
-                subtitle={lastMessage.body}
-                time={DateTime.fromMillis(lastMessage.timestamp).toRelative()}
+                subtitle={(() => {
+                  if (
+                    convoMessages.length === 0 ||
+                    latestMsg?.body === Common.INITIAL_MSG
+                  ) {
+                    return "No messages yet";
+                  }
+                  if (latestMsg?.state === "received") {
+                    return "> " + latestMsg.body;
+                  }
+                  return latestMsg.body;
+                })()}
+                time={DateTime.fromMillis(
+                  latestMsg?.timestamp || Date.now()
+                ).toRelative()}
                 id={convo.id}
               />
             );
