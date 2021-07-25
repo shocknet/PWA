@@ -220,7 +220,7 @@ const MessagesPage = () => {
           ) : null}
           {convos.map(convo => {
             const convoMessages = Object.values(messages[convo.id] ?? []);
-            /** @type {Schema.ConvoMsg | undefined} */
+            /** @type {import('../../schema').ConvoMsg | undefined} */
             const latestMsg = convoMessages[convoMessages.length - 1];
 
             return (
@@ -239,7 +239,9 @@ const MessagesPage = () => {
                   }
                   return latestMsg.body;
                 })()}
-                time={DateTime.fromMillis(latestMsg?.timestamp).toRelative()}
+                time={DateTime.fromMillis(
+                  latestMsg?.timestamp || Date.now()
+                ).toRelative()}
                 id={convo.id}
               />
             );
