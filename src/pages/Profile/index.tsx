@@ -227,9 +227,7 @@ const ProfilePage = () => {
     } catch (e) {
       Utils.logger.error(`Error while trying to load new header.`);
       Utils.logger.error(e);
-      alert(
-        "There was an error loading the new header, this has error has been logged."
-      );
+      alert(`There was an error loading the new header: ${e.message}`);
     } finally {
       setSettingHeader(false);
     }
