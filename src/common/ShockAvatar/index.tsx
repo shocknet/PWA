@@ -51,7 +51,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
-  const { lastSeenApp, lastSeenNode } = Utils.useLastSeen(publicKey);
+  const { lastSeenApp, lastSeenNode } = Utils.useLastSeenShared(publicKey);
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isSelf = publicKey === selfPublicKey;
 
