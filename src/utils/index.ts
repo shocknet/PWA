@@ -3,11 +3,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Action } from "redux";
 import { useDispatch as originalUseDispatch } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
+import { useBetween } from "use-between";
 
 import { State } from "../reducers";
 import { Contact, ReceivedRequest, SentRequest } from "../schema";
 
 import { rifle } from "./WebSocket";
+import { memoize } from "lodash";
 
 export * from "./Date";
 export { default as Http } from "./Http";
@@ -277,3 +279,10 @@ export const useLastSeen = (publicKey: string) => {
 
   return { lastSeenApp, lastSeenNode };
 };
+
+const useLastSeenMemo = memoize((publicKey: string) => {
+  return () => useLastSeen(publicKey);
+});
+
+export const useLastSeenShared = (publicKey: string) =>
+  useBetween(useLastSeenMemo(publicKey));
