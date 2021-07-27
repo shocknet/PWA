@@ -1,6 +1,8 @@
 import React from "react";
 import classNames from "classnames";
+import { toast } from "react-toastify";
 
+import * as Utils from "../../../../utils";
 import Pad from "../../../../common/Pad";
 import Line from "../../../../common/Line";
 import { formatNumber } from "../../../../utils/Number";
@@ -32,8 +34,26 @@ const Channel: React.FC<ChannelProps> = ({
   ]);
   const fullIdentifier = publicKey + (!!ip && `@${ip}`);
 
+  const onClick = React.useCallback(() => {
+    if (!navigator.clipboard) {
+      toast.dark(
+        `Could not copy to clipboard, enable clipboard access or use HTTPs.`
+      );
+      return;
+    }
+    navigator.clipboard
+      .writeText(fullIdentifier)
+      .then(() => {
+        toast.dark("Copied to clipboard");
+      })
+      .catch(e => {
+        Utils.logger.error(`Error inside <Channel />.onClick -> `, e);
+        toast.dark(`Could not copy to clipboard: ${e.message}`);
+      });
+  }, [fullIdentifier]);
+
   return (
-    <div className="advanced-channel-container">
+    <div className="advanced-channel-container" onClick={onClick}>
       {/* <div className="advanced-channel-ip"></div> */}
 
       <div className="advanced-channel-name-container">

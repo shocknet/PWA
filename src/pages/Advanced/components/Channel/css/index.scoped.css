@@ -4,6 +4,10 @@
   padding: 10px 20px;
 }
 
+.advanced-channel-container:hover {
+  cursor: pointer;
+}
+
 .advanced-channel-ip {
   font-size: 13px;
   line-height: 1;
