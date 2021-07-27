@@ -348,7 +348,6 @@ const ProfilePage = () => {
     });
   };
   const renderServices = () => {
-    console.log(myServices);
     return Object.entries(myServices)
       .filter(([id, service]) => !!service)
       .map(([id, serv]) => {
@@ -359,6 +358,8 @@ const ProfilePage = () => {
         };
         return (
           <div className="post" key={id}>
+            {/*@ts-expect-error*/}
+            {user.SeedServiceProvided && user.SeedServiceProvided === id && <div style={{border: 'solid', borderRadius:'5px',borderColor:'green', width:'10rem'}}><p>OFFERED SERVICE</p></div>}
             <strong>Service ID</strong>
             <p>{id}</p>
             <strong>Service Tpe</strong>

@@ -13,29 +13,16 @@ export const ACTIONS = {
 export const createService = (
   clear,
   encrypted,
-  serviceID
 ) => async dispatch => {
-  let id = serviceID;
-  if (serviceID) {
-    const { data } = await Http.post("/api/gun/put", {
-      path: `$user>offeredServices>${id}`,
-      value: clear
-    });
-    const { ok } = data;
-    if (!ok) {
-      return "";
-    }
-  } else {
-    const { data } = await Http.post("/api/gun/set", {
-      path: "$user>offeredServices",
-      value: clear
-    });
-    const { ok, id: newID } = data;
-    if (!ok) {
-      return "";
-    }
-    id = newID;
+  const { data } = await Http.post("/api/gun/set", {
+    path: "$user>offeredServices",
+    value: clear
+  });
+  const { ok, id: newID } = data;
+  if (!ok) {
+    return "";
   }
+  const id = newID;
 
   const all = Object.entries(encrypted).map(([name, value]) => {
     if (!value) {
