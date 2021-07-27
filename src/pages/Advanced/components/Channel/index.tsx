@@ -1,6 +1,9 @@
 import React from "react";
 import classNames from "classnames";
+
+import Pad from "../../../../common/Pad";
 import { formatNumber } from "../../../../utils/Number";
+
 import "./css/index.scoped.css";
 
 export interface ChannelProps {
@@ -31,6 +34,10 @@ const Channel: React.FC<ChannelProps> = ({
       {/* <div className="advanced-channel-ip"></div> */}
 
       <div className="advanced-channel-name-container">
+        <p style={{ marginLeft: "0.5rem" }}>{pendingStatus}</p>
+      </div>
+
+      <div className="address-and-status">
         <div
           className={classNames({
             "advanced-channel-status": true,
@@ -38,12 +45,12 @@ const Channel: React.FC<ChannelProps> = ({
           })}
         ></div>
 
-        <p style={{ marginLeft: "0.5rem" }}>{pendingStatus}</p>
-      </div>
+        <Pad amt={12} insideRow />
 
-      <p className="advanced-channel-address">
-        Address: {address + (!!ip && `@${ip}`)}
-      </p>
+        <p className="advanced-channel-address">
+          {address + (!!ip && `@${ip}`)}
+        </p>
+      </div>
 
       <div className="advanced-channel-capacity-container">
         <div className="advanced-channel-capacity">

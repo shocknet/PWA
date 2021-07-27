@@ -22,14 +22,20 @@
   font-size: 16px;
 }
 
+.address-and-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .advanced-channel-status {
-  margin-left: 10px;
   width: 12px;
   height: 12px;
-  border-radius: 100px;
+  border-radius: 50%;
   background-color: var(--green);
-  margin-left: 7.5px;
-  line-height: 1;
+
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
 }
 
 .advanced-channel-status-offline {
@@ -39,7 +45,7 @@
 .advanced-channel-address {
   font-size: 13px;
   line-height: 1;
-  margin-bottom: 5px;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
