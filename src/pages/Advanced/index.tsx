@@ -271,7 +271,7 @@ const AdvancedPage: React.FC = () => {
 
                 return (
                   <Channel
-                    address={channel.remote_pubkey}
+                    publicKey={channel.remote_pubkey}
                     ip={ip}
                     receivable={channel.remote_balance}
                     sendable={channel.local_balance}
@@ -285,7 +285,7 @@ const AdvancedPage: React.FC = () => {
 
                 return (
                   <Channel
-                    address={channel.remote_pubkey}
+                    publicKey={channel.remote_pubkey}
                     ip={ip}
                     receivable={channel.remote_balance}
                     sendable={channel.local_balance}

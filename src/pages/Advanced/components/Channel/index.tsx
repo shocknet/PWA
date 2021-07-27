@@ -9,7 +9,7 @@ import "./css/index.scoped.css";
 
 export interface ChannelProps {
   active: boolean;
-  address: string;
+  publicKey: string;
   ip: string | undefined;
   pendingStatus?: string;
   receivable: string;
@@ -17,7 +17,7 @@ export interface ChannelProps {
 }
 
 const Channel: React.FC<ChannelProps> = ({
-  address,
+  publicKey,
   ip,
   sendable,
   receivable,
@@ -49,7 +49,7 @@ const Channel: React.FC<ChannelProps> = ({
         <Pad amt={12} insideRow />
 
         <p className="advanced-channel-address">
-          {address + (!!ip && `@${ip}`)}
+          {publicKey + (!!ip && `@${ip}`)}
         </p>
       </div>
 
