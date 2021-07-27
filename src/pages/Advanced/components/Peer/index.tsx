@@ -5,8 +5,8 @@ import "./css/index.scoped.css";
 export interface PeerProps {
   address: string;
   publicKey: string;
-  received: number;
-  sent: number;
+  received: string;
+  sent: string;
 }
 
 const Peer: React.FC<PeerProps> = ({ sent, received, address, publicKey }) => {
