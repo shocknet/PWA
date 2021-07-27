@@ -4,7 +4,6 @@ import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "./String";
 import { setAuthenticated } from "../actions/AuthActions";
-import { connectHost } from "../actions/NodeActions";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').Subscription} Subscription
@@ -51,11 +50,11 @@ export const connectSocket = async (host = "", reconnect = false) => {
 
   GunSocket = SocketIO(`${host}/gun`, socketOptions);
   LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
-  
-  const relayId = store.getState().node.relayId
-  if(relayId){
-    GunSocket.emit('hybridRelayId',{id:relayId})
-    LNDSocket.emit('hybridRelayId',{id:relayId})
+
+  const relayId = store.getState().node.relayId;
+  if (relayId) {
+    GunSocket.emit("hybridRelayId", { id: relayId });
+    LNDSocket.emit("hybridRelayId", { id: relayId });
   }
 
   const GunOn = encryptedOn(GunSocket);
@@ -83,10 +82,22 @@ export const connectSocket = async (host = "", reconnect = false) => {
   //TODO listen on relay error
   GunSocket.on("encryption:error", async err => {
     if (err.field === "deviceId" || err.message === "Bad Mac") {
-      const {hostIP:cachedNodeIP,relayId} = store.getState().node;
       store.dispatch(setAuthenticated(false));
     }
   });
+
+  Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
+    unsubscribeRifleById(key);
+    rifle(value);
+    rifleSubscriptions.delete(key);
+  });
+
+  const onlineListener = () => {
+    connectSocket(host, true);
+    window.removeEventListener("online", onlineListener);
+  };
+
+  window.addEventListener("online", onlineListener);
 
   return { GunSocket, LNDSocket };
 };
@@ -359,6 +370,10 @@ export const rifle = ({
           }
 
           rifleSubscriptions.set(data.subscriptionId, {
+            publicKey,
+            epubForDecryption,
+            epubField,
+            reconnect,
             onData,
             onError,
             query
