@@ -43,7 +43,7 @@
 }
 
 .advanced-channel-address {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1;
 
   white-space: nowrap;
@@ -58,16 +58,22 @@ p.advanced-channel-name {
 
 .advanced-channel-capacity-container {
   display: flex;
+  position: relative;
 }
 
 .advanced-channel-capacity {
   font-weight: 600;
   width: 50%;
-  border-right: 2px solid white;
-  font-size: 14px;
+
+  font-size: 13px;
+}
+
+.line {
+  position: absolute;
+  left: 50%;
+  margin-left: -1px;
 }
 
 .advanced-channel-capacity-container .advanced-channel-capacity:last-of-type {
   text-align: right;
-  border-right: 0;
 }

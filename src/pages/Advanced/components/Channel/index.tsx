@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 
 import Pad from "../../../../common/Pad";
+import Line from "../../../../common/Line";
 import { formatNumber } from "../../../../utils/Number";
 
 import "./css/index.scoped.css";
@@ -52,10 +53,17 @@ const Channel: React.FC<ChannelProps> = ({
         </p>
       </div>
 
+      <Pad amt={12} />
+
       <div className="advanced-channel-capacity-container">
         <div className="advanced-channel-capacity">
           Sendable: {formattedSendable} sats
         </div>
+
+        <div className="line">
+          <Line color="white" length={16} type="vertical" width={2} />
+        </div>
+
         <div className="advanced-channel-capacity">
           Receivable: {formattedReceivable} sats
         </div>
