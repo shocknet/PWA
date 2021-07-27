@@ -1,10 +1,17 @@
-// @ts-check
-import { useMemo } from "react";
+import React from "react";
 import classNames from "classnames";
 import { formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
 
-const Channel = ({
+export interface ChannelProps {
+  active: boolean;
+  address: string;
+  pendingStatus?: string;
+  receivable: string;
+  sendable: string;
+}
+
+const Channel: React.FC<ChannelProps> = ({
   address,
   // ip = null,
   sendable,
@@ -12,13 +19,16 @@ const Channel = ({
   active,
   pendingStatus = ""
 }) => {
-  const formattedSendable = useMemo(() => formatNumber(sendable), [sendable]);
-  const formattedReceivable = useMemo(() => formatNumber(receivable), [
+  const formattedSendable = React.useMemo(() => formatNumber(sendable), [
+    sendable
+  ]);
+  const formattedReceivable = React.useMemo(() => formatNumber(receivable), [
     receivable
   ]);
   return (
     <div className="advanced-channel-container">
       {/* <div className="advanced-channel-ip"></div> */}
+
       <div className="advanced-channel-name-container">
         {/* <p className="advanced-channel-name">IP: {ip ?? "N/A"}</p> */}
         <div
@@ -29,7 +39,9 @@ const Channel = ({
         ></div>
         <p style={{ marginLeft: "0.5rem" }}>{pendingStatus}</p>
       </div>
+
       <p className="advanced-channel-address">Address: {address}</p>
+
       <div className="advanced-channel-capacity-container">
         <div className="advanced-channel-capacity">
           Sendable: {formattedSendable} sats

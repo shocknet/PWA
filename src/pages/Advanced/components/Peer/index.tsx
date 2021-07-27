@@ -2,7 +2,14 @@ import React from "react";
 import { formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
 
-const Peer = ({ sent, received, address, publicKey }) => {
+export interface PeerProps {
+  address: string;
+  publicKey: string;
+  received: number;
+  sent: number;
+}
+
+const Peer: React.FC<PeerProps> = ({ sent, received, address, publicKey }) => {
   const formattedSent = formatNumber(sent.toString());
   const formattedReceived = formatNumber(received.toString());
 

@@ -1,10 +1,8 @@
-// @ts-check
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
-/**
- * @typedef {import('shock-common').Channel} Channel
- */
+import { Channel as IChannel } from "shock-common";
+
 import {
   fetchChannels,
   fetchInvoices,
@@ -26,20 +24,23 @@ import Http from "../../utils/Http";
 import * as Store from "../../store";
 import "./css/index.scoped.css";
 
-/**
- * @typedef {Channel & { pendingStatus: string , ip: string }} PendingChannel
- */
+type PendingChannel = IChannel & {
+  pendingStatus: string;
+  ip: string;
+};
 
-const AdvancedPage = () => {
-  const [selectedAccordion, setSelectedAccordion] = useState("transactions");
-  const [page] = useState(1);
-  const [addPeerOpen, setAddPeerOpen] = useState(false);
-  const [addChannelOpen, setAddChannelOpen] = useState(false);
+const AdvancedPage: React.FC = () => {
+  const [selectedAccordion, setSelectedAccordion] = React.useState(
+    "transactions"
+  );
+  const [page] = React.useState(1);
+  const [addPeerOpen, setAddPeerOpen] = React.useState(false);
+  const [addChannelOpen, setAddChannelOpen] = React.useState(false);
   const [infoModalOpen, toggleInfoModal] = Utils.useBooleanState(false);
 
-  const [pendingChannels, setPendingChannels] = useState(
-    /** @type {readonly PendingChannel[]} */ ([])
-  );
+  const [pendingChannels, setPendingChannels] = React.useState<
+    PendingChannel[]
+  >([]);
 
   const dispatch = useDispatch();
   const confirmedBalance = Store.useSelector(
@@ -54,7 +55,7 @@ const AdvancedPage = () => {
   const peers = Store.useSelector(({ wallet }) => wallet.peers);
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const reset = page === 1;
     dispatch(fetchTransactions({ page, reset }));
     dispatch(fetchInvoices({ page, reset }));
@@ -63,7 +64,7 @@ const AdvancedPage = () => {
   }, [page, dispatch]);
 
   //effect to load pending channels, no need to keep them in redux
-  useEffect(() => {
+  React.useEffect(() => {
     Http.get("/api/lnd/pendingchannels").then(({ data }) => {
       console.log("pending channels:");
       console.log(data);
@@ -92,32 +93,32 @@ const AdvancedPage = () => {
     });
   }, []);
 
-  const confirmedBalanceUSD = useMemo(
+  const confirmedBalanceUSD = React.useMemo(
     () => formatNumber(convertSatsToUSD(confirmedBalance, USDRate).toFixed(2)),
     [USDRate, confirmedBalance]
   );
-  const channelBalanceUSD = useMemo(
+  const channelBalanceUSD = React.useMemo(
     () => formatNumber(convertSatsToUSD(channelBalance, USDRate).toFixed(2)),
     [USDRate, channelBalance]
   );
 
-  const openAccordion = useCallback(accordion => {
+  const openAccordion = React.useCallback(accordion => {
     setSelectedAccordion(accordion);
   }, []);
 
-  const toggleAddPeerOpen = useCallback(() => {
+  const toggleAddPeerOpen = React.useCallback(() => {
     setAddPeerOpen(!addPeerOpen);
   }, [addPeerOpen]);
 
-  const toggleAddChannelOpen = useCallback(() => {
+  const toggleAddChannelOpen = React.useCallback(() => {
     setAddChannelOpen(!addChannelOpen);
   }, [addChannelOpen]);
 
-  const openTransactionsAccordion = useCallback(() => {
+  const openTransactionsAccordion = React.useCallback(() => {
     openAccordion("transactions");
   }, [openAccordion]);
 
-  const openPeersAccordion = useCallback(() => {
+  const openPeersAccordion = React.useCallback(() => {
     openAccordion("peers");
   }, [openAccordion]);
 
@@ -125,7 +126,7 @@ const AdvancedPage = () => {
   //   openAccordion("invoices");
   // }, [openAccordion]);
 
-  const openChannelsAccordion = useCallback(() => {
+  const openChannelsAccordion = React.useCallback(() => {
     openAccordion("channels");
   }, [openAccordion]);
 
