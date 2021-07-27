@@ -1,28 +1,16 @@
-p.advanced-peer-address {
-  font-weight: bold;
-  font-size: 17px;
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.peer-container {
+  padding: 4px 12px;
 }
 
 .advanced-peer-public-key {
   font-size: 13px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.advanced-peer-value-container {
-  text-align: right;
-  width: 30%;
-  padding-left: 20px;
-}
-
 .advanced-peer-value {
   font-size: 14px;
-  display: flex;
-  justify-content: space-between;
 }
 
 span.peer-value-title {
