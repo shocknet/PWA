@@ -266,25 +266,35 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
-              {channels.map(channel => (
-                <Channel
-                  address={channel.remote_pubkey}
-                  receivable={channel.remote_balance}
-                  sendable={channel.local_balance}
-                  active={channel.active}
-                  key={channel.chan_id}
-                />
-              ))}
-              {pendingChannels.map(channel => (
-                <Channel
-                  address={channel.remote_pubkey}
-                  receivable={channel.remote_balance}
-                  sendable={channel.local_balance}
-                  active={channel.active}
-                  key={channel.chan_id}
-                  pendingStatus={channel.pendingStatus}
-                />
-              ))}
+              {channels.map(channel => {
+                const ip = peers.find(p => p.pub_key)?.address;
+
+                return (
+                  <Channel
+                    address={channel.remote_pubkey}
+                    ip={ip}
+                    receivable={channel.remote_balance}
+                    sendable={channel.local_balance}
+                    active={channel.active}
+                    key={channel.chan_id}
+                  />
+                );
+              })}
+              {pendingChannels.map(channel => {
+                const ip = peers.find(p => p.pub_key)?.address;
+
+                return (
+                  <Channel
+                    address={channel.remote_pubkey}
+                    ip={ip}
+                    receivable={channel.remote_balance}
+                    sendable={channel.local_balance}
+                    active={channel.active}
+                    key={channel.chan_id}
+                    pendingStatus={channel.pendingStatus}
+                  />
+                );
+              })}
               <AddBtn nestedMode relative>
                 <AddBtn
                   label="ADD CHANNEL"

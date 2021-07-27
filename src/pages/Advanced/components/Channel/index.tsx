@@ -6,6 +6,7 @@ import "./css/index.scoped.css";
 export interface ChannelProps {
   active: boolean;
   address: string;
+  ip: string | undefined;
   pendingStatus?: string;
   receivable: string;
   sendable: string;
@@ -13,7 +14,7 @@ export interface ChannelProps {
 
 const Channel: React.FC<ChannelProps> = ({
   address,
-  // ip = null,
+  ip,
   sendable,
   receivable,
   active,
@@ -30,17 +31,19 @@ const Channel: React.FC<ChannelProps> = ({
       {/* <div className="advanced-channel-ip"></div> */}
 
       <div className="advanced-channel-name-container">
-        {/* <p className="advanced-channel-name">IP: {ip ?? "N/A"}</p> */}
         <div
           className={classNames({
             "advanced-channel-status": true,
             "advanced-channel-status-offline": !active
           })}
         ></div>
+
         <p style={{ marginLeft: "0.5rem" }}>{pendingStatus}</p>
       </div>
 
-      <p className="advanced-channel-address">Address: {address}</p>
+      <p className="advanced-channel-address">
+        Address: {address + (!!ip && `@${ip}`)}
+      </p>
 
       <div className="advanced-channel-capacity-container">
         <div className="advanced-channel-capacity">
