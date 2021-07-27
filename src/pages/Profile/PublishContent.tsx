@@ -224,7 +224,7 @@ const PublishContentPage = () => {
       let serviceID = "";
       if (userProfiles[seedProviderPub]) {
         //@ts-expect-error
-        serviceID = userProfiles[seedProviderPub].SeedServiceProvided;
+        serviceID = userProfiles[seedProviderPub].offerSeedService;
       }
       if (availableToken || (seedUrl && seedToken)) {
         onSubmitCb();

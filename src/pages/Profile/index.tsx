@@ -69,7 +69,13 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
 
   useEffect(() => {
-    const subscription = subscribeMyServices()(dispatch);
+    console.log(user)
+    //@ts-expect-error
+    if(!user.offerSeedService){
+      return
+    }
+    //@ts-expect-error
+    const subscription = subscribeMyServices(user.offerSeedService)(dispatch);
 
     return rifleCleanup(subscription);
   }, [dispatch]);
@@ -348,8 +354,13 @@ const ProfilePage = () => {
     });
   };
   const renderServices = () => {
+    /*@ts-expect-error*/
+    if(!user.offerSeedService){
+      return
+    }
     return Object.entries(myServices)
-      .filter(([id, service]) => !!service)
+      /*@ts-expect-error*/
+      .filter(([id, service]) => !!service && user.offerSeedService === id)
       .map(([id, serv]) => {
         const service = serv as Record<string, string>;
         const deleteCB = () => {
@@ -358,8 +369,6 @@ const ProfilePage = () => {
         };
         return (
           <div className="post" key={id}>
-            {/*@ts-expect-error*/}
-            {user.SeedServiceProvided && user.SeedServiceProvided === id && <div style={{border: 'solid', borderRadius:'5px',borderColor:'green', width:'10rem'}}><p>OFFERED SERVICE</p></div>}
             <strong>Service ID</strong>
             <p>{id}</p>
             <strong>Service Tpe</strong>

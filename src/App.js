@@ -208,7 +208,7 @@ const App = () => {
   const loadContentInfo = useCallback(async () => {
     try {
       const { data: serviceProvider } = await Http.get(
-        `/api/gun/user/load/seedServiceProviderPubKey`,
+        `/api/gun/user/load/preferencesSeedServiceProvider`,
         {
           headers: {
             "public-key-for-decryption": publicKey
@@ -228,7 +228,7 @@ const App = () => {
     }
     try {
       const { data: seedData } = await Http.get(
-        `/api/gun/user/load/seedServiceSeedData`,
+        `/api/gun/user/load/preferencesSeedServiceData`,
         {
           headers: {
             "public-key-for-decryption": publicKey

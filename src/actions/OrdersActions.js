@@ -43,7 +43,7 @@ export const createService = (
   if (serviceType === "torrentSeed" || serviceType === "streamSeed") {
     console.log("updating profile with service");
     await Http.post("/api/gun/put", {
-      path: `$user>Profile>SeedServiceProvided`,
+      path: `$user>Profile>offerSeedService`,
       value: id
     });
   }
@@ -61,37 +61,28 @@ export const deleteService = id => async dispatch => {
     value: null
   });
 };
-
-export const subscribeMyServices = () => dispatch => {
-  const query = `$user::offeredServices::on`;
+export const subscribeMyServices = (providedServiceId) => dispatch => {
+  const query = `$user::offeredServices>${providedServiceId}::on`;
+  console.log(query)
   const subscription = rifle({
     query,
-    publicKey: "",
+    publicKey: "me",
     reconnect: false,
-    onData: async services => {
-      const servicesEntries = Object.entries(services);
-      console.log(servicesEntries);
 
-      servicesEntries.forEach(async ([id]) => {
-        if (id === "_") {
-          return;
-        }
-        const { data: service } = await Http.get(
-          `/api/gun/user/load/offeredServices>${id}`
-        );
-        console.log(service.data);
-        if (service.data === null) {
-          dispatch({
-            type: ACTIONS.REMOVE_MY_SERVICE,
-            data: id
-          });
-          return;
-        }
+    onData: async (serviceNode, id) => {
+      console.log(serviceNode)
+      if (serviceNode === null) {
         dispatch({
-          type: ACTIONS.ADD_MY_SERVICE,
-          data: { id, serviceInfo: service.data }
+          type: ACTIONS.REMOVE_MY_SERVICE,
+          data: id
         });
+        return;
+      }
+      dispatch({
+        type: ACTIONS.ADD_MY_SERVICE,
+        data: { id, serviceInfo: serviceNode }
       });
+      console.log("got service data")
     }
   });
 
