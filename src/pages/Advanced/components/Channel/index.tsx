@@ -30,6 +30,8 @@ const Channel: React.FC<ChannelProps> = ({
   const formattedReceivable = React.useMemo(() => formatNumber(receivable), [
     receivable
   ]);
+  const fullIdentifier = publicKey + (!!ip && `@${ip}`);
+
   return (
     <div className="advanced-channel-container">
       {/* <div className="advanced-channel-ip"></div> */}
@@ -48,9 +50,7 @@ const Channel: React.FC<ChannelProps> = ({
 
         <Pad amt={12} insideRow />
 
-        <p className="advanced-channel-address">
-          {publicKey + (!!ip && `@${ip}`)}
-        </p>
+        <p className="advanced-channel-address">{fullIdentifier}</p>
       </div>
 
       <Pad amt={12} />
