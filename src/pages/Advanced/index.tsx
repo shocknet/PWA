@@ -204,15 +204,17 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
-              {peers.map(peer => (
-                <Peer
-                  address={peer.address}
-                  publicKey={peer.pub_key}
-                  sent={peer.sat_sent}
-                  received={peer.sat_recv}
-                  key={peer.address + peer.pub_key}
-                />
-              ))}
+              {peers.map(peer => {
+                return (
+                  <Peer
+                    address={peer.address}
+                    publicKey={peer.pub_key}
+                    sent={peer.sat_sent}
+                    received={peer.sat_recv}
+                    key={peer.address + peer.pub_key}
+                  />
+                );
+              })}
             </div>
             <AddBtn nestedMode relative>
               <AddBtn
