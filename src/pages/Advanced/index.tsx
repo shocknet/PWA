@@ -29,10 +29,18 @@ type PendingChannel = IChannel & {
   ip: string;
 };
 
+type AccordionSection =
+  | "none"
+  | "transactions"
+  | "invoices"
+  | "peers"
+  | "channels";
+
 const AdvancedPage: React.FC = () => {
-  const [selectedAccordion, setSelectedAccordion] = React.useState<
-    "transactions" | "invoices" | "peers" | "channels"
-  >("transactions");
+  const [
+    selectedAccordion,
+    setSelectedAccordion
+  ] = React.useState<AccordionSection>("none");
   const [page] = React.useState(1);
   const [addPeerOpen, setAddPeerOpen] = React.useState(false);
   const [addChannelOpen, setAddChannelOpen] = React.useState(false);
@@ -102,8 +110,23 @@ const AdvancedPage: React.FC = () => {
     [USDRate, channelBalance]
   );
 
-  const openAccordion = React.useCallback(accordion => {
-    setSelectedAccordion(accordion);
+  const openAccordion = React.useCallback((accordion: AccordionSection) => {
+    setSelectedAccordion(current => {
+      if (
+        accordion === "channels" &&
+        channels.length === 0 &&
+        pendingChannels.length === 0
+      ) {
+        return;
+      }
+      if (accordion === "peers" && peers.length === 0) {
+        return;
+      }
+      if (accordion === "transactions" && transactions.content.length === 0) {
+        return;
+      }
+      return current === accordion ? "none" : accordion;
+    });
   }, []);
 
   const toggleAddPeerOpen = React.useCallback(() => {
