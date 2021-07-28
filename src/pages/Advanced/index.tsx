@@ -1,10 +1,8 @@
-// @ts-check
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
-/**
- * @typedef {import('shock-common').Channel} Channel
- */
+import { Channel as IChannel } from "shock-common";
+
 import {
   fetchChannels,
   fetchInvoices,
@@ -26,20 +24,31 @@ import Http from "../../utils/Http";
 import * as Store from "../../store";
 import "./css/index.scoped.css";
 
-/**
- * @typedef {Channel & { pendingStatus: string , ip: string }} PendingChannel
- */
+type PendingChannel = IChannel & {
+  pendingStatus: string;
+  ip: string;
+};
 
-const AdvancedPage = () => {
-  const [selectedAccordion, setSelectedAccordion] = useState("transactions");
-  const [page] = useState(1);
-  const [addPeerOpen, setAddPeerOpen] = useState(false);
-  const [addChannelOpen, setAddChannelOpen] = useState(false);
+type AccordionSection =
+  | "none"
+  | "transactions"
+  | "invoices"
+  | "peers"
+  | "channels";
+
+const AdvancedPage: React.FC = () => {
+  const [
+    selectedAccordion,
+    setSelectedAccordion
+  ] = React.useState<AccordionSection>("none");
+  const [page] = React.useState(1);
+  const [addPeerOpen, setAddPeerOpen] = React.useState(false);
+  const [addChannelOpen, setAddChannelOpen] = React.useState(false);
   const [infoModalOpen, toggleInfoModal] = Utils.useBooleanState(false);
 
-  const [pendingChannels, setPendingChannels] = useState(
-    /** @type {readonly PendingChannel[]} */ ([])
-  );
+  const [pendingChannels, setPendingChannels] = React.useState<
+    PendingChannel[]
+  >([]);
 
   const dispatch = useDispatch();
   const confirmedBalance = Store.useSelector(
@@ -54,7 +63,7 @@ const AdvancedPage = () => {
   const peers = Store.useSelector(({ wallet }) => wallet.peers);
   const USDRate = Store.useSelector(({ wallet }) => wallet.USDRate);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const reset = page === 1;
     dispatch(fetchTransactions({ page, reset }));
     dispatch(fetchInvoices({ page, reset }));
@@ -63,7 +72,7 @@ const AdvancedPage = () => {
   }, [page, dispatch]);
 
   //effect to load pending channels, no need to keep them in redux
-  useEffect(() => {
+  React.useEffect(() => {
     Http.get("/api/lnd/pendingchannels").then(({ data }) => {
       console.log("pending channels:");
       console.log(data);
@@ -92,32 +101,47 @@ const AdvancedPage = () => {
     });
   }, []);
 
-  const confirmedBalanceUSD = useMemo(
+  const confirmedBalanceUSD = React.useMemo(
     () => formatNumber(convertSatsToUSD(confirmedBalance, USDRate).toFixed(2)),
     [USDRate, confirmedBalance]
   );
-  const channelBalanceUSD = useMemo(
+  const channelBalanceUSD = React.useMemo(
     () => formatNumber(convertSatsToUSD(channelBalance, USDRate).toFixed(2)),
     [USDRate, channelBalance]
   );
 
-  const openAccordion = useCallback(accordion => {
-    setSelectedAccordion(accordion);
+  const openAccordion = React.useCallback((accordion: AccordionSection) => {
+    setSelectedAccordion(current => {
+      if (
+        accordion === "channels" &&
+        channels.length === 0 &&
+        pendingChannels.length === 0
+      ) {
+        return;
+      }
+      if (accordion === "peers" && peers.length === 0) {
+        return;
+      }
+      if (accordion === "transactions" && transactions.content.length === 0) {
+        return;
+      }
+      return current === accordion ? "none" : accordion;
+    });
   }, []);
 
-  const toggleAddPeerOpen = useCallback(() => {
+  const toggleAddPeerOpen = React.useCallback(() => {
     setAddPeerOpen(!addPeerOpen);
   }, [addPeerOpen]);
 
-  const toggleAddChannelOpen = useCallback(() => {
+  const toggleAddChannelOpen = React.useCallback(() => {
     setAddChannelOpen(!addChannelOpen);
   }, [addChannelOpen]);
 
-  const openTransactionsAccordion = useCallback(() => {
+  const openTransactionsAccordion = React.useCallback(() => {
     openAccordion("transactions");
   }, [openAccordion]);
 
-  const openPeersAccordion = useCallback(() => {
+  const openPeersAccordion = React.useCallback(() => {
     openAccordion("peers");
   }, [openAccordion]);
 
@@ -125,7 +149,7 @@ const AdvancedPage = () => {
   //   openAccordion("invoices");
   // }, [openAccordion]);
 
-  const openChannelsAccordion = useCallback(() => {
+  const openChannelsAccordion = React.useCallback(() => {
     openAccordion("channels");
   }, [openAccordion]);
 
@@ -162,21 +186,18 @@ const AdvancedPage = () => {
           Node Info <i className="fas fa-info-circle" />
         </span>
       </div>
-      <div className="advanced-accordions-container">
+      <div className="accordion">
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "transactions"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "transactions"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openTransactionsAccordion}
-          >
-            <p className="advanced-accordion-title">Transactions</p>
+          <div className="section-header" onClick={openTransactionsAccordion}>
+            <p className="header-title">Transactions</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {transactions.content.map(transaction => (
                 <Transaction
                   date={transaction.time_stamp}
@@ -191,51 +212,53 @@ const AdvancedPage = () => {
         </div>
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "peers"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "peers"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openPeersAccordion}
-          >
-            <p className="advanced-accordion-title">Peers</p>
+          <div className="section-header" onClick={openPeersAccordion}>
+            <p className="header-title">Peers</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
-              {peers.map(peer => (
-                <Peer
-                  address={peer.address}
-                  publicKey={peer.pub_key}
-                  sent={peer.sat_sent}
-                  received={peer.sat_recv}
-                  key={peer.address + peer.pub_key}
-                />
-              ))}
+          <div className="section-content">
+            <div className="content-inner">
+              {peers.map((peer, i) => {
+                return (
+                  <Peer
+                    address={peer.address}
+                    publicKey={peer.pub_key}
+                    sent={peer.sat_sent}
+                    received={peer.sat_recv}
+                    key={peer.address + peer.pub_key}
+                    renderDivider={peers.length > 1 && i !== peers.length - 1}
+                  />
+                );
+              })}
             </div>
-            <AddBtn nestedMode relative>
-              <AddBtn
-                label="ADD PEER"
-                onClick={toggleAddPeerOpen}
-                icon="link"
-              />
-            </AddBtn>
+            {selectedAccordion === "peers" && (
+              <AddBtn nestedMode relative>
+                <AddBtn
+                  label="ADD PEER"
+                  onClick={toggleAddPeerOpen}
+                  icon="link"
+                />
+              </AddBtn>
+            )}
           </div>
         </div>
         {/* <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "invoices"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "invoices"
           })}
         >
           <div
-            className="advanced-accordion-header"
+            className="section-header"
             onClick={openInvoicesAccordion}
           >
-            <p className="advanced-accordion-title">Invoices</p>
+            <p className="header-title">Invoices</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {invoices.content
                 .slice()
                 .reverse()
@@ -253,45 +276,65 @@ const AdvancedPage = () => {
         </div> */}
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "channels"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "channels"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openChannelsAccordion}
-          >
-            <p className="advanced-accordion-title">Channels</p>
+          <div className="section-header" onClick={openChannelsAccordion}>
+            <p className="header-title">Channels</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
-              {channels.map(channel => (
-                <Channel
-                  address={channel.remote_pubkey}
-                  receivable={channel.remote_balance}
-                  sendable={channel.local_balance}
-                  active={channel.active}
-                  key={channel.chan_id}
-                />
-              ))}
-              {pendingChannels.map(channel => (
-                <Channel
-                  address={channel.remote_pubkey}
-                  receivable={channel.remote_balance}
-                  sendable={channel.local_balance}
-                  active={channel.active}
-                  key={channel.chan_id}
-                  pendingStatus={channel.pendingStatus}
-                />
-              ))}
-              <AddBtn nestedMode relative>
-                <AddBtn
-                  label="ADD CHANNEL"
-                  small
-                  onClick={toggleAddChannelOpen}
-                  icon="exchange-alt"
-                />
-              </AddBtn>
+          <div className="section-content">
+            <div className="content-inner">
+              {channels.map((channel, i) => {
+                const ip = peers.find(p => p.pub_key)?.address;
+                const thereIsMoreThanOneChannel = channels.length > 1;
+                const isLastChannel = i === channels.length - 1;
+                const thereArePendingChannels = pendingChannels.length > 0;
+                const renderDivider =
+                  (thereIsMoreThanOneChannel && !isLastChannel) ||
+                  thereArePendingChannels;
+
+                return (
+                  <Channel
+                    publicKey={channel.remote_pubkey}
+                    ip={ip}
+                    receivable={channel.remote_balance}
+                    sendable={channel.local_balance}
+                    active={channel.active}
+                    key={channel.chan_id}
+                    renderDivider={renderDivider}
+                  />
+                );
+              })}
+              {pendingChannels.map((channel, i) => {
+                const ip = peers.find(p => p.pub_key)?.address;
+
+                return (
+                  <Channel
+                    publicKey={channel.remote_pubkey}
+                    ip={ip}
+                    receivable={channel.remote_balance}
+                    sendable={channel.local_balance}
+                    active={channel.active}
+                    key={channel.chan_id}
+                    pendingStatus={channel.pendingStatus}
+                    renderDivider={
+                      pendingChannels.length > 1 &&
+                      i !== pendingChannels.length - 1
+                    }
+                  />
+                );
+              })}
+              {selectedAccordion === "channels" && (
+                <AddBtn nestedMode relative>
+                  <AddBtn
+                    label="ADD CHANNEL"
+                    small
+                    onClick={toggleAddChannelOpen}
+                    icon="exchange-alt"
+                  />
+                </AddBtn>
+              )}
             </div>
           </div>
         </div>

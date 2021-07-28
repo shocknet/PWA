@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('shock-common').Channel} Channel
+ * @typedef {import('shock-common').Peer} Peer
  */
 
 import Big from "big.js";
@@ -21,11 +22,14 @@ const INITIAL_STATE = {
    */
   channels: [],
   invoices: { content: [], page: -1, totalPages: 0, totalItems: 0 },
+  /**
+   * @type {readonly Peer[]}
+   */
   peers: [],
   // Includes transactions, payments and invoices combined with a unified schema
   // and sorted by date
   recentTransactions: [],
-  lightningInfo:{},
+  lightningInfo: {}
 };
 
 const _getUnifiedTransactionDate = item =>

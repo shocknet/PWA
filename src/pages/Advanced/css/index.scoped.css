@@ -54,72 +54,71 @@ p.advanced-balance-usd {
   margin-top: 4px;
 }
 
-.advanced-accordion-header {
+.section-open.accordion-section {
+  border-bottom: 0.5px solid white;
+}
+
+.section-header {
   padding: 15px 25px;
   font-weight: bold;
   background-color: var(--black);
   border: 0px solid white;
-  border-bottom: 1px solid white;
-  cursor: pointer;
+  border-top: 0.5px solid white;
+  border-bottom: 0.5px solid white;
   transition: background-color 0.25s ease;
 }
 
-.advanced-accordion-header:hover {
-  background-color: var(--mist-blue);
-}
-
-p.advanced-accordion-title {
-  line-height: 1;
-}
-
-.advanced-accordions-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-
-.advanced-accordions-container
-  .advanced-accordion-container:last-of-type
-  .advanced-accordion-header {
+.section-open .section-header {
   border-bottom: 1px solid white;
 }
 
-.advanced-accordion-container.accordion-open {
-  flex: 1;
+.section-header:hover {
+  cursor: pointer;
 }
 
-.advanced-accordion-container {
+.section-header:hover {
+  background-color: var(--mist-blue);
+}
+
+p.header-title {
+  line-height: 1;
+}
+
+.accordion {
   display: flex;
-  flex: 0;
+  flex-direction: column;
+  border-top: 0.5px solid white;
+  border-bottom: 0.5px solid white;
+}
+
+.accordion-section.section-open {
+}
+
+.accordion-section {
+  display: flex;
   min-height: 47px;
   flex-direction: column;
-  transition: all 0.35s ease;
+
   overflow: hidden;
 }
 
-.advanced-accordion-content-container {
-  position: relative;
+.section-content {
   display: flex;
-  height: 100%;
-  overflow: hidden;
 }
 
-.advanced-accordion-container.accordion-open .advanced-accordion-header {
+.accordion-section.section-open .section-header {
   background-color: var(--main-blue);
   cursor: default;
 }
 
-.advanced-accordion-container .advanced-accordion-content {
-  opacity: 0;
+.accordion-section .content-inner {
   overflow: auto;
-  flex: 1;
-  transition: all 0.3s ease;
+  display: none;
+  width: 100%;
 }
 
-.advanced-accordion-container.accordion-open .advanced-accordion-content {
-  opacity: 1;
-  overflow: auto;
+.accordion-section.section-open .content-inner {
+  display: unset;
 }
 
 .advanced-transaction-info {
