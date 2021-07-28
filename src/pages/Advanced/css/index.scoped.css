@@ -60,8 +60,11 @@ p.advanced-balance-usd {
   background-color: var(--black);
   border: 0px solid white;
   border-bottom: 1px solid white;
-  cursor: pointer;
   transition: background-color 0.25s ease;
+}
+
+.section-header:hover {
+  cursor: pointer;
 }
 
 .section-header:hover {
