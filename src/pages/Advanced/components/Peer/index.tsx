@@ -1,6 +1,8 @@
 import React from "react";
 import classNames from "classnames";
+import { toast } from "react-toastify";
 
+import * as Utils from "../../../../utils";
 import Pad from "../../../../common/Pad";
 import { formatNumber } from "../../../../utils/Number";
 
@@ -24,11 +26,30 @@ const Peer: React.FC<PeerProps> = ({
   const formattedSent = formatNumber(sent.toString());
   const formattedReceived = formatNumber(received.toString());
 
+  const onClick = React.useCallback(() => {
+    if (!navigator.clipboard) {
+      toast.dark(
+        `Could not copy to clipboard, enable clipboard access or use HTTPs.`
+      );
+      return;
+    }
+    navigator.clipboard
+      .writeText(address)
+      .then(() => {
+        toast.dark("Copied to clipboard");
+      })
+      .catch(e => {
+        Utils.logger.error(`Error inside <Peer />.onClick -> `, e);
+        toast.dark(`Could not copy to clipboard: ${e.message}`);
+      });
+  }, [address]);
+
   return (
     <div
       className={classNames("peer-container", {
         "has-divider": renderDivider
       })}
+      onClick={onClick}
     >
       <h4 className="margin-0 padding-0">{address}</h4>
 
