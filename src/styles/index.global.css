@@ -382,3 +382,11 @@ p.shock-form-button-text {
   background-color: transparent;
   border: 1px solid var(--main-blue);
 }
+
+.margin-0 {
+  margin: 0;
+}
+
+.padding-0 {
+  padding: 0;
+}
