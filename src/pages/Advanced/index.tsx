@@ -166,18 +166,15 @@ const AdvancedPage: React.FC = () => {
       <div className="accordion">
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "transactions"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "transactions"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openTransactionsAccordion}
-          >
-            <p className="advanced-accordion-title">Transactions</p>
+          <div className="section-header" onClick={openTransactionsAccordion}>
+            <p className="header-title">Transactions</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {transactions.content.map(transaction => (
                 <Transaction
                   date={transaction.time_stamp}
@@ -192,18 +189,15 @@ const AdvancedPage: React.FC = () => {
         </div>
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "peers"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "peers"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openPeersAccordion}
-          >
-            <p className="advanced-accordion-title">Peers</p>
+          <div className="section-header" onClick={openPeersAccordion}>
+            <p className="header-title">Peers</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {peers.map((peer, i) => {
                 return (
                   <Peer
@@ -228,18 +222,18 @@ const AdvancedPage: React.FC = () => {
         </div>
         {/* <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "invoices"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "invoices"
           })}
         >
           <div
-            className="advanced-accordion-header"
+            className="section-header"
             onClick={openInvoicesAccordion}
           >
-            <p className="advanced-accordion-title">Invoices</p>
+            <p className="header-title">Invoices</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {invoices.content
                 .slice()
                 .reverse()
@@ -257,18 +251,15 @@ const AdvancedPage: React.FC = () => {
         </div> */}
         <div
           className={classNames({
-            "advanced-accordion-container": true,
-            "accordion-open": selectedAccordion === "channels"
+            "accordion-section": true,
+            "section-open": selectedAccordion === "channels"
           })}
         >
-          <div
-            className="advanced-accordion-header"
-            onClick={openChannelsAccordion}
-          >
-            <p className="advanced-accordion-title">Channels</p>
+          <div className="section-header" onClick={openChannelsAccordion}>
+            <p className="header-title">Channels</p>
           </div>
-          <div className="advanced-accordion-content-container">
-            <div className="advanced-accordion-content">
+          <div className="section-content">
+            <div className="content-inner">
               {channels.map((channel, i) => {
                 const ip = peers.find(p => p.pub_key)?.address;
                 const thereIsMoreThanOneChannel = channels.length > 1;
