@@ -30,9 +30,9 @@ type PendingChannel = IChannel & {
 };
 
 const AdvancedPage: React.FC = () => {
-  const [selectedAccordion, setSelectedAccordion] = React.useState(
-    "transactions"
-  );
+  const [selectedAccordion, setSelectedAccordion] = React.useState<
+    "transactions" | "invoices" | "peers" | "channels"
+  >("transactions");
   const [page] = React.useState(1);
   const [addPeerOpen, setAddPeerOpen] = React.useState(false);
   const [addChannelOpen, setAddChannelOpen] = React.useState(false);
