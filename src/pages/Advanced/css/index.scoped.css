@@ -76,10 +76,8 @@ p.header-title {
 }
 
 .accordion {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .accordion .accordion-section:last-of-type .section-header {
@@ -87,23 +85,19 @@ p.header-title {
 }
 
 .accordion-section.section-open {
-  flex: 1;
 }
 
 .accordion-section {
   display: flex;
-  flex: 0;
   min-height: 47px;
   flex-direction: column;
-  transition: all 0.35s ease;
+
   overflow: hidden;
 }
 
 .section-content {
   position: relative;
   display: flex;
-  height: 100%;
-  overflow: hidden;
 }
 
 .accordion-section.section-open .section-header {
@@ -112,15 +106,13 @@ p.header-title {
 }
 
 .accordion-section .content-inner {
-  opacity: 0;
   overflow: auto;
-  flex: 1;
-  transition: all 0.3s ease;
+  display: none;
+  width: 100%;
 }
 
 .accordion-section.section-open .content-inner {
-  opacity: 1;
-  overflow: auto;
+  display: unset;
 }
 
 .advanced-transaction-info {
