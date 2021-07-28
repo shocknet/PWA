@@ -18,7 +18,9 @@ const Peer: React.FC<PeerProps> = ({ sent, received, address, publicKey }) => {
 
   return (
     <div className="peer-container">
-      <h4>{address}</h4>
+      <h4 className="margin-0 padding-0">{address}</h4>
+
+      <Pad amt={12} />
 
       <p className="advanced-peer-public-key">
         <span>{publicKey ?? "Unknown public key"}</span>
