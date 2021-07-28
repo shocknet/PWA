@@ -18,6 +18,7 @@
 }
 
 .sent-and-received {
+  position: relative; /* needed for absolute line */
   display: flex;
   flex-direction: row;
   justify-content: space-between;

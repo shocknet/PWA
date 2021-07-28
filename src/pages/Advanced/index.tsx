@@ -211,13 +211,15 @@ const AdvancedPage: React.FC = () => {
                 );
               })}
             </div>
-            <AddBtn nestedMode relative>
-              <AddBtn
-                label="ADD PEER"
-                onClick={toggleAddPeerOpen}
-                icon="link"
-              />
-            </AddBtn>
+            {selectedAccordion === "peers" && (
+              <AddBtn nestedMode relative>
+                <AddBtn
+                  label="ADD PEER"
+                  onClick={toggleAddPeerOpen}
+                  icon="link"
+                />
+              </AddBtn>
+            )}
           </div>
         </div>
         {/* <div
@@ -300,14 +302,16 @@ const AdvancedPage: React.FC = () => {
                   />
                 );
               })}
-              <AddBtn nestedMode relative>
-                <AddBtn
-                  label="ADD CHANNEL"
-                  small
-                  onClick={toggleAddChannelOpen}
-                  icon="exchange-alt"
-                />
-              </AddBtn>
+              {selectedAccordion === "channels" && (
+                <AddBtn nestedMode relative>
+                  <AddBtn
+                    label="ADD CHANNEL"
+                    small
+                    onClick={toggleAddChannelOpen}
+                    icon="exchange-alt"
+                  />
+                </AddBtn>
+              )}
             </div>
           </div>
         </div>
