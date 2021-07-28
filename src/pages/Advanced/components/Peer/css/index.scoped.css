@@ -17,6 +17,18 @@
   text-overflow: ellipsis;
 }
 
+.sent-and-received {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.line {
+  position: absolute;
+  left: 50%;
+  margin-left: -1px;
+}
+
 .advanced-peer-value {
   font-size: 13px;
 }

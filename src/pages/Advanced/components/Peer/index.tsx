@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import * as Utils from "../../../../utils";
 import Pad from "../../../../common/Pad";
+import Line from "../../../../common/Line";
 import { formatNumber } from "../../../../utils/Number";
 
 import "./css/index.scoped.css";
@@ -61,20 +62,24 @@ const Peer: React.FC<PeerProps> = ({
 
       <Pad amt={12} />
 
-      <p className="advanced-peer-value">
-        <span>
-          <span className="peer-value-title">Sent:</span> {formattedSent}
-        </span>
-      </p>
+      <div className="sent-and-received">
+        <p className="advanced-peer-value">
+          <span>
+            <span className="peer-value-title">Sent:</span> {formattedSent}
+          </span>
+        </p>
 
-      <Pad amt={4} />
+        <div className="line">
+          <Line color="white" length={16} type="vertical" width={2} />
+        </div>
 
-      <p className="advanced-peer-value">
-        <span>
-          <span className="peer-value-title">Received:</span>{" "}
-          {formattedReceived}
-        </span>
-      </p>
+        <p className="advanced-peer-value">
+          <span>
+            <span className="peer-value-title">Received:</span>{" "}
+            {formattedReceived}
+          </span>
+        </p>
+      </div>
     </div>
   );
 };
