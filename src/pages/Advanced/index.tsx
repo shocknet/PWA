@@ -163,7 +163,7 @@ const AdvancedPage: React.FC = () => {
           Node Info <i className="fas fa-info-circle" />
         </span>
       </div>
-      <div className="advanced-accordions-container">
+      <div className="accordion">
         <div
           className={classNames({
             "advanced-accordion-container": true,

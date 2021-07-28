@@ -72,14 +72,14 @@ p.advanced-accordion-title {
   line-height: 1;
 }
 
-.advanced-accordions-container {
+.accordion {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: auto;
 }
 
-.advanced-accordions-container
+.accordion
   .advanced-accordion-container:last-of-type
   .advanced-accordion-header {
   border-bottom: 1px solid white;
