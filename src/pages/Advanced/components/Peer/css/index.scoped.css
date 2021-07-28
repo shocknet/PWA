@@ -11,14 +11,14 @@
 }
 
 .advanced-peer-public-key {
-  font-size: 13px;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .advanced-peer-value {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 span.peer-value-title {

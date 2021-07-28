@@ -51,7 +51,7 @@ const Peer: React.FC<PeerProps> = ({
       })}
       onClick={onClick}
     >
-      <h4 className="margin-0 padding-0">{address}</h4>
+      <h5 className="margin-0 padding-0">{address}</h5>
 
       <Pad amt={12} />
 
