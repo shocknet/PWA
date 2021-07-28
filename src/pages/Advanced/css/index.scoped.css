@@ -54,13 +54,22 @@ p.advanced-balance-usd {
   margin-top: 4px;
 }
 
+.section-open.accordion-section {
+  border-bottom: 0.5px solid white;
+}
+
 .section-header {
   padding: 15px 25px;
   font-weight: bold;
   background-color: var(--black);
   border: 0px solid white;
-  border-bottom: 1px solid white;
+  border-top: 0.5px solid white;
+  border-bottom: 0.5px solid white;
   transition: background-color 0.25s ease;
+}
+
+.section-open .section-header {
+  border-bottom: 1px solid white;
 }
 
 .section-header:hover {
@@ -78,10 +87,8 @@ p.header-title {
 .accordion {
   display: flex;
   flex-direction: column;
-}
-
-.accordion .accordion-section:last-of-type .section-header {
-  border-bottom: 1px solid white;
+  border-top: 0.5px solid white;
+  border-bottom: 0.5px solid white;
 }
 
 .accordion-section.section-open {
