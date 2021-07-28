@@ -16,6 +16,7 @@ export interface ChannelProps {
   pendingStatus?: string;
   receivable: string;
   sendable: string;
+  renderDivider: boolean;
 }
 
 const Channel: React.FC<ChannelProps> = ({
@@ -24,7 +25,8 @@ const Channel: React.FC<ChannelProps> = ({
   sendable,
   receivable,
   active,
-  pendingStatus = ""
+  pendingStatus = "",
+  renderDivider
 }) => {
   const formattedSendable = React.useMemo(() => formatNumber(sendable), [
     sendable
@@ -53,7 +55,12 @@ const Channel: React.FC<ChannelProps> = ({
   }, [fullIdentifier]);
 
   return (
-    <div className="advanced-channel-container" onClick={onClick}>
+    <div
+      className={classNames("advanced-channel-container", {
+        "has-divider": renderDivider
+      })}
+      onClick={onClick}
+    >
       {/* <div className="advanced-channel-ip"></div> */}
 
       <div className="advanced-channel-name-container">

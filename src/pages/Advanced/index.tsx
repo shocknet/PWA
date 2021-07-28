@@ -204,7 +204,7 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
-              {peers.map(peer => {
+              {peers.map((peer, i) => {
                 return (
                   <Peer
                     address={peer.address}
@@ -212,6 +212,7 @@ const AdvancedPage: React.FC = () => {
                     sent={peer.sat_sent}
                     received={peer.sat_recv}
                     key={peer.address + peer.pub_key}
+                    renderDivider={peers.length > 1 && i !== peers.length - 1}
                   />
                 );
               })}
@@ -268,8 +269,14 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="advanced-accordion-content-container">
             <div className="advanced-accordion-content">
-              {channels.map(channel => {
+              {channels.map((channel, i) => {
                 const ip = peers.find(p => p.pub_key)?.address;
+                const thereIsMoreThanOneChannel = channels.length > 1;
+                const isLastChannel = i === channels.length - 1;
+                const thereArePendingChannels = pendingChannels.length > 0;
+                const renderDivider =
+                  (thereIsMoreThanOneChannel && !isLastChannel) ||
+                  thereArePendingChannels;
 
                 return (
                   <Channel
@@ -279,10 +286,11 @@ const AdvancedPage: React.FC = () => {
                     sendable={channel.local_balance}
                     active={channel.active}
                     key={channel.chan_id}
+                    renderDivider={renderDivider}
                   />
                 );
               })}
-              {pendingChannels.map(channel => {
+              {pendingChannels.map((channel, i) => {
                 const ip = peers.find(p => p.pub_key)?.address;
 
                 return (
@@ -294,6 +302,10 @@ const AdvancedPage: React.FC = () => {
                     active={channel.active}
                     key={channel.chan_id}
                     pendingStatus={channel.pendingStatus}
+                    renderDivider={
+                      pendingChannels.length > 1 &&
+                      i !== pendingChannels.length - 1
+                    }
                   />
                 );
               })}

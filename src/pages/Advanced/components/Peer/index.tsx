@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 import Pad from "../../../../common/Pad";
 import { formatNumber } from "../../../../utils/Number";
@@ -10,14 +11,25 @@ export interface PeerProps {
   publicKey: string;
   received: string;
   sent: string;
+  renderDivider: boolean;
 }
 
-const Peer: React.FC<PeerProps> = ({ sent, received, address, publicKey }) => {
+const Peer: React.FC<PeerProps> = ({
+  sent,
+  received,
+  address,
+  publicKey,
+  renderDivider
+}) => {
   const formattedSent = formatNumber(sent.toString());
   const formattedReceived = formatNumber(received.toString());
 
   return (
-    <div className="peer-container">
+    <div
+      className={classNames("peer-container", {
+        "has-divider": renderDivider
+      })}
+    >
       <h4 className="margin-0 padding-0">{address}</h4>
 
       <Pad amt={12} />

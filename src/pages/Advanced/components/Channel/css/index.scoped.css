@@ -4,6 +4,10 @@
   padding: 10px 20px;
 }
 
+.has-divider {
+  border-bottom: 1px solid white;
+}
+
 .advanced-channel-container:hover {
   cursor: pointer;
 }
