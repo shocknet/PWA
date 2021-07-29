@@ -122,7 +122,8 @@ export const buyService = (
     to: owner,
     memo: "",
     feeLimit: 500,
-    ackInfo: serviceID
+    ackInfo: serviceID,
+    timeout: 120000
   });
   console.log(data);
   const orderAck = JSON.parse(data.orderAck.response);

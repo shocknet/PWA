@@ -313,7 +313,8 @@ export const sendTipPost = ({
     to: publicKey,
     memo: "Post Tipped!",
     feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
-    ackInfo: postId
+    ackInfo: postId,
+    timeout: 120000
   });
   console.log(data);
   dispatch({

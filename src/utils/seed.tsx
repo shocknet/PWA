@@ -64,7 +64,8 @@ export const RequestToken = async ({
       to: seedProviderPub,
       memo: "",
       feeLimit: 500,
-      ackInfo: serviceID
+      ackInfo: serviceID,
+      timeout: 120000
     });
     if (status !== 200) {
       throw new Error("seed token request failed");
