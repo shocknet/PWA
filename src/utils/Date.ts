@@ -2,12 +2,12 @@ import React from "react";
 import { DateTime } from "luxon";
 import * as Common from "shock-common";
 
-export function useForceUpdate(): () => void {
-  const [, setTick] = React.useState(0);
+export function useForceUpdate() {
+  const [tick, setTick] = React.useState(0);
   const update = React.useCallback(() => {
     setTick(tick => tick + 1);
   }, []);
-  return update;
+  return { forceUpdate: update, tick };
 }
 
 /**
