@@ -2,7 +2,9 @@ import React, {
   useRef,
   useState,
   InputHTMLAttributes,
-  useCallback
+  useCallback,
+  useEffect,
+  useMemo
 } from "react";
 import { useHistory } from "react-router-dom";
 import * as Common from "shock-common";
@@ -51,7 +53,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
-  const { lastSeenApp, lastSeenNode } = Utils.useLastSeenShared(publicKey);
+  const { lastSeenApp, lastSeenNode } = Utils.useLastSeen(publicKey);
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isSelf = publicKey === selfPublicKey;
 
@@ -62,7 +64,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   );
   const story = Hooks.useStory(publicKey);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const intervalID = setInterval(() => {
       forceUpdate();
     }, Math.min(Common.LAST_SEEN_APP_INTERVAL, Common.LAST_SEEN_NODE_INTERVAL));
@@ -72,30 +74,34 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     };
   }, [forceUpdate]);
 
-  const avatarStyle: React.CSSProperties = {
-    height: height + "px",
-    width: height + "px",
-    borderRadius: "50%",
-    objectFit: "cover"
-  };
+  const avatarStyle = useMemo(() => {
+    const style: React.CSSProperties = {
+      height,
+      width: height,
+      borderRadius: "50%",
+      objectFit: "cover"
+    };
 
-  if (greyBorder) {
-    avatarStyle.borderWidth = "2px";
-    avatarStyle.borderStyle = "solid";
-    avatarStyle.borderColor = "grey";
-  }
+    if (greyBorder) {
+      style.borderWidth = "2px";
+      style.borderStyle = "solid";
+      style.borderColor = "grey";
+    }
 
-  if (!disableOnlineRing && Common.isNodeOnline(lastSeenNode)) {
-    avatarStyle.borderWidth = 2;
-    avatarStyle.borderStyle = "solid";
-    avatarStyle.borderColor = "#AD5C00";
-  }
-  // green ring takes precedence over amber ring
-  if (!disableOnlineRing && Common.isAppOnline(lastSeenApp)) {
-    avatarStyle.borderWidth = 2;
-    avatarStyle.borderStyle = "solid";
-    avatarStyle.borderColor = "#39B54A";
-  }
+    if (!disableOnlineRing && Common.isNodeOnline(lastSeenNode)) {
+      style.borderWidth = 2;
+      style.borderStyle = "solid";
+      style.borderColor = "#AD5C00";
+    }
+    // green ring takes precedence over amber ring
+    if (!disableOnlineRing && Common.isAppOnline(lastSeenApp)) {
+      style.borderWidth = 2;
+      style.borderStyle = "solid";
+      style.borderColor = "#39B54A";
+    }
+
+    return style;
+  }, [height, lastSeenNode, lastSeenApp, disableOnlineRing, greyBorder]);
 
   // const showStoryRing = story.length && !onPressProp && !setsAvatar;
 
