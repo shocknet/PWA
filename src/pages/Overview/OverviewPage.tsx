@@ -24,7 +24,7 @@ import * as Store from "../../store";
 
 const OverviewPage = () => {
   const dispatch = Store.useDispatch();
-  const forceUpdate = Utils.useForceUpdate();
+  const { forceUpdate } = Utils.useForceUpdate();
   const totalBalance = Store.useSelector(
     ({ wallet }) => wallet.totalBalance ?? "0"
   );
