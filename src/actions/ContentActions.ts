@@ -135,7 +135,8 @@ export const unlockContent = (amt, owner, postID) => async dispatch => {
     to: owner,
     memo: "",
     feeLimit: 500,
-    ackInfo: postID
+    ackInfo: postID,
+    timeout: 120000
   });
   const revealRes = data.orderAck.response;
   if (revealRes && revealRes.unlockedContents) {

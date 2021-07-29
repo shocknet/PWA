@@ -115,7 +115,8 @@ const SendPage = () => {
         payreq: contact.paymentRequest,
         amt: contact.paymentRequest ? "0" : amount,
         feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
-        keysend: contact.type === "keysend"
+        keysend: contact.type === "keysend",
+        timeout: 120000
       });
       console.log(payment);
     }
