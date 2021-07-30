@@ -25,10 +25,3 @@ p.choices-desc {
   flex-direction: column;
   padding: 10px 0;
 }
-
-.commit-hash {
-  margin-top: 12px;
-  text-align: center;
-  font-size: 11px;
-  color: var(--light-gray);
-}
