@@ -25,6 +25,14 @@ export let GunSocket = null;
 /** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let LNDSocket = null;
 
+const reconnectRifleSubscriptions = () => {
+  Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
+    unsubscribeRifleById(key);
+    rifle(value);
+    rifleSubscriptions.delete(key);
+  });
+};
+
 export const connectSocket = async (host = "", reconnect = false) => {
   const { store } = await import("../store");
   const socketOptions = {
@@ -86,18 +94,19 @@ export const connectSocket = async (host = "", reconnect = false) => {
     }
   });
 
-  Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
-    unsubscribeRifleById(key);
-    rifle(value);
-    rifleSubscriptions.delete(key);
+  reconnectRifleSubscriptions();
+
+  GunSocket.on("connect", () => {
+    console.log("Connected to new socket");
+    reconnectRifleSubscriptions();
   });
 
   const onlineListener = () => {
     connectSocket(host, true);
-    window.removeEventListener("online", onlineListener);
+    window.removeEventListener("online resume", onlineListener);
   };
 
-  window.addEventListener("online", onlineListener);
+  window.addEventListener("online resume", onlineListener);
 
   return { GunSocket, LNDSocket };
 };
