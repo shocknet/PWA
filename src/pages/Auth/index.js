@@ -171,6 +171,7 @@ const AuthPage = () => {
       contentClassName="auth-page-content"
       onBack={handleBackOnError}
       showBackBtn={!!error}
+      renderCommitHash={authStep === null || authStep === 'host'}
     >
       <LogoSection />
       {loading && <span>Loading...</span>}
