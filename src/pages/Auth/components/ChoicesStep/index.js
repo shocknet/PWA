@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
+import GitInfo from "react-git-info/macro";
 import ChoiceMethod from "../ChoiceMethod";
 import { setAuthMethod } from "../../../../actions/AuthActions";
 import "./css/index.scoped.css";
@@ -36,6 +37,8 @@ const ChoicesStep = () => {
         <p className="inline-link" onClick={selectCloudChoice}>
           I have a guest invite
         </p>
+
+        <span className="commit-hash">{GitInfo().commit.shortHash}</span>
       </div>
     </div>
   );
