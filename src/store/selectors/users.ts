@@ -6,7 +6,7 @@ import { State } from "../../reducers";
 import { selectSelfPublicKey } from "./auth";
 
 export const selectSelfUser = (state: State) => {
-  const selfPublicKey = selectSelfPublicKey(state);
+  const selfPublicKey = selectSelfPublicKey(state) ?? "";
   const maybeUser = state.userProfiles[selfPublicKey];
   if (maybeUser) {
     return maybeUser;
@@ -16,9 +16,7 @@ export const selectSelfUser = (state: State) => {
   }
 };
 
-export const selectUser = (publicKey: string) => (
-  state: State
-): Schema.User => {
+export const selectUser = (publicKey = "") => (state: State): Schema.User => {
   const maybeUser = state.userProfiles[publicKey];
 
   if (maybeUser) {
