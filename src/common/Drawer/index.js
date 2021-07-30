@@ -1,12 +1,15 @@
 // @ts-check
 import { useCallback } from "react";
 import classNames from "classnames";
-import "./css/index.scoped.css";
+import GitInfo from "react-git-info/macro";
 import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
+
 import { logout } from "../../actions/AuthActions";
 import { closeDrawer } from "../../actions/DrawerActions";
 import * as Store from "../../store";
+
+import "./css/index.scoped.css";
 
 const Drawer = () => {
   const dispatch = useDispatch();
@@ -70,6 +73,8 @@ const Drawer = () => {
             <p className="drawer-item-title unselectable">Wallet Settings</p>
           </NavLink>
         </div>
+
+        <span className="drawer-commit-hash">{GitInfo().commit.shortHash}</span>
         <div className="drawer-bottom-section">
           {/*<NavLink className="drawer-item" to="/moonpay" onClick={close}>
             <div className="drawer-item-icon">
@@ -77,6 +82,7 @@ const Drawer = () => {
             </div>
             <p className="drawer-item-title unselectable">Buy Bitcoins</p>
           </NavLink>*/}
+
           <div className="drawer-item">
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>

@@ -73,3 +73,10 @@ p.drawer-item-title {
   align-items: center;
   padding: 24px;
 }
+
+.drawer-commit-hash {
+  text-align: right;
+  font-size: 13px;
+  margin: 12px;
+  color: var(--light-gray);
+}

@@ -109,7 +109,8 @@
     "@types/luxon": "^1.26.4",
     "@types/react-router-dom": "5.x.x",
     "eslint-config-prettier": "^8.1.0",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "react-git-info": "^2.0.0"
   },
   "engines": {
     "yarn": "\n\n\n\nUse NPM!\n\n\n\n"
