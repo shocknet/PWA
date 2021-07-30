@@ -16,13 +16,13 @@ export const selectSelfUser = (state: State) => {
   }
 };
 
-export const selectUser = (publicKey = "") => (state: State): Schema.User => {
+export const selectUser = publicKey => (state: State): Schema.User => {
   const maybeUser = state.userProfiles[publicKey];
 
   if (maybeUser) {
     return maybeUser;
   } else {
-    return Schema.createEmptyUser(publicKey);
+    return Schema.createEmptyUser(publicKey ?? "");
   }
 };
 
