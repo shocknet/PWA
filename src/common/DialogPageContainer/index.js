@@ -1,5 +1,7 @@
 // @ts-check
 import classNames from "classnames";
+import GitInfo from "react-git-info/macro";
+
 import DialogNav from "../../common/DialogNav";
 import * as gStyles from "../../styles";
 import * as Utils from "../../utils";
@@ -13,7 +15,8 @@ const DialogPageContainer = ({
   children,
   disableNav = false,
   onBack = Utils.EMPTY_FN,
-  showBackBtn = false
+  showBackBtn = false,
+  renderCommitHash = false
 }) => {
   return (
     <div
@@ -40,6 +43,10 @@ const DialogPageContainer = ({
       <div className={`dialog-content-container ${contentClassName}`}>
         {children}
       </div>
+
+      {renderCommitHash && (
+        <span className="commit-hash">{GitInfo().commit.shortHash}</span>
+      )}
     </div>
   );
 };
