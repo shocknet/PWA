@@ -54,7 +54,6 @@ const OfferService = () => {
       }
       try {
         setLoading(true);
-        const serviceID = "defaultContentService";
         const clear = {
           serviceType,
           serviceTitle: "Content Seeding",
@@ -66,7 +65,7 @@ const OfferService = () => {
           serviceSeedUrl: seedUrl,
           serviceSeedToken: seedToken
         };
-        const res = await createService(clear, encrypt, serviceID)(dispatch);
+        const res = await createService(clear, encrypt)(dispatch);
         console.log(res);
         setLoading(false);
         history.push("/profile");

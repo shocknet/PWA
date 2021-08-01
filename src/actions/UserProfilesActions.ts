@@ -16,7 +16,7 @@ export const ACTIONS = {
 const subscribedProfiles = new Set();
 
 export const updatedUserProfile = createAction<{
-  profile: Partial<Common.User & {SeedServiceProvided:string}>;
+  profile: Partial<Common.User & {offerSeedService:string}>;
   publicKey: string;
 }>("userProfiles/profiles/update");
 
@@ -60,11 +60,11 @@ export const subscribeUserProfile = (publicKey: string) => (
           })
         );
       }
-      if (key === "SeedServiceProvided") {
+      if (key === "offerSeedService") {
         dispatch(
           updatedUserProfile({
             profile: {
-              SeedServiceProvided: data
+              offerSeedService: data
             },
             publicKey
           })

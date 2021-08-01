@@ -13,29 +13,16 @@ export const ACTIONS = {
 export const createService = (
   clear,
   encrypted,
-  serviceID
 ) => async dispatch => {
-  let id = serviceID;
-  if (serviceID) {
-    const { data } = await Http.post("/api/gun/put", {
-      path: `$user>offeredServices>${id}`,
-      value: clear
-    });
-    const { ok } = data;
-    if (!ok) {
-      return "";
-    }
-  } else {
-    const { data } = await Http.post("/api/gun/set", {
-      path: "$user>offeredServices",
-      value: clear
-    });
-    const { ok, id: newID } = data;
-    if (!ok) {
-      return "";
-    }
-    id = newID;
+  const { data } = await Http.post("/api/gun/set", {
+    path: "$user>offeredServices",
+    value: clear
+  });
+  const { ok, id: newID } = data;
+  if (!ok) {
+    return "";
   }
+  const id = newID;
 
   const all = Object.entries(encrypted).map(([name, value]) => {
     if (!value) {
@@ -56,7 +43,7 @@ export const createService = (
   if (serviceType === "torrentSeed" || serviceType === "streamSeed") {
     console.log("updating profile with service");
     await Http.post("/api/gun/put", {
-      path: `$user>Profile>SeedServiceProvided`,
+      path: `$user>Profile>offerSeedService`,
       value: id
     });
   }
@@ -74,37 +61,28 @@ export const deleteService = id => async dispatch => {
     value: null
   });
 };
-
-export const subscribeMyServices = () => dispatch => {
-  const query = `$user::offeredServices::on`;
+export const subscribeMyServices = (providedServiceId) => dispatch => {
+  const query = `$user::offeredServices>${providedServiceId}::on`;
+  console.log(query)
   const subscription = rifle({
     query,
-    publicKey: "",
+    publicKey: "me",
     reconnect: false,
-    onData: async services => {
-      const servicesEntries = Object.entries(services);
-      console.log(servicesEntries);
 
-      servicesEntries.forEach(async ([id]) => {
-        if (id === "_") {
-          return;
-        }
-        const { data: service } = await Http.get(
-          `/api/gun/user/load/offeredServices>${id}`
-        );
-        console.log(service.data);
-        if (service.data === null) {
-          dispatch({
-            type: ACTIONS.REMOVE_MY_SERVICE,
-            data: id
-          });
-          return;
-        }
+    onData: async (serviceNode, id) => {
+      console.log(serviceNode)
+      if (serviceNode === null) {
         dispatch({
-          type: ACTIONS.ADD_MY_SERVICE,
-          data: { id, serviceInfo: service.data }
+          type: ACTIONS.REMOVE_MY_SERVICE,
+          data: id
         });
+        return;
+      }
+      dispatch({
+        type: ACTIONS.ADD_MY_SERVICE,
+        data: { id, serviceInfo: serviceNode }
       });
+      console.log("got service data")
     }
   });
 

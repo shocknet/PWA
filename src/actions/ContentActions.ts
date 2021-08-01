@@ -40,7 +40,7 @@ export const setSeedProviderPub = (
       value = "";
     }
     await Http.post("/api/gun/put", {
-      path: "$user>seedServiceProviderPubKey",
+      path: "$user>preferencesSeedServiceProvider",
       value
     });
   }
@@ -58,7 +58,7 @@ export const setSeedInfo = (
   if (!dontBackup) {
     const infoS = JSON.stringify({ seedUrl: cleanUrl, seedToken });
     await Http.post("/api/gun/put", {
-      path: "$user>seedServiceSeedData",
+      path: "$user>preferencesSeedServiceData",
       value: {
         $$__ENCRYPT__FOR: "me",
         value: infoS

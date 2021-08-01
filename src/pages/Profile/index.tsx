@@ -69,7 +69,13 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
 
   useEffect(() => {
-    const subscription = subscribeMyServices()(dispatch);
+    console.log(user)
+    //@ts-expect-error
+    if(!user.offerSeedService){
+      return
+    }
+    //@ts-expect-error
+    const subscription = subscribeMyServices(user.offerSeedService)(dispatch);
 
     return rifleCleanup(subscription);
   }, [dispatch]);
@@ -348,9 +354,13 @@ const ProfilePage = () => {
     });
   };
   const renderServices = () => {
-    console.log(myServices);
+    /*@ts-expect-error*/
+    if(!user.offerSeedService){
+      return
+    }
     return Object.entries(myServices)
-      .filter(([id, service]) => !!service)
+      /*@ts-expect-error*/
+      .filter(([id, service]) => !!service && user.offerSeedService === id)
       .map(([id, serv]) => {
         const service = serv as Record<string, string>;
         const deleteCB = () => {

@@ -39,7 +39,7 @@ const ContentHostInput = () => {
     }
     if (
       // @ts-expect-error
-      provProfile.SeedServiceProvided !== providerProfile.SeedServiceProvided
+      provProfile.offerSeedService !== providerProfile.offerSeedService
     ) {
       setProviderProfile(provProfile);
       return;
@@ -50,9 +50,9 @@ const ContentHostInput = () => {
     if (!providerProfile) {
       return;
     }
-    const { SeedServiceProvided } = providerProfile;
-    if (SeedServiceProvided !== providedService) {
-      setProvidedService(SeedServiceProvided);
+    const { offerSeedService } = providerProfile;
+    if (offerSeedService !== providedService) {
+      setProvidedService(offerSeedService);
     }
   }, [providerProfile, providedService, setProvidedService]);
   //effect to populate the hosts
