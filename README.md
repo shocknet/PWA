@@ -2,8 +2,8 @@
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/shocknet/PWA?style=flat-square)](https://github.com/shocknet/PWA/commits/master)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/Shockwallet)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/shockbtc)
+[![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/LightningPage)
+[![Twitter Follow](https://img.shields.io/twitter/follow/MyLightningPage?style=flat-square)](https://twitter.com/mylightningpage)
 
 ![Banner](https://pbs.twimg.com/profile_banners/971667736978972673/1598594052)
 Lightning.Page runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
@@ -56,4 +56,4 @@ Make a PR or send sats to: `bc1q2pn0rf92mt3pznjxq9gg3wkmjv0cmuy88tmfl8`
 
 **If you find any issues with this project, or would like to suggest an enhancement, please [tell us](https://github.com/shocknet/PWA/issues).**
 
-© 2021 [Shock Network, Inc.](https://shockwallet.app)
+© 2021 [Shock Network, Inc.](https://shock.network)
