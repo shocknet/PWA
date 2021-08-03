@@ -3,7 +3,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/shocknet/PWA?style=flat-square)](https://github.com/shocknet/PWA/commits/master)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/LightningPage)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/shockbtc)
+[![Twitter Follow](https://img.shields.io/twitter/follow/MyLightningPage?style=flat-square)](https://twitter.com/mylightningpage)
 
 ![Banner](https://pbs.twimg.com/profile_banners/971667736978972673/1598594052)
 Lightning.Page runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
