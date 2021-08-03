@@ -132,7 +132,7 @@ const ScanStep = () => {
               rel="noreferrer"
             >
               <img
-                alt="Laptop running Shockwizard and phone running Shockwallet"
+                alt="Laptop running Shockwizard and phone running Lightning.Page"
                 className="w-100"
                 src="https://raw.githubusercontent.com/shocknet/Wizard/master/wizardSS_900tr.png"
               ></img>

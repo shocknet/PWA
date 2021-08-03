@@ -420,7 +420,7 @@ const PublishContentPage = () => {
         <input
           type="text"
           name="title"
-          placeholder="How I monetized my content with ShockWallet"
+          placeholder="How I monetized my content with Lightning.Page"
           value={title}
           onChange={onInputChange}
           className={c("input-field", titleMissing && "input-field-error")}
@@ -525,7 +525,7 @@ const PublishContentPage = () => {
         </div>
         <textarea
           name="description"
-          placeholder="I made a quick video to show you guys how easy it is to run your own social platform on ShockWallet, and start earning Bitcoin"
+          placeholder="I made a quick video to show you guys how easy it is to run your own social platform on Lightning.Page, and start earning Bitcoin"
           rows={3}
           value={description}
           onChange={onInputChange}

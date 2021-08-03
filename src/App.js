@@ -303,7 +303,7 @@ const App = () => {
     closeDialog(dialogHasCallback)(dispatch);
   }, [dialogHasCallback, closeDialog, dispatch]);
   return (
-    <FullHeight className="ShockWallet">
+    <FullHeight className="root-container">
       {showFloatingPlayer && (
         <div id="floatyVideo" className="floaty-container">
           <i id="floatyVideoHeader" className="fas fa-grip-vertical"></i>

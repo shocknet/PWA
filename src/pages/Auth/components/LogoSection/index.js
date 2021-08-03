@@ -4,7 +4,7 @@ import "./css/index.scoped.css";
 
 const LogoSection = () => (
   <div className="auth-logo-header">
-    <img className="auth-logo" src={shockLogo} alt="ShockWallet Logo" />
+    <img className="auth-logo" src={shockLogo} alt="Lightning.Page Logo" />
   </div>
 );
 

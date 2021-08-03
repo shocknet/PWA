@@ -260,7 +260,7 @@ const OtherUserPage = () => {
           <div>
             <p className={styles["profile-name"]}>{user.displayName}</p>
             <p className={styles["profile-desc"]}>
-              {user.bio || "Shockwallet user"}
+              {user.bio || "Lightning.Page user"}
             </p>
 
             <div className={gStyles.rowCentered}>
