@@ -56,4 +56,4 @@ Make a PR or send sats to: `bc1q2pn0rf92mt3pznjxq9gg3wkmjv0cmuy88tmfl8`
 
 **If you find any issues with this project, or would like to suggest an enhancement, please [tell us](https://github.com/shocknet/PWA/issues).**
 
-© 2021 [Shock Network, Inc.](https://shockwallet.app)
+© 2021 [Shock Network, Inc.](https://shock.network)
