@@ -5,7 +5,7 @@
 [![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/LightningPage)
 [![Twitter Follow](https://img.shields.io/twitter/follow/MyLightningPage?style=flat-square)](https://twitter.com/mylightningpage)
 
-![Banner](https://pbs.twimg.com/profile_banners/971667736978972673/1598594052)
+![Banner](https://pbs.twimg.com/profile_banners/1413930674986364934/1628017317)
 Lightning.Page runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
 
 Running a node for Lightning.Page requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
