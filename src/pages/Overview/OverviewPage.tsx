@@ -193,7 +193,7 @@ const INTRO_MODAL_STYLE = {
 
 const REACT_APP_INTRO_PARAGRAPHS_HOSTING = [
   "If you bought a node and didn't get a channel please email us or contact us through telegram",
-  'Telegram: <a href="https://t.me/Shockwallet">click here</a>',
+  'Telegram: <a href="https://t.me/LightningPage">click here</a>',
   'email: <a href="mailto:fake@email.com">fake@email.com</a>'
 ];
 const REACT_APP_INTRO_PARAGRAPHS_DEFAULT = ["Welcome to Shocknet"];
