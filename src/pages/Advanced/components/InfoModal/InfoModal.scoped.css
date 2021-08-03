@@ -41,10 +41,8 @@
 }
 
 .footer {
-  align-self: center;
   text-align: center;
   background-color: var(--dark-blue);
-  width: 100%;
   padding: 32px 0px;
   margin-left: unset;
   margin-right: unset;
@@ -71,5 +69,5 @@
 }
 
 .warning {
-  color: var(--light-blue);
+  color: var(--hovered-blue);
 }

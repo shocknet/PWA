@@ -1,6 +1,7 @@
 # Shockwallet Alpha
+
 [![GitHub last commit](https://img.shields.io/github/last-commit/shocknet/PWA?style=flat-square)](https://github.com/shocknet/PWA/commits/master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/Shockwallet)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/shockbtc)
 
@@ -13,30 +14,28 @@ If you don't have a node already, hosting is offered in the app, or a _Node inst
 
 ## Features:
 
-
-- [X] Basic LND Channel and Peer Management
+- [x] Basic LND Channel and Peer Management
 - [ ] Fee Control from [mempool.space](https://github.com/mempool/mempool) source
-- [X] LNURL-Pay, Withdraw and Channel
-- [X] Social Personas, Presence Indication and Feeds
-- [X] E2EEncrypted Chat/Messaging
-- [X] Automatic Seed and Channel Backup
-- [X] Sender-Initiated Payments (Keysend-less)
+- [x] LNURL-Pay, Withdraw and Channel
+- [x] Social Personas, Presence Indication and Feeds
+- [x] E2EEncrypted Chat/Messaging
+- [x] Automatic Seed and Channel Backup
+- [x] Sender-Initiated Payments (Keysend-less)
 - [ ] Provider-less Notifications with node monitor (SSL required)
-- [X] LND 12 with Keysend & MPP (sharded payments)
-- [X] Invoice liquidity intercept
-- [X] Torrent Content Streaming
-- [X] Torrent Publishing and Seed Service
-- [X] Livestream from Broadcaster
-- [X] Guest Webclient (prototype)
-- [ ] Advanced Coin Control and PSBT 
+- [x] LND 12 with Keysend & MPP (sharded payments)
+- [x] Invoice liquidity intercept
+- [x] Torrent Content Streaming
+- [x] Torrent Publishing and Seed Service
+- [x] Livestream from Broadcaster
+- [x] Guest Webclient (prototype)
+- [ ] Advanced Coin Control and PSBT
 - [ ] Advanced Channel Management
 - [ ] Automatic Swaps
 - [ ] Portable LNURL-Auth Keyring
 
-
 ## Try it out
 
-Run it directly from Github: [https://wallet.shock.pub](https://wallet.shock.pub) 
+Run it directly from Github: [https://wallet.shock.pub](https://wallet.shock.pub)
 
 ### Or build from source
 
@@ -46,7 +45,8 @@ cd PWA
 npm install
 npm start
 ```
-To work properly, Shockwallet should be served with an SSL certificate. 
+
+To work properly, Shockwallet should be served with an SSL certificate.
 
 #### Contributions:
 
