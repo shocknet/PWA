@@ -11,7 +11,7 @@
   background-color: var(--background);
 }
 
-.ShockWallet {
+.root-container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -173,7 +173,7 @@ a.bottom-nav-btn.active-nav-btn {
     height: 100% !important;
   }
 
-  .ShockWallet {
+  .root-container {
     flex: 1;
     height: 100% !important;
   }

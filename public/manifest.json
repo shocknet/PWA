@@ -4,8 +4,8 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "Shockwallet",
-  "short_name": "Shockwallet",
+  "name": "Lightning.Page",
+  "short_name": "Lightning.Page",
   "description": "Non-custodial, decentralized super-app",
   "icons": [
     {

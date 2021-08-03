@@ -528,7 +528,7 @@ const ProfilePage = () => {
                 className={c(gStyles.unselectable, "profile-desc")}
                 onClick={toggleBioModal}
               >
-                {newBioIfBeingSaved || user.bio || "Shockwallet user"}
+                {newBioIfBeingSaved || user.bio || "Lightning.Page user"}
               </p>
               <div className="config-btn" onClick={toggleConfigModal}>
                 <i className="config-btn-icon icon-solid-spending-rule" />

@@ -1,4 +1,4 @@
-# Shockwallet Alpha
+# Lightning.Page Alpha
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/shocknet/PWA?style=flat-square)](https://github.com/shocknet/PWA/commits/master)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
@@ -6,9 +6,9 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/shockbtc)
 
 ![Banner](https://pbs.twimg.com/profile_banners/971667736978972673/1598594052)
-Shockwallet runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
+Lightning.Page runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
 
-Running a node for Shockwallet requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
+Running a node for Lightning.Page requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
 
 If you don't have a node already, hosting is offered in the app, or a _Node installer available at [shocknet/Wizard](https://github.com/shocknet/wizard)_
 
@@ -46,7 +46,7 @@ npm install
 npm start
 ```
 
-To work properly, Shockwallet should be served with an SSL certificate.
+To work properly, Lightning.Page should be served with an SSL certificate.
 
 #### Contributions:
 

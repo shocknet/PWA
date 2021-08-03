@@ -15,8 +15,8 @@ const TiersStep = () => {
     <div className="tiers-step-container">
       <p className="tiers-title">Hosted Nodes</p>
       <p className="tiers-desc">
-        Support development of Shockwallet and receive a hosted node, including
-        a Lightning Channel from our highly connected router.
+        Support development of Lightning.Page and receive a hosted node,
+        including a Lightning Channel from our highly connected router.
       </p>
       <div className="tiers-container">
         <div className="w-100 d-flex flex-align-center flex-justify-center">
