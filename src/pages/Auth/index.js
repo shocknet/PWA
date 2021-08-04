@@ -184,7 +184,7 @@ const AuthPage = () => {
   const clearCache = useCallback(() => {
     dispatch(logout());
     handleBackOnError();
-  }, [dispatch, logout, handleBackOnError]);
+  }, [dispatch, handleBackOnError]);
   return (
     <DialogPageContainer
       disableNav
