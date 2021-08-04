@@ -156,6 +156,8 @@ const OverviewPage = () => {
         contentStyle={INTRO_MODAL_STYLE}
         disableBackdropClose
         noFullWidth
+        blueBtn="Let's Go"
+        onClickBlueBtn={dismissIntro}
       >
         {(() => {
           let paragraphs: string[] = [];
