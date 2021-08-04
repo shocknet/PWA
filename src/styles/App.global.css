@@ -106,11 +106,12 @@ a.bottom-nav-btn.active-nav-btn {
   align-items: center;
   justify-content: center;
   padding: 13px;
-  border-radius: 6px;
+  border-radius: 0px;
   color: white;
   font-weight: bold;
   margin-bottom: 15px;
   background-color: var(--failure-red);
+  font-size: 12px;
 }
 
 .inline-link {
