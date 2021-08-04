@@ -155,6 +155,7 @@ const OverviewPage = () => {
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
         disableBackdropClose
+        noFullWidth
       >
         {(() => {
           let paragraphs: string[] = [];
