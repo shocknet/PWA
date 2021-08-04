@@ -1,4 +1,4 @@
-import "../../css/index.scoped.css";
+import "./ModalSubmit.scoped.css";
 
 const ModalSubmit = ({ text = "Submit", onClick }) => {
   return (
