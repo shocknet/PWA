@@ -12,7 +12,8 @@ const Modal = ({
   children,
   contentStyle = {},
   disableBackdropClose = false,
-  forceRenderTitleBar = false
+  forceRenderTitleBar = false,
+  hideXBtn = false
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -30,6 +31,7 @@ const Modal = ({
           title={modalTitle}
           toggleModal={closeModal}
           forceRenderTitleBar={forceRenderTitleBar}
+          hideXBtn={hideXBtn}
         />
         <ModalContent style={contentStyle}>{children}</ModalContent>
       </div>
