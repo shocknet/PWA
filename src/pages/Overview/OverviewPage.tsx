@@ -152,7 +152,6 @@ const OverviewPage = () => {
           !fetchingDeploymentType &&
           !(introDismissed || sessionStorage.getItem("introDismissed"))
         }
-        forceRenderTitleBar
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
         disableBackdropClose
