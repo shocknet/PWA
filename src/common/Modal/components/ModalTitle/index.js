@@ -1,7 +1,8 @@
-import React from "react";
+import * as Utils from "../../../../utils";
+
 import "./css/index.scoped.css";
 
-const ModalTitle = ({ title, toggleModal }) =>
+const ModalTitle = ({ title = "", toggleModal = Utils.EMPTY_FN }) =>
   title ? (
     <div className="head">
       <p className="head-title">{title}</p>
