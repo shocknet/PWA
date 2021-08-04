@@ -57,7 +57,12 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   }, [tipData]);
 
   return (
-    <Modal toggleModal={toggleOpen} modalOpen={!!tipData} modalTitle="Send Tip">
+    <Modal
+      toggleModal={toggleOpen}
+      modalOpen={!!tipData}
+      modalTitle="Send Tip"
+      noFullWidth
+    >
       {tipSuccess ? (
         <div className="tip-modal-success m-1">
           <i className="tip-success-icon fas fa-check-circle"></i>
