@@ -703,25 +703,18 @@ const ProfilePage = () => {
             contentStyle={{
               padding: "2em 2em"
             }}
+            blueBtn={!deletePostModalLoading && "Cancel"}
+            disableBlueBtn={deletePostModalLoading}
+            onClickBlueBtn={closeDeleteModal}
+            redBtn={!deletePostModalLoading && "Delete"}
+            disableRedBtn={deletePostModalLoading}
+            onClickRedBtn={deletePost}
+            noFullWidth
           >
-            <div>You sure delete</div>
-            {deletePostModalLoading && <Loader />}
             {!deletePostModalLoading && (
-              <div className="flex-center" style={{ marginTop: "auto" }}>
-                <button
-                  onClick={closeDeleteModal}
-                  className="shock-form-button m-1"
-                >
-                  CANCEL
-                </button>
-                <button
-                  onClick={deletePost}
-                  className="shock-form-button-confirm m-1"
-                >
-                  DELETE
-                </button>
-              </div>
+              <span className="text-align-center">Are you sure?</span>
             )}
+            {deletePostModalLoading && <Loader />}
           </Modal>
           <AddBtn
             onClick={toggleModal}
