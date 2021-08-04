@@ -79,11 +79,18 @@
 
 .submit-btn:hover {
   background-color: var(--hovered-blue);
-  cursor: pointer;
 }
 
 .submit-btn:active {
   opacity: 0.7;
+}
+
+.submit-btn:disabled {
+  background-color: var(--dark-gray);
+}
+
+.submit-btn:disabled {
+  color: var(--gray);
 }
 
 .form .form-error {
