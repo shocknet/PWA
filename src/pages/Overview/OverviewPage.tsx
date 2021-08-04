@@ -152,10 +152,12 @@ const OverviewPage = () => {
           !fetchingDeploymentType &&
           !(introDismissed || sessionStorage.getItem("introDismissed"))
         }
-        modalTitle="Welcome"
         toggleModal={dismissIntro}
         contentStyle={INTRO_MODAL_STYLE}
         disableBackdropClose
+        noFullWidth
+        blueBtn="Let's Go"
+        onClickBlueBtn={dismissIntro}
       >
         {(() => {
           let paragraphs: string[] = [];

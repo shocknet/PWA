@@ -1,11 +1,9 @@
-import React from "react";
-import "./css/index.scoped.css";
-import "../../css/index.scoped.css"
+import "./ModalSubmit.scoped.css";
 
 const ModalSubmit = ({ text = "Submit", onClick }) => {
   return (
     <div className="submit-btn" onClick={onClick}>
-      <p className="submit-btn-text">{text}</p>
+      <p>{text}</p>
     </div>
   );
 };

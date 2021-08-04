@@ -257,7 +257,11 @@ i.fas.fa-play {
   margin-left: 0.3rem;
 }
 .liveIcon {
-  color:rgba(240, 52, 52, 1)
+  color: rgba(240, 52, 52, 1);
+}
+
+.trash-icon:hover {
+  cursor: pointer;
 }
 
 @media only screen and (max-width: 500px) {

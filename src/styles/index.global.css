@@ -139,6 +139,7 @@
   --mist-blue-rgb: 39, 69, 92;
   --failure-red: #e23e3e;
   --failure-red-rgb: 226, 62, 62;
+  --failure-red-hovered: #ef6a6a;
 
   --message-timestamp-safe-area: 50px;
 }
@@ -275,13 +276,13 @@ p.shock-form-button-text {
   margin-top: 5em;
 }
 
-.m-l-1{
+.m-l-1 {
   margin-left: 1em;
 }
-.m-r-1{
+.m-r-1 {
   margin-right: 1em;
 }
-.p-1{
+.p-1 {
   padding: 1em;
 }
 
@@ -373,10 +374,10 @@ p.shock-form-button-text {
   text-align: left;
 }
 .btn-primary:hover {
-  color:black
+  color: black;
 }
 .btn-secondary:hover {
-  color:var(--main-blue)
+  color: var(--main-blue);
 }
 .btn-secondary {
   background-color: transparent;

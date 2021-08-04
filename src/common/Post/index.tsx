@@ -327,7 +327,7 @@ const Post = ({
           </div>
         </div>
         {openDeleteModal && (
-          <i className="fas fa-trash" onClick={deletePost}></i>
+          <i className="fas fa-trash trash-icon" onClick={deletePost}></i>
         )}
       </div>
 

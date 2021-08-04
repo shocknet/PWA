@@ -50,6 +50,10 @@
   transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
+.container-no-full-width {
+  max-width: 320px;
+}
+
 .form {
   width: 100%;
   padding-top: 15px;
@@ -59,31 +63,61 @@
   padding: 17px 25px;
 }
 
-.submit-container {
-  margin-top: 15px;
+.color-buttons {
+  display: flex;
+  flex-direction: row;
 }
 
-.submit-btn {
-  width: 100%;
-  border-radius: 0 0 10px 10px;
+.color-buttons > button:first-child {
+  border-bottom-left-radius: 15px;
+}
+
+.color-buttons > button:last-child {
+  border-bottom-right-radius: 15px;
+}
+
+.color-btn {
+  flex-grow: 1;
   border: 0;
-  background-color: var(--main-blue);
   color: white;
   padding: 15px 0;
   font-size: 16px;
-  cursor: pointer;
   text-align: center;
   font-weight: bold;
   opacity: 1;
   transition: all 0.25s ease;
 }
 
-.submit-btn:hover {
+.color-btn:enabled:hover {
+  cursor: pointer;
+}
+
+.color-btn:active {
+  opacity: 0.7;
+}
+
+.color-btn:disabled {
+  background-color: var(--dark-gray);
+}
+
+.color-btn:disabled {
+  color: var(--gray);
+}
+
+.blue-btn {
+  background-color: var(--main-blue);
+}
+
+.blue-btn:enabled:hover {
   background-color: var(--hovered-blue);
 }
 
-.submit-btn:active {
-  opacity: 0.7;
+.red-btn {
+  background-color: var(--failure-red);
+}
+
+.red-btn:enabeld:hover {
+  background-color: var(--failure-red-hovered);
 }
 
 .form .form-error {
