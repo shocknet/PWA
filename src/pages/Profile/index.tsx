@@ -69,10 +69,10 @@ const ProfilePage = () => {
   const user = useSelector(Store.selectSelfUser);
 
   useEffect(() => {
-    console.log(user)
+    console.log(user);
     //@ts-expect-error
-    if(!user.offerSeedService){
-      return
+    if (!user.offerSeedService) {
+      return;
     }
     //@ts-expect-error
     const subscription = subscribeMyServices(user.offerSeedService)(dispatch);
@@ -355,36 +355,38 @@ const ProfilePage = () => {
   };
   const renderServices = () => {
     /*@ts-expect-error*/
-    if(!user.offerSeedService){
-      return
+    if (!user.offerSeedService) {
+      return;
     }
-    return Object.entries(myServices)
-      /*@ts-expect-error*/
-      .filter(([id, service]) => !!service && user.offerSeedService === id)
-      .map(([id, serv]) => {
-        const service = serv as Record<string, string>;
-        const deleteCB = () => {
-          console.log("delete wtf");
-          deleteService(id)(dispatch);
-        };
-        return (
-          <div className="post" key={id}>
-            <strong>Service ID</strong>
-            <p>{id}</p>
-            <strong>Service Tpe</strong>
-            <p>{service.serviceType || ""}</p>
-            <strong>Service Title</strong>
-            <p>{service.serviceTitle || ""}</p>
-            <strong>Service Description</strong>
-            <p>{service.serviceDescription || ""}</p>
-            <strong>Service Condition</strong>
-            <p>{service.serviceCondition || ""}</p>
-            <strong>Service Price</strong>
-            <p>{service.servicePrice || ""}</p>
-            <button onClick={deleteCB}>DELETE SERVICE</button>
-          </div>
-        );
-      });
+    return (
+      Object.entries(myServices)
+        /*@ts-expect-error*/
+        .filter(([id, service]) => !!service && user.offerSeedService === id)
+        .map(([id, serv]) => {
+          const service = serv as Record<string, string>;
+          const deleteCB = () => {
+            console.log("delete wtf");
+            deleteService(id)(dispatch);
+          };
+          return (
+            <div className="post" key={id}>
+              <strong>Service ID</strong>
+              <p>{id}</p>
+              <strong>Service Tpe</strong>
+              <p>{service.serviceType || ""}</p>
+              <strong>Service Title</strong>
+              <p>{service.serviceTitle || ""}</p>
+              <strong>Service Description</strong>
+              <p>{service.serviceDescription || ""}</p>
+              <strong>Service Condition</strong>
+              <p>{service.serviceCondition || ""}</p>
+              <strong>Service Price</strong>
+              <p>{service.servicePrice || ""}</p>
+              <button onClick={deleteCB}>DELETE SERVICE</button>
+            </div>
+          );
+        })
+    );
   };
   //#endregion deleteModal------------------------------------------------------ //
   //#region displayName ----------------------------------------------------- //
