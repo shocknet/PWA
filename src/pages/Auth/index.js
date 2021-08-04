@@ -55,7 +55,7 @@ const AuthPage = () => {
         ])
       );
     }
-  }, []);
+  }, [authToken, dispatch]);
 
   const updateRetryHostIP = useCallback(
     e => {
