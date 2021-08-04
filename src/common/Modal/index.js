@@ -11,7 +11,8 @@ const Modal = ({
   modalTitle = "",
   children,
   contentStyle = {},
-  disableBackdropClose = false
+  disableBackdropClose = false,
+  forceRenderTitleBar = false
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -25,7 +26,11 @@ const Modal = ({
     <div className={classNames({ modal: true, open: modalOpen })}>
       <div className="backdrop" onClick={handleBackdropClick} />
       <div className="container">
-        <ModalTitle title={modalTitle} toggleModal={closeModal} />
+        <ModalTitle
+          title={modalTitle}
+          toggleModal={closeModal}
+          forceRenderTitleBar={forceRenderTitleBar}
+        />
         <ModalContent style={contentStyle}>{children}</ModalContent>
       </div>
     </div>
