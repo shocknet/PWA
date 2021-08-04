@@ -50,6 +50,10 @@
   transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
+.container-no-full-width {
+  max-width: 320px;
+}
+
 .form {
   width: 100%;
   padding-top: 15px;

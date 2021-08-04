@@ -13,7 +13,8 @@ const Modal = ({
   contentStyle = {},
   disableBackdropClose = false,
   forceRenderTitleBar = false,
-  hideXBtn = false
+  hideXBtn = false,
+  noFullWidth = false
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -26,7 +27,12 @@ const Modal = ({
   return (
     <div className={classNames({ modal: true, open: modalOpen })}>
       <div className="backdrop" onClick={handleBackdropClick} />
-      <div className="container">
+      <div
+        className={classNames({
+          container: true,
+          "container-no-full-width": noFullWidth
+        })}
+      >
         <ModalTitle
           title={modalTitle}
           toggleModal={closeModal}
