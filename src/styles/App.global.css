@@ -194,3 +194,7 @@ a.bottom-nav-btn.active-nav-btn {
 .red-border {
   border-color: var(--failure-red) !important;
 }
+
+.text-align-center {
+  text-align: center;
+}
