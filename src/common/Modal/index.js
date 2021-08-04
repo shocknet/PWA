@@ -19,7 +19,10 @@ const Modal = ({
   noFullWidth = false,
   blueBtn = "",
   disableBlueBtn = false,
-  onClickBlueBtn = Utils.EMPTY_FN
+  onClickBlueBtn = Utils.EMPTY_FN,
+  redBtn = "",
+  disableRedBtn = false,
+  onClickRedBtn = Utils.EMPTY_FN
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -46,15 +49,27 @@ const Modal = ({
         />
         <ModalContent style={contentStyle}>{children}</ModalContent>
 
-        {blueBtn && (
-          <button
-            disabled={disableBlueBtn}
-            className="submit-btn"
-            onClick={onClickBlueBtn}
-          >
-            {blueBtn}
-          </button>
-        )}
+        <div className="color-buttons">
+          {blueBtn && (
+            <button
+              disabled={disableBlueBtn}
+              className={classNames("color-btn", "blue-btn")}
+              onClick={onClickBlueBtn}
+            >
+              {blueBtn}
+            </button>
+          )}
+
+          {redBtn && (
+            <button
+              disabled={disableRedBtn}
+              className={classNames("color-btn", "red-btn")}
+              onClick={onClickRedBtn}
+            >
+              {redBtn}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
