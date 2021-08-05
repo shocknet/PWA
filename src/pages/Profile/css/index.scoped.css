@@ -63,6 +63,7 @@
   opacity: 0.5;
   font-size: 10px;
   margin-left: 8px;
+  transition: all 0.25s ease;
 }
 
 .profile-name:hover .pencil-btn {
