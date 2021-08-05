@@ -525,12 +525,16 @@ const ProfilePage = () => {
                 onClick={toggleDnModal}
               >
                 {newDnIfBeingSaved || displayName}
+
+                <i className="fas fa-pencil-alt pencil-btn" />
               </p>
               <p
                 className={c(gStyles.unselectable, "profile-desc")}
                 onClick={toggleBioModal}
               >
                 {newBioIfBeingSaved || user.bio || "Lightning.Page user"}
+
+                <i className="fas fa-pencil-alt pencil-btn" />
               </p>
               <div className="config-btn" onClick={toggleConfigModal}>
                 <i className="config-btn-icon icon-solid-spending-rule" />
