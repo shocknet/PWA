@@ -17,10 +17,33 @@
   flex-shrink: 0;
 }
 
+.profile-cover-has-cover {
+  background-color: var(--body-background);
+}
+
+.profile-cover:hover {
+  cursor: pointer;
+}
+
 .profile-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: all 0.25s ease;
+}
+
+.profile-cover:hover img {
+  opacity: 0.5;
+}
+
+.cover-pencil {
+  opacity: 0.5;
+  font-size: 16px;
+  transition: all 0.25s ease;
+}
+
+.profile-cover:hover .cover-pencil {
+  opacity: 1;
 }
 
 .profile-info-container {
@@ -45,10 +68,35 @@
   line-height: 31px;
 }
 
+.profile-name:hover {
+  cursor: pointer;
+}
+
 .profile-desc {
   font-size: 12px;
   margin-bottom: 4px;
   line-height: 20px;
+}
+
+.profile-desc:hover {
+  cursor: pointer;
+}
+
+.pencil-btn {
+  opacity: 0.5;
+  font-size: 10px;
+  margin-left: 8px;
+  transition: all 0.25s ease;
+}
+
+.profile-name:hover .pencil-btn {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.profile-desc:hover .pencil-btn {
+  cursor: pointer;
+  opacity: 1;
 }
 
 .config-btn {

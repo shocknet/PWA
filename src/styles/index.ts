@@ -166,6 +166,8 @@ export const absoluteStickToLeft = styles["absolute-stick-to-left"];
 
 export const absoluteStickToRight = styles["absolute-stick-to-right"];
 
+export const absoluteDeadCenter = styles["absolute-dead-center"];
+
 /* -------------------------------------------------------------------------- */
 
 export const opacityFull = styles["opacity-full"];
