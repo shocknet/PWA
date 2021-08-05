@@ -1,4 +1,9 @@
+.container {
+  transition: opacity 0.25s ease;
+}
+
 .container:hover {
+  opacity: 0.5;
   cursor: pointer;
 }
 
