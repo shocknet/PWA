@@ -494,13 +494,29 @@ const ProfilePage = () => {
     <>
       <div className="page-container profile-page">
         <div className="profile-container">
-          <div className="profile-cover" onClick={onPressHeader}>
+          <div
+            className={c({
+              "profile-cover": true,
+              [gStyles.relative]: true,
+              "profile-cover-has-cover": !!user.header
+            })}
+            onClick={onPressHeader}
+          >
             {user.header && (
               <img
                 alt="User set profile header."
                 src={`data:image/jpeg;base64,${user.header}`}
               />
             )}
+
+            <i
+              className={c(
+                gStyles.absoluteDeadCenter,
+                "fas",
+                "fa-pencil-alt",
+                "cover-pencil"
+              )}
+            />
           </div>
           <div className="profile-info-container">
             <div
