@@ -1,14 +1,10 @@
-// @ts-check
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import Modal from "../../../../common/Modal";
-import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import Loader from "../../../../common/Loader";
 import "./css/index.scoped.css";
 import { Http } from "../../../../utils";
 
 const ShareModal = ({ shareData, toggleOpen }) => {
-  const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -18,19 +14,19 @@ const ShareModal = ({ shareData, toggleOpen }) => {
       e.preventDefault();
       try {
         setLoading(true);
-        const {postID:id,publicKey} = shareData
+        const { postID: id, publicKey } = shareData;
         const sharedPostRaw = {
           originalAuthor: publicKey,
-          shareDate: Date.now(),
-        }
-        const {data} = await Http.post(`/api/gun/put`, {
+          shareDate: Date.now()
+        };
+        const { data } = await Http.post(`/api/gun/put`, {
           path: `$user>sharedPosts>${id}`,
-          value: sharedPostRaw,
-        })
-        if(data.ok){
-          setSuccess(true)
+          value: sharedPostRaw
+        });
+        if (data.ok) {
+          setSuccess(true);
         } else {
-          setError("Share operation failed")
+          setError("Share operation failed");
         }
       } catch (err) {
         console.error(err);
@@ -38,8 +34,12 @@ const ShareModal = ({ shareData, toggleOpen }) => {
         setLoading(false);
       }
     },
-    [dispatch, shareData]
+    [shareData]
   );
+
+  const close = useCallback(() => {
+    toggleOpen(null);
+  }, [toggleOpen]);
 
   // Reset the modal's state
   useEffect(() => {
@@ -55,6 +55,14 @@ const ShareModal = ({ shareData, toggleOpen }) => {
       toggleModal={toggleOpen}
       modalOpen={!!shareData}
       modalTitle="Share post"
+      blueBtn={
+        (!loading && !error && !success && "SHARE") ||
+        ((success || error) && "OK")
+      }
+      disableBlueBtn={loading}
+      onClickBlueBtn={success || error ? close : submitShare}
+      hideXBtn={success}
+      noFullWidth
     >
       {success ? (
         <div className="tip-modal-success m-1">
@@ -63,12 +71,14 @@ const ShareModal = ({ shareData, toggleOpen }) => {
         </div>
       ) : (
         <form className="modal-form tip-form m-1" onSubmit={submitShare}>
-          {error ? <div className="form-error">{error}</div> : null}
-          {loading ? <Loader overlay text="Sharing..." /> : null}
-          <p className="tip-modal-desc m-1">
-            This post will be shared on your profile
-          </p>
-          <ModalSubmit text="SHARE" onClick={submitShare} />
+          {error ? <p className="form-error">{error}</p> : null}
+          {error && <p className="tip-modal-desc m-1">You can try again.</p>}
+          {loading ? <Loader text="Sharing..." /> : null}
+          {!error && !loading && (
+            <p className="tip-modal-desc m-1">
+              This post will be shared on your profile
+            </p>
+          )}
         </form>
       )}
     </Modal>
