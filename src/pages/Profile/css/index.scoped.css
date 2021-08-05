@@ -45,10 +45,18 @@
   line-height: 31px;
 }
 
+.profile-name:hover {
+  cursor: pointer;
+}
+
 .profile-desc {
   font-size: 12px;
   margin-bottom: 4px;
   line-height: 20px;
+}
+
+.profile-desc:hover {
+  cursor: pointer;
 }
 
 .pencil-btn {
@@ -57,8 +65,14 @@
   margin-left: 8px;
 }
 
-.pencil-btn:hover {
+.profile-name:hover .pencil-btn {
   cursor: pointer;
+  opacity: 1;
+}
+
+.profile-desc:hover .pencil-btn {
+  cursor: pointer;
+  opacity: 1;
 }
 
 .config-btn {
