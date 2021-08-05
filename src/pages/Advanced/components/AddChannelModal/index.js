@@ -2,15 +2,15 @@ import React, { useCallback, useState } from "react";
 import Modal from "../../../../common/Modal";
 import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css";
-import { connectPeer, openChannel } from "../../../../actions/WalletActions";
-import { useDispatch, useSelector } from "react-redux";
+import { openChannel } from "../../../../actions/WalletActions";
+import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import { loadFeeRates } from "../../../../actions/FeesActions";
 
 const AddChannelModal = ({ open = false, toggleModal }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [channelCapacity, setChannelCapacity] = useState("");
+  const [channelCapacity, setChannelCapacity] = React.useState("");
   const [pushAmount, setPushAmount] = useState("");
   const [publicKey, setPublicKey] = useState("");
   const [error, setError] = useState("");
