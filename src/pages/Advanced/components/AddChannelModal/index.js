@@ -5,6 +5,7 @@ import "./css/index.scoped.css";
 import { openChannel } from "../../../../actions/WalletActions";
 import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
+import Pad from "../../../../common/Pad";
 import { loadFeeRates } from "../../../../actions/FeesActions";
 
 const AddChannelModal = ({ open = false, toggleModal }) => {
@@ -48,37 +49,43 @@ const AddChannelModal = ({ open = false, toggleModal }) => {
   );
 
   return (
-    <Modal toggleModal={toggleModal} modalOpen={open} modalTitle="OPEN CHANNEL">
-      <form className="modal-form" onSubmit={onSubmit}>
+    <Modal
+      toggleModal={toggleModal}
+      modalOpen={open}
+      modalTitle="OPEN CHANNEL"
+      blueBtn={!loading && "OPEN"}
+      noFullWidth
+    >
+      <form className="container m-1" onSubmit={onSubmit}>
         {error ? <div className="form-error">{error}</div> : null}
         {loading ? <Loader overlay text="Adding Peer..." /> : null}
-        <InputGroup
-          onChange={onInputChange}
-          name="publicKey"
-          label="Node Public Key"
-          value={publicKey}
-          small
-        />
-        <InputGroup
-          onChange={onInputChange}
-          name="channelCapacity"
-          label="Channel Capacity (sats)"
-          value={channelCapacity}
-          inputMode="number"
-          small
-        />
-        <InputGroup
-          onChange={onInputChange}
-          name="pushAmount"
-          label="Push Amount (sats)"
-          value={pushAmount}
-          inputMode="number"
-          small
-        />
-        <div className="modal-submit-container">
-          <button className="modal-submit-btn" type="submit">
-            OPEN CHANNEL
-          </button>
+        <div className="inputs">
+          <InputGroup
+            onChange={onInputChange}
+            name="publicKey"
+            label="Node Public Key"
+            value={publicKey}
+            small
+          />
+          <Pad amt={16} />
+          <InputGroup
+            onChange={onInputChange}
+            name="channelCapacity"
+            label="Channel Capacity (sats)"
+            value={channelCapacity}
+            inputMode="number"
+            small
+          />
+          <Pad amt={16} />
+          <InputGroup
+            onChange={onInputChange}
+            name="pushAmount"
+            label="Push Amount (sats)"
+            value={pushAmount}
+            inputMode="number"
+            small
+          />
+          <Pad amt={16} />
         </div>
       </form>
     </Modal>
