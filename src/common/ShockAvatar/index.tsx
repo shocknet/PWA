@@ -192,7 +192,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
         className={c(
           globalStyles.colCentered,
           globalStyles.relative,
-          "cursor-pointer"
+          "container"
         )}
         onClick={onPress}
       >
@@ -221,6 +221,17 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
           <div className="user-add-btn">
             <i className="fas fa-plus" />
           </div>
+        )}
+
+        {setsAvatar && (
+          <i
+            className={c(
+              globalStyles.absoluteDeadCenter,
+              "fas",
+              "fa-pencil-alt",
+              "pencil-icon"
+            )}
+          />
         )}
       </div>
 
