@@ -54,9 +54,10 @@ const AddChannelModal = ({ open = false, toggleModal }) => {
       modalOpen={open}
       modalTitle="OPEN CHANNEL"
       blueBtn={!loading && "OPEN"}
+      onClickBlueBtn={onSubmit}
       noFullWidth
     >
-      <form className="container m-1" onSubmit={onSubmit}>
+      <form className="container m-1">
         {error ? <div className="form-error">{error}</div> : null}
         {loading ? <Loader overlay text="Adding Peer..." /> : null}
         <div className="inputs">
