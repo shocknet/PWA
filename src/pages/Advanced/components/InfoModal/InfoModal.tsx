@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import * as Schema from "../../../../schema";
 import * as Utils from "../../../../utils";
-import ShockModal from "../../../../common/Modal";
+import Modal from "../../../../common/Modal";
 import Pad from "../../../../common/Pad";
 
 import "./InfoModal.scoped.css";
@@ -167,7 +167,7 @@ const InfoModal = ({ modalOpen, toggleModal }: InfoModalProps) => {
   }
 
   return (
-    <ShockModal
+    <Modal
       modalOpen={modalOpen}
       toggleModal={toggleModal}
       modalTitle="Node Info"
@@ -175,7 +175,7 @@ const InfoModal = ({ modalOpen, toggleModal }: InfoModalProps) => {
       <Pad amt={50} />
 
       {modalContent}
-    </ShockModal>
+    </Modal>
   );
 };
 
