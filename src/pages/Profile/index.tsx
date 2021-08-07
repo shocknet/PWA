@@ -649,9 +649,7 @@ const ProfilePage = () => {
           <Modal
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
-            contentStyle={{
-              padding: "2em 2em"
-            }}
+            contentClass="p-2"
           >
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
