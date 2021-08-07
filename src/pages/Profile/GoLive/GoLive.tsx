@@ -488,9 +488,7 @@ const GoLive = () => {
         <Modal
           modalOpen={promptInfo && !loading}
           toggleModal={closePrompt}
-          contentStyle={{
-            padding: "1rem"
-          }}
+          contentClass="p-1"
           blueBtn="Confirm"
           onClickBlueBtn={submitPrompt}
           forceRenderTitleBar
