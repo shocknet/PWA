@@ -492,6 +492,7 @@ const GoLive = () => {
           blueBtn="Confirm"
           onClickBlueBtn={submitPrompt}
           forceRenderTitleBar
+          noFullWidth
         >
           <p className="text-center">
             The service from the default service provider will cost:{" "}
