@@ -22,7 +22,8 @@ const Modal = ({
   onClickBlueBtn = Utils.EMPTY_FN,
   redBtn = "",
   disableRedBtn = false,
-  onClickRedBtn = Utils.EMPTY_FN
+  onClickRedBtn = Utils.EMPTY_FN,
+  contentClass = ""
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -47,7 +48,9 @@ const Modal = ({
           forceRenderTitleBar={forceRenderTitleBar}
           hideXBtn={hideXBtn}
         />
-        <ModalContent style={contentStyle}>{children}</ModalContent>
+        <ModalContent style={contentStyle} contentClass={contentClass}>
+          {children}
+        </ModalContent>
 
         <div className="color-buttons">
           {blueBtn && (

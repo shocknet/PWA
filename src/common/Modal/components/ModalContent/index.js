@@ -1,8 +1,9 @@
-// @ts-check
+import c from "classnames";
+
 import "./css/index.scoped.css";
 
-const ModalContent = ({ children, style }) => (
-  <div className="content" style={style}>
+const ModalContent = ({ children = null, style = {}, contentClass = "" }) => (
+  <div className={c("content", contentClass)} style={style}>
     {children}
   </div>
 );
