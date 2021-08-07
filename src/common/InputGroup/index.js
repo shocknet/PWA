@@ -1,18 +1,22 @@
+import React from "react";
 import classNames from "classnames";
+
+import * as Utils from "../../utils";
+
 import "./css/index.scoped.css";
 
 const InputGroup = ({
-  label,
-  name,
+  label = "",
+  name = "",
   onChange,
-  inputAction,
-  actionIcon,
+  inputAction = Utils.EMPTY_FN,
+  actionIcon = "",
   value,
-  inputMode = "text",
+  inputMode = /** @type {React.HTMLAttributes['inputMode']} */ ("text"),
   type = "text",
   element = "input",
   small = false,
-  disabled
+  disabled = false
 }) => {
   return (
     <div
