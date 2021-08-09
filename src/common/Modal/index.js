@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import classNames from "classnames";
 
 import * as Utils from "../../utils";
+import Loader from "../../common/Loader";
 
 import ModalContent from "./components/ModalContent";
 import ModalTitle from "./components/ModalTitle";
@@ -25,7 +26,8 @@ const Modal = ({
   disableRedBtn = false,
   onClickRedBtn = Utils.EMPTY_FN,
   contentClass = "",
-  error = ""
+  error = "",
+  textIfLoading = ""
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -44,6 +46,10 @@ const Modal = ({
           "container-no-full-width": noFullWidth
         })}
       >
+        {textIfLoading && (
+          <Loader overlay style={OVERLAY_STYLE} text={textIfLoading} />
+        )}
+
         <ModalTitle
           title={modalTitle}
           toggleModal={closeModal}
@@ -81,6 +87,10 @@ const Modal = ({
       </div>
     </div>
   );
+};
+
+const OVERLAY_STYLE = {
+  borderRadius: "15px"
 };
 
 export default Modal;
