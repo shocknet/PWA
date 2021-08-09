@@ -5,6 +5,7 @@ import * as Utils from "../../utils";
 
 import ModalContent from "./components/ModalContent";
 import ModalTitle from "./components/ModalTitle";
+
 import "./css/index.scoped.css";
 
 const Modal = ({
@@ -23,7 +24,8 @@ const Modal = ({
   redBtn = "",
   disableRedBtn = false,
   onClickRedBtn = Utils.EMPTY_FN,
-  contentClass = ""
+  contentClass = "",
+  error = ""
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -48,6 +50,9 @@ const Modal = ({
           forceRenderTitleBar={forceRenderTitleBar}
           hideXBtn={hideXBtn}
         />
+
+        {error && <div className={"form-error form-error-margin"}>{error}</div>}
+
         <ModalContent style={contentStyle} contentClass={contentClass}>
           {children}
         </ModalContent>
