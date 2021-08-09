@@ -366,18 +366,22 @@
 }
 
 .absolute-stick-to-top {
+  composes: absolute;
   top: 0;
 }
 
 .absolute-stick-to-bottom {
+  composes: absolute;
   bottom: 0;
 }
 
 .absolute-stick-to-left {
+  composes: absolute;
   left: 0;
 }
 
 .absolute-stick-to-right {
+  composes: absolute;
   right: 0;
 }
 
