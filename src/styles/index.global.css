@@ -285,6 +285,12 @@ p.shock-form-button-text {
 .p-1 {
   padding: 1em;
 }
+.p-1-h {
+  padding: 0 1em;
+}
+.p-1-v {
+  padding: 1em 0;
+}
 .p-2 {
   padding: 2em;
 }
