@@ -12,7 +12,7 @@ const Modal = ({
   toggleModal,
   modalTitle = "",
   children,
-  contentStyle = {},
+  contentStyle = Utils.EMPTY_OBJ,
   disableBackdropClose = false,
   forceRenderTitleBar = false,
   hideXBtn = false,
