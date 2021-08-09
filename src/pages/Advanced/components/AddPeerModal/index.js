@@ -54,6 +54,7 @@ const AddPeerModal = ({ open = false, toggleModal }) => {
       modalTitle="ADD PEER"
       blueBtn="Add Peer"
       onClickBlueBtn={onSubmit}
+      disableBlueBtn={loading}
       noFullWidth
       error={error}
       contentClass="p-1"
