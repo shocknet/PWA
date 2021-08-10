@@ -776,8 +776,13 @@ const ProfilePage = () => {
         contentStyle={bioModalStyle}
         modalOpen={bioModalOpen}
         toggleModal={toggleBioModal}
+        modalTitle="NEW BIO"
+        blueBtn="Save"
+        onClickBlueBtn={handleOkBioChange}
+        disableBlueBtn={newBio === bio || newBio === ""}
+        forceRenderTitleBar
+        noFullWidth
       >
-        <label htmlFor="newBio">New Bio</label>
         <input
           autoCapitalize="none"
           autoCorrect="off"
@@ -788,18 +793,6 @@ const ProfilePage = () => {
           onChange={handleNewBioChange}
           value={newBio}
         />
-        {newBio !== bio && newBio !== "" ? (
-          <button
-            onClick={handleOkBioChange}
-            className="shock-form-button-confirm m-1"
-          >
-            OK
-          </button>
-        ) : (
-          <button onClick={toggleBioModal} className="shock-form-button m-1">
-            GO BACK
-          </button>
-        )}
       </Modal>
       {
         //#endregion bioModal
