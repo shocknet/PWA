@@ -543,23 +543,18 @@ const PublishContentPage = () => {
         </div>
       </form>
       {promptInfo && (
-        <Modal modalOpen={promptInfo && !loading} toggleModal={closePrompt}>
-          <div style={{ padding: "1rem" }}>
-            <p>
-              The service from the default service provider will cost:{" "}
-              <strong>{promptInfo.servicePrice} sats</strong>
-            </p>
-
-            <button className="shock-form-button m-1" onClick={onDiscard}>
-              cancel
-            </button>
-            <button
-              className="shock-form-button-confirm m-1"
-              onClick={submitPrompt}
-            >
-              confirm
-            </button>
-          </div>
+        <Modal
+          modalOpen={promptInfo && !loading}
+          toggleModal={closePrompt}
+          contentClass="p-1"
+          forceRenderTitleBar
+          blueBtn="Confirm"
+          noFullWidth
+        >
+          <p className="text-align-center">
+            The service from the default service provider will cost:{" "}
+            <strong>{promptInfo.servicePrice} sats</strong>
+          </p>
         </Modal>
       )}
       <UploadThumbnail
