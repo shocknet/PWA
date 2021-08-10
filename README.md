@@ -46,7 +46,7 @@ npm install
 npm start
 ```
 
-To work properly, Lightning.Page should be served with an SSL certificate.
+To work properly, this PWA should be served with an SSL certificate.
 
 #### Contributions:
 
