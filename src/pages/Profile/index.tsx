@@ -650,6 +650,8 @@ const ProfilePage = () => {
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
             contentClass="p-2"
+            forceRenderTitleBar
+            blueBtn={somethingInsideConfigModalChanged && "Save"}
           >
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
@@ -695,25 +697,6 @@ const ProfilePage = () => {
             <label htmlFor="content-host">Content Host</label>
 
             <ContentHostInput />
-
-            <br></br>
-
-            {somethingInsideConfigModalChanged && (
-              <div className="flex-center" style={{ marginTop: "auto" }}>
-                <button
-                  onClick={onConfigCancel}
-                  className="shock-form-button m-1"
-                >
-                  CANCEL
-                </button>
-                <button
-                  onClick={onConfigSubmit}
-                  className="shock-form-button-confirm m-1"
-                >
-                  SUBMIT
-                </button>
-              </div>
-            )}
           </Modal>
 
           <Modal
