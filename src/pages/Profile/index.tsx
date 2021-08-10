@@ -747,8 +747,12 @@ const ProfilePage = () => {
         contentStyle={dnModalStyle}
         modalOpen={dnModalOpen}
         toggleModal={toggleDnModal}
+        blueBtn="Save"
+        disableBlueBtn={newDisplayName === displayName || newDisplayName === ""}
+        onClickBlueBtn={handleOkDnChange}
+        noFullWidth
+        modalTitle="NEW DISPLAY NAME"
       >
-        <label htmlFor="newDisplayName">Display Name</label>
         <input
           autoCapitalize="none"
           autoCorrect="off"
@@ -759,19 +763,6 @@ const ProfilePage = () => {
           onChange={handleNewDisplayNameChange}
           value={newDisplayName}
         />
-
-        {newDisplayName !== displayName && newDisplayName !== "" ? (
-          <button
-            onClick={handleOkDnChange}
-            className="shock-form-button-confirm m-1"
-          >
-            OK
-          </button>
-        ) : (
-          <button onClick={toggleDnModal} className="shock-form-button m-1">
-            GO BACK
-          </button>
-        )}
       </Modal>
 
       {
