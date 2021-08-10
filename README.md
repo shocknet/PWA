@@ -35,7 +35,7 @@ If you don't have a node already, hosting is offered in the app, or a _Node inst
 
 ## Try it out
 
-Run it directly from Github: [https://wallet.shock.pub](https://wallet.shock.pub)
+Run it directly from Github: [https://my.Lightning.Page](https://my.Lightning.Page
 
 ### Or build from source
 
