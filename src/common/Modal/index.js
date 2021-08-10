@@ -60,7 +60,11 @@ const Modal = ({
         {error && <div className={"form-error form-error-margin"}>{error}</div>}
 
         <ModalContent style={contentStyle} contentClass={contentClass}>
-          {children}
+          {typeof children === "string" ? (
+            <p className="text-align-center">{children}</p>
+          ) : (
+            children
+          )}
         </ModalContent>
 
         <div className="color-buttons">
