@@ -319,29 +319,26 @@ const ContentHostInputView = ({
       {/* TODO: change to global modal */}
       <Modal
         modalOpen={!!hostForErrorDialog}
-        modalTitle={
-          hosts.find(
-            h =>
-              h.publicKey === hostForErrorDialog || h.URI === hostForErrorDialog
-          )?.error
-        }
+        forceRenderTitleBar
         toggleModal={closeErrorDialog}
+        blueBtn="Retry"
+        onClickBlueBtn={handleHostRetry}
+        redBtn="Remove"
+        onClickRedBtn={handleRemovalOfHostWithError}
+        noFullWidth
+        // error="SOMETHING HAPPENED"
+        contentClass="p-1"
+        hideXBtn
       >
-        <div className={BUTTON_HOLDER_CLASS_NAME}>
-          <button
-            onClick={handleRemovalOfHostWithError}
-            className="shock-form-button m-1"
-          >
-            REMOVE
-          </button>
-
-          <button
-            onClick={handleHostRetry}
-            className="shock-form-button-confirm m-1"
-          >
-            RETRY
-          </button>
-        </div>
+        <p className="text-align-center">
+          {
+            hosts.find(
+              h =>
+                h.publicKey === hostForErrorDialog ||
+                h.URI === hostForErrorDialog
+            )?.error
+          }
+        </p>
       </Modal>
     </>
   );
