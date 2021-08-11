@@ -76,12 +76,12 @@ const Drawer = () => {
 
         <span className="drawer-commit-hash">{GitInfo().commit.shortHash}</span>
         <div className="drawer-bottom-section">
-          {/*<NavLink className="drawer-item" to="/moonpay" onClick={close}>
+          <NavLink className="drawer-item" to="/moonpay" onClick={close}>
             <div className="drawer-item-icon">
               <i className="icon-solid-help"></i>
             </div>
             <p className="drawer-item-title unselectable">Buy Bitcoins</p>
-          </NavLink>*/}
+          </NavLink>
 
           <div className="drawer-item">
             <div className="drawer-item-icon">
