@@ -12,7 +12,7 @@ const supportedFileTypes = {
     }
   },
   "image/embedded": {
-    formats: ["jpg", "png", "webp", "jpeg"],
+    formats: ["jpg", "png", "webp", "jpeg", "gif"],
     element: "img",
     options: {}
   }
