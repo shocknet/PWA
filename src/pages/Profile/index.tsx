@@ -8,7 +8,7 @@ import React, {
   InputHTMLAttributes
 } from "react";
 import { useSelector } from "react-redux";
-import QRCode from "qrcode.react";
+import QRCode, { ImageSettings } from "qrcode.react";
 import { Link } from "react-router-dom";
 import c from "classnames";
 import * as Common from "shock-common";
@@ -30,6 +30,7 @@ import ProfileDivider from "../../common/ProfileDivider";
 import Pad from "../../common/Pad";
 
 import ClipboardIcon from "../../images/clipboard.svg";
+import logoAlone from "../../images/logo-alone.png";
 import QRCodeIcon from "../../images/qrcode.svg";
 import * as Store from "../../store";
 import { rifle, rifleCleanup } from "../../utils/WebSocket";
@@ -618,6 +619,7 @@ const ProfilePage = () => {
               value={`${currWebClientPrefix}/${publicKey}`}
               size={180}
               className="profile-qrcode"
+              imageSettings={QR_IMAGE_SETTINGS}
             />
             <p className="profile-qrcode-desc">
               Other users can scan this code to contact you
@@ -841,5 +843,12 @@ const AVAILABLE_WEB_CLIENT_PREFIXES: readonly WebClientPrefix[] = [
   "https://lightning.page",
   "https://satoshi.watch"
 ];
+
+const QR_IMAGE_SETTINGS: ImageSettings = {
+  src: logoAlone,
+  height: 36,
+  width: 36,
+  excavate: true
+};
 
 export default ProfilePage;
