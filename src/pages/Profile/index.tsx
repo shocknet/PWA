@@ -614,7 +614,7 @@ const ProfilePage = () => {
           >
             <QRCode
               bgColor="#23282d"
-              fgColor="#4285b9"
+              fgColor="#64bbff"
               value={`${currWebClientPrefix}/${publicKey}`}
               size={180}
               className="profile-qrcode"
