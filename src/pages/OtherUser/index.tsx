@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import QRCode from "qrcode.react";
+import QRCode, { ImageSettings } from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
 import * as Common from "shock-common";
@@ -19,6 +19,7 @@ import ContentWall from "../../common/ContentWall";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
+import logoAlone from "../../images/logo-alone-2.png";
 import SendTipModal from "../Feed/components/SendTipModal";
 import UnlockModal from "../Feed/components/UnlockModal";
 import BuyServiceModal from "../Feed/components/BuyServiceModal";
@@ -301,6 +302,7 @@ const OtherUserPage = () => {
             value={userPublicKey}
             size={180}
             className={styles["profile-qrcode"]}
+            imageSettings={QR_IMAGE_SETTINGS}
           />
           <p className={styles["profile-qrcode-desc"]}>
             Scan this code to contact this user
@@ -342,6 +344,13 @@ const OtherUserPage = () => {
       <BottomBar />
     </div>
   );
+};
+
+const QR_IMAGE_SETTINGS: ImageSettings = {
+  src: logoAlone,
+  height: 36,
+  width: 36,
+  excavate: true
 };
 
 export default OtherUserPage;
