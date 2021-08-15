@@ -297,7 +297,7 @@ const OtherUserPage = () => {
         >
           <QRCode
             bgColor="#23282d"
-            fgColor="#4285b9"
+            fgColor="#64bbff"
             value={userPublicKey}
             size={180}
             className={styles["profile-qrcode"]}
