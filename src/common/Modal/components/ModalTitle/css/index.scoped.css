@@ -22,6 +22,8 @@
   background-color: var(--failure-red);
   transform: translate(25%, -25%);
   cursor: pointer;
+  /* Else the loading overlay covers the X button */
+  z-index: 10;
 }
 
 p.head-title {

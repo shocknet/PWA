@@ -295,6 +295,7 @@ const OtherUserPage = () => {
           contentStyle={{
             padding: "40px 30px"
           }}
+          noFullWidth
         >
           <QRCode
             bgColor="#23282d"

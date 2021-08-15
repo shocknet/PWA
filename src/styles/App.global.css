@@ -114,6 +114,11 @@ a.bottom-nav-btn.active-nav-btn {
   font-size: 12px;
 }
 
+.modal-paragraph {
+  text-align: center;
+  color: var(--text-white);
+}
+
 .inline-link {
   text-align: center;
   font-weight: 600;

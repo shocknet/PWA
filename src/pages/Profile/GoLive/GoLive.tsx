@@ -488,26 +488,16 @@ const GoLive = () => {
         <Modal
           modalOpen={promptInfo && !loading}
           toggleModal={closePrompt}
-          contentStyle={{
-            padding: "1rem"
-          }}
+          contentClass="p-1"
+          blueBtn="Confirm"
+          onClickBlueBtn={submitPrompt}
+          forceRenderTitleBar
+          noFullWidth
         >
-          <p>
+          <p className="text-center">
             The service from the default service provider will cost:{" "}
             <strong>{promptInfo.servicePrice} sats</strong>
           </p>
-
-          <div className={gStyles.rowCentered}>
-            <button className="shock-form-button m-1" onClick={closePrompt}>
-              Cancel
-            </button>
-            <button
-              className="shock-form-button-confirm m-1"
-              onClick={submitPrompt}
-            >
-              Confirm
-            </button>
-          </div>
         </Modal>
       )}
 

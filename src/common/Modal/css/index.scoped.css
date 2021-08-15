@@ -120,7 +120,6 @@
   background-color: var(--failure-red-hovered);
 }
 
-.form .form-error {
-  margin: 0 25px;
-  margin-bottom: 5px;
+.form-error-margin {
+  margin-bottom: 0 !important;
 }

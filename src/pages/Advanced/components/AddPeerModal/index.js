@@ -4,7 +4,7 @@ import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css";
 import { connectPeer } from "../../../../actions/WalletActions";
 import { useDispatch } from "react-redux";
-import Loader from "../../../../common/Loader";
+import Pad from "../../../../common/Pad";
 
 const AddPeerModal = ({ open = false, toggleModal }) => {
   const dispatch = useDispatch();
@@ -24,9 +24,16 @@ const AddPeerModal = ({ open = false, toggleModal }) => {
     }
   }, []);
 
+  React.useEffect(() => {
+    setHost("");
+    setLoading(false);
+    setError("");
+  }, [open]);
+
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       try {
         await dispatch(connectPeer({ publicKey, host }));
@@ -41,30 +48,35 @@ const AddPeerModal = ({ open = false, toggleModal }) => {
   );
 
   return (
-    <Modal toggleModal={toggleModal} modalOpen={open} modalTitle="ADD PEER">
-      <form className="modal-form" onSubmit={onSubmit}>
-        {error ? <div className="form-error">{error}</div> : null}
-        {loading ? <Loader overlay text="Adding Peer..." /> : null}
-        <InputGroup
-          onChange={onInputChange}
-          name="publicKey"
-          label="Public Key"
-          value={publicKey}
-          small
-        />
-        <InputGroup
-          onChange={onInputChange}
-          name="host"
-          label="Host IP"
-          value={host}
-          small
-        />
-        <div className="modal-submit-container">
-          <button className="modal-submit-btn" type="submit">
-            ADD PEER
-          </button>
-        </div>
-      </form>
+    <Modal
+      toggleModal={toggleModal}
+      modalOpen={open}
+      modalTitle="ADD PEER"
+      blueBtn="Add Peer"
+      onClickBlueBtn={onSubmit}
+      disableBlueBtn={loading}
+      noFullWidth
+      error={error}
+      contentClass="p-1"
+      textIfLoading={loading && "Adding Peer..."}
+    >
+      <InputGroup
+        onChange={onInputChange}
+        name="publicKey"
+        label="Public Key"
+        value={publicKey}
+        small
+      />
+
+      <Pad amt={16} />
+
+      <InputGroup
+        onChange={onInputChange}
+        name="host"
+        label="Host IP"
+        value={host}
+        small
+      />
     </Modal>
   );
 };

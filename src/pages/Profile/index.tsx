@@ -612,6 +612,7 @@ const ProfilePage = () => {
             contentStyle={{
               padding: "40px 30px"
             }}
+            noFullWidth
           >
             <QRCode
               bgColor="#23282d"
@@ -650,9 +651,9 @@ const ProfilePage = () => {
           <Modal
             toggleModal={toggleConfigModal}
             modalOpen={profileConfigModalOpen}
-            contentStyle={{
-              padding: "2em 2em"
-            }}
+            contentClass="p-2"
+            forceRenderTitleBar
+            blueBtn={somethingInsideConfigModalChanged && "Save"}
           >
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
@@ -698,25 +699,6 @@ const ProfilePage = () => {
             <label htmlFor="content-host">Content Host</label>
 
             <ContentHostInput />
-
-            <br></br>
-
-            {somethingInsideConfigModalChanged && (
-              <div className="flex-center" style={{ marginTop: "auto" }}>
-                <button
-                  onClick={onConfigCancel}
-                  className="shock-form-button m-1"
-                >
-                  CANCEL
-                </button>
-                <button
-                  onClick={onConfigSubmit}
-                  className="shock-form-button-confirm m-1"
-                >
-                  SUBMIT
-                </button>
-              </div>
-            )}
           </Modal>
 
           <Modal
@@ -767,8 +749,12 @@ const ProfilePage = () => {
         contentStyle={dnModalStyle}
         modalOpen={dnModalOpen}
         toggleModal={toggleDnModal}
+        blueBtn="Save"
+        disableBlueBtn={newDisplayName === displayName || newDisplayName === ""}
+        onClickBlueBtn={handleOkDnChange}
+        noFullWidth
+        modalTitle="NEW DISPLAY NAME"
       >
-        <label htmlFor="newDisplayName">Display Name</label>
         <input
           autoCapitalize="none"
           autoCorrect="off"
@@ -779,19 +765,6 @@ const ProfilePage = () => {
           onChange={handleNewDisplayNameChange}
           value={newDisplayName}
         />
-
-        {newDisplayName !== displayName && newDisplayName !== "" ? (
-          <button
-            onClick={handleOkDnChange}
-            className="shock-form-button-confirm m-1"
-          >
-            OK
-          </button>
-        ) : (
-          <button onClick={toggleDnModal} className="shock-form-button m-1">
-            GO BACK
-          </button>
-        )}
       </Modal>
 
       {
@@ -805,8 +778,13 @@ const ProfilePage = () => {
         contentStyle={bioModalStyle}
         modalOpen={bioModalOpen}
         toggleModal={toggleBioModal}
+        modalTitle="NEW BIO"
+        blueBtn="Save"
+        onClickBlueBtn={handleOkBioChange}
+        disableBlueBtn={newBio === bio || newBio === ""}
+        forceRenderTitleBar
+        noFullWidth
       >
-        <label htmlFor="newBio">New Bio</label>
         <input
           autoCapitalize="none"
           autoCorrect="off"
@@ -817,18 +795,6 @@ const ProfilePage = () => {
           onChange={handleNewBioChange}
           value={newBio}
         />
-        {newBio !== bio && newBio !== "" ? (
-          <button
-            onClick={handleOkBioChange}
-            className="shock-form-button-confirm m-1"
-          >
-            OK
-          </button>
-        ) : (
-          <button onClick={toggleBioModal} className="shock-form-button m-1">
-            GO BACK
-          </button>
-        )}
       </Modal>
       {
         //#endregion bioModal

@@ -2,9 +2,11 @@ import { useCallback } from "react";
 import classNames from "classnames";
 
 import * as Utils from "../../utils";
+import Loader from "../../common/Loader";
 
 import ModalContent from "./components/ModalContent";
 import ModalTitle from "./components/ModalTitle";
+
 import "./css/index.scoped.css";
 
 const Modal = ({
@@ -12,7 +14,7 @@ const Modal = ({
   toggleModal,
   modalTitle = "",
   children,
-  contentStyle = {},
+  contentStyle = Utils.EMPTY_OBJ,
   disableBackdropClose = false,
   forceRenderTitleBar = false,
   hideXBtn = false,
@@ -22,7 +24,10 @@ const Modal = ({
   onClickBlueBtn = Utils.EMPTY_FN,
   redBtn = "",
   disableRedBtn = false,
-  onClickRedBtn = Utils.EMPTY_FN
+  onClickRedBtn = Utils.EMPTY_FN,
+  contentClass = "",
+  error = "",
+  textIfLoading = ""
 }) => {
   const closeModal = useCallback(() => {
     toggleModal();
@@ -41,13 +46,26 @@ const Modal = ({
           "container-no-full-width": noFullWidth
         })}
       >
+        {textIfLoading && (
+          <Loader overlay style={OVERLAY_STYLE} text={textIfLoading} />
+        )}
+
         <ModalTitle
           title={modalTitle}
           toggleModal={closeModal}
           forceRenderTitleBar={forceRenderTitleBar}
           hideXBtn={hideXBtn}
         />
-        <ModalContent style={contentStyle}>{children}</ModalContent>
+
+        {error && <div className={"form-error form-error-margin"}>{error}</div>}
+
+        <ModalContent style={contentStyle} contentClass={contentClass}>
+          {typeof children === "string" ? (
+            <p className="text-align-center">{children}</p>
+          ) : (
+            children
+          )}
+        </ModalContent>
 
         <div className="color-buttons">
           {blueBtn && (
@@ -73,6 +91,10 @@ const Modal = ({
       </div>
     </div>
   );
+};
+
+const OVERLAY_STYLE = {
+  borderRadius: "15px"
 };
 
 export default Modal;
