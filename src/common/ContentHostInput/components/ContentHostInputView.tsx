@@ -326,7 +326,6 @@ const ContentHostInputView = ({
         redBtn="Remove"
         onClickRedBtn={handleRemovalOfHostWithError}
         noFullWidth
-        // error="SOMETHING HAPPENED"
         contentClass="p-1"
         hideXBtn
       >
