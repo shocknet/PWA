@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import Modal from "../../../../common/Modal";
 import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css";
@@ -11,7 +11,7 @@ import { loadFeeRates } from "../../../../actions/FeesActions";
 const AddChannelModal = ({ open = false, toggleModal }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [channelCapacity, setChannelCapacity] = React.useState("");
+  const [channelCapacity, setChannelCapacity] = useState("");
   const [pushAmount, setPushAmount] = useState("");
   const [publicKey, setPublicKey] = useState("");
   const [error, setError] = useState("");
