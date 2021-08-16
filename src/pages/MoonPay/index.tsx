@@ -3,7 +3,7 @@ import MainNav from "../../common/MainNav";
 import "./css/index.scoped.css";
 import Http from "../../utils/Http";
 const signingServiceUrl = "https://moon-sign.shock.network/sign";
-const apiPubKey = "pk_test_C8jSPDtsKQqXwP7nkScpqZI5tsaOiQPH";
+const apiPubKey = "pk_live_oXjufSZTIzr14PJNrLv3XdCKM9BI6pdH";
 
 const MoonPay = () => {
   const [src, setSrc] = useState("");
