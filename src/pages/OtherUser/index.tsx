@@ -1,4 +1,10 @@
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState
+} from "react";
 import QRCode, { ImageSettings } from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
@@ -36,6 +42,7 @@ import {
   subscribeUserPosts as subPosts,
   subSharedPosts
 } from "../../actions/FeedActions";
+import { attachMedia } from "../../utils/Torrents";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -230,6 +237,13 @@ const OtherUserPage = () => {
     [history, userPublicKey]
   );
   //#endregion controller
+
+  useLayoutEffect(() => {
+    attachMedia(
+      posts.filter(post => !Common.isSharedPost(post)),
+      false
+    );
+  }, [posts]);
 
   return (
     <div className={classNames("page-container", styles["profile-page"])}>

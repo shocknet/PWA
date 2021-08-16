@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import TipRibbon from "../TipRibbon";
+import { useCallback, useMemo } from "react";
+import { isURLCompatible } from "../../../../utils/Torrents";
 import "./css/index.scoped.css";
 
 const VideoPreview = ({
@@ -11,9 +11,15 @@ const VideoPreview = ({
   selected,
   updateSelection
 }) => {
-  const contentURL = decodeURIComponent(
-    item.magnetURI.replace(/.*(ws=)/gi, "")
-  );
+  const contentURL = useMemo(() => {
+    const url = item.magnetURI.replace(/.*(ws=)/gi, "");
+
+    if (isURLCompatible({ url })) {
+      return decodeURIComponent(url);
+    }
+
+    return null;
+  }, [item.magnetURI]);
   const videoStyle = {};
   if (width) {
     videoStyle.width = width;
@@ -22,7 +28,7 @@ const VideoPreview = ({
     if (selected !== id) {
       updateSelection(id);
     }
-  }, [id, updateSelection]);
+  }, [id, selected, updateSelection]);
   return (
     <div className="media-container" style={{ position: "relative" }}>
       <div
@@ -55,7 +61,7 @@ const VideoPreview = ({
           justifyContent: "center"
         }}
       >
-        <i class="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
+        <i className="far fa-check-circle fa-3x" style={{ opacity: 1 }}></i>
       </div>
     </div>
   );

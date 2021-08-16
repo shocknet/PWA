@@ -37,6 +37,15 @@ const _getFileType = file => {
 
 export const webTorrentClient = new WebTorrent();
 
+export const isURLCompatible = ({ url, type = "video/embedded" }) => {
+  const fileType = supportedFileTypes[type];
+  const [compatibleURL] = fileType.formats.filter(format =>
+    url.toLowerCase().endsWith(`.${format.toLowerCase()}`)
+  );
+
+  return !!compatibleURL;
+};
+
 export const attachMedia = (
   posts = [],
   torrentMode = true,
@@ -101,20 +110,19 @@ export const attachMedia = (
 
                 const torrentElements = document.querySelectorAll(target);
                 torrentElements.forEach(torrentElement => {
-                  const contentURL = decodeURIComponent(
-                    item.magnetURI.replace(/.*(ws=)/gi, "")
-                  );
-                  const [compatibleURL] = fileType.formats.filter(format =>
-                    contentURL
-                      .toLowerCase()
-                      .endsWith(`.${format.toLowerCase()}`)
-                  );
+                  const compatibleURL = isURLCompatible({
+                    url: item.magnetURI
+                  });
                   const elementSrc = torrentElement.getAttribute("src");
 
-                  if ((torrentMode || !compatibleURL) && !elementSrc) {
+                  if ((torrentMode && !elementSrc) || !compatibleURL) {
                     file.renderTo(torrentElement, fileType.options);
                     return;
                   }
+
+                  const contentURL = decodeURIComponent(
+                    item.magnetURI.replace(/.*(ws=)/gi, "")
+                  );
 
                   torrentElement.setAttribute("src", contentURL);
                 });
