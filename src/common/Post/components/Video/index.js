@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { isURLCompatible } from "../../../../utils/Torrents";
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 
@@ -11,9 +13,15 @@ const Video = ({
   hideRibbon = false,
   width = null
 }) => {
-  const contentURL = decodeURIComponent(
-    item.magnetURI.replace(/.*(ws=)/gi, "")
-  );
+  const contentURL = useMemo(() => {
+    const url = item.magnetURI.replace(/.*(ws=)/gi, "");
+
+    if (isURLCompatible({ url })) {
+      return decodeURIComponent(url);
+    }
+
+    return null;
+  }, [item.magnetURI]);
   const videoStyle = {};
   if (width) {
     videoStyle.width = width;
