@@ -111,7 +111,8 @@ export const attachMedia = (
                 const torrentElements = document.querySelectorAll(target);
                 torrentElements.forEach(torrentElement => {
                   const compatibleURL = isURLCompatible({
-                    url: item.magnetURI
+                    url: item.magnetURI,
+                    type: fileType.name
                   });
                   const elementSrc = torrentElement.getAttribute("src");
 
