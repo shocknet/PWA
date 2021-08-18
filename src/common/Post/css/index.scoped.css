@@ -83,6 +83,7 @@
 .content p {
   opacity: 0.7;
   margin-bottom: 20px;
+  white-space: break-spaces;
 }
 
 .actions {
