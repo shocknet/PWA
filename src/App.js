@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import JWTDecode from "jwt-decode";
 import videojs from "video.js";
 import FullHeight from "react-div-100vh";
+import { toast } from "react-toastify";
 
 import { setAuthenticated } from "./actions/AuthActions";
 
@@ -24,6 +25,7 @@ import * as Store from "./store";
 import "./styles/App.global.css";
 import Stream from "./common/Post/components/Stream";
 import { dragElement } from "./utils/ui";
+import * as Utils from "./utils";
 import { Http } from "./utils";
 import {
   addStream,
@@ -223,8 +225,14 @@ const App = () => {
         setSeedProviderPub(serviceProvider.data, true)(dispatch);
       }
     } catch (err) {
-      //if something goes wrong just log the error, no need to do anything else
-      console.log(err);
+      const msg = Utils.extractErrorMessage(err);
+      // Timeout expected if hasn't been populated before
+      if (!msg.startsWith("timeout of ")) {
+        toast.dark(
+          `There was an error fetching your seed service provider: ${msg}`
+        );
+        Utils.logger.error(err);
+      }
     }
     try {
       const { data: seedData } = await Http.get(
@@ -246,8 +254,14 @@ const App = () => {
         }
       }
     } catch (err) {
-      //if something goes wrong just log the error, no need to do anything else
-      console.log(err);
+      const msg = Utils.extractErrorMessage(err);
+      // Timeout expected if hasn't been populated before
+      if (!msg.startsWith("timeout of ")) {
+        toast.dark(
+          `There was an error fetching your seed service data: ${msg}`
+        );
+        Utils.logger.error(err);
+      }
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
@@ -284,8 +298,14 @@ const App = () => {
         }
       }
     } catch (err) {
-      //if something goes wrong just log the error, no need to do anything else
-      console.log(err);
+      const msg = Utils.extractErrorMessage(err);
+      // Timeout expected if hasn't been populated before
+      if (!msg.startsWith("timeout of ")) {
+        toast.dark(
+          `There was an error fetching your current stream info: ${msg}`
+        );
+        Utils.logger.error(err);
+      }
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
