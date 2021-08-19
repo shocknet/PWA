@@ -50,6 +50,7 @@ export type WebClientPrefix =
   | "https://shock.page"
   | "https://shock.pub"
   | "https://lightning.page"
+  | "https://onlysats.page"
   | "https://satoshi.watch";
 
 const ProfilePage = () => {
