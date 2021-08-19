@@ -98,15 +98,21 @@ const OtherUserPage = () => {
       })
       .catch(e => {
         const msg = Utils.extractErrorMessage(e);
-        // Timeout expected if hasn't been populated before
-        if (!msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+
+        if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+          Utils.logger.warn(
+            `Could not fetch this user's (...${userPublicKey.slice(
+              -8
+            )}) offered services due to a timeout error, this can be expected if the data hasn't been populated yet.`
+          );
+        } else {
           toast.dark(
-            `There was an error fetching this user's offered services: ${msg}`
+            `There was an error fetching ${user.displayName}'s offered services: ${msg}`
           );
           Utils.logger.error(e);
         }
       });
-  }, [userPublicKey]);
+  }, [user.displayName, userPublicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
