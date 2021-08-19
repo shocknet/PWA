@@ -226,8 +226,12 @@ const App = () => {
       }
     } catch (err) {
       const msg = Utils.extractErrorMessage(err);
-      // Timeout expected if hasn't been populated before
-      if (!msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+
+      if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+        Utils.logger.warn(
+          `Could not fetch seed service provider due to a timeout error, this can be expected if the data hasn't been populated yet.`
+        );
+      } else {
         toast.dark(
           `There was an error fetching your seed service provider: ${msg}`
         );
@@ -255,8 +259,12 @@ const App = () => {
       }
     } catch (err) {
       const msg = Utils.extractErrorMessage(err);
-      // Timeout expected if hasn't been populated before
-      if (!msg.startsWith("timeout of ")) {
+
+      if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+        Utils.logger.warn(
+          `Could not fetch seed service data due to a timeout error, this can be expected if the data hasn't been populated yet.`
+        );
+      } else {
         toast.dark(
           `There was an error fetching your seed service data: ${msg}`
         );
@@ -299,8 +307,12 @@ const App = () => {
       }
     } catch (err) {
       const msg = Utils.extractErrorMessage(err);
-      // Timeout expected if hasn't been populated before
-      if (!msg.startsWith("timeout of ")) {
+
+      if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+        Utils.logger.warn(
+          `Could not fetch current stream info due to a timeout error, this can be expected if the data hasn't been populated yet.`
+        );
+      } else {
         toast.dark(
           `There was an error fetching your current stream info: ${msg}`
         );
