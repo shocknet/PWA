@@ -550,6 +550,7 @@ const PublishContentPage = () => {
           forceRenderTitleBar
           blueBtn="Confirm"
           noFullWidth
+          onClickBlueBtn={submitPrompt}
         >
           <p className="text-align-center">
             The service from the default service provider will cost:{" "}
