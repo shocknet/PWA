@@ -282,10 +282,6 @@ const GoLive = () => {
     [setParagraph, setSelectedSource]
   );
 
-  const toggleEnableTipsOverlay = useCallback(() => {
-    setEnableTipsOverlay(!enableTipsOverlay);
-  }, [enableTipsOverlay, setEnableTipsOverlay]);
-
   const onTipsOverlayChange = useCallback(
     (e: { target: { checked: boolean } }) => {
       setEnableTipsOverlay(e.target.checked);
