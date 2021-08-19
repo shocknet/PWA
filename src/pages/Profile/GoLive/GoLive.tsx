@@ -116,9 +116,8 @@ const GoLive = () => {
           type: "stream/embedded",
           userToken: latestUserToken,
           viewersCounter: 0,
-          width: 0,
-          //@ts-expect-error
-          viewersSocketUrl
+          viewersSocketUrl,
+          width: 0
         };
 
         contentItems.push(streamContent);
