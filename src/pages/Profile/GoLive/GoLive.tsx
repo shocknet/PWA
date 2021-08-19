@@ -286,6 +286,13 @@ const GoLive = () => {
     setEnableTipsOverlay(!enableTipsOverlay);
   }, [enableTipsOverlay, setEnableTipsOverlay]);
 
+  const onTipsOverlayChange = useCallback(
+    (e: { target: { checked: boolean } }) => {
+      setEnableTipsOverlay(e.target.checked);
+    },
+    []
+  );
+
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
       postId: streamPostId,
@@ -468,7 +475,7 @@ const GoLive = () => {
                   name="enable-tips-notifications"
                   id="enable-tips-notifications"
                   checked={enableTipsOverlay}
-                  onClick={toggleEnableTipsOverlay}
+                  onChange={onTipsOverlayChange}
                 />
                 <button
                   onClick={onSubmit}
