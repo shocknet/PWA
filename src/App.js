@@ -227,7 +227,7 @@ const App = () => {
     } catch (err) {
       const msg = Utils.extractErrorMessage(err);
       // Timeout expected if hasn't been populated before
-      if (!msg.startsWith("timeout of ")) {
+      if (!msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
         toast.dark(
           `There was an error fetching your seed service provider: ${msg}`
         );
