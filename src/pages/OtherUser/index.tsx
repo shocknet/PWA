@@ -9,6 +9,7 @@ import QRCode, { ImageSettings } from "qrcode.react";
 import { useHistory, useParams } from "react-router-dom";
 import classNames from "classnames";
 import * as Common from "shock-common";
+import { toast } from "react-toastify";
 
 import Http from "../../utils/Http";
 
@@ -43,6 +44,7 @@ import {
   subSharedPosts
 } from "../../actions/FeedActions";
 import { attachMedia } from "../../utils/Torrents";
+import * as Utils from "../../utils";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -95,7 +97,14 @@ const OtherUserPage = () => {
         setUserServices(data.data);
       })
       .catch(e => {
-        console.log(e);
+        const msg = Utils.extractErrorMessage(e);
+        // Timeout expected if hasn't been populated before
+        if (!msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+          toast.dark(
+            `There was an error fetching this user's offered services: ${msg}`
+          );
+          Utils.logger.error(e);
+        }
       });
   }, [userPublicKey]);
 
