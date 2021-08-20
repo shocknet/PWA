@@ -15,14 +15,14 @@ If you don't have a node already, hosting is offered in the app, or a _Node inst
 ## Features:
 
 - [x] Basic LND Channel and Peer Management
-- [ ] Fee Control from [mempool.space](https://github.com/mempool/mempool) source
+- [x] Fee Control from [mempool.space](https://github.com/mempool/mempool) source
 - [x] LNURL-Pay, Withdraw and Channel
 - [x] Social Personas, Presence Indication and Feeds
 - [x] E2EEncrypted Chat/Messaging
 - [x] Automatic Seed and Channel Backup
 - [x] Sender-Initiated Payments (Keysend-less)
 - [ ] Provider-less Notifications with node monitor (SSL required)
-- [x] LND 12 with Keysend & MPP (sharded payments)
+- [x] LND 13 with Keysend & MPP (sharded payments)
 - [x] Invoice liquidity intercept
 - [x] Torrent Content Streaming
 - [x] Torrent Publishing and Seed Service
