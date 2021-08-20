@@ -286,9 +286,9 @@ const ProfilePage = () => {
         })
       );
       toggleDeleteModal(null);
-      setDeletePostModalLoading(true);
+      setDeletePostModalLoading(false);
     } catch (e) {
-      setDeletePostModalLoading(true);
+      setDeletePostModalLoading(false);
       console.log(`Error when deleting post:`);
       console.log(e);
       alert(`Could not delete post: ${e.message}`);
