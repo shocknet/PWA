@@ -805,9 +805,10 @@ const ProfilePage = () => {
 };
 
 const AVAILABLE_WEB_CLIENT_PREFIXES: readonly WebClientPrefix[] = [
+  "https://onlysats.page",
   "https://shock.pub",
-  "https://shock.page",
   "https://lightning.page",
+  "https://shock.page",
   "https://satoshi.watch"
 ];
 
