@@ -12,6 +12,9 @@ const ShareModal = ({ shareData, toggleOpen }) => {
   const submitShare = useCallback(
     async e => {
       e.preventDefault();
+      if(loading){
+        return
+      }
       try {
         setLoading(true);
         const { postID: id, publicKey } = shareData;
@@ -34,7 +37,7 @@ const ShareModal = ({ shareData, toggleOpen }) => {
         setLoading(false);
       }
     },
-    [shareData]
+    [shareData,loading]
   );
 
   const close = useCallback(() => {

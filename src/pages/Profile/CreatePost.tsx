@@ -24,6 +24,7 @@ const CreatePostPage = () => {
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
   const [selectedContent, setSelectedContent] = useState("");
+  const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
     dispatch(subOwnPublishedContent());
@@ -44,12 +45,15 @@ const CreatePostPage = () => {
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
-
+      if(loading){
+        return
+      }
       console.log("submitting");
       if (selectedContent === "" && paragraph === "") {
         setError("at least one paragraph or one media is required");
         return;
       }
+      
       setLoading(true);
       let contentItems = [];
       if (paragraph !== "") {
@@ -98,6 +102,7 @@ const CreatePostPage = () => {
       publishedContent,
       postType,
       history,
+      loading,
       setLoading,
       setError
     ]
