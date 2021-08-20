@@ -116,6 +116,7 @@ const GoLive = () => {
           type: "stream/embedded",
           userToken: latestUserToken,
           viewersCounter: 0,
+          // @ts-expect-error
           viewersSocketUrl,
           width: 0
         };
