@@ -23,6 +23,9 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   const submitTip = useCallback(
     async e => {
       e.preventDefault();
+      if(loading){
+        return
+      }
       try {
         setLoading(true);
         await dispatch(
@@ -44,7 +47,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
         setLoading(false);
       }
     },
-    [dispatch, amount, tipData]
+    [dispatch, amount,loading, tipData]
   );
 
   // Reset the modal's state

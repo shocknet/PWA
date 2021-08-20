@@ -53,6 +53,9 @@ const PublishContentPage = () => {
 
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
+      if(loading){
+        return
+      }
       console.log([title, description, mediaPreviews, videoThumbnails]);
       if (!title) {
         setError("Please input a title");
@@ -195,7 +198,8 @@ const PublishContentPage = () => {
       selectedFiles,
       selfPublicKey,
       title,
-      videoThumbnails
+      videoThumbnails,
+      loading
     ]
   );
 

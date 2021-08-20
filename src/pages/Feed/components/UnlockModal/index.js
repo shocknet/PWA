@@ -16,6 +16,9 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
   const submitUnlock = useCallback(
     async e => {
       e.preventDefault();
+      if(loading){
+        return
+      }
       try {
         setLoading(true);
         await unlockContent(
@@ -35,7 +38,7 @@ const UnlockModal = ({ unlockData, toggleOpen }) => {
         setLoading(false);
       }
     },
-    [dispatch, unlockData]
+    [dispatch,loading, unlockData]
   );
 
   // Reset the modal's state
