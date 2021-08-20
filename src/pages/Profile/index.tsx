@@ -655,6 +655,7 @@ const ProfilePage = () => {
             contentClass="p-2"
             forceRenderTitleBar
             blueBtn={somethingInsideConfigModalChanged && "Save"}
+            onClickBlueBtn={onConfigSubmit}
           >
             <label htmlFor="new-web-client-prefix">Web Client</label>
 
