@@ -47,10 +47,10 @@ const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 
 export type WebClientPrefix =
-  | "https://shock.page"
+  | "https://onlysats.page"
   | "https://shock.pub"
   | "https://lightning.page"
-  | "https://onlysats.page"
+  | "https://shock.page"
   | "https://satoshi.watch";
 
 const ProfilePage = () => {
