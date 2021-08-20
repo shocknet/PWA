@@ -116,12 +116,13 @@ const Post = ({
     if (item.type === "text/paragraph") {
       return <p key={key}>{item.text}</p>;
     }
-    const finalItem = item;
+
+    let finalMagnetURI = "";
     if (item.isPrivate) {
       const path = `${publicKey}>posts>${id}`;
       const cached = unlockedContent[path];
       if (cached) {
-        finalItem.magnetURI = cached;
+        finalMagnetURI = cached;
       } else {
         return (
           <div key={key}>
@@ -135,7 +136,10 @@ const Post = ({
       return (
         <Image
           id={key}
-          item={finalItem}
+          item={{
+            ...item,
+            magnetURI: finalMagnetURI || item.magnetURI
+          }}
           index={index}
           postId={id}
           tipCounter={tipCounter}
@@ -151,7 +155,10 @@ const Post = ({
       return (
         <Video
           id={key}
-          item={finalItem}
+          item={{
+            ...item,
+            magnetURI: finalMagnetURI || item.magnetURI
+          }}
           index={index}
           postId={id}
           tipCounter={tipCounter}
@@ -162,14 +169,14 @@ const Post = ({
         />
       );
     }
-    if (Common.isEmbeddedStream(finalItem)) {
+    if (Common.isEmbeddedStream(item)) {
       if (item.playbackMagnet) {
         return (
           <Video
             id={key}
             item={{
-              ...finalItem,
-              magnetURI: finalItem.playbackMagnet
+              ...item,
+              magnetURI: item.playbackMagnet
             }}
             index={index}
             postId={id}
@@ -184,7 +191,10 @@ const Post = ({
       return (
         <Stream
           id={key}
-          item={finalItem}
+          item={{
+            ...item,
+            magnetURI: finalMagnetURI || item.magnetURI
+          }}
           index={index}
           postId={id}
           tipCounter={tipCounter}
