@@ -6,7 +6,8 @@ import React, {
   useEffect,
   useMemo
 } from "react";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import * as Common from "shock-common";
 import c from "classnames";
 
@@ -21,7 +22,6 @@ import "./css/index.scoped.css";
 export interface ShockAvatarProps {
   height: number;
   publicKey: string;
-  onPress?(): void;
   disableOnlineRing?: boolean;
   nameAtBottom?: boolean;
   /**
@@ -39,6 +39,10 @@ export interface ShockAvatarProps {
    * Recommended to use together with disableStoriesRing.
    */
   forceAddBtn?: boolean;
+  /**
+   * If true, will link to create post.
+   */
+  createsPost?: boolean;
 }
 
 const ShockAvatar: React.FC<ShockAvatarProps> = ({
@@ -46,10 +50,10 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   publicKey,
   disableOnlineRing,
   nameAtBottom,
-  onPress: onPressProp,
   setsAvatar,
   greyBorder,
-  forceAddBtn
+  forceAddBtn,
+  createsPost
 }) => {
   const avatarImageFileInput = useRef<HTMLInputElement>(null);
   const [settingAvatar, setSettingAvatar] = useState<boolean>(false);
@@ -57,7 +61,6 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isSelf = publicKey === selfPublicKey;
 
-  const history = useHistory();
   const { forceUpdate, tick } = Utils.useForceUpdate();
   const { avatar: image, displayName } = Store.useSelector(
     Store.selectUser(publicKey)
@@ -160,41 +163,39 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
 
   const onPress = useCallback(
     e => {
-      e.preventDefault();
-      if (onPressProp) {
-        onPressProp();
-        return;
-      } else if (setsAvatar) {
+      if (setsAvatar) {
+        e.preventDefault();
         const { current } = avatarImageFileInput;
         if (!current) {
           Utils.logger.error("File input element for avatar is falsy.");
         }
-
         current.click();
-      } else {
-        if (story.length) {
-          history.push(`/story/${publicKey}`);
-        } else {
-          if (isSelf) {
-            history.push("/profile");
-          } else {
-            history.push(`/otherUser/${publicKey}`);
-          }
-        }
       }
     },
-    [history, isSelf, onPressProp, publicKey, setsAvatar, story.length]
+    [setsAvatar]
   );
 
   return (
     <>
-      <div
+      <Link
         className={c(
           globalStyles.colCentered,
           globalStyles.relative,
           "container"
         )}
         onClick={onPress}
+        to={(() => {
+          if (story.length) {
+            return `/story/${publicKey}`;
+          }
+          if (createsPost) {
+            return "/createPost";
+          }
+          if (isSelf) {
+            return "/profile";
+          }
+          return `/otherUser/${publicKey}`;
+        })()}
       >
         <img
           alt={`Avatar for ${displayName || "an user"}`}
@@ -226,7 +227,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
             )}
           />
         )}
-      </div>
+      </Link>
 
       <input
         type="file"
