@@ -17,3 +17,9 @@ export const parseError = (error: MixedError) => {
     message: error.message ?? "An unknown error has occurred"
   });
 };
+
+export const extractErrorMessage = (error: any): string => {
+  return (
+    error?.response?.data?.errorMessage || error.message || "Unknown error"
+  );
+};

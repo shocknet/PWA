@@ -116,9 +116,9 @@ const GoLive = () => {
           type: "stream/embedded",
           userToken: latestUserToken,
           viewersCounter: 0,
-          width: 0,
-          //@ts-expect-error
-          viewersSocketUrl
+          // @ts-expect-error
+          viewersSocketUrl,
+          width: 0
         };
 
         contentItems.push(streamContent);
@@ -283,9 +283,12 @@ const GoLive = () => {
     [setParagraph, setSelectedSource]
   );
 
-  const toggleEnableTipsOverlay = useCallback(() => {
-    setEnableTipsOverlay(!enableTipsOverlay);
-  }, [enableTipsOverlay, setEnableTipsOverlay]);
+  const onTipsOverlayChange = useCallback(
+    (e: { target: { checked: boolean } }) => {
+      setEnableTipsOverlay(e.target.checked);
+    },
+    []
+  );
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {
@@ -469,7 +472,7 @@ const GoLive = () => {
                   name="enable-tips-notifications"
                   id="enable-tips-notifications"
                   checked={enableTipsOverlay}
-                  onClick={toggleEnableTipsOverlay}
+                  onChange={onTipsOverlayChange}
                 />
                 <button
                   onClick={onSubmit}

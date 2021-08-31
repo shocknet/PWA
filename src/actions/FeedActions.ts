@@ -221,7 +221,7 @@ export const subPostContent = (author: string, postID: string) => (
           );
         } else {
           Utils.logger.error(
-            `Invalid content item in post content subscription from ..${author.slice(
+            `Invalid content item (${id}) in post content subscription from ..${author.slice(
               -8
             )} for post ${postID} -> `,
             contentItem
