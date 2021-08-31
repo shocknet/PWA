@@ -206,14 +206,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
           <>
             <Pad amt={12} />
 
-            <span
-              style={{
-                fontSize: 13,
-                textAlign: "center"
-              }}
-            >
-              {displayName}
-            </span>
+            <span className="name-at-bottom">{displayName}</span>
           </>
         )}
 

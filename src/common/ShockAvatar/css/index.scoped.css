@@ -2,6 +2,11 @@
   transition: opacity 0.25s ease;
 }
 
+.name-at-bottom {
+  font-size: 13;
+  text-align: center;
+}
+
 .container:hover {
   opacity: 0.5;
   cursor: pointer;
