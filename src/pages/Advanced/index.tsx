@@ -40,7 +40,7 @@ const AdvancedPage: React.FC = () => {
   const [
     selectedAccordion,
     setSelectedAccordion
-  ] = React.useState<AccordionSection>("none");
+  ] = React.useState<AccordionSection>("channels");
   const [page] = React.useState(1);
   const [addPeerOpen, setAddPeerOpen] = React.useState(false);
   const [addChannelOpen, setAddChannelOpen] = React.useState(false);
