@@ -118,7 +118,13 @@ p.header-title {
 }
 
 .accordion-section.section-open .content-inner {
-  display: unset;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-inner-empty {
+  text-align: center;
+  padding: 96px 0;
 }
 
 .advanced-transaction-info {

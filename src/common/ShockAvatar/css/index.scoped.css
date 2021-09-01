@@ -1,5 +1,13 @@
 .container {
   transition: opacity 0.25s ease;
+  /* stops text inside <Link /> from looking like 1999 links */
+  color: inherit;
+  text-decoration: none;
+}
+
+.name-at-bottom {
+  font-size: 13;
+  text-align: center;
 }
 
 .container:hover {

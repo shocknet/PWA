@@ -40,7 +40,7 @@ const AdvancedPage: React.FC = () => {
   const [
     selectedAccordion,
     setSelectedAccordion
-  ] = React.useState<AccordionSection>("none");
+  ] = React.useState<AccordionSection>("channels");
   const [page] = React.useState(1);
   const [addPeerOpen, setAddPeerOpen] = React.useState(false);
   const [addChannelOpen, setAddChannelOpen] = React.useState(false);
@@ -112,19 +112,6 @@ const AdvancedPage: React.FC = () => {
 
   const openAccordion = React.useCallback((accordion: AccordionSection) => {
     setSelectedAccordion(current => {
-      if (
-        accordion === "channels" &&
-        channels.length === 0 &&
-        pendingChannels.length === 0
-      ) {
-        return;
-      }
-      if (accordion === "peers" && peers.length === 0) {
-        return;
-      }
-      if (accordion === "transactions" && transactions.content.length === 0) {
-        return;
-      }
       return current === accordion ? "none" : accordion;
     });
   }, []);
@@ -198,6 +185,9 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="section-content">
             <div className="content-inner">
+              {transactions.content.length === 0 && (
+                <span className="content-inner-empty">No transactions yet</span>
+              )}
               {transactions.content.map(transaction => (
                 <Transaction
                   date={transaction.time_stamp}
@@ -221,6 +211,9 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="section-content">
             <div className="content-inner">
+              {peers.length === 0 && (
+                <span className="content-inner-empty">No peers connected</span>
+              )}
               {peers.map((peer, i) => {
                 return (
                   <Peer
@@ -285,6 +278,9 @@ const AdvancedPage: React.FC = () => {
           </div>
           <div className="section-content">
             <div className="content-inner">
+              {channels.length === 0 && pendingChannels.length === 0 && (
+                <span className="content-inner-empty">No channels</span>
+              )}
               {channels.map((channel, i) => {
                 const ip = peers.find(p => p.pub_key)?.address;
                 const thereIsMoreThanOneChannel = channels.length > 1;

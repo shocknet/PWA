@@ -130,9 +130,7 @@ const FeedPage = () => {
           forceAddBtn
           height={60}
           publicKey={selfPublicKey}
-          onPress={useCallback(() => {
-            history.push("/createPost");
-          }, [history])}
+          createsPost
         />
 
         {follows?.map(follow => {

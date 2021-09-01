@@ -1,7 +1,6 @@
 import React from "react";
 import * as Common from "shock-common";
 import { Link } from "react-router-dom";
-import { DateTime } from "luxon";
 
 import * as Store from "../../../../store";
 import * as Utils from "../../../../utils";
