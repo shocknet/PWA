@@ -11,7 +11,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [tipSuccess, setTipSuccess] = useState(false);
 
   const onInputChange = useCallback(e => {
@@ -23,8 +23,8 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   const submitTip = useCallback(
     async e => {
       e.preventDefault();
-      if(loading){
-        return
+      if (loading) {
+        return;
       }
       try {
         setLoading(true);
@@ -47,7 +47,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
         setLoading(false);
       }
     },
-    [dispatch, amount,loading, tipData]
+    [dispatch, amount, loading, tipData]
   );
 
   // Reset the modal's state

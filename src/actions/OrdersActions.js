@@ -10,10 +10,7 @@ export const ACTIONS = {
   ADD_BOUGHT_SERVICE: "service/add/bought"
 };
 
-export const createService = (
-  clear,
-  encrypted,
-) => async dispatch => {
+export const createService = (clear, encrypted) => async dispatch => {
   const { data } = await Http.post("/api/gun/set", {
     path: "$user>offeredServices",
     value: clear
@@ -61,16 +58,16 @@ export const deleteService = id => async dispatch => {
     value: null
   });
 };
-export const subscribeMyServices = (providedServiceId) => dispatch => {
+export const subscribeMyServices = providedServiceId => dispatch => {
   const query = `$user::offeredServices>${providedServiceId}::on`;
-  console.log(query)
+  console.log(query);
   const subscription = rifle({
     query,
     publicKey: "me",
     reconnect: false,
 
     onData: async (serviceNode, id) => {
-      console.log(serviceNode)
+      console.log(serviceNode);
       if (serviceNode === null) {
         dispatch({
           type: ACTIONS.REMOVE_MY_SERVICE,
@@ -82,7 +79,7 @@ export const subscribeMyServices = (providedServiceId) => dispatch => {
         type: ACTIONS.ADD_MY_SERVICE,
         data: { id, serviceInfo: serviceNode }
       });
-      console.log("got service data")
+      console.log("got service data");
     }
   });
 
@@ -100,8 +97,7 @@ export const buyService = (
     to: owner,
     memo: "",
     feeLimit: 500,
-    ackInfo: serviceID,
-    timeout: 120000
+    ackInfo: serviceID
   });
   console.log(data);
   const orderAck = JSON.parse(data.orderAck.response);

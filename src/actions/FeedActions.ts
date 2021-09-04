@@ -19,7 +19,7 @@ export const ACTIONS = {
   LOAD_SHARED_POST: "feed/sharedPosts/load",
   POST_TIPPED: "feed/posts/tipped",
   RELOAD_FEED: "feed/reload",
-  RESET_DEFAULT_FOLLOWS: "follows/reload",
+  RESET_DEFAULT_FOLLOWS: "follows/reload"
 };
 
 export const removeFollow = key => dispatch =>
@@ -78,7 +78,6 @@ export const subSinglePost = (author: string, postID: string) => (
     const subscription = rifle({
       query: `${author}::posts>${postID}::on`,
       onData(post: string) {
-
         if (Schema.isPostRaw(post)) {
           dispatch(
             postReceived({
@@ -135,7 +134,6 @@ export const subscribeUserPosts = (publicKey: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-
     const subscription = rifle({
       query: `${publicKey}::posts::map.on`,
       onError(e) {
@@ -150,7 +148,6 @@ export const subscribeUserPosts = (publicKey: string) => (
         );
       },
       onData: (post: unknown, postID: string) => {
-
         if (Schema.isPostRaw(post)) {
           dispatch(
             postReceived({
@@ -204,11 +201,9 @@ export const subPostContent = (author: string, postID: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-
     const subscription = rifle({
       query: `${author}::posts>${postID}>contentItems::map.on`,
       onData(contentItem: unknown, id: string) {
-
         // CAST: unfortunate isContentItem typings
         if (Common.isContentItem(contentItem)) {
           dispatch(
@@ -313,8 +308,7 @@ export const sendTipPost = ({
     to: publicKey,
     memo: "Post Tipped!",
     feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
-    ackInfo: postId,
-    timeout: 120000
+    ackInfo: postId
   });
   console.log(data);
   dispatch({
@@ -339,9 +333,9 @@ export const reloadFeed = () => ({
   type: ACTIONS.RELOAD_FEED
 });
 
-export const reloadFollows = (follows:Common.Follow[]) => ({
+export const reloadFollows = (follows: Common.Follow[]) => ({
   type: ACTIONS.RESET_DEFAULT_FOLLOWS,
-  data:follows
+  data: follows
 });
 
 // #region sharedPosts
@@ -362,7 +356,6 @@ export const subSharedPosts = (sharerPublicKey: string) => (
   dispatch: (action: any) => void
 ): (() => void) => {
   try {
-
     const subscription = rifle({
       query: `${sharerPublicKey}::sharedPosts::map.on`,
       onError(e) {
@@ -379,7 +372,6 @@ export const subSharedPosts = (sharerPublicKey: string) => (
         );
       },
       onData: (sharedPost: unknown, postID: string) => {
-
         if (Common.isSharedPostRaw(sharedPost)) {
           dispatch(
             sharedPostReceived({
@@ -443,13 +435,13 @@ export const subPostTips = (author: string, postID: string) => (
     const subscription = rifle({
       query: `${author}::posts>${postID}>tipsSet::map.on`,
       onData(tipAmt: unknown, tipID: string) {
-          const nTipAmount = Number(tipAmt)
+        const nTipAmount = Number(tipAmt);
         if (nTipAmount !== NaN) {
           dispatch(
             postTipReceived({
               author,
               postID,
-              tipAmt:nTipAmount,
+              tipAmt: nTipAmount,
               tipID
             })
           );

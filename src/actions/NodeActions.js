@@ -143,17 +143,10 @@ export const connectHost = (
 
 export const unlockWallet = ({ alias, password }) => async dispatch => {
   try {
-    const { data } = await Http.post(
-      "/api/lnd/auth",
-      {
-        alias,
-        password
-      },
-      {
-        // Unlocking can take significantly longer than other endpoints
-        timeout: 30000
-      }
-    );
+    const { data } = await Http.post("/api/lnd/auth", {
+      alias,
+      password
+    });
 
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
@@ -202,17 +195,10 @@ export const createAlias = ({ alias, password }) => async dispatch => {
 
 export const createWallet = ({ alias, password }) => async dispatch => {
   try {
-    const { data } = await Http.post(
-      "/api/lnd/wallet",
-      {
-        alias,
-        password
-      },
-      {
-        // Creating a wallet can take longer than any other endpoints.
-        timeout: 30000
-      }
-    );
+    const { data } = await Http.post("/api/lnd/wallet", {
+      alias,
+      password
+    });
 
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);

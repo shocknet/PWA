@@ -23,9 +23,9 @@ const SendPage = () => {
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  const isDesktopDevice = useMemo(()=>{
-    return isDesktop()
-  },[])
+  const isDesktopDevice = useMemo(() => {
+    return isDesktop();
+  }, []);
 
   const onInputChange = useCallback(e => {
     if (e.target.name === "amount") {
@@ -115,8 +115,7 @@ const SendPage = () => {
         payreq: contact.paymentRequest,
         amt: contact.paymentRequest ? "0" : amount,
         feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
-        keysend: contact.type === "keysend",
-        timeout: 120000
+        keysend: contact.type === "keysend"
       });
       console.log(payment);
     }
@@ -214,10 +213,20 @@ const SendPage = () => {
           disabled={contact?.type === "invoice"}
         />
       </div>
-      {isDesktopDevice && <div className="w-100 flex-center m-b-3">
-        <button disabled={!contact} onClick={onSubmit} className="shock-form-button-confirm">SEND</button>
-      </div>}
-      {!isDesktopDevice && <SlidePay disabled={!contact} onSuccess={onSubmit} />}
+      {isDesktopDevice && (
+        <div className="w-100 flex-center m-b-3">
+          <button
+            disabled={!contact}
+            onClick={onSubmit}
+            className="shock-form-button-confirm"
+          >
+            SEND
+          </button>
+        </div>
+      )}
+      {!isDesktopDevice && (
+        <SlidePay disabled={!contact} onSuccess={onSubmit} />
+      )}
     </DialogPageContainer>
   );
 };
