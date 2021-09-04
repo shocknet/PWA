@@ -135,8 +135,7 @@ export const unlockContent = (amt, owner, postID) => async dispatch => {
     to: owner,
     memo: "",
     feeLimit: 500,
-    ackInfo: postID,
-    timeout: 120000
+    ackInfo: postID
   });
   const revealRes = data.orderAck.response;
   if (revealRes && revealRes.unlockedContents) {
@@ -160,7 +159,7 @@ export const addStream = (
     streamContentId,
     streamStatusUrl,
     streamBroadcasterUrl,
-    tipOverlayUrl,
+    tipOverlayUrl
   },
   dontBackup = false
 ) => async dispatch => {
