@@ -178,7 +178,7 @@ const App = () => {
   }, [authToken, dispatch]);
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && publicKey) {
       // Get current user's profile on login
       dispatch(subscribeUserProfile(publicKey));
 
@@ -209,6 +209,9 @@ const App = () => {
   //load info about content provider stored into gun
   const loadContentInfo = useCallback(async () => {
     try {
+      if (!publicKey) {
+        return;
+      }
       const { data: serviceProvider } = await Http.get(
         `/api/gun/user/load/preferencesSeedServiceProvider`,
         {
@@ -239,6 +242,9 @@ const App = () => {
       }
     }
     try {
+      if (!publicKey) {
+        return;
+      }
       const { data: seedData } = await Http.get(
         `/api/gun/user/load/preferencesSeedServiceData`,
         {
@@ -273,15 +279,18 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
-    if (!authenticated) {
+    if (!authenticated || !publicKey) {
       return;
     }
     loadContentInfo();
-  }, [authenticated, loadContentInfo]);
+  }, [authenticated, loadContentInfo, publicKey]);
 
   //load info about current stream stored into gun
   const loadStreamInfo = useCallback(async () => {
     try {
+      if (!publicKey) {
+        return;
+      }
       const { data: streamData } = await Http.get(
         `/api/gun/user/load/currentStreamInfo`,
         {
@@ -321,11 +330,11 @@ const App = () => {
     }
   }, [dispatch, publicKey]);
   useEffect(() => {
-    if (!authenticated) {
+    if (!authenticated || !publicKey) {
       return;
     }
     loadStreamInfo();
-  }, [authenticated, loadStreamInfo]);
+  }, [authenticated, loadStreamInfo, publicKey]);
 
   const DialogClose = useCallback(() => {
     closeDialog(false)(dispatch);
