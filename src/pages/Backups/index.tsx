@@ -21,7 +21,7 @@ const Backups = () => {
     }).then(({ data: { data: seedBackup } }) => {
       setSeedBackup(seedBackup);
     });
-  }, []);
+  }, [gunPub]);
   //effect for channels backup
   useEffect(() => {
     Http.get(`/api/gun/user/once/channelsBackup`, {
@@ -31,7 +31,7 @@ const Backups = () => {
     }).then(({ data: { data: channelsBackup } }) => {
       setChannelsBackup(channelsBackup);
     });
-  }, []);
+  }, [gunPub]);
   const copyChannelsBackup = useCallback(() => {
     navigator.clipboard.writeText(JSON.stringify(channelsBackup));
     setCopied(true);
