@@ -329,11 +329,11 @@ const App = () => {
 
   const DialogClose = useCallback(() => {
     closeDialog(false)(dispatch);
-  }, [closeDialog, dispatch]);
+  }, [dispatch]);
 
   const ConfirmDialog = useCallback(() => {
     closeDialog(dialogHasCallback)(dispatch);
-  }, [dialogHasCallback, closeDialog, dispatch]);
+  }, [dialogHasCallback, dispatch]);
   return (
     <FullHeight className="root-container">
       {showFloatingPlayer && (
