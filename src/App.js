@@ -210,7 +210,7 @@ const App = () => {
   const loadContentInfo = useCallback(async () => {
     try {
       const { data: serviceProvider } = await Http.get(
-        `/api/gun/user/load/preferencesSeedServiceProvider`,
+        `/api/gun/user/once/preferencesSeedServiceProvider`,
         {
           headers: {
             "public-key-for-decryption": publicKey
@@ -240,7 +240,7 @@ const App = () => {
     }
     try {
       const { data: seedData } = await Http.get(
-        `/api/gun/user/load/preferencesSeedServiceData`,
+        `/api/gun/user/once/preferencesSeedServiceData`,
         {
           headers: {
             "public-key-for-decryption": publicKey
@@ -283,7 +283,7 @@ const App = () => {
   const loadStreamInfo = useCallback(async () => {
     try {
       const { data: streamData } = await Http.get(
-        `/api/gun/user/load/currentStreamInfo`,
+        `/api/gun/user/once/currentStreamInfo`,
         {
           headers: {
             "public-key-for-decryption": publicKey
