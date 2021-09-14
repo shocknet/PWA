@@ -22,8 +22,6 @@ const rifleSubscriptions = new Map();
 /** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let GunSocket = null;
 
-/** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
-export let LNDSocket = null;
 
 const reconnectRifleSubscriptions = () => {
   Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
@@ -47,22 +45,19 @@ export const connectSocket = async (host = "", reconnect = false) => {
     }
   };
 
-  if (GunSocket?.connected && LNDSocket?.connected && !reconnect) {
-    return { GunSocket, LNDSocket };
+  if (GunSocket?.connected && !reconnect) {
+    return { GunSocket };
   }
 
-  if (GunSocket && LNDSocket && reconnect) {
+  if (GunSocket && reconnect) {
     disconnectSocket(GunSocket);
-    disconnectSocket(LNDSocket);
   }
 
   GunSocket = SocketIO(`${host}/gun`, socketOptions);
-  LNDSocket = SocketIO(`${host}/lndstreaming`, socketOptions);
 
   const relayId = store.getState().node.relayId;
   if (relayId) {
     GunSocket.emit("hybridRelayId", { id: relayId });
-    LNDSocket.emit("hybridRelayId", { id: relayId });
   }
 
   const GunOn = encryptedOn(GunSocket);
@@ -108,7 +103,7 @@ export const connectSocket = async (host = "", reconnect = false) => {
 
   window.addEventListener("online resume", onlineListener);
 
-  return { GunSocket, LNDSocket };
+  return { GunSocket };
 };
 
 export const disconnectSocket = socket => {
