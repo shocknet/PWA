@@ -12,7 +12,8 @@ const INITIAL_STATE = {
   authMethod: null,
   hostingAttemptsDone: false,
   webClientPrefix:"https://lightning.page",
-  relayId:null
+  relayId:null,
+  accessSecret:null
 };
 
 const node = (state = INITIAL_STATE, action) => {
@@ -75,6 +76,10 @@ const node = (state = INITIAL_STATE, action) => {
     }
     case ACTIONS.SET_WEBCLIENT_PREFIX:{
       return {...state, webClientPrefix:action.data}
+    }
+
+    case ACTIONS.SET_ACCESS_SECRET:{
+      return {...state, accessSecret:action.data}
     }
     default:
       return state;

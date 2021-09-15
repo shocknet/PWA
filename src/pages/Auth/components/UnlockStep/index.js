@@ -14,6 +14,7 @@ const UnlockStep = () => {
   const [cachedAliasDismissed, setCachedAliasDismissed] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const accessSecret = Store.useSelector(({node}) => node.accessSecret)
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -40,7 +41,8 @@ const UnlockStep = () => {
           unlockWallet({
             // Do not replace "||" with "??"
             alias: alias || cachedAlias,
-            password
+            password,
+            accessSecret
           })
         );
       } catch (err) {

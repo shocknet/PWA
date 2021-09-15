@@ -12,6 +12,7 @@ const CreateAliasStep = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const accessSecret = Store.useSelector(({node}) => node.accessSecret)
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -49,7 +50,7 @@ const CreateAliasStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(createAlias({ alias, password }));
+        const wallet = await dispatch(createAlias({ alias, password,accessSecret }));
       } catch (err) {
         setError(err.message);
       } finally {
