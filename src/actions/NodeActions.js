@@ -15,7 +15,8 @@ export const ACTIONS = {
   SET_CONNECTION_STATUS: "node/connectionStatus",
   SET_NODE_HEALTH: "node/health",
   SET_WEBCLIENT_PREFIX: "node/setWebClientPrefix",
-  SET_RELAY_ID: "auth/relay/set"
+  SET_RELAY_ID: "auth/relay/set",
+  SET_ACCESS_SECRET: "auth/accessSecret/set"
 };
 
 export const resetNodeInfo = () => dispatch => {
@@ -87,7 +88,8 @@ export const fetchNodeUnlockStatus = () => async dispatch => {
 export const connectHost = (
   hostIP,
   resetData = true,
-  relayId = null
+  relayId = null,
+  accessSecret = null
 ) => async dispatch => {
   if (resetData) {
     dispatch({
@@ -101,6 +103,9 @@ export const connectHost = (
     Http.defaults.baseURL = `${host}`;
     if (relayId) {
       dispatch(setRelayId(relayId));
+    }
+    if(accessSecret) {
+      dispatch(setAccessSecret(accessSecret))
     }
     dispatch({
       type: ACTIONS.SET_HOST_IP,
@@ -141,11 +146,12 @@ export const connectHost = (
   return nodeHealthHttps || nodeHealth;
 };
 
-export const unlockWallet = ({ alias, password }) => async dispatch => {
+export const unlockWallet = ({ alias, password,accessSecret }) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/auth", {
       alias,
-      password
+      password,
+      accessSecret
     });
 
     dispatch(setAuthenticated(true));
@@ -167,11 +173,12 @@ export const unlockWallet = ({ alias, password }) => async dispatch => {
   }
 };
 
-export const createAlias = ({ alias, password }) => async dispatch => {
+export const createAlias = ({ alias, password, accessSecret }) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/wallet/existing", {
       alias,
-      password
+      password,
+      accessSecret
     });
 
     dispatch(setAuthenticated(true));
@@ -229,4 +236,9 @@ export const setWebclientPrefix = prefix => dispatch => {
 export const setRelayId = relayId => ({
   type: ACTIONS.SET_RELAY_ID,
   data: relayId
+});
+
+export const setAccessSecret = accessSecret => ({
+  type: ACTIONS.SET_ACCESS_SECRET,
+  data: accessSecret
 });

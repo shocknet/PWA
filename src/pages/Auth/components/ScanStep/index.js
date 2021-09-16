@@ -20,13 +20,14 @@ const ScanStep = () => {
   const connectHostIP = useCallback(
     async (hostIdentifier, walletPort) => {
       try {
-        const [hostIP, relayId] = ParseNodeIP(hostIdentifier);
+        const [hostIP, relayId, accessSecret] = ParseNodeIP(hostIdentifier);
         console.log("connectHostIP:", hostIP);
         const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
         const { withProtocolHostIP } = await connectHost(
           `${noProtocolHostIP}:${walletPort}`,
           true,
-          relayId
+          relayId,
+          accessSecret
         )(dispatch);
         return true;
       } catch (error) {
