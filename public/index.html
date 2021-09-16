@@ -214,5 +214,20 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script type="text/javascript">
+      if (location.search[1] === "/") {
+        const decoded = location.search
+          .slice(1)
+          .split("&")
+          .map(s => s.replace(/~and~/g, "&"))
+          .join("?");
+
+        window.history.replaceState(
+          null,
+          null,
+          location.pathname.slice(0, -1) + decoded + location.hash
+        );
+      }
+    </script>
   </body>
 </html>
