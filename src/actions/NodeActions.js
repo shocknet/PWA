@@ -180,7 +180,7 @@ export const createAlias = ({ alias, password, accessSecret }) => async dispatch
       password,
       accessSecret
     });
-
+    await  Http.post("/api/initUserInformation");
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
     dispatch({
@@ -206,7 +206,7 @@ export const createWallet = ({ alias, password }) => async dispatch => {
       alias,
       password
     });
-
+    await  Http.post("/api/initUserInformation");
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
     dispatch({
