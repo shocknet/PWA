@@ -279,6 +279,7 @@ const ChatPage = () => {
             onInView={handleMessageInView}
             onOutView={handleMessageOutView}
             id={message.id}
+            key={message.id}
           />
         ))}
       </div>
