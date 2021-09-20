@@ -343,12 +343,4 @@ const ContentHostInputView = ({
   );
 };
 
-const BUTTON_HOLDER_CLASS_NAME = classNames(
-  gStyles.rowCentered,
-  gStyles.width100,
-  gStyles.centerJustify,
-  gStyles.childrenSpaced16,
-  gStyles.padding12
-);
-
 export default ContentHostInputView;
