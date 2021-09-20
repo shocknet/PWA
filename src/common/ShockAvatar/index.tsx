@@ -15,7 +15,6 @@ import * as Store from "../../store";
 import Pad from "../Pad";
 import * as Utils from "../../utils";
 import * as globalStyles from "../../styles";
-import * as Hooks from "../../hooks";
 
 import "./css/index.scoped.css";
 
@@ -65,7 +64,6 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   const { avatar: image, displayName } = Store.useSelector(
     Store.selectUser(publicKey)
   );
-  const story = Hooks.useStory(publicKey);
 
   useEffect(() => {
     const intervalID = setInterval(() => {
@@ -185,9 +183,6 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
         )}
         onClick={onPress}
         to={(() => {
-          if (story.length) {
-            return `/story/${publicKey}`;
-          }
           if (createsPost) {
             return "/createPost";
           }

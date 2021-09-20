@@ -1,9 +1,5 @@
 import Http from "../utils/Http";
-import {
-  rifle,
-  rifleSocketExists,
-  unsubscribeRifleById
-} from "../utils/WebSocket";
+import { rifle } from "../utils/WebSocket";
 export const ACTIONS = {
   ADD_MY_SERVICE: "service/add",
   REMOVE_MY_SERVICE: "service/remove",

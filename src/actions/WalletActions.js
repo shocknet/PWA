@@ -15,7 +15,7 @@ export const ACTIONS = {
   REMOVE_PEER: "wallet/peers/remove",
   LOAD_RECENT_TRANSACTIONS: "wallet/recentTransactions/load",
   RESET_RECENT_TRANSACTIONS: "wallet/recentTransactions/reset",
-  LOAD_LIGHTNING_INFO: "wallet/lightningInfo/load",
+  LOAD_LIGHTNING_INFO: "wallet/lightningInfo/load"
 };
 
 export const fetchWalletBalance = () => async dispatch => {
@@ -154,36 +154,6 @@ export const fetchInvoices = ({
   }
 };
 
-const fetchPayments = ({ page, itemsPerPage = 10, reset = false }) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    const { payments } = getState().wallet;
-
-    if ((payments.page >= page && !reset) || payments.totalPages < page) {
-      return;
-    }
-
-    const { data } = await Http.get("/api/lnd/payments", {
-      params: {
-        page,
-        itemsPerPage
-      }
-    });
-
-    dispatch({
-      type: reset ? ACTIONS.LOAD_PAYMENTS : ACTIONS.LOAD_MORE_PAYMENTS,
-      data
-    });
-  } catch (e) {
-    console.error(
-      `An error ocurred while fetching payments (fetchPayments()):`,
-      e
-    );
-  }
-};
-
 export const fetchUnifiedTransactions = () => async dispatch => {
   const { data } = await Http.get("/api/lnd/unifiedTrx");
 
@@ -249,16 +219,15 @@ export const openChannel = ({
   }
 };
 
-export const FetchLightningInfo = () =>async dispatch => {
-  
-  try{
-    const {data}= await Http.get("/api/lnd/getinfo");
+export const FetchLightningInfo = () => async dispatch => {
+  try {
+    const { data } = await Http.get("/api/lnd/getinfo");
     dispatch({
-      type:ACTIONS.LOAD_LIGHTNING_INFO,
+      type: ACTIONS.LOAD_LIGHTNING_INFO,
       data
-    })
-  }catch (err) {
+    });
+  } catch (err) {
     console.error(err);
     throw err?.response?.data ?? err;
   }
-}
+};

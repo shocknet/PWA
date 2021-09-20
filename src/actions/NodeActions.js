@@ -5,7 +5,6 @@ import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
 import { parseError } from "../utils/Error";
 import { exchangeKeyPair } from "./EncryptionActions";
 import { connectSocket } from "../utils/WebSocket";
-import { safeParseJSON } from "../utils/JSON";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
@@ -104,8 +103,8 @@ export const connectHost = (
     if (relayId) {
       dispatch(setRelayId(relayId));
     }
-    if(accessSecret) {
-      dispatch(setAccessSecret(accessSecret))
+    if (accessSecret) {
+      dispatch(setAccessSecret(accessSecret));
     }
     dispatch({
       type: ACTIONS.SET_HOST_IP,
@@ -146,7 +145,11 @@ export const connectHost = (
   return nodeHealthHttps || nodeHealth;
 };
 
-export const unlockWallet = ({ alias, password,accessSecret }) => async dispatch => {
+export const unlockWallet = ({
+  alias,
+  password,
+  accessSecret
+}) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/auth", {
       alias,
@@ -173,7 +176,11 @@ export const unlockWallet = ({ alias, password,accessSecret }) => async dispatch
   }
 };
 
-export const createAlias = ({ alias, password, accessSecret }) => async dispatch => {
+export const createAlias = ({
+  alias,
+  password,
+  accessSecret
+}) => async dispatch => {
   try {
     const { data } = await Http.post("/api/lnd/wallet/existing", {
       alias,
@@ -192,7 +199,7 @@ export const createAlias = ({ alias, password, accessSecret }) => async dispatch
         authTokenExpirationDate: decodedToken.exp
       }
     });
-    await  Http.post("/api/initUserInformation", {});
+    await Http.post("/api/initUserInformation", {});
     return data;
   } catch (err) {
     dispatch(setAuthenticated(false));
@@ -218,7 +225,7 @@ export const createWallet = ({ alias, password }) => async dispatch => {
         authTokenExpirationDate: decodedToken.exp
       }
     });
-    await  Http.post("/api/initUserInformation", {});
+    await Http.post("/api/initUserInformation", {});
     return data;
   } catch (err) {
     dispatch(setAuthenticated(false));
