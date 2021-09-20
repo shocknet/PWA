@@ -180,7 +180,6 @@ export const createAlias = ({ alias, password, accessSecret }) => async dispatch
       password,
       accessSecret
     });
-    await  Http.post("/api/initUserInformation");
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
     dispatch({
@@ -193,6 +192,7 @@ export const createAlias = ({ alias, password, accessSecret }) => async dispatch
         authTokenExpirationDate: decodedToken.exp
       }
     });
+    await  Http.post("/api/initUserInformation", {});
     return data;
   } catch (err) {
     dispatch(setAuthenticated(false));
@@ -206,7 +206,6 @@ export const createWallet = ({ alias, password }) => async dispatch => {
       alias,
       password
     });
-    await  Http.post("/api/initUserInformation");
     dispatch(setAuthenticated(true));
     const decodedToken = jwtDecode(data.authorization);
     dispatch({
@@ -219,6 +218,7 @@ export const createWallet = ({ alias, password }) => async dispatch => {
         authTokenExpirationDate: decodedToken.exp
       }
     });
+    await  Http.post("/api/initUserInformation", {});
     return data;
   } catch (err) {
     dispatch(setAuthenticated(false));
