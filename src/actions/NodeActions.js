@@ -5,7 +5,6 @@ import { ACTIONS as AUTH_ACTIONS, setAuthenticated } from "./AuthActions";
 import { parseError } from "../utils/Error";
 import { exchangeKeyPair } from "./EncryptionActions";
 import { connectSocket } from "../utils/WebSocket";
-import { safeParseJSON } from "../utils/JSON";
 
 export const ACTIONS = {
   RESET_NODE_INFO: "node/reset",
