@@ -19,7 +19,7 @@ export const createService = (clear, encrypted) => async dispatch => {
 
   const all = Object.entries(encrypted).map(([name, value]) => {
     if (!value) {
-      return;
+      return null;
     }
     console.log(`setting: ${name} to ${value}`);
     return Http.post("/api/gun/put", {

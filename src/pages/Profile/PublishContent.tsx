@@ -19,7 +19,6 @@ import DarkPage from "../../common/DarkPage";
 import UploadThumbnail from "./components/UploadThumbnail";
 import * as gStyles from "../../styles";
 import * as Schema from "../../schema";
-import { base64toBlob } from "../../utils/Media";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -53,7 +52,7 @@ const PublishContentPage = () => {
 
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
-      if(loading){
+      if (loading) {
         return
       }
       console.log([title, description, mediaPreviews, videoThumbnails]);
@@ -392,9 +391,8 @@ const PublishContentPage = () => {
             <strong>
               Audience:{" "}
               <i
-                className={`fas ${
-                  postType === "public" ? "fa-globe-europe" : "fa-credit-card"
-                }`}
+                className={`fas ${postType === "public" ? "fa-globe-europe" : "fa-credit-card"
+                  }`}
               ></i>
             </strong>
             <select

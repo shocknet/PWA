@@ -185,7 +185,9 @@ const GoLive = () => {
       seedUrl,
       enableTipsOverlay,
       dispatch,
-      paragraph
+      paragraph,
+      nodeIP,
+      relayId
     ]
   );
   const closePrompt = useCallback(() => {

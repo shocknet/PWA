@@ -62,7 +62,7 @@ const BuyServiceModal = ({ service, toggleOpen }) => {
       setError(null);
       setBuySuccess(null);
     }
-  }, [buySuccess]);
+  }, [buySuccess, service]);
   const copyRes = useCallback(() => {
     navigator.clipboard.writeText(JSON.stringify(buySuccess));
     setCopied(true);

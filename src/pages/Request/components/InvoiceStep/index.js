@@ -130,7 +130,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest, dispatch, history]);
+  }, [contact, history]);
 
   return (
     <div className="container">
@@ -141,6 +141,7 @@ const InvoiceStep = ({
             selected
             contact={contact}
             selectContact={selectContact}
+            style
           />
         ) : (
           <ContactsSearch
@@ -227,6 +228,7 @@ const InvoiceStep = ({
               }}
               slideText="SLIDE TO SEND"
               onSuccess={sendInvoice}
+              disabled={false}
             />
           ) : null}
         </>
