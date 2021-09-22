@@ -9,7 +9,6 @@ import Http from "../../../../utils/Http";
 import "./css/index.scoped.css";
 import Suggestion from "../../../../common/ContactsSearch/components/Suggestion";
 import ContactsSearch from "../../../../common/ContactsSearch";
-import { sendMessage } from "../../../../actions/ChatActions";
 
 import * as gStyles from "../../../../styles";
 
@@ -130,7 +129,7 @@ const InvoiceStep = ({
         setLoading(false);
       }
     }
-  }, [contact, paymentRequest, dispatch, history]);
+  }, [contact, history]);
 
   return (
     <div className="container">
