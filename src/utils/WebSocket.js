@@ -4,6 +4,8 @@ import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "./String";
 import { setAuthenticated } from "../actions/AuthActions";
+import { fetchPath, listenPath } from "./Gun";
+import { uniqueId } from "lodash";
 /**
  * @typedef {import('../schema').Contact} Contact
  * @typedef {import('../schema').Subscription} Subscription
@@ -21,7 +23,6 @@ const rifleSubscriptions = new Map();
 
 /** @type {import("socket.io-client").Socket<import("socket.io-client/build/typed-events").DefaultEventsMap, import("socket.io-client/build/typed-events").DefaultEventsMap>} */
 export let GunSocket = null;
-
 
 const reconnectRifleSubscriptions = () => {
   Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
@@ -276,6 +277,10 @@ export const unsubscribeRifleByQuery = query => {
   subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
       console.log("Unsubscribing by query:", subscription);
+      if (subscription.listener) {
+        subscription.listener.off();
+        return true;
+      }
       unsubscribeRifleById(id);
       return true;
     }
@@ -286,6 +291,13 @@ export const unsubscribeRifleByQuery = query => {
 
 export const unsubscribeEvent = subscriptionId =>
   new Promise(resolve => {
+    const subscription = rifleSubscriptions.get(subscriptionId);
+
+    if (subscription.listener) {
+      subscription.listener.off();
+      resolve(true);
+    }
+
     const emit = encryptedEmit(GunSocket);
     emit(
       "unsubscribe",
@@ -350,6 +362,27 @@ export const rifle = ({
 }) =>
   new Promise((resolve, reject) => {
     import("../store").then(({ store }) => {
+      const { authenticated } = store.getState().auth;
+      const { authToken } = store.getState().node;
+
+      if (!authenticated) {
+        return listenPath({
+          query,
+          callback: onData
+        }).then(listener => {
+          const id = uniqueId();
+
+          rifleSubscriptions.set(id, {
+            publicKey,
+            onData,
+            query,
+            listener
+          });
+
+          return listener;
+        });
+      }
+
       if (reconnect) {
         unsubscribeRifleByQuery(query);
       }
@@ -360,7 +393,7 @@ export const rifle = ({
         "subscribe:query",
         {
           $shock: query,
-          token: store.getState().node.authToken,
+          token: authToken,
           publicKey,
           epubForDecryption,
           epubField
