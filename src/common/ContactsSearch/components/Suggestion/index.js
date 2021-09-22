@@ -2,7 +2,12 @@ import React, { useCallback, useMemo } from "react";
 import classNames from "classnames";
 import "./css/index.scoped.css";
 
-const Suggestion = ({ style, selectContact, contact, selected = false }) => {
+const Suggestion = ({
+  style = {},
+  selectContact,
+  contact,
+  selected = false
+}) => {
   const { name, avatar, type } = contact;
   const renderedAvatar = useMemo(() => {
     if (avatar) {
