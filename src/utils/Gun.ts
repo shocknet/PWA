@@ -115,7 +115,7 @@ const getNode = (root: string) => {
 const parseGunPath = ({ path, root }: GunPath) => {
   const gunPointer = getNode(root);
   const GunContext = path
-    .split("/")
+    .split(">")
     .reduce((gun, path) => gun.get(path), gunPointer);
   return GunContext;
 };
@@ -227,11 +227,22 @@ export const setPath = ({ query = "", data = {} }) =>
   });
 
 export const listenPath = ({ query = "", callback }) => {
-  const [root, path] = query.split("::");
+  const [root, path, method] = query.split("::");
   const GunContext = parseGunPath({ path, root });
-  return GunContext.on(event => {
-    callback(event);
-  });
+
+  if (method === "open") {
+    return GunContext.open(callback);
+  }
+
+  if (method === "map.on") {
+    return GunContext.map().on(callback);
+  }
+
+  if (method === "map.once") {
+    return GunContext.map().once(callback);
+  }
+
+  return GunContext.on(callback);
 };
 
 export const createRandomGunUser = () =>

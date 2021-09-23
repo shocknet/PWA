@@ -277,7 +277,7 @@ export const unsubscribeRifleByQuery = query => {
   subscriptionEntries.map(([id, subscription]) => {
     if (subscription.query === query) {
       console.log("Unsubscribing by query:", subscription);
-      if (subscription.listener) {
+      if (subscription.listener && subscription.listener.off) {
         subscription.listener.off();
         return true;
       }
@@ -293,7 +293,7 @@ export const unsubscribeEvent = subscriptionId =>
   new Promise(resolve => {
     const subscription = rifleSubscriptions.get(subscriptionId);
 
-    if (subscription.listener) {
+    if (subscription.listener && subscription.listener.off) {
       subscription.listener.off();
       resolve(true);
     }

@@ -407,7 +407,7 @@ const App = () => {
             component={offerServicePage}
           />
           <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
-          <PrivateRoute
+          <Route
             path="/otherUser/:publicKey/:selectedView?"
             exact
             component={OtherUserPage}
