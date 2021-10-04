@@ -4,7 +4,7 @@ import * as Common from "shock-common";
 import * as Encryption from "./Encryption";
 import { initialMessagePrefix } from "./String";
 import { setAuthenticated } from "../actions/AuthActions";
-import { fetchPath, listenPath } from "./Gun";
+import { listenPath } from "./Gun";
 import { uniqueId } from "lodash";
 /**
  * @typedef {import('../schema').Contact} Contact

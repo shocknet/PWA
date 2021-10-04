@@ -39,7 +39,7 @@ export const renderCachedFile = (fileURL, selector) => {
       if (!element.src) {
         element.src = fileURL;
         element.muted = true;
-        element.autoplay = true;
+        element.autoplay = false;
       }
     });
   }
