@@ -34,7 +34,7 @@ const parseUrl = url => {
 
 const HostStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [hostIP, setHostIP] = useState("");
   const [connecting, setConnecting] = useState(false);
 
@@ -60,11 +60,7 @@ const HostStep = () => {
       setError(null);
       const [parsedHostIP, relayId] = ParseNodeIP(hostIP);
       const noProtocolHostIP = parseUrl(parsedHostIP);
-      const { withProtocolHostIP } = await connectHost(
-        noProtocolHostIP,
-        true,
-        relayId
-      )(dispatch);
+      await connectHost(noProtocolHostIP, true, relayId)(dispatch);
     } catch (error) {
       setConnecting(false);
       setError("Unable to connect to host");
@@ -87,6 +83,7 @@ const HostStep = () => {
             target="_blank"
             href="https://github.com/shocknet/api"
             className="color-text-blue"
+            rel="noreferrer"
           >
             ShockAPI
           </a>{" "}
@@ -98,6 +95,7 @@ const HostStep = () => {
             target="_blank"
             href="https://github.com/shocknet/api"
             className="color-text-blue"
+            rel="noreferrer"
           >
             Here
           </a>

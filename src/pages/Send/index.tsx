@@ -11,6 +11,10 @@ import Loader from "../../common/Loader";
 import "./css/index.scoped.css";
 import { isDesktop } from "../../utils/Platform";
 
+interface properties {
+  [key: string]: any
+}
+
 const SendPage = () => {
   const location = useLocation();
   const history = useHistory();
@@ -18,7 +22,7 @@ const SendPage = () => {
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [unit, setUnit] = useState("sats");
-  const [contact, setContact] = useState();
+  const [contact, setContact] = useState<properties>({})
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -123,9 +127,9 @@ const SendPage = () => {
 
   const sendGunPayment = useCallback(async () => {
     if (contact) {
-      const { data: gunPayment } = await Http.post("/api/gun/sendpayment", {
+      await Http.post("/api/gun/sendpayment", {
         recipientPub: contact.pk,
-        amount: parseInt(amount),
+        amount: Number(amount),
         feeLimit: amount * 0.006 + 10, // TODO: Hardcoded fees for now
         memo: description
       });
@@ -176,6 +180,7 @@ const SendPage = () => {
             selected
             contact={contact}
             selectContact={selectContact}
+            style
           />
         ) : (
           <ContactSearch

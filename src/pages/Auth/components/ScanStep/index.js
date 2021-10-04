@@ -23,7 +23,7 @@ const ScanStep = () => {
         const [hostIP, relayId, accessSecret] = ParseNodeIP(hostIdentifier);
         console.log("connectHostIP:", hostIP);
         const noProtocolHostIP = hostIP.replace(/^http(s)?:\/\//gi, "");
-        const { withProtocolHostIP } = await connectHost(
+        await connectHost(
           `${noProtocolHostIP}:${walletPort}`,
           true,
           relayId,

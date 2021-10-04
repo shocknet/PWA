@@ -94,6 +94,7 @@ const App = () => {
   const dialogHasCallback = Store.useSelector(
     ({ app }) => app.dialogHasCallback
   );
+  // @ts-ignore
   const [update, setUpdate] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
@@ -136,7 +137,7 @@ const App = () => {
         width={undefined}
       />
     );
-  }, [streamUrl, update]);
+  }, [streamUrl]);
 
   const stopStream = useCallback(() => {
     Http.post("/api/stopStream", {

@@ -5,9 +5,8 @@ import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import "./css/index.scoped.css";
 import Thumbnail from "./components/Thumbnail";
 import CustomThumbnail from "./components/CustomThumbnail";
-import useMemo from "react";
 
-interface Thumbnail {
+interface ThumbnailProps {
   preview: string;
   blob: Blob;
 }
@@ -24,7 +23,7 @@ async function extractFramesFromVideo(
   fps = 25,
   limit = 3,
   randomFrames = true
-): Promise<Thumbnail[]> {
+): Promise<ThumbnailProps[]> {
   return new Promise(async resolve => {
     let video = document.createElement("video");
 
@@ -64,8 +63,8 @@ async function extractFramesFromVideo(
       } else {
         video.currentTime = currentTime;
       }
-
-      await new Promise(r => (seekResolve = r));
+      let promiseSeekResolve = await new Promise(resolve => resolve);
+      seekResolve = promiseSeekResolve;
 
       context.drawImage(video, 0, 0, w, h);
       let base64ImageData = canvas.toDataURL();
@@ -90,9 +89,9 @@ const UploadThumbnail = ({
   const [selectedThumbnailFile, setSelectedThumbnailFile] = useState<
     string | undefined
   >();
-  const [customThumbnail, setCustomThumbnail] = useState<Thumbnail>();
+  const [customThumbnail, setCustomThumbnail] = useState<ThumbnailProps>();
   const [videoPlaying, setVideoPlaying] = useState(false);
-  const [videoFrames, setVideoFrames] = useState<Thumbnail[]>([]);
+  const [videoFrames, setVideoFrames] = useState<ThumbnailProps[]>([]);
   const videoElement = useRef<HTMLVideoElement>();
 
   const setSelectedThumbnail = useCallback(thumbnail => {
@@ -114,20 +113,20 @@ const UploadThumbnail = ({
         return;
       }
 
-      const data: Thumbnail = { preview: reader.result, blob: thumbnail };
+      const data: ThumbnailProps = { preview: reader.result, blob: thumbnail };
       setCustomThumbnail(data);
       setSelectedThumbnail(data);
       console.log(data);
     });
 
     reader.readAsDataURL(thumbnail);
-  }, []);
+  }, [setSelectedThumbnail]);
 
   const loadVideoFrames = useCallback(async () => {
     const frames = await extractFramesFromVideo(target.uri);
     setVideoFrames(frames);
     setSelectedThumbnail(frames[0]);
-  }, [target]);
+  }, [target, setSelectedThumbnail]);
 
   useEffect(() => {
     if (!target?.uri) {
@@ -171,7 +170,7 @@ const UploadThumbnail = ({
     if (videoFrames.length) {
       setSelectedThumbnail(videoFrames[0]);
     }
-  }, [videoFrames]);
+  }, [videoFrames, setSelectedThumbnail]);
 
   const onEnded = useCallback(() => {
     setVideoPlaying(false);

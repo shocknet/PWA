@@ -1,38 +1,41 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
-import { createAlias, createWallet } from "../../../../actions/NodeActions";
+import { createAlias } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
 import * as Store from "../../../../store";
 
 const CreateAliasStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const accessSecret = Store.useSelector(({node}) => node.accessSecret)
+  const accessSecret = Store.useSelector(({ node }) => node.accessSecret);
 
-  const onInputChange = useCallback(e => {
-    const { value, name } = e.target;
-    switch (name) {
-      case "alias": {
-        setAlias(value);
-        return;
+  const onInputChange = useCallback(
+    e => {
+      const { value, name } = e.target;
+      switch (name) {
+        case "alias": {
+          setAlias(value);
+          return;
+        }
+        case "password": {
+          setPassword(value);
+          return;
+        }
+        case "confirmPassword": {
+          setConfirmPassword(value);
+          return;
+        }
+        default:
+          return;
       }
-      case "password": {
-        setPassword(value);
-        return;
-      }
-      case "confirmPassword": {
-        setConfirmPassword(value);
-        return;
-      }
-      default:
-        return;
-    }
-  }, [setAlias,setPassword,setConfirmPassword]);
+    },
+    [setAlias, setPassword, setConfirmPassword]
+  );
 
   const onSubmit = useCallback(
     async e => {
@@ -50,14 +53,16 @@ const CreateAliasStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(createAlias({ alias, password,accessSecret }));
+        const wallet = await dispatch(
+          createAlias({ alias, password, accessSecret })
+        );
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     },
-    [alias, password,confirmPassword, dispatch]
+    [alias, password, confirmPassword, dispatch, accessSecret]
   );
 
   const chooseUnlockWallet = useCallback(() => {

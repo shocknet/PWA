@@ -436,7 +436,7 @@ export const subPostTips = (author: string, postID: string) => (
       query: `${author}::posts>${postID}>tipsSet::map.on`,
       onData(tipAmt: unknown, tipID: string) {
         const nTipAmount = Number(tipAmt);
-        if (nTipAmount !== NaN) {
+        if (!isNaN(nTipAmount)) {
           dispatch(
             postTipReceived({
               author,

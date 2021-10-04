@@ -12,10 +12,6 @@ const OfferService = () => {
   const history = useHistory();
   //@ts-expect-error
   const { seedUrl, seedToken } = useSelector(({ content }) => content.seedInfo);
-  //@ts-expect-error
-  const publicKey = useSelector(({ node }) => node.publicKey);
-  //@ts-expect-error
-  const userProfiles = useSelector(({ userProfiles }) => userProfiles);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [serviceType, setServiceType] = useState("torrentSeed");
@@ -74,7 +70,7 @@ const OfferService = () => {
         setError(err.message || err);
       }
     },
-    [serviceType, servicePrice, history]
+    [serviceType, servicePrice, history, dispatch, seedUrl, seedToken]
   );
   const onDiscard = useCallback(
     async e => {

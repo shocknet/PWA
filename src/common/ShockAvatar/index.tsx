@@ -60,7 +60,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
   const selfPublicKey = Store.useSelector(Store.selectSelfPublicKey);
   const isSelf = publicKey === selfPublicKey;
 
-  const { forceUpdate, tick } = Utils.useForceUpdate();
+  const { forceUpdate } = Utils.useForceUpdate();
   const { avatar: image, displayName } = Store.useSelector(
     Store.selectUser(publicKey)
   );
@@ -102,7 +102,7 @@ const ShockAvatar: React.FC<ShockAvatarProps> = ({
     }
 
     return style;
-  }, [height, lastSeenNode, lastSeenApp, disableOnlineRing, greyBorder, tick]);
+  }, [height, lastSeenNode, lastSeenApp, disableOnlineRing, greyBorder]);
 
   // const showStoryRing = story.length && !onPressProp && !setsAvatar;
 
