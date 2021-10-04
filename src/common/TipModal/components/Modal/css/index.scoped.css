@@ -1,0 +1,112 @@
+.tip-modal-head {
+  background-color: #2a384a;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.tip-modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 25px 10px;
+  max-width: 620px;
+  background-color: #1b2129;
+  align-items: center;
+}
+
+input.tip-modal-input {
+  width: 270px;
+  padding: 6px 20px;
+  border: 0;
+  border-radius: 9px;
+  background-color: #2a384a;
+  color: #ffffffc9;
+  font-weight: 600;
+  font-family: Poppins;
+}
+
+.tip-modal-footer {
+  background-color: #4080b2;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.tip-modal-footer:hover {
+  background-color: #4e94ca;
+}
+
+p.tip-modal-instructions {
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.tip-modal-loading {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1b2129f2;
+}
+
+.tip-modal-qr-code-container {
+  display: flex;
+  padding: 8px;
+  background-color: #4db1ff;
+}
+
+.tip-modal-action-btns {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-modal-action-btns .tip-modal-action-btn:first-of-type {
+  margin-right: 15px;
+}
+
+.tip-modal-action-btn {
+  display: flex;
+  line-height: 1;
+  padding: 10px 40px;
+  border-radius: 4px;
+  background-color: #2a384a;
+  font-weight: bold;
+  font-size: 14px;
+  border: 2px solid #314054;
+  color: #ffffffcf;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tip-modal-action-btn:hover {
+  background-color: #f2a90087;
+  border-color: #ad8220;
+  color: #fff;
+}
+
+@media only screen and (max-width: 570px) {
+  .tip-modal-action-btns {
+    flex-direction: column;
+  }
+
+  .tip-modal-action-btns .tip-modal-action-btn:first-of-type {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .tip-modal-action-btns .tip-modal-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

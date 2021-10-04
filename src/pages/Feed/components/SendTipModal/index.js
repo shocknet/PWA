@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useSelector } from "../../../../store";
 import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
 import InputGroup from "../../../../common/InputGroup";
@@ -9,6 +10,7 @@ import "./css/index.scoped.css";
 
 const SendTipModal = ({ tipData, toggleOpen }) => {
   const dispatch = useDispatch();
+  const authenticated = useSelector(({ auth }) => auth.authenticated);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState("");
@@ -62,7 +64,7 @@ const SendTipModal = ({ tipData, toggleOpen }) => {
   return (
     <Modal
       toggleModal={toggleOpen}
-      modalOpen={!!tipData}
+      modalOpen={tipData && authenticated}
       modalTitle="Send Tip"
       noFullWidth
     >

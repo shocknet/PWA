@@ -204,3 +204,109 @@ a.bottom-nav-btn.active-nav-btn {
 .text-align-center {
   text-align: center;
 }
+
+.media-content-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  overflow: hidden;
+  border-radius: 8px;
+  align-self: center;
+  margin-bottom: 30px;
+}
+
+.media-content-root {
+  overflow: hidden;
+  width: 100%;
+}
+
+.media-content-root.is-draggable {
+  cursor: move;
+  cursor: grab;
+}
+
+.media-content-root.is-dragging {
+  cursor: grabbing;
+}
+
+.media-content-container {
+  display: flex;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  margin-left: -10px;
+}
+
+.media-content-container .media-container {
+  padding-left: 10px;
+  min-width: 100%;
+  position: relative;
+}
+
+.media-carousel-controls-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  padding: 25px 15px;
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent);
+  opacity: 1;
+}
+
+.media-carousel-arrow {
+  font-size: 24px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  line-height: 0;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.media-carousel-arrow:hover {
+  opacity: 0.9;
+}
+
+.media-carousel-pages {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.media-carousel-page {
+  width: 100%;
+  height: 4px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 2px;
+  opacity: 0.6;
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.media-carousel-arrow.fas.fa-angle-left {
+  margin-right: 10px;
+}
+
+.media-carousel-arrow.fas.fa-angle-right {
+  margin-left: 10px;
+}
+
+.media-carousel-page:hover {
+  opacity: 0.8;
+}
+
+.media-carousel-page.active-carousel-page {
+  opacity: 0.9;
+}
+
+@media only screen and (max-width: 500px) {
+  .media-content-carousel {
+    border-radius: 0;
+  }
+}

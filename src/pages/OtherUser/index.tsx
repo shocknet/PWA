@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 
 import Http from "../../utils/Http";
 
+import { createGuestUser } from "../../actions/GuestActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import BottomBar from "../../common/BottomBar";
@@ -23,6 +24,7 @@ import ShockAvatar from "../../common/ShockAvatar";
 import ProfileDivider from "../../common/ProfileDivider";
 import Pad from "../../common/Pad";
 import ContentWall from "../../common/ContentWall";
+import GuestTipModal from "../../common/TipModal";
 
 import ClipboardIcon from "../../images/clipboard.svg";
 import QRCodeIcon from "../../images/qrcode.svg";
@@ -56,6 +58,7 @@ const OtherUserPage = () => {
   const dispatch = Store.useDispatch();
   const history = useHistory();
   const myGunPub = Store.useSelector(({ node }) => node.publicKey);
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   const { publicKey: userPublicKey, selectedView = "posts" } = useParams<{
@@ -77,42 +80,51 @@ const OtherUserPage = () => {
     };
   }, [dispatch]);
 
-  useEffect(() => dispatch(subPosts(userPublicKey)), [dispatch, userPublicKey]);
-  useEffect(() => dispatch(subSharedPosts(userPublicKey)), [
-    dispatch,
-    userPublicKey
-  ]);
-
-  // effect for user profile
   useEffect(() => {
-    const unsubscribe = dispatch(subscribeUserProfile(userPublicKey));
+    const unsubscribePosts = dispatch(subPosts(userPublicKey));
+    const unsubscribeSharedPosts = dispatch(subSharedPosts(userPublicKey));
+    const unsubscribeUserProfile = dispatch(
+      subscribeUserProfile(userPublicKey)
+    );
 
-    return unsubscribe;
+    return () => {
+      unsubscribePosts();
+      unsubscribeSharedPosts();
+      unsubscribeUserProfile();
+    };
   }, [dispatch, userPublicKey]);
 
   //effect for services
   useEffect(() => {
-    Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`)
-      .then(({ data }) => {
-        setUserServices(data.data);
-      })
-      .catch(e => {
-        const msg = Utils.extractErrorMessage(e);
+    if (authenticated) {
+      Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`)
+        .then(({ data }) => {
+          setUserServices(data.data);
+        })
+        .catch(e => {
+          const msg = Utils.extractErrorMessage(e);
 
-        if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
-          Utils.logger.warn(
-            `Could not fetch this user's (...${userPublicKey.slice(
-              -8
-            )}) offered services due to a timeout error, this can be expected if the data hasn't been populated yet.`
-          );
-        } else {
-          toast.dark(
-            `There was an error fetching ${user.displayName}'s offered services: ${msg}`
-          );
-          Utils.logger.error(e);
-        }
-      });
-  }, [user.displayName, userPublicKey]);
+          if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+            Utils.logger.warn(
+              `Could not fetch this user's (...${userPublicKey.slice(
+                -8
+              )}) offered services due to a timeout error, this can be expected if the data hasn't been populated yet.`
+            );
+          } else {
+            toast.dark(
+              `There was an error fetching ${user.displayName}'s offered services: ${msg}`
+            );
+            Utils.logger.error(e);
+          }
+        });
+    }
+  }, [authenticated, user.displayName, userPublicKey]);
+
+  useEffect(() => {
+    if (!authenticated) {
+      dispatch(createGuestUser());
+    }
+  }, [authenticated, dispatch]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);
@@ -166,9 +178,14 @@ const OtherUserPage = () => {
     Store.selectPostsNewestToOldest(userPublicKey)
   );
 
+  const redirectAuth = useCallback(() => {
+    history.push("/auth");
+  }, [history]);
+
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
   }, [userPublicKey]);
+
   const renderPosts = () => {
     if (posts.length === 0) {
       return <Loader text="loading posts..." />;
@@ -308,6 +325,7 @@ const OtherUserPage = () => {
           selected={selectedView}
           showContentBtn
         />
+        <Pad amt={30} />
 
         <div>
           {selectedView === "posts" && renderPosts()}
@@ -352,6 +370,11 @@ const OtherUserPage = () => {
           </div>
         </Modal>
         <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
+        <GuestTipModal
+          publicKey={userPublicKey}
+          tipData={tipModalData}
+          toggleOpen={toggleTipModal}
+        />
         <UnlockModal
           unlockData={unlockModalData}
           toggleOpen={toggleUnlockModal}
@@ -361,7 +384,8 @@ const OtherUserPage = () => {
           toggleOpen={toggleBuyServiceModal}
         />
         <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
-
+      </div>
+      {authenticated ? (
         <AddBtn
           onClick={toggleModal}
           large
@@ -369,7 +393,14 @@ const OtherUserPage = () => {
           icon={null}
           label={null}
         />
-      </div>
+      ) : (
+        <AddBtn
+          onClick={redirectAuth}
+          large
+          icon="user"
+          label="Create a Lightning Page"
+        />
+      )}
 
       <BottomBar />
     </div>
