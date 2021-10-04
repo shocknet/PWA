@@ -1,6 +1,6 @@
 import "./css/index.scoped.css";
 
-const TipRibbon = ({ tipCounter, tipValue, zoomed }) =>
+const TipRibbon = ({ tipCounter, tipValue, zoomed = false }) =>
   tipValue > 0 ? (
     <div className="ribbon-container" style={{ opacity: !zoomed ? 1 : 0 }}>
       <p className="ribbon-title">Total Tips</p>
