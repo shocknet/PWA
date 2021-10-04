@@ -2,6 +2,7 @@ import GunDB from "gun/gun";
 import { isCrawler } from "./Prerender";
 import "gun/sea";
 import "gun/lib/load";
+import { IGunCryptoKeyPair, IGunRecordNodeRaw } from "gun/types/types";
 
 interface GunPath {
   path: string;
@@ -16,6 +17,20 @@ interface GunDBQuery {
   // Private arguments for recursive retries
   _retryCount?: number;
   _fallbackResult?: any;
+}
+
+interface GunDBUser {
+  ack: 2;
+  get: string;
+  on: (args_0: unknown, args_1: unknown, args_2: unknown) => unknown;
+  put: {
+    alias: string;
+    auth: any;
+    epub: string;
+    pub: string;
+  };
+  sea: IGunCryptoKeyPair;
+  soul: string;
 }
 
 const safeParse = (data: string) => {
@@ -82,15 +97,12 @@ const isIncompleteGunResponse = (data: any) => {
       }
 
       const stringifiedData = JSON.stringify(data);
-      console.log(data, stringifiedData);
 
       if (stringifiedData === "{}") {
         return true;
       }
 
       const filteredGunProps = Object.entries(data).filter(filterGunProps);
-
-      console.log(filteredGunProps, filteredGunProps?.length);
 
       if (!filteredGunProps?.length) {
         return true;
@@ -131,10 +143,10 @@ export const fetchPath = ({
   _retryCount = 0,
   _fallbackResult = null
 }: GunDBQuery) =>
-  new Promise(resolve => {
+  new Promise<any>(resolve => {
     const parsedRetryLimit = isCrawler() ? 1 : retryLimit;
     const parsedRetryDelay = isCrawler() ? 200 : retryDelay;
-    const [root, path, method] = query.split("::");
+    const [root, path, method = "once"] = query.split("::");
 
     if (_retryCount > parsedRetryLimit) {
       resolve(_fallbackResult);
@@ -217,11 +229,11 @@ export const putPath = ({ query = "", data = {} }) =>
   });
 
 export const setPath = ({ query = "", data = {} }) =>
-  new Promise((resolve, reject) => {
+  new Promise<IGunRecordNodeRaw<string>>((resolve, reject) => {
     const [root, path] = query.split("::");
     const GunContext = parseGunPath({ path, root });
     const response = GunContext.set(data, event => {
-      console.log(data);
+      // @ts-ignore
       resolve(response);
     });
   });
@@ -245,8 +257,15 @@ export const listenPath = ({ query = "", callback }) => {
   return GunContext.on(callback);
 };
 
+export interface RandomGunUser {
+  alias: string;
+  pass: string;
+  ok: 0;
+  pub: string;
+}
+
 export const createRandomGunUser = () =>
-  new Promise((resolve, reject) => {
+  new Promise<RandomGunUser>((resolve, reject) => {
     const randomAlias = randomString(10);
     const randomPass = randomString(10);
     Gun.user().create(randomAlias, randomPass, event => {
@@ -260,13 +279,18 @@ export const createRandomGunUser = () =>
         });
         return;
       }
+
       resolve({ ...event, alias: randomAlias, pass: randomPass });
     });
   });
 
 export const authUser = (alias: string, pass: string) =>
-  new Promise(resolve => {
+  new Promise<GunDBUser>((resolve, reject) => {
     Gun.user().auth(alias, pass, user => {
+      if ("err" in user) {
+        reject(user);
+        return;
+      }
       resolve(user);
     });
   });
