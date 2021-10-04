@@ -164,8 +164,6 @@ const Post = ({
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
-          hideRibbon={undefined}
-          width={undefined}
         />
       );
     }
@@ -183,8 +181,6 @@ const Post = ({
             tipCounter={tipCounter}
             tipValue={tipValue}
             key={`${id}-${index}`}
-            hideRibbon={undefined}
-            width={undefined}
           />
         );
       }
