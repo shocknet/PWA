@@ -58,6 +58,7 @@ const FeedPage = () => {
       console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
+        return;
       }
 
       setTipModalOpen(tipData);
