@@ -290,6 +290,7 @@ const Post = ({
           text: `Check out ${author.displayName}'s post on Lightning.Page!`,
           url
         });
+        return;
       }
 
       navigator.clipboard.writeText(url);
