@@ -10,6 +10,7 @@ import FeesReducer from "./FeesReducer";
 import FeedReducer from "./FeedReducer";
 import EncryptionReducer from "./EncryptionReducer";
 import UserProfilesReducer from "./UserProfilesReducer";
+import GuestReducer from "./GuestReducer";
 import OrdersReducer from "./OrdersReducer";
 import AppReducer from "./AppReducer";
 import settings from "./settings";
@@ -28,6 +29,7 @@ const reducers = combineReducers({
   userProfiles: UserProfilesReducer,
   orders: OrdersReducer,
   app: AppReducer,
+  guest: GuestReducer,
   settings,
   coordinates
 });
