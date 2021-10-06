@@ -226,10 +226,8 @@ const GoLive = () => {
         if (availableToken || (seedUrl && seedToken)) {
           onSubmitCb();
         } else if (serviceID && seedProviderPub) {
-          const {
-            data: { data: servicePrice }
-          } = await Http.get(
-            `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>data>servicePrice`
+          const { data: servicePrice } = await Http.get(
+            `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>servicePrice`
           );
           setPromptInfo({ servicePrice, serviceID });
         } else {

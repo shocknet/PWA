@@ -90,9 +90,9 @@ const ContentHostInput = () => {
       return;
     }
     Http.get(
-      `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${providedService}>data>servicePrice`
+      `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${providedService}>servicePrice`
     )
-      .then(({ data: { data } }) => {
+      .then(({ data }) => {
         setPriceToUpdate(data);
       })
       .catch(e => {
