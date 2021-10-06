@@ -226,11 +226,11 @@ const GoLive = () => {
         if (availableToken || (seedUrl && seedToken)) {
           onSubmitCb();
         } else if (serviceID && seedProviderPub) {
-          const { data: service } = await Http.get(
-            `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${serviceID}`
+          const {
+            data: { data: servicePrice }
+          } = await Http.get(
+            `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>data>servicePrice`
           );
-          const { servicePrice } = service.data;
-          console.log(service);
           setPromptInfo({ servicePrice, serviceID });
         } else {
           setError("No way found to publish content");
