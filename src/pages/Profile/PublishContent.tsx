@@ -53,7 +53,7 @@ const PublishContentPage = () => {
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
       if (loading) {
-        return
+        return;
       }
       console.log([title, description, mediaPreviews, videoThumbnails]);
       if (!title) {
@@ -394,8 +394,9 @@ const PublishContentPage = () => {
             <strong>
               Audience:{" "}
               <i
-                className={`fas ${postType === "public" ? "fa-globe-europe" : "fa-credit-card"
-                  }`}
+                className={`fas ${
+                  postType === "public" ? "fa-globe-europe" : "fa-credit-card"
+                }`}
               ></i>
             </strong>
             <select
