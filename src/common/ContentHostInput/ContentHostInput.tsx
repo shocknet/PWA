@@ -93,7 +93,7 @@ const ContentHostInput = () => {
       `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${providedService}>servicePrice`
     )
       .then(({ data }) => {
-        setPriceToUpdate(data);
+        setPriceToUpdate(data.data);
       })
       .catch(e => {
         setProviderError(e);
