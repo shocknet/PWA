@@ -141,7 +141,7 @@ const InvoiceStep = ({
             selected
             contact={contact}
             selectContact={selectContact}
-            style
+            style={undefined}
           />
         ) : (
           <ContactsSearch
