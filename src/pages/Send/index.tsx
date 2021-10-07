@@ -12,7 +12,7 @@ import "./css/index.scoped.css";
 import { isDesktop } from "../../utils/Platform";
 
 interface properties {
-  [key: string]: any
+  [key: string]: any;
 }
 
 const SendPage = () => {
@@ -22,7 +22,7 @@ const SendPage = () => {
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [unit, setUnit] = useState("sats");
-  const [contact, setContact] = useState<properties>({})
+  const [contact, setContact] = useState<properties>({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
