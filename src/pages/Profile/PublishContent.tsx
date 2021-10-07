@@ -53,7 +53,7 @@ const PublishContentPage = () => {
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
       if (loading) {
-        return
+        return;
       }
       console.log([title, description, mediaPreviews, videoThumbnails]);
       if (!title) {
@@ -232,11 +232,10 @@ const PublishContentPage = () => {
       if (availableToken || (seedUrl && seedToken)) {
         onSubmitCb();
       } else if (serviceID && seedProviderPub) {
-        const { data: service } = await Http.get(
-          `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${serviceID}`
+        const { data: servicePrice } = await Http.get(
+          `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>servicePrice`
         );
-        const { servicePrice } = service.data;
-        console.log(service);
+
         setPromptInfo({ servicePrice, serviceID });
       } else {
         setError("No way found to publish content");
@@ -391,8 +390,9 @@ const PublishContentPage = () => {
             <strong>
               Audience:{" "}
               <i
-                className={`fas ${postType === "public" ? "fa-globe-europe" : "fa-credit-card"
-                  }`}
+                className={`fas ${
+                  postType === "public" ? "fa-globe-europe" : "fa-credit-card"
+                }`}
               ></i>
             </strong>
             <select
