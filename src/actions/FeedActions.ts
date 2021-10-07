@@ -34,32 +34,6 @@ export const addFollow = follow => dispatch =>
     data: follow
   });
 
-export const loadSharedPost = (
-  originalPostId,
-  originalPublicKey,
-  sharerPublicKey
-) => async dispatch => {
-  const { data: post } = await Http.get(
-    `/api/gun/otheruser/${originalPublicKey}/load/posts>${originalPostId}`
-  );
-  dispatch(subscribeUserProfile(originalPublicKey));
-  const tipSet = post.data.tipsSet ? Object.values(post.data.tipsSet) : [];
-  const lenSet = tipSet.length;
-  const tot =
-    lenSet > 0 ? tipSet.reduce((acc, val) => Number(val) + Number(acc)) : 0;
-  dispatch({
-    type: ACTIONS.LOAD_SHARED_POST,
-    data: {
-      ...post.data,
-      authorId: originalPublicKey,
-      sharerId: sharerPublicKey,
-      id: originalPostId,
-      tipCounter: lenSet,
-      tipValue: tot
-    }
-  });
-};
-
 export const postDeleted = createAction<{
   author: string;
   id: string;
