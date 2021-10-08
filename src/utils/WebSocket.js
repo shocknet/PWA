@@ -217,9 +217,6 @@ const encryptedOn = socket => async (eventName, callback) => {
             privateKey: localPrivateKey,
             encryptedMessage: response
           });
-          if (typeof res !== "object") {
-            console.log("asdfghhi", res);
-          }
           return res;
         } catch (e) {
           return e;
