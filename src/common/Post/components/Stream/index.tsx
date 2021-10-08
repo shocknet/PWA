@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 import videojs from "video.js";
-import Http from "../../../../utils/Http";
 
 const Stream = ({
   id,
@@ -21,8 +20,8 @@ const Stream = ({
   if (width) {
     videoStyle.width = width;
   }
-  const {liveStatus} = item
-  useEffect(() =>{
+  const { liveStatus } = item
+  useEffect(() => {
     const player = videojs(playerDOM.current, {
       autoplay: true,
       muted: true,
@@ -37,9 +36,9 @@ const Stream = ({
     //  console.log('retryplaylist');
     //});
     player.play();
-  },[item])
-  useEffect(()=>{
-    if(item.viewersSocketUrl){
+  }, [item])
+  useEffect(() => {
+    if (item.viewersSocketUrl) {
       const socket = new WebSocket(`${item.viewersSocketUrl}/stream/watch/${item.userToken}`);
       socket.addEventListener("open", () => {
         console.log("viewer socket open")
@@ -48,7 +47,7 @@ const Stream = ({
         socket.close()
       }
     }
-  },[item])
+  }, [item])
 
   return (
     <div className="media-container w-100">

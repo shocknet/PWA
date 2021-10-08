@@ -7,31 +7,34 @@ import * as Store from "../../../../store";
 
 const CreateWalletStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [alias, setAlias] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onInputChange = useCallback(e => {
-    const { value, name } = e.target;
-    switch (name) {
-      case "alias": {
-        setAlias(value);
-        return;
+  const onInputChange = useCallback(
+    e => {
+      const { value, name } = e.target;
+      switch (name) {
+        case "alias": {
+          setAlias(value);
+          return;
+        }
+        case "password": {
+          setPassword(value);
+          return;
+        }
+        case "confirmPassword": {
+          setConfirmPassword(value);
+          return;
+        }
+        default:
+          return;
       }
-      case "password": {
-        setPassword(value);
-        return;
-      }
-      case "confirmPassword": {
-        setConfirmPassword(value);
-        return;
-      }
-      default:
-        return;
-    }
-  }, [setAlias,setPassword,setConfirmPassword]);
+    },
+    [setAlias, setPassword, setConfirmPassword]
+  );
 
   const onSubmit = useCallback(
     async e => {
@@ -54,7 +57,7 @@ const CreateWalletStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(createWallet({ alias, password }));
+        await dispatch(createWallet({ alias, password }));
       } catch (err) {
         setError(err.message);
       } finally {

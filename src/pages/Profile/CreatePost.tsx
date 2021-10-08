@@ -24,7 +24,6 @@ const CreatePostPage = () => {
   const [paragraph, setParagraph] = useState("");
   const [postType, setPostType] = useState("public");
   const [selectedContent, setSelectedContent] = useState("");
-  const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
     dispatch(subOwnPublishedContent());
@@ -45,7 +44,7 @@ const CreatePostPage = () => {
   const onSubmit = useCallback(
     async e => {
       e.preventDefault();
-      if(loading){
+      if (loading) {
         return
       }
       console.log("submitting");
@@ -53,7 +52,7 @@ const CreatePostPage = () => {
         setError("at least one paragraph or one media is required");
         return;
       }
-      
+
       setLoading(true);
       let contentItems = [];
       if (paragraph !== "") {
@@ -217,9 +216,8 @@ const CreatePostPage = () => {
           <strong>
             Audience:{" "}
             <i
-              className={`fas ${
-                postType === "public" ? "fa-globe-europe" : "fa-credit-card"
-              }`}
+              className={`fas ${postType === "public" ? "fa-globe-europe" : "fa-credit-card"
+                }`}
             ></i>
           </strong>
           <select

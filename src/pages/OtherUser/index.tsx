@@ -11,7 +11,7 @@ import classNames from "classnames";
 import * as Common from "shock-common";
 import { toast } from "react-toastify";
 
-import Http from "../../utils/Http";
+import { rifle } from "../../utils/WebSocket";
 
 import { createGuestUser } from "../../actions/GuestActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
@@ -94,37 +94,45 @@ const OtherUserPage = () => {
     };
   }, [dispatch, userPublicKey]);
 
-  //effect for services
-  useEffect(() => {
-    if (authenticated) {
-      Http.get(`/api/gun/otheruser/${userPublicKey}/load/offeredServices`)
-        .then(({ data }) => {
-          setUserServices(data.data);
-        })
-        .catch(e => {
-          const msg = Utils.extractErrorMessage(e);
-
-          if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
-            Utils.logger.warn(
-              `Could not fetch this user's (...${userPublicKey.slice(
-                -8
-              )}) offered services due to a timeout error, this can be expected if the data hasn't been populated yet.`
-            );
-          } else {
-            toast.dark(
-              `There was an error fetching ${user.displayName}'s offered services: ${msg}`
-            );
-            Utils.logger.error(e);
-          }
-        });
-    }
-  }, [authenticated, user.displayName, userPublicKey]);
-
   useEffect(() => {
     if (!authenticated) {
       dispatch(createGuestUser());
     }
   }, [authenticated, dispatch]);
+
+  //effect for services
+  useEffect(() => {
+    const subscription = rifle({
+      onData(data, key) {
+        setUserServices(s => ({
+          ...s,
+          [key]: data
+        }));
+      },
+      query: `${userPublicKey}::offeredServices::map.on`,
+      onError(e) {
+        const msg = Utils.extractErrorMessage(e);
+
+        if (msg.startsWith("timeout of ") || msg === "TIMEOUT_ERR") {
+          Utils.logger.warn(
+            `Could not fetch this user's (...${userPublicKey.slice(
+              -8
+            )}) offered services due to a timeout error, this can be expected if the data hasn't been populated yet.`
+          );
+        } else {
+          toast.dark(
+            `There was an error fetching ${user.displayName}'s offered services: ${msg}`
+          );
+          Utils.logger.error(e);
+        }
+      }
+    });
+    return () => {
+      subscription.then(sub => {
+        sub.off();
+      });
+    };
+  }, [user.displayName, userPublicKey]);
 
   const toggleModal = useCallback(() => {
     setProfileModalOpen(!profileModalOpen);

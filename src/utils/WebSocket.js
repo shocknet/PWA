@@ -25,7 +25,7 @@ const rifleSubscriptions = new Map();
 export let GunSocket = null;
 
 const reconnectRifleSubscriptions = () => {
-  Array.from(rifleSubscriptions.entries()).map(([key, value]) => {
+  Array.from(rifleSubscriptions.entries()).forEach(([key, value]) => {
     unsubscribeRifleById(key);
     rifle(value);
     rifleSubscriptions.delete(key);

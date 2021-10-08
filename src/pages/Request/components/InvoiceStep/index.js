@@ -140,6 +140,7 @@ const InvoiceStep = ({
             selected
             contact={contact}
             selectContact={selectContact}
+            style={undefined}
           />
         ) : (
           <ContactsSearch
@@ -226,6 +227,7 @@ const InvoiceStep = ({
               }}
               slideText="SLIDE TO SEND"
               onSuccess={sendInvoice}
+              disabled={false}
             />
           ) : null}
         </>

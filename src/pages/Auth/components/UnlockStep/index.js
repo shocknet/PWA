@@ -14,7 +14,7 @@ const UnlockStep = () => {
   const [cachedAliasDismissed, setCachedAliasDismissed] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const accessSecret = Store.useSelector(({node}) => node.accessSecret)
+  const accessSecret = Store.useSelector(({ node }) => node.accessSecret);
 
   const onInputChange = useCallback(e => {
     const { value, name } = e.target;
@@ -37,7 +37,7 @@ const UnlockStep = () => {
       e.preventDefault();
       setLoading(true);
       try {
-        const wallet = await dispatch(
+        await dispatch(
           unlockWallet({
             // Do not replace "||" with "??"
             alias: alias || cachedAlias,
@@ -50,14 +50,14 @@ const UnlockStep = () => {
         setLoading(false);
       }
     },
-    [alias, cachedAliasDismissed, cachedAlias, password, dispatch, setError]
+    [alias, cachedAlias, password, dispatch, setError, accessSecret]
   );
 
   const chooseAnotherMethod = useCallback(() => {
     dispatch(setAuthMethod(null));
     dispatch(setAuthStep(null));
   }, [dispatch]);
-  
+
   const createNewAlias = useCallback(() => {
     dispatch(setAuthStep("createGun"));
   }, [dispatch]);

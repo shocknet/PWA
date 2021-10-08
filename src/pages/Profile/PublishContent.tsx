@@ -19,7 +19,6 @@ import DarkPage from "../../common/DarkPage";
 import UploadThumbnail from "./components/UploadThumbnail";
 import * as gStyles from "../../styles";
 import * as Schema from "../../schema";
-import { base64toBlob } from "../../utils/Media";
 
 const PublishContentPage = () => {
   const dispatch = useDispatch();
@@ -53,8 +52,8 @@ const PublishContentPage = () => {
 
   const onSubmitCb = useCallback(
     async (servicePrice?, serviceID?) => {
-      if(loading){
-        return
+      if (loading) {
+        return;
       }
       console.log([title, description, mediaPreviews, videoThumbnails]);
       if (!title) {
@@ -233,11 +232,10 @@ const PublishContentPage = () => {
       if (availableToken || (seedUrl && seedToken)) {
         onSubmitCb();
       } else if (serviceID && seedProviderPub) {
-        const { data: service } = await Http.get(
-          `/api/gun/otheruser/${seedProviderPub}/load/offeredServices>${serviceID}`
+        const { data: servicePrice } = await Http.get(
+          `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>servicePrice`
         );
-        const { servicePrice } = service.data;
-        console.log(service);
+
         setPromptInfo({ servicePrice, serviceID });
       } else {
         setError("No way found to publish content");

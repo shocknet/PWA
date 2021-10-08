@@ -62,7 +62,6 @@ const ProfilePage = () => {
   const publicKey = Store.useSelector(({ node }) => node.publicKey);
   const posts = Store.useSelector(Store.selectPostsNewestToOldest(publicKey));
   const hostIP = Store.useSelector(({ node }) => node.hostIP);
-  const allPosts = Store.useSelector(Store.selectAllPosts);
 
   const myServices = Store.useSelector(({ orders }) => orders.myServices);
   const [selectedView, setSelectedView] = useState<"posts" | "services">(
@@ -80,7 +79,7 @@ const ProfilePage = () => {
     const subscription = subscribeMyServices(user.offerSeedService)(dispatch);
 
     return rifleCleanup(subscription);
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   useEffect(() => dispatch(subscribeUserPosts(publicKey)), [
     dispatch,
@@ -172,10 +171,6 @@ const ProfilePage = () => {
     setProfileConfigModalOpen(open => !open);
     setNewWebClientPrefix(currWebClientPrefix);
   }, [currWebClientPrefix]);
-
-  const onConfigCancel = useCallback(() => {
-    toggleConfigModal();
-  }, [toggleConfigModal]);
 
   const onConfigSubmit = useCallback(() => {
     if (newWebClientPrefix !== currWebClientPrefix) {

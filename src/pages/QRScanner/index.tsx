@@ -1,7 +1,5 @@
 import React, {
-  Suspense,
   useCallback,
-  useEffect,
   useMemo,
   useState
 } from "react";
@@ -59,10 +57,6 @@ const QRScanner = () => {
         }
         case "hasMemo": {
           setHasMemo(checked);
-          return;
-        }
-        case "memo": {
-          setMemo(value);
           return;
         }
         case "memo": {
@@ -154,7 +148,7 @@ const QRScanner = () => {
   const closeQR = useCallback(() => {
     setScanQR(false);
     history.push("/overview");
-  }, [setScanQR]);
+  }, [setScanQR, history]);
   const scanDone = useCallback(
     content => {
       console.log(content);
@@ -187,7 +181,7 @@ const QRScanner = () => {
     } catch (e) {
       setError(e.message || e);
     }
-  }, [history, LNURLdata, withdrawAmount, memo, setDone, setError]);
+  }, [LNURLdata, withdrawAmount, memo, setDone, setError]);
   const confirmChannelReq = useCallback(async () => {
     try {
       const { uri, callback, k1 } = LNURLdata;
@@ -219,7 +213,7 @@ const QRScanner = () => {
     } catch (e) {
       setError(e.message || e);
     }
-  }, [history, LNURLdata, setError]);
+  }, [LNURLdata, setError, dispatch, privateChannel]);
   const confirmPayReq = useCallback(async () => {
     try {
       const { callback } = LNURLdata;
@@ -357,7 +351,10 @@ const QRScanner = () => {
     memo,
     payAmount,
     onInputChange,
-    goBack
+    goBack,
+    confirmChannelReq,
+    confirmPayReq,
+    confirmWithdrawReq
   ]);
   const scanErr = useCallback(
     (e: Error) => {
