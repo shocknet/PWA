@@ -9,7 +9,11 @@ export const ACTIONS = {
 
 export const loadFeeRates = () => async (dispatch, getState) => {
   const { source } = getState().fees;
-  const { data } = await Http.get(source);
+  const { data } = await Http.get(source, {
+    headers: {
+      authorization: null
+    }
+  });
 
   dispatch({
     type: ACTIONS.LOAD_FEE_RATES,
