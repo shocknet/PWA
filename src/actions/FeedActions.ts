@@ -6,7 +6,10 @@ import * as Utils from "../utils";
 import Http from "../utils/Http";
 import { rifle, unsubscribeRifleByQuery } from "../utils/WebSocket";
 
-import { subscribeUserProfile } from "./UserProfilesActions";
+import { ACTIONS as GUEST_ACTIONS } from "./GuestActions";
+import { ThunkAction } from "redux-thunk";
+import { State } from "../reducers/index";
+import { Action } from "redux";
 
 export const ACTIONS = {
   RESET_FEED: "feed/reset",
@@ -307,10 +310,22 @@ export const reloadFeed = () => ({
   type: ACTIONS.RELOAD_FEED
 });
 
-export const reloadFollows = (follows: Common.Follow[]) => ({
-  type: ACTIONS.RESET_DEFAULT_FOLLOWS,
-  data: follows
-});
+export const reloadFollows =
+  (
+    follows: Common.Follow[]
+  ): ThunkAction<Promise<Common.Follow[]>, State, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const { authenticated } = getState().auth;
+
+    dispatch({
+      type: authenticated
+        ? ACTIONS.RESET_DEFAULT_FOLLOWS
+        : GUEST_ACTIONS.RESET_DEFAULT_FOLLOWS,
+      data: follows
+    });
+
+    return follows;
+  };
 
 // #region sharedPosts
 

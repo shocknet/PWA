@@ -141,7 +141,6 @@ const ContactsSearch = ({
               selectContact={onSuggestionClick}
               contact={suggestion}
               key={suggestion.pk ?? suggestion.value}
-              style={undefined}
             />
           ))}
         </div>

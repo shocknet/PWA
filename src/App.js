@@ -70,6 +70,13 @@ const PrivateRoute = ({ component, ...options }) => {
   return <Route {...options} component={authorizedComponent} />;
 };
 
+const GuestRoute = ({ component, ...options }) => {
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
+  const allowedComponent = authenticated ? OverviewPage : component;
+
+  return <Route {...options} component={allowedComponent} />;
+};
+
 const App = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -380,7 +387,7 @@ const App = () => {
       <Drawer />
       <Suspense fallback={<Loader fullScreen text={null} />}>
         <Switch>
-          <Route path="/auth" exact component={AuthPage} />
+          <GuestRoute path="/auth" exact component={AuthPage} />
           <PrivateRoute path="/overview" exact component={OverviewPage} />
           <PrivateRoute path="/advanced" exact component={AdvancedPage} />
           <PrivateRoute
@@ -398,7 +405,6 @@ const App = () => {
             exact
             component={PublishContentPage}
           />
-          <PrivateRoute path="/feed" exact component={FeedPage} />
           <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
           <PrivateRoute path="/createPost" exact component={CreatePostPage} />
           <PrivateRoute path="/goLive" exact component={GoLivePage} />
@@ -408,19 +414,24 @@ const App = () => {
             component={offerServicePage}
           />
           <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
-          <PrivateRoute
-            path="/otherUser/:publicKey/:selectedView?"
-            exact
-            component={OtherUserPage}
-          />
           <PrivateRoute path="/Backups" exact component={BackupsPage} />
-
           <PrivateRoute
             path="/item/:publicKey/:id"
             exact
             component={PublicContentItemPage}
           />
-          <Redirect to="/overview" />
+          <Route path="/feed" exact component={FeedPage} />
+          <Route
+            path="/otherUser/:publicKey/:selectedView?"
+            exact
+            component={OtherUserPage}
+          />
+
+          {authenticated ? (
+            <Redirect to="/overview" />
+          ) : (
+            <Redirect to="/feed" />
+          )}
         </Switch>
       </Suspense>
 

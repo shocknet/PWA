@@ -10,7 +10,7 @@ const HANDLE_POSITION_OFFSET = -3;
 const SlidePay = ({
   wrapperStyle = {},
   containerStyle = {},
-  disabled,
+  disabled = false,
   onSuccess,
   slideText = "SLIDE TO PAY"
 }) => {

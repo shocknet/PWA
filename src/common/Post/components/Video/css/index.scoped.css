@@ -1,24 +1,92 @@
 .media-container {
-  padding-left: 10px;
-  min-width: 100%;
   position: relative;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
 }
 
 .video-container {
-  display: flex;
   position: relative;
+  display: flex;
+  width: 100%;
   border-radius: 8px;
-  max-width: 700px;
-  max-height: 700px;
+  aspect-ratio: 16 / 9;
   background-color: #171c23;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .torrent-video {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.2s ease;
+}
+
+.thumbnail-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.2s ease;
+}
+
+.video-thumbnail {
   width: 100%;
   height: 100%;
   max-width: 700px;
   max-height: 700px;
   min-width: 400px;
   min-height: 250px;
+}
+
+.dynamic-thumbnail {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.video-thumbnail.hidden,
+.dynamic-thumbnail.hidden {
+  display: none;
+}
+
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 100px;
+  background-color: #18191d;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.play-btn i.fas.fa-play {
+  color: #4080b2;
+  width: auto;
+}
+
+.video-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+i.fas.fa-play {
+  width: 15px;
 }

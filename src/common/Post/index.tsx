@@ -31,6 +31,7 @@ const Post = ({
   const unlockedContent = Store.useSelector(
     ({ content }) => content.unlockedContent
   );
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const [carouselRef, carouselAPI] = useEmblaCarousel({
     slidesToScroll: 1,
     align: "center"
@@ -54,17 +55,15 @@ const Post = ({
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
 
-  useEffect(() => dispatch(subPostContent(publicKey, id)), [
-    dispatch,
-    id,
-    publicKey
-  ]);
+  useEffect(() => {
+    const subscription = dispatch(subPostContent(publicKey, id));
+    return subscription;
+  }, [dispatch, id, publicKey]);
 
-  useEffect(() => dispatch(subPostTips(publicKey, id)), [
-    dispatch,
-    id,
-    publicKey
-  ]);
+  useEffect(() => {
+    const subscription = dispatch(subPostTips(publicKey, id));
+    return subscription;
+  }, [dispatch, id, publicKey]);
 
   const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
     const stream = Object.values(post.contentItems ?? {}).find(
@@ -164,8 +163,6 @@ const Post = ({
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
-          hideRibbon={undefined}
-          width={undefined}
         />
       );
     }
@@ -183,8 +180,6 @@ const Post = ({
             tipCounter={tipCounter}
             tipValue={tipValue}
             key={`${id}-${index}`}
-            hideRibbon={undefined}
-            width={undefined}
           />
         );
       }
@@ -287,6 +282,21 @@ const Post = ({
   }, [id, openDeleteModal]);
 
   const sharePost = useCallback(() => {
+    if (!authenticated) {
+      const url = `https://${window.location.host}/${publicKey}/post/${id}`;
+
+      if (navigator.share) {
+        navigator.share({
+          text: `Check out ${author.displayName}'s post on Lightning.Page!`,
+          url
+        });
+        return;
+      }
+
+      navigator.clipboard.writeText(url);
+      return;
+    }
+
     openShareModal({
       targetType: "share",
       postID: id,
@@ -388,7 +398,7 @@ const Post = ({
           <div className="tip-icon icon-thin-feed"></div>
         </div>
         {openShareModal && (
-          <div className="icon-tip-btn" data-tip={"share"} onClick={sharePost}>
+          <div className="icon-tip-btn" data-tip="share" onClick={sharePost}>
             <img
               alt="Share this post"
               src={ShareIcon}
