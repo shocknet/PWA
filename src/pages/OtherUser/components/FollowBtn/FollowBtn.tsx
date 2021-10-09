@@ -6,12 +6,16 @@ import * as Utils from "../../../../utils";
 import * as gStyles from "../../../../styles";
 
 import styles from "./FollowBtn.module.css";
+import { useDispatch } from "../../../../utils/index";
+import { followUser } from "../../../../actions/GuestActions";
 
 export interface FollowBtnProps {
   publicKey: string;
 }
 
 const FollowBtn = ({ publicKey }: FollowBtnProps) => {
+  const dispatch = useDispatch();
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const isFollowed = !!Store.useSelector(Store.selectFollows).find(
     f => f.user === publicKey
   );
@@ -47,8 +51,15 @@ const FollowBtn = ({ publicKey }: FollowBtnProps) => {
     }
   }, [changingStatus, setChangingStatus, isFollowed, publicKey]);
 
+  const handleGuestFollow = useCallback(() => {
+    dispatch(followUser({ publicKey }));
+  }, [dispatch, publicKey]);
+
   return (
-    <div className={styles.container} onClick={handleFollow}>
+    <div
+      className={styles.container}
+      onClick={authenticated ? handleFollow : handleGuestFollow}
+    >
       <p className={c(gStyles.unselectable, styles.text)}>
         {changingStatus ? "..." : isFollowed ? "Unfollow" : "Follow"}
       </p>

@@ -3,6 +3,7 @@ import { Action } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { State } from "../reducers";
 import FieldError from "../utils/FieldError";
+import * as Common from "shock-common";
 import {
   $$_SHOCKWALLET__ENCRYPTED__,
   $$__SHOCKWALLET__MSG__,
@@ -23,8 +24,11 @@ export const ACTIONS = {
   RESET_GUEST: "guest/reset",
   CREATE_GUEST_USER: "guest/user/create",
   TIP_USER: "guest/user/tip",
+  FOLLOW_USER: "guest/user/follow",
+  UNFOLLOW_USER: "guest/user/unfollow",
   SET_PAYMENT_RESPONSE: "guest/paymentRequest/response",
-  SET_PAYMENT_METADATA: "guest/paymentRequest/metadata"
+  SET_PAYMENT_METADATA: "guest/paymentRequest/metadata",
+  RESET_DEFAULT_FOLLOWS: "guest/follows/reset"
 };
 
 export const resetGuestUser = () => ({
@@ -159,4 +163,33 @@ export const payUser =
       paymentRequest: decryptedOrder.response,
       ackNode: encryptedOrder.ackNode
     };
+  };
+
+export const followUser =
+  ({
+    publicKey = ""
+  }): ThunkAction<Promise<void>, State, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const [followedUser] = getState().guest.follows.filter(
+      follow => follow.user === publicKey
+    );
+
+    if (followedUser) {
+      dispatch({
+        type: ACTIONS.UNFOLLOW_USER,
+        data: publicKey
+      });
+      return;
+    }
+
+    const follow: Common.Follow = {
+      user: publicKey,
+      status: "ok",
+      private: false
+    };
+
+    dispatch({
+      type: ACTIONS.FOLLOW_USER,
+      data: follow
+    });
   };

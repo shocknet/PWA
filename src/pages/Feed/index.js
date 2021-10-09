@@ -25,10 +25,14 @@ import {
   subscribeUserPosts,
   unsubscribeFollows,
   reloadFeed,
-  subSharedPosts
+  subSharedPosts,
+  reloadFollows
 } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import styles from "./css/Feed.module.css";
+import { DEFAULT_FOLLOWS } from "../../utils/Constants";
+import GuestTipModal from "../../common/TipModal";
+import AddBtn from "../../common/AddBtn";
 
 const Post = React.lazy(() => import("../../common/Post"));
 const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
@@ -36,6 +40,7 @@ const SharedPost = React.lazy(() => import("../../common/Post/SharedPost"));
 const FeedPage = () => {
   const dispatch = Store.useDispatch();
   const history = useHistory();
+  const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
   const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(
     Store.selectAllPostsFromFollowedNewestToOldest
@@ -43,6 +48,7 @@ const FeedPage = () => {
   const [tipModalData, setTipModalOpen] = useState(null);
   const [unlockModalData, setUnlockModalOpen] = useState(null);
   const [shareModalData, setShareModalData] = useState(null);
+  const [tipPublicKey, setTipPublicKey] = useState(null);
   const { publicKey: selfPublicKey } = Store.useSelector(Store.selectSelfUser);
   const reloadDone = Store.useSelector(({ feed }) => feed.reloadDone);
   // Effect to sub follows
@@ -53,15 +59,23 @@ const FeedPage = () => {
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    if (!authenticated) {
+      dispatch(reloadFollows(DEFAULT_FOLLOWS));
+    }
+  }, [authenticated, dispatch]);
+
   const toggleTipModal = useCallback(
     tipData => {
       console.log(tipData);
       if (tipModalData || !tipData) {
         setTipModalOpen(null);
+        setTipPublicKey(null);
         return;
       }
 
       setTipModalOpen(tipData);
+      setTipPublicKey(tipData.publicKey);
     },
     [tipModalData]
   );
@@ -88,6 +102,10 @@ const FeedPage = () => {
     },
     [shareModalData]
   );
+
+  const redirectAuth = useCallback(() => {
+    history.push("/auth");
+  }, [history]);
 
   useLayoutEffect(() => {
     attachMedia(
@@ -127,12 +145,14 @@ const FeedPage = () => {
   return (
     <div className="page-container feed-page">
       <div className={styles.followed}>
-        <ShockAvatar
-          forceAddBtn
-          height={60}
-          publicKey={selfPublicKey}
-          createsPost
-        />
+        {authenticated && (
+          <ShockAvatar
+            forceAddBtn
+            height={60}
+            publicKey={selfPublicKey}
+            createsPost
+          />
+        )}
 
         {follows?.map(follow => {
           return (
@@ -182,11 +202,24 @@ const FeedPage = () => {
         })}
       </div>
       <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
+      <GuestTipModal
+        publicKey={tipPublicKey}
+        tipData={tipModalData}
+        toggleOpen={toggleTipModal}
+      />
       <UnlockModal
         unlockData={unlockModalData}
         toggleOpen={toggleUnlockModal}
       />
       <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
+      {!authenticated && (
+        <AddBtn
+          onClick={redirectAuth}
+          large
+          icon="user"
+          label="Create a Lightning Page"
+        />
+      )}
       <BottomBar />
     </div>
   );

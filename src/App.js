@@ -405,7 +405,6 @@ const App = () => {
             exact
             component={PublishContentPage}
           />
-          <PrivateRoute path="/feed" exact component={FeedPage} />
           <PrivateRoute path="/moonpay" exact component={MoonPayPage} />
           <PrivateRoute path="/createPost" exact component={CreatePostPage} />
           <PrivateRoute path="/goLive" exact component={GoLivePage} />
@@ -415,22 +414,23 @@ const App = () => {
             component={offerServicePage}
           />
           <PrivateRoute path="/QRScanner" exact component={QRScannerPage} />
-          <Route
-            path="/otherUser/:publicKey/:selectedView?"
-            exact
-            component={OtherUserPage}
-          />
           <PrivateRoute path="/Backups" exact component={BackupsPage} />
-
           <PrivateRoute
             path="/item/:publicKey/:id"
             exact
             component={PublicContentItemPage}
           />
+          <Route path="/feed" exact component={FeedPage} />
+          <Route
+            path="/otherUser/:publicKey/:selectedView?"
+            exact
+            component={OtherUserPage}
+          />
+
           {authenticated ? (
             <Redirect to="/overview" />
           ) : (
-            <Redirect to="/otherUser/Gt6T7pCjy7z8Qk74ILsUqJqMnEoJBfnYT1-KF08CkAE.PcTaX1kStDPrqfcHhLxG1Uy-P7ZGI9Wjn1iyyLfjtZM" />
+            <Redirect to="/feed" />
           )}
         </Switch>
       </Suspense>

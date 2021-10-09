@@ -1,4 +1,5 @@
 import { ACTIONS } from "../actions/GuestActions";
+import * as Common from "shock-common";
 
 export interface GuestState {
   user?: {
@@ -8,6 +9,7 @@ export interface GuestState {
     epub: string;
     ok: 0;
   };
+  follows: Common.Follow[];
   paymentRequest?: {
     response: string;
     metadata: object;
@@ -18,6 +20,7 @@ export interface GuestState {
 const INITIAL_STATE: GuestState = {
   user: null,
   paymentRequest: null,
+  follows: [],
   tips: []
 };
 
@@ -48,6 +51,31 @@ const guest = (
         ...state,
         paymentRequest: data
       };
+    }
+    case ACTIONS.FOLLOW_USER: {
+      const { data } = action;
+
+      return {
+        ...state,
+        follows: [...state.follows, data]
+      };
+    }
+    case ACTIONS.UNFOLLOW_USER: {
+      const { data } = action;
+
+      return {
+        ...state,
+        follows: state.follows.filter(follow => follow.user !== data)
+      };
+    }
+    case ACTIONS.RESET_DEFAULT_FOLLOWS: {
+      const { data } = action;
+
+      if (state.follows.length > 0) {
+        return state;
+      }
+
+      return { ...state, follows: data };
     }
     default:
       return state;
