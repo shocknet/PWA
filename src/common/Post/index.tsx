@@ -55,15 +55,15 @@ const Post = ({
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
   );*/ true;
 
-  useEffect(
-    () => dispatch(subPostContent(publicKey, id)),
-    [dispatch, id, publicKey]
-  );
+  useEffect(() => {
+    const subscription = dispatch(subPostContent(publicKey, id));
+    return subscription;
+  }, [dispatch, id, publicKey]);
 
-  useEffect(
-    () => dispatch(subPostTips(publicKey, id)),
-    [dispatch, id, publicKey]
-  );
+  useEffect(() => {
+    const subscription = dispatch(subPostTips(publicKey, id));
+    return subscription;
+  }, [dispatch, id, publicKey]);
 
   const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
     const stream = Object.values(post.contentItems ?? {}).find(
