@@ -132,12 +132,16 @@ const decryptEventCallback = async ({ err, data, callback, privateKey }) => {
   }
 
   if (data) {
-    const decryptedMessage = await Encryption.decryptMessage({
-      privateKey,
-      encryptedMessage: data
-    });
+    try {
+      const decryptedMessage = await Encryption.decryptMessage({
+        privateKey,
+        encryptedMessage: data
+      });
 
-    callback(err, decryptedMessage);
+      callback(err, decryptedMessage);
+    } catch (e) {
+      callback(e, undefined);
+    }
     return;
   }
 };
@@ -201,23 +205,39 @@ const encryptedOn = socket => async (eventName, callback) => {
   socket.on(eventName, async (...responses) => {
     const decryptedResponses = await Promise.all(
       responses.map(async response => {
-        if (!response) {
-          return response;
-        }
+        try {
+          if (!response) {
+            return response;
+          }
 
-        if (response && !Encryption.isEncryptedMessage(response)) {
-          console.warn("Non-encrypted socket message", response);
-          return response;
-        }
+          if (response && !Encryption.isEncryptedMessage(response)) {
+            console.warn("Non-encrypted socket message", response);
+            return response;
+          }
 
-        return Encryption.decryptMessage({
-          privateKey: localPrivateKey,
-          encryptedMessage: response
-        });
+          const res = await Encryption.decryptMessage({
+            privateKey: localPrivateKey,
+            encryptedMessage: response
+          });
+          return res;
+        } catch (e) {
+          return e;
+        }
       })
     );
 
-    callback(...decryptedResponses);
+    const sanitized = decryptedResponses.filter(
+      data => !(data instanceof Error)
+    );
+    const errors = decryptedResponses.filter(data => data instanceof Error);
+
+    if (errors.length) {
+      console.log("Errors inside socket.on:", errors);
+    }
+
+    if (sanitized.length) {
+      callback(...sanitized);
+    }
   });
 };
 
