@@ -28,9 +28,9 @@ const _getFileType = file => {
   }
 
   const extension = file.name?.split(".")?.slice(-1)[0];
-  const [supportedFileType] = Object.entries(
-    supportedFileTypes
-  ).filter(([type, options]) => options.formats.includes(extension));
+  const [supportedFileType] = Object.entries(supportedFileTypes).filter(
+    ([type, options]) => options.formats.includes(extension)
+  );
 
   if (supportedFileType) {
     const [name, fileType] = supportedFileType;
@@ -62,12 +62,15 @@ const showDynamicThumbnail = ({ thumbnailFile, fileType, item }) => {
   const dynamicThumbnailTarget = `.dynamic-thumbnail[data-torrent="${item.magnetURI}"]`;
 
   if (!thumbnailFile && fileType.element === "video") {
-    document.querySelector(thumbnailTarget).classList.add("hidden");
-    document.querySelector(dynamicThumbnailTarget).classList.remove("hidden");
+    document.querySelector(thumbnailTarget)?.classList.add("hidden");
+    document.querySelector(dynamicThumbnailTarget)?.classList.remove("hidden");
   }
 };
 
-const getCacheId = ({ id, key }) => file => `${id}-${key}-${file.name}`;
+const getCacheId =
+  ({ id, key }) =>
+  file =>
+    `${id}-${key}-${file.name}`;
 
 const renderTorrent = ({ file, type, torrentMode, torrent }) => {
   const element = type.element;
@@ -104,56 +107,56 @@ export const isURLCompatible = ({ url, type = "video/embedded" }) => {
   return !!compatibleURL;
 };
 
-const getThumbnailRenderer = ({
-  thumbnailFileNames,
-  getCacheFileName,
-  torrentMode
-}) => async ({ fileName, thumbnails, item, fileType }) => {
-  const sanitizedName = fileName.split(".").slice(0, -1).join(".");
-  const thumbnailName = `${sanitizedName}-thumb`;
-  const thumbnailIndex = thumbnailFileNames.indexOf(thumbnailName);
-  const thumbnailFile = thumbnails[thumbnailIndex];
-  const thumbnailFileType = thumbnailFile ? _getFileType(thumbnailFile) : null;
-  const thumbnailTarget = `${
-    thumbnailFileType?.element ?? "img"
-  }[data-torrent="${item.magnetURI}"]`;
+const getThumbnailRenderer =
+  ({ thumbnailFileNames, getCacheFileName, torrentMode }) =>
+  async ({ fileName, thumbnails, item, fileType }) => {
+    const sanitizedName = fileName.split(".").slice(0, -1).join(".");
+    const thumbnailName = `${sanitizedName}-thumb`;
+    const thumbnailIndex = thumbnailFileNames.indexOf(thumbnailName);
+    const thumbnailFile = thumbnails[thumbnailIndex];
+    const thumbnailFileType = thumbnailFile
+      ? _getFileType(thumbnailFile)
+      : null;
+    const thumbnailTarget = `${
+      thumbnailFileType?.element ?? "img"
+    }[data-torrent="${item.magnetURI}"]`;
 
-  if (fileType.element === "video" && thumbnailFile) {
-    const cachedThumbnail = await getCachedFile(
-      getCacheFileName(thumbnailFile)
-    );
+    if (fileType.element === "video" && thumbnailFile) {
+      const cachedThumbnail = await getCachedFile(
+        getCacheFileName(thumbnailFile)
+      );
 
-    document.querySelector(thumbnailTarget).classList.remove("hidden");
+      document.querySelector(thumbnailTarget)?.classList.remove("hidden");
 
-    if (cachedThumbnail) {
-      renderCachedFile(cachedThumbnail, thumbnailTarget);
+      if (cachedThumbnail) {
+        renderCachedFile(cachedThumbnail, thumbnailTarget);
+        return;
+      }
+
+      renderTorrent({
+        file: thumbnailFile,
+        type: thumbnailFileType,
+        torrentMode,
+        torrent: item
+      });
+
       return;
     }
 
-    renderTorrent({
-      file: thumbnailFile,
-      type: thumbnailFileType,
-      torrentMode,
-      torrent: item
-    });
+    if (fileType.element === "video" && !thumbnailFile) {
+      showDynamicThumbnail({
+        thumbnailFile,
+        fileType,
+        item
+      });
 
-    return;
-  }
+      return;
+    }
 
-  if (fileType.element === "video" && !thumbnailFile) {
-    showDynamicThumbnail({
-      thumbnailFile,
-      fileType,
-      item
-    });
-
-    return;
-  }
-
-  return {
-    thumbnailFile
+    return {
+      thumbnailFile
+    };
   };
-};
 
 export const attachMedia = async (posts = [], torrentMode = true) => {
   const torrentTasks = await Promise.all(
@@ -169,117 +172,119 @@ export const attachMedia = async (posts = [], torrentMode = true) => {
 
       const webTorrentClient = await initializeClient();
 
-      return supportedItems.map(([key, item]) => () =>
-        new Promise(resolve => {
-          const getCacheFileName = getCacheId({ id, key });
-          const torrentExists = webTorrentClient.get(item.magnetURI);
+      return supportedItems.map(
+        ([key, item]) =>
+          () =>
+            new Promise(resolve => {
+              const getCacheFileName = getCacheId({ id, key });
+              const torrentExists = webTorrentClient.get(item.magnetURI);
 
-          if (torrentExists) {
-            resolve(true);
-            return;
-          }
-
-          webTorrentClient.add(item.magnetURI, async torrent => {
-            // Proceed to the next torrent in queue
-            resolve(true);
-
-            const files = torrent.files.filter(file => {
-              const extension = file.name?.split(".")?.slice(-1)[0];
-              const supportedFileType = Object.values(
-                supportedFileTypes
-              ).filter(options => options.formats.includes(extension))[0];
-              if (supportedFileType) {
-                const fileType = supportedFileType;
-                const matched = fileType.formats.includes(extension);
-                return matched;
-              }
-              return false;
-            });
-
-            const thumbnails = files.filter(file =>
-              file.name.match(/-thumb\.([\w\d]){2,4}$/gi)
-            );
-            const thumbnailFileNames = thumbnails.map(file =>
-              file.name.replace(/\.([\w\d]){2,4}$/gi, "")
-            );
-            const renderThumbnail = getThumbnailRenderer({
-              getCacheFileName,
-              thumbnailFileNames,
-              torrentMode
-            });
-
-            files.map(async file => {
-              // Skip thumbnails
-              if (thumbnailFileNames.includes(file.name)) {
+              if (torrentExists) {
+                resolve(true);
                 return;
               }
 
-              const fileType = _getFileType(file);
+              webTorrentClient.add(item.magnetURI, async torrent => {
+                // Proceed to the next torrent in queue
+                resolve(true);
 
-              if (!fileType) {
-                return;
-              }
+                const files = torrent.files.filter(file => {
+                  const extension = file.name?.split(".")?.slice(-1)[0];
+                  const supportedFileType = Object.values(
+                    supportedFileTypes
+                  ).filter(options => options.formats.includes(extension))[0];
+                  if (supportedFileType) {
+                    const fileType = supportedFileType;
+                    const matched = fileType.formats.includes(extension);
+                    return matched;
+                  }
+                  return false;
+                });
 
-              const fileName = getCacheFileName(file);
+                const thumbnails = files.filter(file =>
+                  file.name.match(/-thumb\.([\w\d]){2,4}$/gi)
+                );
+                const thumbnailFileNames = thumbnails.map(file =>
+                  file.name.replace(/\.([\w\d]){2,4}$/gi, "")
+                );
+                const renderThumbnail = getThumbnailRenderer({
+                  getCacheFileName,
+                  thumbnailFileNames,
+                  torrentMode
+                });
 
-              const element = fileType.element;
-              const target = `${element}[data-torrent="${item.magnetURI}"]`;
-              const cachedFile = await getCachedFile(fileName);
-
-              renderThumbnail({
-                fileName: file.name,
-                thumbnails,
-                fileType,
-                item
-              });
-
-              if (cachedFile) {
-                const torrent = webTorrentClient.get(item.magnetURI);
-
-                if (torrent) {
-                  torrent.destroy();
-                }
-
-                renderCachedFile(cachedFile, target);
-                return;
-              }
-
-              renderTorrent({
-                file,
-                type: fileType,
-                torrentMode,
-                torrent: item
-              });
-            });
-
-            torrent.on("done", () => {
-              files.map(file => {
-                const fileType = _getFileType(file);
-                const fileName = getCacheFileName(file);
-                const element = fileType.element;
-                const target = `${element}.torrent-video[data-torrent="${item.magnetURI}"]`;
-
-                file.getBlob(async (err, blob) => {
-                  if (err) {
-                    console.warn(err);
+                files.map(async file => {
+                  // Skip thumbnails
+                  if (thumbnailFileNames.includes(file.name)) {
                     return;
                   }
 
-                  console.log("Caching loaded file...", fileName, blob);
-                  await saveFile(fileName, blob);
-                  const element = document.querySelector(target);
-                  if (
-                    element?.dataset.played === "false" &&
-                    !element?.getAttribute("src")
-                  ) {
-                    const cachedFile = await getCachedFile(fileName);
-                    renderCachedFile(cachedFile, target);
+                  const fileType = _getFileType(file);
+
+                  if (!fileType) {
+                    return;
                   }
+
+                  const fileName = getCacheFileName(file);
+
+                  const element = fileType.element;
+                  const target = `${element}[data-torrent="${item.magnetURI}"]`;
+                  const cachedFile = await getCachedFile(fileName);
+
+                  renderThumbnail({
+                    fileName: file.name,
+                    thumbnails,
+                    fileType,
+                    item
+                  });
+
+                  if (cachedFile) {
+                    const torrent = webTorrentClient.get(item.magnetURI);
+
+                    if (torrent) {
+                      torrent.destroy();
+                    }
+
+                    renderCachedFile(cachedFile, target);
+                    return;
+                  }
+
+                  renderTorrent({
+                    file,
+                    type: fileType,
+                    torrentMode,
+                    torrent: item
+                  });
+                });
+
+                torrent.on("done", () => {
+                  files.map(file => {
+                    const fileType = _getFileType(file);
+                    const fileName = getCacheFileName(file);
+                    const element = fileType.element;
+                    const target = `${element}.torrent-video[data-torrent="${item.magnetURI}"]`;
+
+                    file.getBlob(async (err, blob) => {
+                      if (err) {
+                        console.warn(err);
+                        return;
+                      }
+
+                      console.log("Caching loaded file...", fileName, blob);
+                      await saveFile(fileName, blob);
+                      const element = document.querySelector(target);
+                      if (
+                        element?.dataset.played === "false" &&
+                        !element?.getAttribute("src")
+                      ) {
+                        const cachedFile = await getCachedFile(fileName);
+                        renderCachedFile(cachedFile, target);
+                      }
+                    });
+                  });
                 });
               });
-            });
-          });
-        })
+            })
       );
     })
   );
