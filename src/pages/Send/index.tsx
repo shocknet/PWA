@@ -10,13 +10,23 @@ import Suggestion from "../../common/ContactsSearch/components/Suggestion";
 import Loader from "../../common/Loader";
 import "./css/index.scoped.css";
 import { isDesktop } from "../../utils/Platform";
+import { Location } from "history";
 
 interface properties {
   [key: string]: any;
 }
 
+interface LocationState {
+  data?: {
+    type: "btc" | "ln" | "keysend";
+    address: string;
+    amount: number;
+    request: string;
+  };
+}
+
 const SendPage = () => {
-  const location = useLocation();
+  const location = useLocation<LocationState>();
   const history = useHistory();
 
   const [amount, setAmount] = useState(0);
@@ -69,7 +79,9 @@ const SendPage = () => {
   useEffect(() => {
     const { state: routerState } = location;
 
+    // @ts-ignore
     if (routerState && routerState.data && routerState.data.type) {
+      // @ts-ignore
       const { data } = routerState;
       switch (data.type) {
         case "btc": {
