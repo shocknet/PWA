@@ -36,6 +36,7 @@ import {
 import { closeDialog } from "./actions/AppActions";
 
 import { ToastContainer } from "react-toastify";
+import { createGuestUser } from "./actions/GuestActions";
 
 const OverviewPage = React.lazy(() => import("./pages/Overview"));
 const AdvancedPage = React.lazy(() => import("./pages/Advanced"));
@@ -337,6 +338,13 @@ const App = () => {
       }
     }
   }, [dispatch, publicKey]);
+
+  useEffect(() => {
+    if (!authenticated) {
+      dispatch(createGuestUser());
+    }
+  }, [authenticated, dispatch]);
+
   useEffect(() => {
     if (!authenticated || !publicKey) {
       return;
@@ -351,6 +359,7 @@ const App = () => {
   const ConfirmDialog = useCallback(() => {
     closeDialog(dialogHasCallback)(dispatch);
   }, [dialogHasCallback, dispatch]);
+
   return (
     <FullHeight className="root-container">
       {showFloatingPlayer && (
