@@ -5,10 +5,8 @@ import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 
 const Video = ({
-  id = "",
   item,
   index = 0,
-  postId = "",
   tipValue = 0,
   tipCounter = 0,
   hideRibbon = false
@@ -107,7 +105,9 @@ const Video = ({
           muted
           onPause={onPause}
         />
-        <TipRibbon tipCounter={tipCounter} tipValue={tipValue} />
+        {!hideRibbon && (
+          <TipRibbon tipCounter={tipCounter} tipValue={tipValue} />
+        )}
       </div>
     </div>
   );

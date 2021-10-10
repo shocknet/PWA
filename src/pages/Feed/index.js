@@ -107,13 +107,6 @@ const FeedPage = () => {
     history.push("/auth");
   }, [history]);
 
-  useLayoutEffect(() => {
-    attachMedia(
-      posts.filter(post => !Common.isSharedPost(post)),
-      false
-    );
-  }, [posts]);
-
   useEffect(() => {
     const subscriptions = follows.map(follow => {
       const profileSubscription = dispatch(subscribeUserProfile(follow.user));

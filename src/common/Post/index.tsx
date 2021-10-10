@@ -1,6 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useLayoutEffect
+} from "react";
 import * as Common from "shock-common";
 import { Link } from "react-router-dom";
+import useInView from "react-cool-inview";
 import { useEmblaCarousel } from "embla-carousel/react";
 import Tooltip from "react-tooltip";
 import classNames from "classnames";
@@ -8,16 +14,17 @@ import sum from "lodash/sum";
 import { DateTime } from "luxon";
 
 import * as Store from "../../store";
-import ShockAvatar from "../ShockAvatar";
-import Pad from "../Pad";
+import { attachMedia, detachTorrent } from "../../utils/Torrents";
 import { subPostContent, subPostTips } from "../../actions/FeedActions";
 
 import Video from "./components/Video";
 import Image from "./components/Image";
 import Stream from "./components/Stream";
-import "./css/index.scoped.css";
+import ShockAvatar from "../ShockAvatar";
+import Pad from "../Pad";
 
 import ShareIcon from "../../images/share.svg";
+import "./css/index.scoped.css";
 
 const Post = ({
   id,
@@ -50,6 +57,19 @@ const Post = ({
   const [sliderLength, setSliderLength] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
+  // Track Enter/Leave only once
+  const [mediaAttached, setMediaAttached] = useState(false);
+  const [mediaDetached, setMediaDetached] = useState(false);
+  const { observe } = useInView({
+    trackVisibility: false,
+    delay: 100,
+    onEnter: () => {
+      setMediaAttached(true);
+    },
+    onLeave: () => {
+      setMediaDetached(true);
+    }
+  });
 
   const isOnlineNode = /*Utils.isOnline(
     Store.useSelector(Store.selectUser(publicKey)).lastSeenApp
@@ -153,13 +173,11 @@ const Post = ({
     if (item.type === "video/embedded") {
       return (
         <Video
-          id={key}
           item={{
             ...item,
             magnetURI: finalMagnetURI || item.magnetURI
           }}
           index={index}
-          postId={id}
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
@@ -170,13 +188,11 @@ const Post = ({
       if (item.playbackMagnet) {
         return (
           <Video
-            id={key}
             item={{
               ...item,
               magnetURI: item.playbackMagnet
             }}
             index={index}
-            postId={id}
             tipCounter={tipCounter}
             tipValue={tipValue}
             key={`${id}-${index}`}
@@ -312,6 +328,22 @@ const Post = ({
     }
   }, []);
 
+  useLayoutEffect(() => {
+    if (mediaAttached) {
+      attachMedia([post], false);
+    }
+
+    if (mediaDetached) {
+      Object.entries(post.contentItems).map(([key, item]) => {
+        if ("magnetURI" in item) {
+          detachTorrent({
+            magnetURI: item.magnetURI
+          });
+        }
+      });
+    }
+  }, [mediaAttached, mediaDetached]);
+
   const readableLiveStatus: Record<Common.LiveStatus, string> = {
     live: "Is Live",
     waiting: "Waiting",
@@ -319,7 +351,7 @@ const Post = ({
   };
 
   return (
-    <div className="post">
+    <div className="post" ref={observe}>
       <div className="head">
         <div className="user">
           <ShockAvatar height={50} publicKey={publicKey} />

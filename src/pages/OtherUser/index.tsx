@@ -94,12 +94,6 @@ const OtherUserPage = () => {
     };
   }, [dispatch, userPublicKey]);
 
-  useEffect(() => {
-    if (!authenticated) {
-      dispatch(createGuestUser());
-    }
-  }, [authenticated, dispatch]);
-
   //effect for services
   useEffect(() => {
     const subscription = rifle({
@@ -277,13 +271,6 @@ const OtherUserPage = () => {
     [history, userPublicKey]
   );
   //#endregion controller
-
-  useLayoutEffect(() => {
-    attachMedia(
-      posts.filter(post => !Common.isSharedPost(post)),
-      false
-    );
-  }, [posts]);
 
   return (
     <div className={classNames("page-container", styles["profile-page"])}>
