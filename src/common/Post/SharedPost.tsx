@@ -41,11 +41,6 @@ const SharedPost = ({
     Store.selectSinglePost(sharedPost.originalAuthor, postID)
   );
 
-  const loadPostMedia = useCallback(async () => {
-    if (originalPost) {
-      attachMedia([originalPost], false);
-    }
-  }, [originalPost]);
   const deletePost = useCallback(() => {
     openDeleteModal({ id: originalPost.id, shared: true });
   }, [originalPost, openDeleteModal]);
@@ -55,10 +50,10 @@ const SharedPost = ({
     [dispatch, sharedPost.originalAuthor]
   );
 
-  React.useEffect(() => dispatch(subscribeUserProfile(sharerPublicKey)), [
-    dispatch,
-    sharerPublicKey
-  ]);
+  React.useEffect(
+    () => dispatch(subscribeUserProfile(sharerPublicKey)),
+    [dispatch, sharerPublicKey]
+  );
 
   React.useEffect(
     () => dispatch(subSinglePost(sharedPost.originalAuthor, postID)),
@@ -72,8 +67,7 @@ const SharedPost = ({
 
   useLayoutEffect(() => {
     Tooltip.rebuild();
-    loadPostMedia();
-  }, [loadPostMedia]);
+  }, []);
 
   return (
     <div className="post shared-post">

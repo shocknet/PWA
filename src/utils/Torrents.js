@@ -295,3 +295,15 @@ export const attachMedia = async (posts = [], torrentMode = true) => {
 
   runSerial(contentItems);
 };
+
+export const detachTorrent = async ({ magnetURI }) => {
+  const webTorrentClient = await initializeClient();
+  const torrent = webTorrentClient.get(magnetURI);
+
+  if (torrent) {
+    torrent.destroy();
+    return true;
+  }
+
+  return false;
+};
