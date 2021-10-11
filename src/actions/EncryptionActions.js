@@ -9,8 +9,6 @@ export const ACTIONS = {
   SET_DEVICE_ID: "encryption/deviceId"
 };
 
-let exchangeSource = Http.CancelToken.source();
-
 export const generateDeviceId = () => dispatch => {
   const deviceId = uuidv4();
   dispatch({
@@ -48,29 +46,32 @@ const getDeviceId = () => (dispatch, getState) => {
   return deviceId;
 };
 
+let isExchanging = false;
+
+/** @returns {Promise<void>} */
+const waitForCurrExchangeIfAny = async () => {
+  if (!isExchanging) {
+    return;
+  }
+  await new Promise(res => setTimeout(res, 750));
+
+  return waitForCurrExchangeIfAny();
+};
+
 export const exchangeKeyPair = () => async dispatch => {
   try {
-    if (exchangeSource) {
-      exchangeSource.cancel(
-        "Key Pair exchange operation is preceded by another one"
-      );
-      exchangeSource = null;
-    }
+    console.log("before check");
+    await waitForCurrExchangeIfAny();
+    isExchanging = true;
+    console.log("after check");
 
-    exchangeSource = Http.CancelToken.source();
     const deviceId = dispatch(getDeviceId());
 
     const keyPair = generateKeyPair();
-    const { data } = await Http.post(
-      `/api/encryption/exchange`,
-      {
-        publicKey: keyPair.publicKeyBase64,
-        deviceId
-      },
-      {
-        cancelToken: exchangeSource.token
-      }
-    );
+    const { data } = await Http.post(`/api/encryption/exchange`, {
+      publicKey: keyPair.publicKeyBase64,
+      deviceId
+    });
 
     dispatch(
       addUserKeyPair({
@@ -96,5 +97,8 @@ export const exchangeKeyPair = () => async dispatch => {
   } catch (err) {
     console.error("[ENCRYPTION] Key Exchange Error:", err);
     throw err;
+  } finally {
+    console.log("finally");
+    isExchanging = false;
   }
 };
