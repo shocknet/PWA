@@ -135,6 +135,7 @@ export const connectHost = (
     console.log(e);
   }
 
+  // TODO discriminate error
   console.error("cannot establish https connection, will try http");
   const nodeHealth = await fetchNodeHealth(
     `http://${sanitizedHostIP}`,
