@@ -380,20 +380,13 @@ const OtherUserPage = () => {
         />
         <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
       </div>
-      {authenticated ? (
+      {authenticated && (
         <AddBtn
           onClick={toggleModal}
           large
           iconURL={QRCodeIcon}
           icon={null}
           label={null}
-        />
-      ) : (
-        <AddBtn
-          onClick={redirectAuth}
-          large
-          icon="user"
-          label="Create a Lightning Page"
         />
       )}
 

@@ -205,14 +205,6 @@ const FeedPage = () => {
         toggleOpen={toggleUnlockModal}
       />
       <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
-      {!authenticated && (
-        <AddBtn
-          onClick={redirectAuth}
-          large
-          icon="user"
-          label="Create a Lightning Page"
-        />
-      )}
       <BottomBar />
     </div>
   );
