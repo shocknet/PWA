@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "../../store";
 
 const BottomBar = () => {
-  const authenticated = useSelector(({ auth }) => auth.authenticated);
+  const authenticated = useSelector(({ node }) => node.authToken);
 
   if (!authenticated) {
     return null;
