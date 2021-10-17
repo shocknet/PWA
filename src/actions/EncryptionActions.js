@@ -58,10 +58,15 @@ const waitForCurrExchangeIfAny = async () => {
   return waitForCurrExchangeIfAny();
 };
 
+let lastPair = null;
+
 export const exchangeKeyPair = () => async dispatch => {
   try {
     console.log("before check");
     await waitForCurrExchangeIfAny();
+    if (lastPair) {
+      return lastPair;
+    }
     isExchanging = true;
     console.log("after check");
 
@@ -72,6 +77,12 @@ export const exchangeKeyPair = () => async dispatch => {
       publicKey: keyPair.publicKeyBase64,
       deviceId
     });
+
+    lastPair = {
+      deviceId,
+      user: keyPair,
+      host: data
+    };
 
     dispatch(
       addUserKeyPair({
@@ -89,11 +100,7 @@ export const exchangeKeyPair = () => async dispatch => {
 
     dispatch(setHostId(data.hostId));
 
-    return {
-      deviceId,
-      user: keyPair,
-      host: data
-    };
+    return lastPair;
   } catch (err) {
     console.error("[ENCRYPTION] Key Exchange Error:", err);
     throw err;
