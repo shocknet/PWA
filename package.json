@@ -110,6 +110,7 @@
     "@types/lodash": "^4.14.168",
     "@types/luxon": "^1.26.4",
     "@types/react-router-dom": "5.x.x",
+    "@welldone-software/why-did-you-render": "^6.2.1",
     "eslint-config-prettier": "^8.1.0",
     "prettier": "^2.2.1",
     "react-git-info": "^2.0.0"
