@@ -127,6 +127,10 @@ Http.interceptors.response.use(
       const { store } = await import("../store");
       const response = await decryptResponse(error.response);
       error.response = response;
+      console.error("Error status:", error.response);
+      if (!response) {
+        store.dispatch(setAuthenticated(false));
+      }
       if (
         response?.data.field === "deviceId" &&
         (error.config.retries ?? 0) < 2
