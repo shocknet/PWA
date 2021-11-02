@@ -41,6 +41,7 @@ const FeedPage = () => {
   const dispatch = Store.useDispatch();
   const history = useHistory();
   const authenticated = Store.useSelector(({ auth }) => auth.authenticated);
+  const authToken = Store.useSelector(({ node }) => node.authToken);
   const follows = Store.useSelector(Store.selectFollows);
   const posts = Store.useSelector(
     Store.selectAllPostsFromFollowedNewestToOldest
@@ -205,6 +206,14 @@ const FeedPage = () => {
         toggleOpen={toggleUnlockModal}
       />
       <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
+      {!authToken && (
+        <AddBtn
+          onClick={redirectAuth}
+          large
+          icon="user"
+          label="Create a Lightning Page"
+        />
+      )}
       <BottomBar />
     </div>
   );
