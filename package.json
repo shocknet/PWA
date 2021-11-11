@@ -20,7 +20,7 @@
     "craco-plugin-scoped-css": "^1.1.1",
     "eccrypto": "^1.1.6",
     "embla-carousel": "^4.2.0",
-    "gun": "0.2020.520",
+    "gun": "amark/gun#50af2d52ad6677fd5b95e5ed64fca7491c7877b5",
     "immer": "^9.0.1",
     "js-lnurl": "^0.2.5",
     "jwt-decode": "^3.1.2",
