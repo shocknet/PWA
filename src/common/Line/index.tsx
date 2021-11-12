@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 export interface LineProps {
   color: string;
@@ -39,4 +39,4 @@ const Line = ({ color, length, type, width }: LineProps) => {
   return <div style={style} />;
 };
 
-export default Line;
+export default memo(Line);

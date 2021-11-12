@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import c from "classnames";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -53,4 +53,4 @@ const SendReqBtn = ({ publicKey }: SendReqBtnProps) => {
   );
 };
 
-export default SendReqBtn;
+export default memo(SendReqBtn);

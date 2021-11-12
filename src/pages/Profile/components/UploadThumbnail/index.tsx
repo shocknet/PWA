@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo,useCallback, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import Modal from "../../../../common/Modal";
 import ModalSubmit from "../../../../common/Modal/components/ModalSubmit";
@@ -226,4 +226,4 @@ const UploadThumbnail = ({
   );
 };
 
-export default UploadThumbnail;
+export default memo(UploadThumbnail);

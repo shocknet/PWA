@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect } from "react";
+import React, { memo, useCallback, useLayoutEffect } from "react";
 import { DateTime } from "luxon";
 import Tooltip from "react-tooltip";
 
@@ -107,4 +107,4 @@ const SharedPost = ({
   );
 };
 
-export default SharedPost;
+export default memo(SharedPost);

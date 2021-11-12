@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 export interface WithHeighthProps extends React.HTMLAttributes<{}> {
   onHeight(height: number): void;
@@ -30,4 +30,4 @@ const WithHeight: React.FC<WithHeighthProps> = ({
   );
 };
 
-export default WithHeight;
+export default memo(WithHeight);

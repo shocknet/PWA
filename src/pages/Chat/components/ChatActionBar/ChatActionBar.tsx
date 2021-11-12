@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 import "./ChatActionBar.scoped.css";
 
@@ -49,4 +49,4 @@ const ChatBottomBar: React.FC<ChatBottomBarProps> = ({
   );
 };
 
-export default ChatBottomBar;
+export default memo(ChatBottomBar);

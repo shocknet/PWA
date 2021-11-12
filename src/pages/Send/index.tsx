@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import React, { memo, useCallback, useState, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import Http from "../../utils/Http";
@@ -248,4 +248,4 @@ const SendPage = () => {
   );
 };
 
-export default SendPage;
+export default memo(SendPage);

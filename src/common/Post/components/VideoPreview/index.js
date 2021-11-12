@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { isURLCompatible } from "../../../../utils/Torrents";
 import "./css/index.scoped.css";
 
@@ -67,4 +67,4 @@ const VideoPreview = ({
   );
 };
 
-export default VideoPreview;
+export default memo(VideoPreview);

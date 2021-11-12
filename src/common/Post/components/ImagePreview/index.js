@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 import ShockImg from "../../../ShockImg";
 
@@ -61,4 +61,4 @@ const ImagePreview = ({
   );
 };
 
-export default ImagePreview;
+export default memo(ImagePreview);

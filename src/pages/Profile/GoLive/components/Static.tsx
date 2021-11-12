@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 import * as gStyles from "../../../../styles";
 
@@ -83,4 +83,4 @@ const Static: React.FC<StaticProps> = ({ overlay }) => {
   );
 };
 
-export default Static;
+export default memo(Static);

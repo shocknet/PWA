@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import produce from "immer";
 import { useHistory } from "react-router-dom";
 
@@ -119,4 +119,4 @@ const MEDIA_STYLE: React.CSSProperties = {
   objectFit: "contain"
 };
 
-export default ContentWall;
+export default memo(ContentWall);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { Channel as IChannel } from "shock-common";
@@ -345,4 +345,4 @@ const AdvancedPage: React.FC = () => {
   );
 };
 
-export default AdvancedPage;
+export default memo(AdvancedPage);

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{memo} from "react";
 import { useParams } from "react-router-dom";
 
 import * as Schema from "../../schema";
@@ -113,4 +113,4 @@ const PublicContentItemPage: React.FC<PublicContentItemPageProps> = () => {
   );
 };
 
-export default PublicContentItemPage;
+export default memo(PublicContentItemPage);

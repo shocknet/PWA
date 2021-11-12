@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import MainNav from "../../common/MainNav";
 import "./css/index.scoped.css";
 import Http from "../../utils/Http";
@@ -69,4 +69,4 @@ const Backups = () => {
   );
 };
 
-export default Backups;
+export default memo(Backups);

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import * as Common from "shock-common";
 import classNames from "classnames";
 
@@ -226,4 +226,4 @@ const Host = ({
   );
 };
 
-export default Host;
+export default memo(Host);

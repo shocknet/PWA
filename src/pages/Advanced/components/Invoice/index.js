@@ -1,4 +1,5 @@
 // @ts-check
+import { memo } from "react";
 import { DateTime } from "luxon";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import * as Store from "../../../../store";
@@ -32,4 +33,4 @@ const Invoice = ({ value, date, paymentRequest, message }) => {
   );
 };
 
-export default Invoice;
+export default memo(Invoice);

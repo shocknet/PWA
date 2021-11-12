@@ -1,4 +1,5 @@
 // @ts-check
+import { memo } from "react";
 import classNames from "classnames";
 import GitInfo from "react-git-info/macro";
 
@@ -51,4 +52,4 @@ const DialogPageContainer = ({
   );
 };
 
-export default DialogPageContainer;
+export default memo(DialogPageContainer);

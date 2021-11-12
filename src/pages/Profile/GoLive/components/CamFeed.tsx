@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import c from "classnames";
 
 import * as gStyles from "../../../../styles";
@@ -63,4 +63,4 @@ const CamFeed = () => {
   );
 };
 
-export default CamFeed;
+export default memo(CamFeed);
