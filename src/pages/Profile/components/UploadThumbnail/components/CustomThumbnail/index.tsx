@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.scoped.css";
 
@@ -45,4 +45,4 @@ const CustomThumbnail = ({
   );
 };
 
-export default CustomThumbnail;
+export default memo(CustomThumbnail);

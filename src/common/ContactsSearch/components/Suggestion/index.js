@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import classNames from "classnames";
 import "./css/index.scoped.css";
 
@@ -98,4 +98,4 @@ const Suggestion = ({
   );
 };
 
-export default Suggestion;
+export default memo(Suggestion);

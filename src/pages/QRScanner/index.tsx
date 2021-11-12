@@ -1,4 +1,5 @@
 import React, {
+  memo,
   useCallback,
   useMemo,
   useState
@@ -383,4 +384,4 @@ const QRScanner = () => {
   );
 };
 
-export default QRScanner;
+export default memo(QRScanner);

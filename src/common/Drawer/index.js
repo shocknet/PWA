@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 import GitInfo from "react-git-info/macro";
 import { NavLink } from "react-router-dom";
@@ -110,4 +110,4 @@ const Drawer = () => {
   );
 };
 
-export default Drawer;
+export default memo(Drawer);

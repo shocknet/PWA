@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import * as Common from "shock-common";
 import { Link } from "react-router-dom";
 
@@ -61,4 +61,4 @@ const Message = ({ id }) => {
   );
 };
 
-export default Message;
+export default memo(Message);

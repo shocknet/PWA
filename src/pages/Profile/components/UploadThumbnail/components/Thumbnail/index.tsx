@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 import "./css/index.scoped.css";
 
@@ -19,4 +19,4 @@ const Thumbnail = ({ thumbnail, selected, setSelectedThumbnail }) => {
   );
 };
 
-export default Thumbnail;
+export default memo(Thumbnail);

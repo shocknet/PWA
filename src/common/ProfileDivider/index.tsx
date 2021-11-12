@@ -1,3 +1,4 @@
+import { memo } from "react";
 import classNames from "classnames";
 
 import * as gStyles from "../../styles";
@@ -82,4 +83,4 @@ const ProfileDivider = ({
   );
 };
 
-export default ProfileDivider;
+export default memo(ProfileDivider);

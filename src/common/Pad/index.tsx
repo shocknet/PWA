@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 export interface PadProps {
   amt: number;
@@ -16,4 +16,4 @@ const Pad: React.FC<PadProps> = ({ amt, insideRow }) => {
   return <div style={style} />;
 };
 
-export default Pad;
+export default memo(Pad);

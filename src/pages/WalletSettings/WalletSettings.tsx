@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import c from "classnames";
 import debounce from "lodash/debounce";
 
@@ -154,4 +154,4 @@ const WalletSettings = () => {
   );
 };
 
-export default WalletSettings;
+export default memo(WalletSettings);

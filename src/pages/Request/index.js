@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import classNames from "classnames";
 import DialogPageContainer from "../../common/DialogPageContainer";
 import "./css/index.scoped.css";
@@ -99,4 +99,4 @@ const RequestPage = () => {
   );
 };
 
-export default RequestPage;
+export default memo(RequestPage);

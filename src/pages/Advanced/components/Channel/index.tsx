@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import classNames from "classnames";
 import { toast } from "react-toastify";
 
@@ -99,4 +99,4 @@ const Channel: React.FC<ChannelProps> = ({
   );
 };
 
-export default Channel;
+export default memo(Channel);

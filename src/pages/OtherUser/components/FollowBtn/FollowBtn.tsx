@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import c from "classnames";
 
 import * as Store from "../../../../store";
@@ -67,4 +67,4 @@ const FollowBtn = ({ publicKey }: FollowBtnProps) => {
   );
 };
 
-export default FollowBtn;
+export default memo(FollowBtn);

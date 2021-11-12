@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import * as Common from "shock-common";
 import { useDispatch } from "react-redux";
 import c from "classnames";
@@ -509,4 +509,4 @@ const GoLive = () => {
   );
 };
 
-export default GoLive;
+export default memo(GoLive);

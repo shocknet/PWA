@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
@@ -40,4 +40,4 @@ const Transaction = ({ hash, value, date, unconfirmed }) => {
   );
 };
 
-export default Transaction;
+export default memo(Transaction);

@@ -1,6 +1,7 @@
 // @ts-check
 import React, {
   Suspense,
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -219,4 +220,4 @@ const FeedPage = () => {
   );
 };
 
-export default FeedPage;
+export default memo(FeedPage);
