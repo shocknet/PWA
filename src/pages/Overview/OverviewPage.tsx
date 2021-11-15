@@ -95,6 +95,10 @@ const OverviewPage = () => {
     totalBalance
   ]);
 
+  const introModalOpen =
+    !fetchingDeploymentType &&
+    !(introDismissed || sessionStorage.getItem("introDismissed"));
+
   return (
     <div className="page-container overview-page">
       <div className="overview-header">
@@ -147,41 +151,40 @@ const OverviewPage = () => {
       </div>
       <BottomBar />
 
-      <Modal
-        modalOpen={
-          !fetchingDeploymentType &&
-          !(introDismissed || sessionStorage.getItem("introDismissed"))
-        }
-        toggleModal={dismissIntro}
-        contentStyle={INTRO_MODAL_STYLE}
-        disableBackdropClose
-        noFullWidth
-        blueBtn="Let's Go"
-        onClickBlueBtn={dismissIntro}
-      >
-        {(() => {
-          let paragraphs: string[] = [];
-          if (deploymentType === "hosting") {
-            paragraphs = REACT_APP_INTRO_PARAGRAPHS_HOSTING;
-          }
-          if (deploymentType === "default") {
-            paragraphs = REACT_APP_INTRO_PARAGRAPHS_DEFAULT;
-          }
-          if (deploymentType === "unknown") {
-            paragraphs = introParagraphsIfError;
-          }
-          return paragraphs.map((paragraph, i) => (
-            <React.Fragment key={paragraph + i}>
-              <p
-                className="intro-paragraph"
-                dangerouslySetInnerHTML={{ __html: paragraph }}
-              />
+      {introModalOpen && (
+        <Modal
+          modalOpen={introModalOpen}
+          toggleModal={dismissIntro}
+          contentStyle={INTRO_MODAL_STYLE}
+          disableBackdropClose
+          noFullWidth
+          blueBtn="Let's Go"
+          onClickBlueBtn={dismissIntro}
+        >
+          {(() => {
+            let paragraphs: string[] = [];
+            if (deploymentType === "hosting") {
+              paragraphs = REACT_APP_INTRO_PARAGRAPHS_HOSTING;
+            }
+            if (deploymentType === "default") {
+              paragraphs = REACT_APP_INTRO_PARAGRAPHS_DEFAULT;
+            }
+            if (deploymentType === "unknown") {
+              paragraphs = introParagraphsIfError;
+            }
+            return paragraphs.map((paragraph, i) => (
+              <React.Fragment key={paragraph + i}>
+                <p
+                  className="intro-paragraph"
+                  dangerouslySetInnerHTML={{ __html: paragraph }}
+                />
 
-              <br />
-            </React.Fragment>
-          ));
-        })()}
-      </Modal>
+                <br />
+              </React.Fragment>
+            ));
+          })()}
+        </Modal>
+      )}
     </div>
   );
 };
