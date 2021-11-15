@@ -318,7 +318,7 @@ const Post = ({
       postID: id,
       publicKey
     });
-  }, [publicKey, id, openShareModal]);
+  }, [authenticated, openShareModal, id, publicKey, author.displayName]);
 
   useEffect(() => {
     try {
