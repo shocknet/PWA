@@ -603,45 +603,49 @@ const ProfilePage = () => {
           {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
           <Pad amt={200} />
 
-          <Modal
-            toggleModal={toggleModal}
-            modalOpen={profileModalOpen}
-            contentStyle={PROFILE_MODAL_CONTENT_STYLE}
-            noFullWidth
-          >
-            <QRCode
-              bgColor="#23282d"
-              fgColor="#64bbff"
-              value={`${currWebClientPrefix}/${publicKey}`}
-              size={180}
-              className="profile-qrcode"
-              imageSettings={QR_IMAGE_SETTINGS}
-            />
-            <p className="profile-qrcode-desc">
-              Other users can scan this code to contact you
-            </p>
-
-            {!navigator.clipboard && (
-              <input
-                className="hidden-input"
-                id="public-key-holder"
-                readOnly
-                type="text"
-                value={`${currWebClientPrefix}/${publicKey}`}
-              ></input>
-            )}
-            <div
-              className="profile-clipboard-container"
-              onClick={copyClipboard}
+          {profileModalOpen && (
+            <Modal
+              toggleModal={toggleModal}
+              modalOpen={profileModalOpen}
+              contentStyle={PROFILE_MODAL_CONTENT_STYLE}
+              noFullWidth
             >
-              <img
-                src={ClipboardIcon}
-                className="profile-clipboard-icon"
-                alt=""
+              <QRCode
+                bgColor="#23282d"
+                fgColor="#64bbff"
+                value={`${currWebClientPrefix}/${publicKey}`}
+                size={180}
+                className="profile-qrcode"
+                imageSettings={QR_IMAGE_SETTINGS}
               />
-              <p className="profile-clipboard-text">Tap to copy to clipboard</p>
-            </div>
-          </Modal>
+              <p className="profile-qrcode-desc">
+                Other users can scan this code to contact you
+              </p>
+
+              {!navigator.clipboard && (
+                <input
+                  className="hidden-input"
+                  id="public-key-holder"
+                  readOnly
+                  type="text"
+                  value={`${currWebClientPrefix}/${publicKey}`}
+                ></input>
+              )}
+              <div
+                className="profile-clipboard-container"
+                onClick={copyClipboard}
+              >
+                <img
+                  src={ClipboardIcon}
+                  className="profile-clipboard-icon"
+                  alt=""
+                />
+                <p className="profile-clipboard-text">
+                  Tap to copy to clipboard
+                </p>
+              </div>
+            </Modal>
+          )}
 
           <Modal
             toggleModal={toggleConfigModal}
