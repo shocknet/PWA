@@ -647,59 +647,61 @@ const ProfilePage = () => {
             </Modal>
           )}
 
-          <Modal
-            toggleModal={toggleConfigModal}
-            modalOpen={profileConfigModalOpen}
-            contentClass="p-2"
-            forceRenderTitleBar
-            blueBtn={somethingInsideConfigModalChanged && "Save"}
-            onClickBlueBtn={onConfigSubmit}
-          >
-            <label htmlFor="new-web-client-prefix">Web Client</label>
+          {profileConfigModalOpen && (
+            <Modal
+              toggleModal={toggleConfigModal}
+              modalOpen={profileConfigModalOpen}
+              contentClass="p-2"
+              forceRenderTitleBar
+              blueBtn={somethingInsideConfigModalChanged && "Save"}
+              onClickBlueBtn={onConfigSubmit}
+            >
+              <label htmlFor="new-web-client-prefix">Web Client</label>
 
-            <div className="web-client-prefix-picker">
-              <i
-                className="far fa-copy"
-                onClick={copyWebClientUrlToClipboard}
-                style={{ fontSize: 24 }}
-              />
+              <div className="web-client-prefix-picker">
+                <i
+                  className="far fa-copy"
+                  onClick={copyWebClientUrlToClipboard}
+                  style={{ fontSize: 24 }}
+                />
 
-              <select
-                onChange={e => {
-                  setNewWebClientPrefix(e.target.value as WebClientPrefix);
-                }}
-                name="new-web-client-prefix"
-                id="new-web-client-prefix"
-                value={newWebClientPrefix}
-              >
-                {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
-                  <option key={prefix} value={prefix}>
-                    {prefix}
-                  </option>
-                ))}
-              </select>
+                <select
+                  onChange={e => {
+                    setNewWebClientPrefix(e.target.value as WebClientPrefix);
+                  }}
+                  name="new-web-client-prefix"
+                  id="new-web-client-prefix"
+                  value={newWebClientPrefix}
+                >
+                  {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
+                    <option key={prefix} value={prefix}>
+                      {prefix}
+                    </option>
+                  ))}
+                </select>
 
-              <span>/</span>
+                <span>/</span>
 
-              <span style={{ fontSize: 12 }}>{publicKey}</span>
-            </div>
+                <span style={{ fontSize: 12 }}>{publicKey}</span>
+              </div>
 
-            {!navigator.clipboard && (
-              <input
-                className="hidden-input"
-                id="web-client-url-holder"
-                readOnly
-                type="text"
-                value={newWebClientPrefix + "/" + publicKey}
-              ></input>
-            )}
+              {!navigator.clipboard && (
+                <input
+                  className="hidden-input"
+                  id="web-client-url-holder"
+                  readOnly
+                  type="text"
+                  value={newWebClientPrefix + "/" + publicKey}
+                ></input>
+              )}
 
-            <br></br>
+              <br></br>
 
-            <label htmlFor="content-host">Content Host</label>
+              <label htmlFor="content-host">Content Host</label>
 
-            <ContentHostInput />
-          </Modal>
+              <ContentHostInput />
+            </Modal>
+          )}
 
           {deletePostModalData && (
             <Modal
