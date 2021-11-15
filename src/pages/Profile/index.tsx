@@ -743,28 +743,31 @@ const ProfilePage = () => {
       {
         //#region displayNameModal
       }
-
-      <Modal
-        contentStyle={dnModalStyle}
-        modalOpen={dnModalOpen}
-        toggleModal={toggleDnModal}
-        blueBtn="Save"
-        disableBlueBtn={newDisplayName === displayName || newDisplayName === ""}
-        onClickBlueBtn={handleOkDnChange}
-        noFullWidth
-        modalTitle="NEW DISPLAY NAME"
-      >
-        <input
-          autoCapitalize="none"
-          autoCorrect="off"
-          type="text"
-          className="input-field"
-          placeholder={"New display name"}
-          name="newDisplayName"
-          onChange={handleNewDisplayNameChange}
-          value={newDisplayName}
-        />
-      </Modal>
+      {dnModalOpen && (
+        <Modal
+          contentStyle={dnModalStyle}
+          modalOpen={dnModalOpen}
+          toggleModal={toggleDnModal}
+          blueBtn="Save"
+          disableBlueBtn={
+            newDisplayName === displayName || newDisplayName === ""
+          }
+          onClickBlueBtn={handleOkDnChange}
+          noFullWidth
+          modalTitle="NEW DISPLAY NAME"
+        >
+          <input
+            autoCapitalize="none"
+            autoCorrect="off"
+            type="text"
+            className="input-field"
+            placeholder={"New display name"}
+            name="newDisplayName"
+            onChange={handleNewDisplayNameChange}
+            value={newDisplayName}
+          />
+        </Modal>
+      )}
 
       {
         //#endregion displayNameModal
