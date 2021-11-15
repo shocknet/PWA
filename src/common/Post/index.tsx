@@ -342,7 +342,7 @@ const Post = ({
         }
       });
     }
-  }, [mediaAttached, mediaDetached]);
+  }, [mediaAttached, mediaDetached, post]);
 
   const readableLiveStatus: Record<Common.LiveStatus, string> = {
     live: "Is Live",
