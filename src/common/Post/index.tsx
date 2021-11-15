@@ -334,7 +334,7 @@ const Post = ({
     }
 
     if (mediaDetached) {
-      Object.entries(post.contentItems).map(([key, item]) => {
+      Object.entries(post.contentItems).map(([, item]) => {
         if ("magnetURI" in item) {
           detachTorrent({
             magnetURI: item.magnetURI

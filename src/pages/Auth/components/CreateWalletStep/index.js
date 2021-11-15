@@ -1,9 +1,8 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAuthMethod, setAuthStep } from "../../../../actions/AuthActions";
 import { createWallet } from "../../../../actions/NodeActions";
 import Loader from "../../../../common/Loader";
-import * as Store from "../../../../store";
 
 const CreateWalletStep = () => {
   const dispatch = useDispatch();
