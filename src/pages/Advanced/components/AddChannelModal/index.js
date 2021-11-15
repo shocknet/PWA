@@ -74,7 +74,7 @@ const AddChannelModal = ({ open = false, toggleModal }) => {
             name="channelCapacity"
             label="Channel Capacity (sats)"
             value={channelCapacity}
-            inputMode="number"
+            inputMode="numeric"
             small
           />
           <Pad amt={16} />
@@ -83,7 +83,7 @@ const AddChannelModal = ({ open = false, toggleModal }) => {
             name="pushAmount"
             label="Push Amount (sats)"
             value={pushAmount}
-            inputMode="number"
+            inputMode="numeric"
             small
           />
           <Pad amt={16} />
