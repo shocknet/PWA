@@ -329,9 +329,7 @@ const OtherUserPage = () => {
           <Modal
             toggleModal={toggleModal}
             modalOpen={profileModalOpen}
-            contentStyle={{
-              padding: "40px 30px"
-            }}
+            contentStyle={PROFILE_MODAL_CONTENT_STYLE}
             noFullWidth
           >
             <QRCode
@@ -396,6 +394,10 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   height: 36,
   width: 36,
   excavate: true
+};
+
+const PROFILE_MODAL_CONTENT_STYLE = {
+  padding: "40px 30px"
 };
 
 export default memo(OtherUserPage);
