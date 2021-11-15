@@ -195,7 +195,7 @@ const QRScanner = () => {
       };
       const { peers } = await fetchPeers()(dispatch);
       if (!peers.find(samePeer)) {
-        const [publicKey, host] = uri.plit("@");
+        const [publicKey, host] = uri.split("@");
         await connectPeer({ publicKey, host });
       }
 
