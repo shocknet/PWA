@@ -152,7 +152,7 @@ const ContentHostInput = () => {
       hosts={filteredHosts}
       onAddHost={addHost}
       onRemoveHost={removeHost}
-      onRetryHost={() => {}}
+      onRetryHost={Utils.EMPTY_FN}
     />
   );
 };
