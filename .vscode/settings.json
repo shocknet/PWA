@@ -29,6 +29,8 @@
     "otheruser",
     "pendingchannels",
     "persistor",
+    "precache",
+    "precaching",
     "pubkey",
     "qrcode",
     "reduxjs",
