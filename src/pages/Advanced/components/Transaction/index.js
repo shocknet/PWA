@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { useSelector } from "react-redux";
+import { useSelector } from "../../../../store";
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
 
