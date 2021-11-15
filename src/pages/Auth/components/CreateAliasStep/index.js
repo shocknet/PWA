@@ -53,9 +53,7 @@ const CreateAliasStep = () => {
 
       try {
         setLoading(true);
-        const wallet = await dispatch(
-          createAlias({ alias, password, accessSecret })
-        );
+        await dispatch(createAlias({ alias, password, accessSecret }));
       } catch (err) {
         setError(err.message);
       } finally {
