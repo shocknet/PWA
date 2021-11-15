@@ -258,7 +258,7 @@ export const attachMedia = async (posts = [], torrentMode = true) => {
                 });
 
                 torrent.on("done", () => {
-                  files.map(file => {
+                  files.forEach(file => {
                     const fileType = _getFileType(file);
                     const fileName = getCacheFileName(file);
                     const element = fileType.element;
