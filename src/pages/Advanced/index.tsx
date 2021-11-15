@@ -335,12 +335,18 @@ const AdvancedPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <AddPeerModal open={addPeerOpen} toggleModal={toggleAddPeerOpen} />
-      <AddChannelModal
-        open={addChannelOpen}
-        toggleModal={toggleAddChannelOpen}
-      />
-      <InfoModal modalOpen={infoModalOpen} toggleModal={toggleInfoModal} />
+      {addPeerOpen && (
+        <AddPeerModal open={addPeerOpen} toggleModal={toggleAddPeerOpen} />
+      )}
+      {addChannelOpen && (
+        <AddChannelModal
+          open={addChannelOpen}
+          toggleModal={toggleAddChannelOpen}
+        />
+      )}
+      {infoModalOpen && (
+        <InfoModal modalOpen={infoModalOpen} toggleModal={toggleInfoModal} />
+      )}
     </div>
   );
 };
