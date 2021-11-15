@@ -776,28 +776,30 @@ const ProfilePage = () => {
       {
         //#region bioModal
       }
-      <Modal
-        contentStyle={bioModalStyle}
-        modalOpen={bioModalOpen}
-        toggleModal={toggleBioModal}
-        modalTitle="NEW BIO"
-        blueBtn="Save"
-        onClickBlueBtn={handleOkBioChange}
-        disableBlueBtn={newBio === bio || newBio === ""}
-        forceRenderTitleBar
-        noFullWidth
-      >
-        <input
-          autoCapitalize="none"
-          autoCorrect="off"
-          type="text"
-          className="input-field"
-          placeholder={"New bio"}
-          name="newBio"
-          onChange={handleNewBioChange}
-          value={newBio}
-        />
-      </Modal>
+      {bioModalOpen && (
+        <Modal
+          contentStyle={bioModalStyle}
+          modalOpen={bioModalOpen}
+          toggleModal={toggleBioModal}
+          modalTitle="NEW BIO"
+          blueBtn="Save"
+          onClickBlueBtn={handleOkBioChange}
+          disableBlueBtn={newBio === bio || newBio === ""}
+          forceRenderTitleBar
+          noFullWidth
+        >
+          <input
+            autoCapitalize="none"
+            autoCorrect="off"
+            type="text"
+            className="input-field"
+            placeholder={"New bio"}
+            name="newBio"
+            onChange={handleNewBioChange}
+            value={newBio}
+          />
+        </Modal>
+      )}
       {
         //#endregion bioModal
       }
