@@ -699,23 +699,26 @@ const ProfilePage = () => {
             <ContentHostInput />
           </Modal>
 
-          <Modal
-            toggleModal={toggleDeleteModal}
-            modalOpen={deletePostModalData}
-            contentStyle={DELETE_MODAL_CONTENT_STYLE}
-            blueBtn={!deletePostModalLoading && "Cancel"}
-            disableBlueBtn={deletePostModalLoading}
-            onClickBlueBtn={closeDeleteModal}
-            redBtn={!deletePostModalLoading && "Delete"}
-            disableRedBtn={deletePostModalLoading}
-            onClickRedBtn={deletePost}
-            noFullWidth
-          >
-            {!deletePostModalLoading && (
-              <span className="text-align-center">Are you sure?</span>
-            )}
-            {deletePostModalLoading && <Loader />}
-          </Modal>
+          {deletePostModalData && (
+            <Modal
+              toggleModal={toggleDeleteModal}
+              modalOpen={deletePostModalData}
+              contentStyle={DELETE_MODAL_CONTENT_STYLE}
+              blueBtn={!deletePostModalLoading && "Cancel"}
+              disableBlueBtn={deletePostModalLoading}
+              onClickBlueBtn={closeDeleteModal}
+              redBtn={!deletePostModalLoading && "Delete"}
+              disableRedBtn={deletePostModalLoading}
+              onClickRedBtn={deletePost}
+              noFullWidth
+            >
+              {!deletePostModalLoading && (
+                <span className="text-align-center">Are you sure?</span>
+              )}
+              {deletePostModalLoading && <Loader />}
+            </Modal>
+          )}
+
           <AddBtn
             onClick={toggleModal}
             large
