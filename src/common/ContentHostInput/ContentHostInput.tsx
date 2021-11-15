@@ -13,43 +13,21 @@ const ContentHostInput = () => {
   const seedProviderPub = Store.useSelector(
     ({ content }) => content.seedProviderPub
   );
-  const userProfiles = Store.useSelector(({ userProfiles }) => userProfiles);
+  const providerProfile = Store.useSelector(Store.selectUser(seedProviderPub));
   const { seedUrl, seedToken } = Store.useSelector(
     ({ content }) => content.seedInfo
   );
   const [hosts, setHosts] = useState<IHost[]>([]);
-  const [providerProfile, setProviderProfile] = useState(null);
   const [providedService, setProvidedService] = useState("");
   const [priceToUpdate, setPriceToUpdate] = useState(0);
   const [providerError, setProviderError] = useState("");
-  //effect for user profile
-  useEffect(() => {
-    const provProfile = userProfiles[seedProviderPub];
-    if (!provProfile) {
-      setProviderProfile(null);
-      return;
-    }
-    if (!providerProfile) {
-      setProviderProfile(provProfile);
-      return;
-    }
-    if (provProfile.avatar !== providerProfile.avatar) {
-      setProviderProfile(provProfile);
-      return;
-    }
-    if (
-      // @ts-expect-error
-      provProfile.offerSeedService !== providerProfile.offerSeedService
-    ) {
-      setProviderProfile(provProfile);
-      return;
-    }
-  }, [userProfiles, seedProviderPub, providerProfile, setProviderProfile]);
+
   //effect to check provided service
   useEffect(() => {
     if (!providerProfile) {
       return;
     }
+    // @ts-expect-error TODO: add `offerSeedService` to Common.User
     const { offerSeedService } = providerProfile;
     if (offerSeedService !== providedService) {
       setProvidedService(offerSeedService);
