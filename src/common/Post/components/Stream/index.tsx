@@ -1,21 +1,17 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
 import videojs from "video.js";
 
 const Stream = ({
-  id,
   item,
-  index,
-  postId,
   tipValue,
   tipCounter,
   hideRibbon,
   width,
-  timeout = 10000
 }) => {
   const playerDOM = useRef(null);
-  const [isLive, setIsLive] = useState(false);
+  const [isLive] = useState(false);
   const videoStyle = { width: "100%" };
   if (width) {
     videoStyle.width = width;

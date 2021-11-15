@@ -201,13 +201,10 @@ const Post = ({
       }
       return (
         <Stream
-          id={key}
           item={{
             ...item,
             magnetURI: finalMagnetURI || item.magnetURI
           }}
-          index={index}
-          postId={id}
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
