@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import  { useCallback, useState, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import Http from "../../utils/Http";
@@ -10,7 +10,6 @@ import Suggestion from "../../common/ContactsSearch/components/Suggestion";
 import Loader from "../../common/Loader";
 import "./css/index.scoped.css";
 import { isDesktop } from "../../utils/Platform";
-import { Location } from "history";
 
 interface properties {
   [key: string]: any;
@@ -34,7 +33,7 @@ const SendPage = () => {
   const [unit, setUnit] = useState("sats");
   const [contact, setContact] = useState<properties>({});
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const isDesktopDevice = useMemo(() => {

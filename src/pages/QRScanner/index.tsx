@@ -1,4 +1,4 @@
-import React, {
+import  {
   useCallback,
   useMemo,
   useState
@@ -16,15 +16,13 @@ import DialogNav from "../../common/DialogNav";
 import Loader from "../../common/Loader";
 import QRCodeScanner from "../../common/QRCodeScanner";
 import ExtractInfo from "../../utils/validators";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Http } from "../../utils";
 import { connectPeer, fetchPeers } from "../../actions/WalletActions";
 
 const QRScanner = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-  //@ts-ignore
-  const publicKey = useSelector(({ node }) => node.publicKey);
   const [loading, setLoading] = useState(false);
   const [privateChannel, setPrivateChannel] = useState(true);
   const [payAmount, setPayAmount] = useState(0);
@@ -33,8 +31,8 @@ const QRScanner = () => {
   const [memo, setMemo] = useState("");
   const [LNURLdata, setLNURLdata] = useState(null);
   const [scanQR, setScanQR] = useState(true);
-  const [done, setDone] = useState(null);
-  const [error, setError] = useState(null);
+  const [, setDone] = useState(null);
+  const [, setError] = useState(null);
   const goBack = useCallback(() => {
     history.push("/overview");
   }, [history]);
