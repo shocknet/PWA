@@ -1,5 +1,3 @@
-import Http from "../utils/Http";
-
 export const ACTIONS = {
   RESET_FEES: "fees/reset",
   LOAD_FEE_RATES: "fees/feeRates/load",
