@@ -702,9 +702,7 @@ const ProfilePage = () => {
           <Modal
             toggleModal={toggleDeleteModal}
             modalOpen={deletePostModalData}
-            contentStyle={{
-              padding: "2em 2em"
-            }}
+            contentStyle={DELETE_MODAL_CONTENT_STYLE}
             blueBtn={!deletePostModalLoading && "Cancel"}
             disableBlueBtn={deletePostModalLoading}
             onClickBlueBtn={closeDeleteModal}
@@ -814,6 +812,10 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   height: 36,
   width: 36,
   excavate: true
+};
+
+const DELETE_MODAL_CONTENT_STYLE = {
+  padding: "2em 2em"
 };
 
 export default memo(ProfilePage);
