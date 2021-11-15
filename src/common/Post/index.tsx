@@ -318,7 +318,7 @@ const Post = ({
       postID: id,
       publicKey
     });
-  }, [publicKey, id, openShareModal]);
+  }, [authenticated, openShareModal, id, publicKey, author.displayName]);
 
   useEffect(() => {
     try {
@@ -342,7 +342,7 @@ const Post = ({
         }
       });
     }
-  }, [mediaAttached, mediaDetached]);
+  }, [mediaAttached, mediaDetached, post]);
 
   const readableLiveStatus: Record<Common.LiveStatus, string> = {
     live: "Is Live",
