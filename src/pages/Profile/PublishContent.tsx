@@ -232,7 +232,9 @@ const PublishContentPage = () => {
       if (availableToken || (seedUrl && seedToken)) {
         onSubmitCb();
       } else if (serviceID && seedProviderPub) {
-        const { data: servicePrice } = await Http.get(
+        const {
+          data: { data: servicePrice }
+        } = await Http.get(
           `/api/gun/otheruser/${seedProviderPub}/once/offeredServices>${serviceID}>servicePrice`
         );
 
