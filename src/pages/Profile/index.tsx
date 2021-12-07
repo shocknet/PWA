@@ -603,121 +603,126 @@ const ProfilePage = () => {
           {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
           <Pad amt={200} />
 
-          <Modal
-            toggleModal={toggleModal}
-            modalOpen={profileModalOpen}
-            contentStyle={{
-              padding: "40px 30px"
-            }}
-            noFullWidth
-          >
-            <QRCode
-              bgColor="#23282d"
-              fgColor="#64bbff"
-              value={`${currWebClientPrefix}/${publicKey}`}
-              size={180}
-              className="profile-qrcode"
-              imageSettings={QR_IMAGE_SETTINGS}
-            />
-            <p className="profile-qrcode-desc">
-              Other users can scan this code to contact you
-            </p>
-
-            {!navigator.clipboard && (
-              <input
-                className="hidden-input"
-                id="public-key-holder"
-                readOnly
-                type="text"
-                value={`${currWebClientPrefix}/${publicKey}`}
-              ></input>
-            )}
-            <div
-              className="profile-clipboard-container"
-              onClick={copyClipboard}
+          {profileModalOpen && (
+            <Modal
+              toggleModal={toggleModal}
+              modalOpen={profileModalOpen}
+              contentStyle={PROFILE_MODAL_CONTENT_STYLE}
+              noFullWidth
             >
-              <img
-                src={ClipboardIcon}
-                className="profile-clipboard-icon"
-                alt=""
+              <QRCode
+                bgColor="#23282d"
+                fgColor="#64bbff"
+                value={`${currWebClientPrefix}/${publicKey}`}
+                size={180}
+                className="profile-qrcode"
+                imageSettings={QR_IMAGE_SETTINGS}
               />
-              <p className="profile-clipboard-text">Tap to copy to clipboard</p>
-            </div>
-          </Modal>
+              <p className="profile-qrcode-desc">
+                Other users can scan this code to contact you
+              </p>
 
-          <Modal
-            toggleModal={toggleConfigModal}
-            modalOpen={profileConfigModalOpen}
-            contentClass="p-2"
-            forceRenderTitleBar
-            blueBtn={somethingInsideConfigModalChanged && "Save"}
-            onClickBlueBtn={onConfigSubmit}
-          >
-            <label htmlFor="new-web-client-prefix">Web Client</label>
-
-            <div className="web-client-prefix-picker">
-              <i
-                className="far fa-copy"
-                onClick={copyWebClientUrlToClipboard}
-                style={{ fontSize: 24 }}
-              />
-
-              <select
-                onChange={e => {
-                  setNewWebClientPrefix(e.target.value as WebClientPrefix);
-                }}
-                name="new-web-client-prefix"
-                id="new-web-client-prefix"
-                value={newWebClientPrefix}
+              {!navigator.clipboard && (
+                <input
+                  className="hidden-input"
+                  id="public-key-holder"
+                  readOnly
+                  type="text"
+                  value={`${currWebClientPrefix}/${publicKey}`}
+                ></input>
+              )}
+              <div
+                className="profile-clipboard-container"
+                onClick={copyClipboard}
               >
-                {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
-                  <option key={prefix} value={prefix}>
-                    {prefix}
-                  </option>
-                ))}
-              </select>
+                <img
+                  src={ClipboardIcon}
+                  className="profile-clipboard-icon"
+                  alt=""
+                />
+                <p className="profile-clipboard-text">
+                  Tap to copy to clipboard
+                </p>
+              </div>
+            </Modal>
+          )}
 
-              <span>/</span>
+          {profileConfigModalOpen && (
+            <Modal
+              toggleModal={toggleConfigModal}
+              modalOpen={profileConfigModalOpen}
+              contentClass="p-2"
+              forceRenderTitleBar
+              blueBtn={somethingInsideConfigModalChanged && "Save"}
+              onClickBlueBtn={onConfigSubmit}
+            >
+              <label htmlFor="new-web-client-prefix">Web Client</label>
 
-              <span style={{ fontSize: 12 }}>{publicKey}</span>
-            </div>
+              <div className="web-client-prefix-picker">
+                <i
+                  className="far fa-copy"
+                  onClick={copyWebClientUrlToClipboard}
+                  style={{ fontSize: 24 }}
+                />
 
-            {!navigator.clipboard && (
-              <input
-                className="hidden-input"
-                id="web-client-url-holder"
-                readOnly
-                type="text"
-                value={newWebClientPrefix + "/" + publicKey}
-              ></input>
-            )}
+                <select
+                  onChange={e => {
+                    setNewWebClientPrefix(e.target.value as WebClientPrefix);
+                  }}
+                  name="new-web-client-prefix"
+                  id="new-web-client-prefix"
+                  value={newWebClientPrefix}
+                >
+                  {AVAILABLE_WEB_CLIENT_PREFIXES.map(prefix => (
+                    <option key={prefix} value={prefix}>
+                      {prefix}
+                    </option>
+                  ))}
+                </select>
 
-            <br></br>
+                <span>/</span>
 
-            <label htmlFor="content-host">Content Host</label>
+                <span style={{ fontSize: 12 }}>{publicKey}</span>
+              </div>
 
-            <ContentHostInput />
-          </Modal>
+              {!navigator.clipboard && (
+                <input
+                  className="hidden-input"
+                  id="web-client-url-holder"
+                  readOnly
+                  type="text"
+                  value={newWebClientPrefix + "/" + publicKey}
+                ></input>
+              )}
 
-          <Modal
-            toggleModal={toggleDeleteModal}
-            modalOpen={deletePostModalData}
-            contentStyle={{
-              padding: "2em 2em"
-            }}
-            blueBtn={!deletePostModalLoading && "Cancel"}
-            disableBlueBtn={deletePostModalLoading}
-            onClickBlueBtn={closeDeleteModal}
-            redBtn={!deletePostModalLoading && "Delete"}
-            disableRedBtn={deletePostModalLoading}
-            onClickRedBtn={deletePost}
-            noFullWidth
-          >
-            {!deletePostModalLoading && (
-              <span className="text-align-center">Are you sure?</span>
-            )}
-            {deletePostModalLoading && <Loader />}
-          </Modal>
+              <br></br>
+
+              <label htmlFor="content-host">Content Host</label>
+
+              <ContentHostInput />
+            </Modal>
+          )}
+
+          {deletePostModalData && (
+            <Modal
+              toggleModal={toggleDeleteModal}
+              modalOpen={deletePostModalData}
+              contentStyle={DELETE_MODAL_CONTENT_STYLE}
+              blueBtn={!deletePostModalLoading && "Cancel"}
+              disableBlueBtn={deletePostModalLoading}
+              onClickBlueBtn={closeDeleteModal}
+              redBtn={!deletePostModalLoading && "Delete"}
+              disableRedBtn={deletePostModalLoading}
+              onClickRedBtn={deletePost}
+              noFullWidth
+            >
+              {!deletePostModalLoading && (
+                <span className="text-align-center">Are you sure?</span>
+              )}
+              {deletePostModalLoading && <Loader />}
+            </Modal>
+          )}
+
           <AddBtn
             onClick={toggleModal}
             large
@@ -742,28 +747,31 @@ const ProfilePage = () => {
       {
         //#region displayNameModal
       }
-
-      <Modal
-        contentStyle={dnModalStyle}
-        modalOpen={dnModalOpen}
-        toggleModal={toggleDnModal}
-        blueBtn="Save"
-        disableBlueBtn={newDisplayName === displayName || newDisplayName === ""}
-        onClickBlueBtn={handleOkDnChange}
-        noFullWidth
-        modalTitle="NEW DISPLAY NAME"
-      >
-        <input
-          autoCapitalize="none"
-          autoCorrect="off"
-          type="text"
-          className="input-field"
-          placeholder={"New display name"}
-          name="newDisplayName"
-          onChange={handleNewDisplayNameChange}
-          value={newDisplayName}
-        />
-      </Modal>
+      {dnModalOpen && (
+        <Modal
+          contentStyle={dnModalStyle}
+          modalOpen={dnModalOpen}
+          toggleModal={toggleDnModal}
+          blueBtn="Save"
+          disableBlueBtn={
+            newDisplayName === displayName || newDisplayName === ""
+          }
+          onClickBlueBtn={handleOkDnChange}
+          noFullWidth
+          modalTitle="NEW DISPLAY NAME"
+        >
+          <input
+            autoCapitalize="none"
+            autoCorrect="off"
+            type="text"
+            className="input-field"
+            placeholder={"New display name"}
+            name="newDisplayName"
+            onChange={handleNewDisplayNameChange}
+            value={newDisplayName}
+          />
+        </Modal>
+      )}
 
       {
         //#endregion displayNameModal
@@ -772,28 +780,30 @@ const ProfilePage = () => {
       {
         //#region bioModal
       }
-      <Modal
-        contentStyle={bioModalStyle}
-        modalOpen={bioModalOpen}
-        toggleModal={toggleBioModal}
-        modalTitle="NEW BIO"
-        blueBtn="Save"
-        onClickBlueBtn={handleOkBioChange}
-        disableBlueBtn={newBio === bio || newBio === ""}
-        forceRenderTitleBar
-        noFullWidth
-      >
-        <input
-          autoCapitalize="none"
-          autoCorrect="off"
-          type="text"
-          className="input-field"
-          placeholder={"New bio"}
-          name="newBio"
-          onChange={handleNewBioChange}
-          value={newBio}
-        />
-      </Modal>
+      {bioModalOpen && (
+        <Modal
+          contentStyle={bioModalStyle}
+          modalOpen={bioModalOpen}
+          toggleModal={toggleBioModal}
+          modalTitle="NEW BIO"
+          blueBtn="Save"
+          onClickBlueBtn={handleOkBioChange}
+          disableBlueBtn={newBio === bio || newBio === ""}
+          forceRenderTitleBar
+          noFullWidth
+        >
+          <input
+            autoCapitalize="none"
+            autoCorrect="off"
+            type="text"
+            className="input-field"
+            placeholder={"New bio"}
+            name="newBio"
+            onChange={handleNewBioChange}
+            value={newBio}
+          />
+        </Modal>
+      )}
       {
         //#endregion bioModal
       }
@@ -814,6 +824,14 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   height: 36,
   width: 36,
   excavate: true
+};
+
+const PROFILE_MODAL_CONTENT_STYLE = {
+  padding: "40px 30px"
+};
+
+const DELETE_MODAL_CONTENT_STYLE = {
+  padding: "2em 2em"
 };
 
 export default memo(ProfilePage);

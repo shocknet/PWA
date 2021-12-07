@@ -194,17 +194,25 @@ const FeedPage = () => {
           );
         })}
       </div>
-      <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
-      <GuestTipModal
-        publicKey={tipPublicKey}
-        tipData={tipModalData}
-        toggleOpen={toggleTipModal}
-      />
-      <UnlockModal
-        unlockData={unlockModalData}
-        toggleOpen={toggleUnlockModal}
-      />
-      <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
+      {tipModalData && (
+        <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
+      )}
+      {tipModalData && (
+        <GuestTipModal
+          publicKey={tipPublicKey}
+          tipData={tipModalData}
+          toggleOpen={toggleTipModal}
+        />
+      )}
+      {unlockModalData && (
+        <UnlockModal
+          unlockData={unlockModalData}
+          toggleOpen={toggleUnlockModal}
+        />
+      )}
+      {shareModalData && (
+        <ShareModal shareData={shareModalData} toggleOpen={toggleShareModal} />
+      )}
       {!authToken && (
         <AddBtn
           onClick={redirectAuth}

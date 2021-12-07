@@ -220,40 +220,43 @@ const MessagesPage = () => {
         </div>
         <AddBtn onClick={toggleModal} label="REQUEST" />
         {/* TODO: Extract to a separate component */}
-        <Modal
-          modalTitle="SEND REQUEST"
-          toggleModal={toggleModal}
-          modalOpen={addModalOpen}
-        >
-          {sendRequestLoading ? (
-            <Loader
-              text="Sending Request..."
-              overlay
-              style={{
-                borderRadius: "0 0 15px 15px"
-              }}
-            />
-          ) : null}
-          {sendError ? (
-            <div className="send-request-error">{sendError}</div>
-          ) : null}
-          <div className="send-request-cards">
-            <div className="send-request-card" onClick={openQR}>
-              <i className="send-request-card-icon fas fa-qrcode" />
-              <p className="send-request-card-title">SCAN QR</p>
-              <p className="send-request-card-desc">
-                Scan another users QR to send a message request.
-              </p>
+
+        {addModalOpen && (
+          <Modal
+            modalTitle="SEND REQUEST"
+            toggleModal={toggleModal}
+            modalOpen={addModalOpen}
+          >
+            {sendRequestLoading ? (
+              <Loader
+                text="Sending Request..."
+                overlay
+                style={{
+                  borderRadius: "0 0 15px 15px"
+                }}
+              />
+            ) : null}
+            {sendError ? (
+              <div className="send-request-error">{sendError}</div>
+            ) : null}
+            <div className="send-request-cards">
+              <div className="send-request-card" onClick={openQR}>
+                <i className="send-request-card-icon fas fa-qrcode" />
+                <p className="send-request-card-title">SCAN QR</p>
+                <p className="send-request-card-desc">
+                  Scan another users QR to send a message request.
+                </p>
+              </div>
+              <div className="send-request-card" onClick={sendRequestClipboard}>
+                <i className="send-request-card-icon fas fa-clipboard" />
+                <p className="send-request-card-title">PASTE CLIPBOARD</p>
+                <p className="send-request-card-desc">
+                  Paste another users Public Key to send a message request.
+                </p>
+              </div>
             </div>
-            <div className="send-request-card" onClick={sendRequestClipboard}>
-              <i className="send-request-card-icon fas fa-clipboard" />
-              <p className="send-request-card-title">PASTE CLIPBOARD</p>
-              <p className="send-request-card-desc">
-                Paste another users Public Key to send a message request.
-              </p>
-            </div>
-          </div>
-        </Modal>
+          </Modal>
+        )}
       </div>
       <BottomBar />
     </div>

@@ -325,39 +325,39 @@ const OtherUserPage = () => {
         {/* Allow some wiggle room to avoid the QR btn covering the view selector */}
         <Pad amt={200} />
 
-        <Modal
-          toggleModal={toggleModal}
-          modalOpen={profileModalOpen}
-          contentStyle={{
-            padding: "40px 30px"
-          }}
-          noFullWidth
-        >
-          <QRCode
-            bgColor="#23282d"
-            fgColor="#64bbff"
-            value={userPublicKey}
-            size={180}
-            className={styles["profile-qrcode"]}
-            imageSettings={QR_IMAGE_SETTINGS}
-          />
-          <p className={styles["profile-qrcode-desc"]}>
-            Scan this code to contact this user
-          </p>
-          <div
-            className={styles["profile-clipboard-container"]}
-            onClick={copyClipboard}
+        {profileModalOpen && (
+          <Modal
+            toggleModal={toggleModal}
+            modalOpen={profileModalOpen}
+            contentStyle={PROFILE_MODAL_CONTENT_STYLE}
+            noFullWidth
           >
-            <img
-              src={ClipboardIcon}
-              className={styles["profile-clipboard-icon"]}
-              alt=""
+            <QRCode
+              bgColor="#23282d"
+              fgColor="#64bbff"
+              value={userPublicKey}
+              size={180}
+              className={styles["profile-qrcode"]}
+              imageSettings={QR_IMAGE_SETTINGS}
             />
-            <p className={styles["profile-clipboard-text"]}>
-              Tap to copy to clipboard
+            <p className={styles["profile-qrcode-desc"]}>
+              Scan this code to contact this user
             </p>
-          </div>
-        </Modal>
+            <div
+              className={styles["profile-clipboard-container"]}
+              onClick={copyClipboard}
+            >
+              <img
+                src={ClipboardIcon}
+                className={styles["profile-clipboard-icon"]}
+                alt=""
+              />
+              <p className={styles["profile-clipboard-text"]}>
+                Tap to copy to clipboard
+              </p>
+            </div>
+          </Modal>
+        )}
         <SendTipModal tipData={tipModalData} toggleOpen={toggleTipModal} />
         <GuestTipModal
           publicKey={userPublicKey}
@@ -394,6 +394,10 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   height: 36,
   width: 36,
   excavate: true
+};
+
+const PROFILE_MODAL_CONTENT_STYLE = {
+  padding: "40px 30px"
 };
 
 export default memo(OtherUserPage);

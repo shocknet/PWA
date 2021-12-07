@@ -49,12 +49,9 @@ const AuthPage = () => {
     }
   }, [authToken, dispatch]);
 
-  const updateRetryHostIP = useCallback(
-    e => {
-      setRetryHostIP(e.target.value);
-    },
-    [setRetryHostIP]
-  );
+  const updateRetryHostIP = useCallback(e => {
+    setRetryHostIP(e.target.value);
+  }, []);
 
   useEffect(() => {
     const cleanHostIP = !cachedHostIP
