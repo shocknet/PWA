@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, memo } from "react";
 
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
@@ -12,7 +12,7 @@ const Stream = ({
   width,
 }) => {
   const playerDOM = useRef(null);
-  const [isLive] = useState(false);
+  const isLive = false // TODO
   const videoStyle = { width: "100%" };
   if (width) {
     videoStyle.width = width;

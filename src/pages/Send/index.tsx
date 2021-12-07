@@ -33,7 +33,6 @@ const SendPage = () => {
   const [unit, setUnit] = useState("sats");
   const [contact, setContact] = useState<properties>({});
   const [error, setError] = useState("");
-  const [, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const isDesktopDevice = useMemo(() => {
@@ -56,7 +55,6 @@ const SendPage = () => {
 
   const selectContact = useCallback(async contact => {
     console.log("selectContact:", contact);
-    setLoading(true);
     setContact(contact);
 
     if (contact && contact.type === "invoice") {
@@ -72,7 +70,6 @@ const SendPage = () => {
       setDescription(decodedRequest.description);
     }
 
-    setLoading(false);
   }, []);
   //effect for incoming redirects with data
   useEffect(() => {

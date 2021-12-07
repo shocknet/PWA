@@ -32,8 +32,6 @@ const QRScanner = () => {
   const [memo, setMemo] = useState("");
   const [LNURLdata, setLNURLdata] = useState(null);
   const [scanQR, setScanQR] = useState(true);
-  const [, setDone] = useState(null);
-  const [, setError] = useState(null);
   const goBack = useCallback(() => {
     history.push("/overview");
   }, [history]);
@@ -76,7 +74,7 @@ const QRScanner = () => {
       if (!params.tag) {
         const p = params as LNURLResponse;
         setLoading(false);
-        setError(p.reason);
+        alert(p.reason);
       }
       const p = params as
         | LNURLChannelParams
@@ -113,7 +111,7 @@ const QRScanner = () => {
     } catch (e) {
       console.log(e);
       setLoading(false);
-      setError(e.message || e);
+      alert(e.message || e);
     }
   }, []);
   const decodeAll = useCallback(
@@ -138,11 +136,11 @@ const QRScanner = () => {
           return;
         }
         case "unknown": {
-          setError("cant decode" + JSON.stringify(info));
+          alert("cant decode" + JSON.stringify(info));
         }
       }
     },
-    [history, setError, decodeLNURL]
+    [history, decodeLNURL]
   );
   const closeQR = useCallback(() => {
     setScanQR(false);
@@ -173,14 +171,14 @@ const QRScanner = () => {
       const res = await fetch(completeUrl);
       const json = await res.json();
       if (json.status === "OK") {
-        setDone("Withdraw request sent correctly");
+        alert("Withdraw request sent correctly");
       } else {
-        setError(json.reason);
+        alert(json.reason);
       }
     } catch (e) {
-      setError(e.message || e);
+      alert(e.message || e);
     }
-  }, [LNURLdata, withdrawAmount, memo, setDone, setError]);
+  }, [LNURLdata, withdrawAmount, memo]);
   const confirmChannelReq = useCallback(async () => {
     try {
       const { uri, callback, k1 } = LNURLdata;
@@ -205,14 +203,14 @@ const QRScanner = () => {
       const res = await fetch(completeUrl);
       const json = await res.json();
       if (json.status === "OK") {
-        setDone("Channel request sent correctly");
+        alert("Channel request sent correctly");
       } else {
-        setError(json.reason);
+        alert(json.reason);
       }
     } catch (e) {
-      setError(e.message || e);
+      alert(e.message || e);
     }
-  }, [LNURLdata, setError, dispatch, privateChannel]);
+  }, [LNURLdata, dispatch, privateChannel]);
   const confirmPayReq = useCallback(async () => {
     try {
       const { callback } = LNURLdata;
@@ -221,16 +219,16 @@ const QRScanner = () => {
       const res = await fetch(completeUrl);
       const json = await res.json();
       if (json.status === "ERROR") {
-        setError(json.reason);
+        alert(json.reason);
         return;
       }
       history.push("/send", {
         data: { type: "ln", request: json.pr }
       });
     } catch (e) {
-      setError(e.message || e);
+      alert(e.message || e);
     }
-  }, [history, LNURLdata, payAmount, setError]);
+  }, [history, LNURLdata, payAmount]);
 
   const toRender = useMemo(() => {
     if (LNURLdata === null) {
@@ -357,9 +355,9 @@ const QRScanner = () => {
   ]);
   const scanErr = useCallback(
     (e: Error) => {
-      setError(e.message || e);
+      alert(e.message || e);
     },
-    [setError]
+    []
   );
   if (scanQR) {
     return (
