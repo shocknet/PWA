@@ -1,3 +1,4 @@
+import { memo } from "react";
 import classNames from "classnames";
 import { use100vh } from "react-div-100vh";
 import "./css/index.scoped.css";
@@ -51,4 +52,4 @@ const Loader = ({
   );
 };
 
-export default Loader;
+export default memo(Loader);

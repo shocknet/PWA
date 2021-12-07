@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import c from "classnames";
 
 import "./css/ShockImg.scoped.css";
@@ -63,4 +63,4 @@ const ShockImg: React.FC<ShockImgProps> = props => {
   );
 };
 
-export default ShockImg;
+export default memo(ShockImg);

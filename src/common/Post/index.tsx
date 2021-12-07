@@ -1,4 +1,5 @@
 import React, {
+  memo,
   useEffect,
   useState,
   useCallback,
@@ -444,4 +445,4 @@ const Post = ({
   );
 };
 
-export default Post;
+export default memo(Post);

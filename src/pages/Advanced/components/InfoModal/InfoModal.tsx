@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -179,4 +179,4 @@ const InfoModal = ({ modalOpen, toggleModal }: InfoModalProps) => {
   );
 };
 
-export default InfoModal;
+export default memo(InfoModal);

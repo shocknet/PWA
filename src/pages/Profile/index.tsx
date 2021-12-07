@@ -1,5 +1,6 @@
 import React, {
   Suspense,
+  memo,
   useCallback,
   useMemo,
   useState,
@@ -815,4 +816,4 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   excavate: true
 };
 
-export default ProfilePage;
+export default memo(ProfilePage);

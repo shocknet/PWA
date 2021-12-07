@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import classNames from "classnames";
 import { toast } from "react-toastify";
 
@@ -84,4 +84,4 @@ const Peer: React.FC<PeerProps> = ({
   );
 };
 
-export default Peer;
+export default memo(Peer);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Swipe } from "react-swipe-component";
 import classNames from "classnames";
 import bitcoinLightning from "../../images/bitcoin-lightning.svg";
@@ -126,4 +126,4 @@ const SlidePay = ({
   );
 };
 
-export default SlidePay;
+export default memo(SlidePay);

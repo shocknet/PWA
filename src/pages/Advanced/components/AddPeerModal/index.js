@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import Modal from "../../../../common/Modal";
 import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css";
@@ -81,4 +81,4 @@ const AddPeerModal = ({ open = false, toggleModal }) => {
   );
 };
 
-export default AddPeerModal;
+export default memo(AddPeerModal);

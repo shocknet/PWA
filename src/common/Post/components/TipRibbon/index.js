@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import "./css/index.scoped.css";
 
 const TipRibbon = ({ tipCounter, tipValue, zoomed = false }) =>
@@ -10,4 +12,4 @@ const TipRibbon = ({ tipCounter, tipValue, zoomed = false }) =>
     </div>
   ) : null;
 
-export default TipRibbon;
+export default memo(TipRibbon);

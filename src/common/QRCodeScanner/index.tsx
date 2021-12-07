@@ -1,3 +1,4 @@
+import { memo } from "react";
 import QRScanner from "react-qr-scanner";
 import { isDesktop } from "../../utils/Platform";
 import "./css/index.scoped.css";
@@ -66,4 +67,4 @@ const QRCodeScanner = ({
   );
 };
 
-export default QRCodeScanner;
+export default memo(QRCodeScanner);

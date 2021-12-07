@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, { memo, useEffect, useMemo, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 
@@ -200,4 +200,4 @@ const REACT_APP_INTRO_PARAGRAPHS_HOSTING = [
 ];
 const REACT_APP_INTRO_PARAGRAPHS_DEFAULT = ["Welcome to Shocknet"];
 
-export default OverviewPage;
+export default memo(OverviewPage);

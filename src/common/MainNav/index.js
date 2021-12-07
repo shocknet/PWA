@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 /**
  * @typedef {import('react').RefCallback<HTMLElement>} DivRefCallback
  */
@@ -71,4 +71,4 @@ const MainNav = ({
   );
 };
 
-export default MainNav;
+export default memo(MainNav);

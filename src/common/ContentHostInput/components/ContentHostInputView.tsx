@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import produce from "immer";
 
@@ -343,4 +343,4 @@ const ContentHostInputView = ({
   );
 };
 
-export default ContentHostInputView;
+export default memo(ContentHostInputView);

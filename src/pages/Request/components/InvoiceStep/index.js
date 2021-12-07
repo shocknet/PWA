@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { memo,useCallback, useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
@@ -236,4 +236,4 @@ const InvoiceStep = ({
   );
 };
 
-export default InvoiceStep;
+export default memo(InvoiceStep);

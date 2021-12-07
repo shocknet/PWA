@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 /**
  * @typedef {import('react').RefCallback<HTMLElement>} DivRefCallback
@@ -63,4 +63,4 @@ const DialogNav = ({
   );
 };
 
-export default DialogNav;
+export default memo(DialogNav);

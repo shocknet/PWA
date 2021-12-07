@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 import Pad from "../../Pad";
 
@@ -48,4 +48,4 @@ const styles: Record<string, React.CSSProperties> = {
   }
 };
 
-export default SmallData;
+export default memo(SmallData);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import c from "classnames";
 
 import DialogNav, { DIALOG_NAV_MIN_HEIGHT_PX } from "../DialogNav";
@@ -8,6 +8,7 @@ import * as gStyles from "../../styles";
 import styles from "./css/DarkPage.module.css";
 
 export interface DarkPageProps {
+  children?: any;
   justify?: "start" | "center";
   padding?: boolean;
   paddingBetweenChildren?: 0 | 48;
@@ -51,4 +52,4 @@ const DarkPage: React.FC<DarkPageProps> = ({
   );
 };
 
-export default DarkPage;
+export default memo(DarkPage);

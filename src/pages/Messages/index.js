@@ -1,5 +1,4 @@
-// @ts-check
-import { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 
 import {
   sendHandshakeRequest,
@@ -261,4 +260,4 @@ const MessagesPage = () => {
   );
 };
 
-export default MessagesPage;
+export default memo(MessagesPage);

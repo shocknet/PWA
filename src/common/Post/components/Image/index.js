@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { memo, useState, useCallback } from "react";
 import { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import TipRibbon from "../TipRibbon";
 import "react-medium-image-zoom/dist/styles.css";
@@ -108,4 +108,4 @@ const Image = ({
   );
 };
 
-export default Image;
+export default memo(Image);
