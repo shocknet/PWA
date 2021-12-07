@@ -1,5 +1,5 @@
 // @ts-check
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import * as Common from "shock-common";
@@ -77,4 +77,4 @@ const ChatMessage = ({
   );
 };
 
-export default ChatMessage;
+export default memo(ChatMessage);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import * as Common from "shock-common";
 
 import * as Store from "../../../../store";
@@ -172,4 +172,4 @@ const Transaction = ({ coordinateSHA256 }: TransactionProps) => {
   );
 };
 
-export default Transaction;
+export default memo(Transaction);

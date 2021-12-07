@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as Store from "../../store";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
@@ -179,4 +179,4 @@ const ContentHostInput = () => {
   );
 };
 
-export default ContentHostInput;
+export default memo(ContentHostInput);

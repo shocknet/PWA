@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import useInView from "react-cool-inview";
 import TipRibbon from "../TipRibbon";
 import "./css/index.scoped.css";
@@ -113,4 +113,4 @@ const Video = ({
   );
 };
 
-export default Video;
+export default memo(Video);

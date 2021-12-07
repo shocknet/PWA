@@ -1,4 +1,5 @@
 // @ts-check
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
 import * as Store from "../../../../store";
@@ -28,4 +29,4 @@ const Request = ({ publicKey = "", time, sent, id }) => {
   );
 };
 
-export default Request;
+export default memo(Request);

@@ -1,5 +1,8 @@
 import { DateTime } from "luxon";
+
 import { useSelector } from "../../../../store";
+import { memo } from "react";
+
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
 
@@ -39,4 +42,4 @@ const Transaction = ({ hash, value, date, unconfirmed }) => {
   );
 };
 
-export default Transaction;
+export default memo(Transaction);

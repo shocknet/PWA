@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "../../store";
 
@@ -42,4 +43,4 @@ const BottomBar = () => {
   );
 };
 
-export default BottomBar;
+export default memo(BottomBar);

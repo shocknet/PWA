@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import useOutsideClick from "use-onclickoutside";
 import { processDisplayName } from "../../utils/String";
 import Suggestion from "./components/Suggestion";
@@ -149,4 +149,4 @@ const ContactsSearch = ({
   );
 };
 
-export default ContactsSearch;
+export default memo(ContactsSearch);

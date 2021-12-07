@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import classNames from "classnames";
 
 import * as Utils from "../../utils";
@@ -70,4 +70,4 @@ const InputGroup = ({
   );
 };
 
-export default InputGroup;
+export default memo(InputGroup);

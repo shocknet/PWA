@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 
 import * as Utils from "../../utils";
@@ -97,4 +97,4 @@ const OVERLAY_STYLE = {
   borderRadius: "15px"
 };
 
-export default Modal;
+export default memo(Modal);

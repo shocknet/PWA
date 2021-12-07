@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import Modal from "../../../../common/Modal";
 import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css";
@@ -93,4 +93,4 @@ const AddChannelModal = ({ open = false, toggleModal }) => {
   );
 };
 
-export default AddChannelModal;
+export default memo(AddChannelModal);

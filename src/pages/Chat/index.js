@@ -1,5 +1,5 @@
 // @ts-check
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { memo, useCallback, useEffect, useState, useMemo } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import TextArea from "react-textarea-autosize";
 import classNames from "classnames";
@@ -446,4 +446,4 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+export default memo(ChatPage);

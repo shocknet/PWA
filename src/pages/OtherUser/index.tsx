@@ -1,5 +1,6 @@
 import React, {
   Suspense,
+  memo,
   useCallback,
   useEffect,
   useState
@@ -395,4 +396,4 @@ const QR_IMAGE_SETTINGS: ImageSettings = {
   excavate: true
 };
 
-export default OtherUserPage;
+export default memo(OtherUserPage);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import Http from "../../utils/Http";
@@ -207,4 +207,4 @@ const AuthPage = () => {
   );
 };
 
-export default AuthPage;
+export default memo(AuthPage);

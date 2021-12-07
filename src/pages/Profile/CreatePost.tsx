@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { memo, useCallback, useState, useEffect } from "react";
 import { useHistory } from "react-router";
 
 import Loader from "../../common/Loader";
@@ -267,4 +267,4 @@ const CreatePostPage = () => {
   );
 };
 
-export default CreatePostPage;
+export default memo(CreatePostPage);

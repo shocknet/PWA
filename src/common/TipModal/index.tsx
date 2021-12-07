@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useMemo } from "react";
+import React, { Suspense, memo, useCallback, useMemo } from "react";
 import { resetPaymentResponse } from "../../actions/GuestActions";
 import { useSelector } from "../../store";
 import Loader from "../Loader";
@@ -42,4 +42,4 @@ const GuestTipModal = (props: {
   );
 };
 
-export default GuestTipModal;
+export default memo(GuestTipModal);

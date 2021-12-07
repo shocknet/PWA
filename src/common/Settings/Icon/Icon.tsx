@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 import "./Icon.scoped.css";
 
@@ -37,4 +37,4 @@ const Icon: React.FC<IconProps> = ({ name }) => {
   throw new Error(`<Settings.Icon />: wrong icon name supplied.`);
 };
 
-export default Icon;
+export default memo(Icon);

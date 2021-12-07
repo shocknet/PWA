@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import MainNav from "../../common/MainNav";
 import "./css/index.scoped.css";
 import Http from "../../utils/Http";
@@ -48,4 +48,4 @@ const MoonPay = () => {
   );
 };
 
-export default MoonPay;
+export default memo(MoonPay);

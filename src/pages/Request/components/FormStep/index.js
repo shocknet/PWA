@@ -1,3 +1,4 @@
+import {memo} from 'react'
 import InputGroup from "../../../../common/InputGroup";
 import "./css/index.scoped.css"
 
@@ -27,4 +28,4 @@ const FormStep = ({ onInputChange, amount, description }) => (
   </div>
 );
 
-export default FormStep;
+export default memo(FormStep);

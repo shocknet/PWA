@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import classNames from "classnames";
 import "./css/index.scoped.css";
 
@@ -76,4 +76,4 @@ const AddBtn = ({
   );
 };
 
-export default AddBtn;
+export default memo(AddBtn);
