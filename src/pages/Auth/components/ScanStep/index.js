@@ -8,7 +8,7 @@ import { ParseNodeIP } from "../../../../utils/relay";
 
 const ScanStep = () => {
   const dispatch = useDispatch();
-  const [error, setError] = React.useState("");
+  const [, setError] = React.useState("");
   const [loading, setLoading] = useState(false);
   const [scan, setScan] = useState(false);
   const [scanned, setScanned] = useState("");

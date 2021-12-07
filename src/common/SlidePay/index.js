@@ -14,6 +14,9 @@ const SlidePay = ({
   onSuccess,
   slideText = "SLIDE TO PAY"
 }) => {
+  /**
+   * @type {React.Ref<HTMLDivElement>}
+   */
   const containerRef = useRef();
   const [position, setPosition] = useState(HANDLE_POSITION_OFFSET);
   const [swipeSuccess, setSwipeSuccess] = useState(false);
@@ -39,10 +42,10 @@ const SlidePay = ({
 
   const onSwipe = useCallback(
     position => {
-      if (containerRef.current && !swipeSuccess) {
+      const { current } = containerRef;
+      if (current && !swipeSuccess) {
         const maxLeft =
-          containerRef.current.getBoundingClientRect().width -
-          HANDLE_RADIUS / 2;
+          current.getBoundingClientRect().width - HANDLE_RADIUS / 2;
         const left = position.x + HANDLE_POSITION_OFFSET; // Handle has a 2px offset to hide the left border
 
         setSwipeReset(false);

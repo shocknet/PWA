@@ -102,8 +102,7 @@ const App = () => {
   const dialogHasCallback = Store.useSelector(
     ({ app }) => app.dialogHasCallback
   );
-  // @ts-ignore
-  const [update, setUpdate] = useState(0);
+  const [, setUpdate] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showFloatingPlayer, setShowFloatingPlayer] = useState(false);
   // effect to update live status
@@ -136,10 +135,6 @@ const App = () => {
       <Stream
         hideRibbon={true}
         item={{ magnetURI: streamUrl, liveStatus: "live" }}
-        timeout={1500}
-        id={undefined}
-        index={undefined}
-        postId={undefined}
         tipCounter={undefined}
         tipValue={undefined}
         width={undefined}

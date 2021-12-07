@@ -197,15 +197,15 @@ export const connectPeer = ({ publicKey, host }) => async dispatch => {
 
 export const openChannel = ({
   publicKey = "",
-  channelCapacity = 0,
-  pushAmount = 0
+  channelCapacity = '0',
+  pushAmount = '0'
 }) => async (dispatch, getState) => {
   try {
     const { feeRates, rate } = getState().fees;
     await Http.post("/api/lnd/openchannel", {
       pubkey: publicKey,
-      channelCapacity: channelCapacity.toString(),
-      channelPushAmount: pushAmount.toString(),
+      channelCapacity: channelCapacity,
+      channelPushAmount: pushAmount,
       satPerByte: feeRates[rate]
     });
 

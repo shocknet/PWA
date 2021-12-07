@@ -2,7 +2,6 @@ import { memo,useCallback, useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router";
 import classNames from "classnames";
 import QRCode from "qrcode.react";
-import { useDispatch } from "react-redux";
 import Loader from "../../../../common/Loader";
 import SlidePay from "../../../../common/SlidePay";
 import Http from "../../../../utils/Http";
@@ -18,7 +17,6 @@ const InvoiceStep = ({
   unit = "",
   prevStep
 }) => {
-  const dispatch = useDispatch();
   const history = useHistory();
   const [paymentRequest, setPaymentRequest] = useState("");
   const [address, setAddress] = useState("");

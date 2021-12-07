@@ -183,7 +183,6 @@ const AuthPage = () => {
       {error && (
         <div className="error-info-container">
           <div className="p-1">
-            {/*@ts-expect-error*/}
             <InputGroup
               label="Cached node Url"
               value={retryHostIP}

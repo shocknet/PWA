@@ -4,13 +4,11 @@ import React, {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useState
 } from "react";
 import * as Common from "shock-common";
 import { useHistory } from "react-router-dom";
 
-import { attachMedia } from "../../utils/Torrents";
 import * as Store from "../../store";
 import BottomBar from "../../common/BottomBar";
 

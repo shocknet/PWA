@@ -9,7 +9,6 @@ import * as Utils from "../../utils";
 import Loader from "../Loader";
 import ShockAvatar from "../ShockAvatar";
 import Pad from "../Pad";
-import { attachMedia } from "../../utils/Torrents";
 import { subPostContent, subSinglePost } from "../../actions/FeedActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 import "../Post/css/index.scoped.css";

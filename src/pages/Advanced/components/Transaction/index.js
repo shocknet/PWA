@@ -1,6 +1,8 @@
 import { DateTime } from "luxon";
-import React, { memo } from "react";
-import { useSelector } from "react-redux";
+
+import { useSelector } from "../../../../store";
+import { memo } from "react";
+
 import { convertSatsToUSD, formatNumber } from "../../../../utils/Number";
 import "./css/index.scoped.css";
 

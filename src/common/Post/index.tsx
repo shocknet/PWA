@@ -202,13 +202,10 @@ const Post = ({
       }
       return (
         <Stream
-          id={key}
           item={{
             ...item,
             magnetURI: finalMagnetURI || item.magnetURI
           }}
-          index={index}
-          postId={id}
           tipCounter={tipCounter}
           tipValue={tipValue}
           key={`${id}-${index}`}
@@ -335,7 +332,7 @@ const Post = ({
     }
 
     if (mediaDetached) {
-      Object.entries(post.contentItems).map(([key, item]) => {
+      Object.entries(post.contentItems).forEach(([, item]) => {
         if ("magnetURI" in item) {
           detachTorrent({
             magnetURI: item.magnetURI

@@ -3,7 +3,6 @@ import React, {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useState
 } from "react";
 import QRCode, { ImageSettings } from "qrcode.react";
@@ -14,7 +13,6 @@ import { toast } from "react-toastify";
 
 import { rifle } from "../../utils/WebSocket";
 
-import { createGuestUser } from "../../actions/GuestActions";
 import { subscribeUserProfile } from "../../actions/UserProfilesActions";
 
 import BottomBar from "../../common/BottomBar";
@@ -46,7 +44,6 @@ import {
   subscribeUserPosts as subPosts,
   subSharedPosts
 } from "../../actions/FeedActions";
-import { attachMedia } from "../../utils/Torrents";
 import * as Utils from "../../utils";
 
 const Post = React.lazy(() => import("../../common/Post"));
@@ -180,10 +177,6 @@ const OtherUserPage = () => {
   const posts = Store.useSelector(
     Store.selectPostsNewestToOldest(userPublicKey)
   );
-
-  const redirectAuth = useCallback(() => {
-    history.push("/auth");
-  }, [history]);
 
   const copyClipboard = useCallback(() => {
     navigator.clipboard.writeText(userPublicKey);
