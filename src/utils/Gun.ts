@@ -2,7 +2,10 @@ import GunDB from "gun/gun";
 import { isCrawler } from "./Prerender";
 import "gun/sea";
 import "gun/lib/load";
-import { IGunCryptoKeyPair, IGunRecordNodeRaw } from "gun/types/types";
+import { ISEAPair } from "gun/types/sea/ISEAPair";
+import { IGunUserInstance } from "gun/types/gun/IGunUserInstance";
+import { IGunInstance } from "gun/types/gun/IGunInstance";
+import { IGunFinalTreeMethods } from "gun/types/gun/IGunFinalTreeMethods";
 
 interface GunPath {
   path: string;
@@ -21,15 +24,18 @@ interface GunDBQuery {
 
 interface GunDBUser {
   ack: 2;
+  ing: false;
+  id: number;
   get: string;
-  on: (args_0: unknown, args_1: unknown, args_2: unknown) => unknown;
+  on: (tag: unknown, args: unknown, as: unknown) => unknown;
   put: {
     alias: string;
-    auth: any;
+    auth: string;
     epub: string;
     pub: string;
   };
-  sea: IGunCryptoKeyPair;
+  sea: ISEAPair;
+  err?: undefined;
   soul: string;
 }
 
@@ -128,7 +134,15 @@ const parseGunPath = ({ path, root }: GunPath) => {
   const gunPointer = getNode(root);
   const GunContext = path
     .split(">")
-    .reduce((gun, path) => gun.get(path), gunPointer);
+    .reduce(
+      (
+        gun,
+        path
+      ): Promise<any> &
+        IGunInstance<any, any> &
+        IGunFinalTreeMethods<any, any, any> => gun.get(path),
+      gunPointer
+    );
   return GunContext;
 };
 
@@ -229,16 +243,18 @@ export const putPath = ({ query = "", data = {} }) =>
   });
 
 export const setPath = ({ query = "", data = {} }) =>
-  new Promise<IGunRecordNodeRaw<string>>((resolve, reject) => {
-    const [root, path] = query.split("::");
-    const GunContext = parseGunPath({ path, root });
-    const response = GunContext.set(data, event => {
-      // @ts-ignore
-      resolve(response);
-    });
-  });
+  new Promise<IGunInstance<any, string> | IGunUserInstance<any, string>>(
+    (resolve, reject) => {
+      const [root, path] = query.split("::");
+      const GunContext = parseGunPath({ path, root });
+      const response = GunContext.set(data, event => {
+        // @ts-ignore
+        resolve(response);
+      });
+    }
+  );
 
-export const listenPath = ({ query = "", callback }) => {
+export const listenPath = ({ query = "", callback, map }) => {
   const [root, path, method] = query.split("::");
   const GunContext = parseGunPath({ path, root });
 
@@ -247,11 +263,11 @@ export const listenPath = ({ query = "", callback }) => {
   }
 
   if (method === "map.on") {
-    return GunContext.map().on(callback);
+    return GunContext.map(map).on(callback);
   }
 
   if (method === "map.once") {
-    return GunContext.map().once(callback);
+    return GunContext.map(map).once(callback);
   }
 
   return GunContext.on(callback);
