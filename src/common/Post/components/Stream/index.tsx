@@ -8,16 +8,16 @@ const Stream = ({
   item,
   tipValue,
   tipCounter,
-  hideRibbon,
-  width,
+  hideRibbon = false,
+  width = null
 }) => {
   const playerDOM = useRef(null);
-  const isLive = false // TODO
+  const isLive = false; // TODO
   const videoStyle = { width: "100%" };
   if (width) {
     videoStyle.width = width;
   }
-  const { liveStatus } = item
+  const { liveStatus } = item;
   useEffect(() => {
     const player = videojs(playerDOM.current, {
       autoplay: true,
@@ -33,18 +33,20 @@ const Stream = ({
     //  console.log('retryplaylist');
     //});
     player.play();
-  }, [item])
+  }, [item]);
   useEffect(() => {
     if (item.viewersSocketUrl) {
-      const socket = new WebSocket(`${item.viewersSocketUrl}/stream/watch/${item.userToken}`);
+      const socket = new WebSocket(
+        `${item.viewersSocketUrl}/stream/watch/${item.userToken}`
+      );
       socket.addEventListener("open", () => {
-        console.log("viewer socket open")
+        console.log("viewer socket open");
       });
       return () => {
-        socket.close()
-      }
+        socket.close();
+      };
     }
-  }, [item])
+  }, [item]);
 
   return (
     <div className="media-container w-100">
@@ -55,12 +57,16 @@ const Stream = ({
           width: "100%"
         }}
       >
-        {!isLive && liveStatus === 'waiting' && <p>The stream did not start yet.</p>}
-        {!isLive && liveStatus === 'wasLive' && <p>The stream is over</p>}
+        {!isLive && liveStatus === "waiting" && (
+          <p>The stream did not start yet.</p>
+        )}
+        {!isLive && liveStatus === "wasLive" && <p>The stream is over</p>}
         {!isLive && !liveStatus && <p>The streamer has disconnected.</p>}
         <div
           style={
-            liveStatus === 'live' ? { width: "100%" } : { display: "none", width: "100%" }
+            liveStatus === "live"
+              ? { width: "100%" }
+              : { display: "none", width: "100%" }
           }
         >
           <video

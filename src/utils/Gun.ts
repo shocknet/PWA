@@ -6,6 +6,9 @@ import { ISEAPair } from "gun/types/sea/ISEAPair";
 import { IGunUserInstance } from "gun/types/gun/IGunUserInstance";
 import { IGunInstance } from "gun/types/gun/IGunInstance";
 import { IGunFinalTreeMethods } from "gun/types/gun/IGunFinalTreeMethods";
+import { And } from "gun/types/shared/And";
+import { IGunFinalUserTreeMethods } from "gun/types/gun/IGunFinalUserTreeMethods";
+import { IGunReturnObject } from "gun/types/gun/IGunReturnObject";
 
 interface GunPath {
   path: string;
@@ -138,9 +141,15 @@ const parseGunPath = ({ path, root }: GunPath) => {
       (
         gun,
         path
-      ): Promise<any> &
-        IGunInstance<any, any> &
-        IGunFinalTreeMethods<any, any, any> => gun.get(path),
+      ):
+        | And<
+            Promise<any>,
+            IGunInstance<any, any> & IGunFinalTreeMethods<any, any, any>
+          >
+        | And<
+            Promise<any>,
+            IGunUserInstance<any, any> & IGunFinalUserTreeMethods<any, any, any>
+          > => gun.get(path),
       gunPointer
     );
   return GunContext;
@@ -243,18 +252,16 @@ export const putPath = ({ query = "", data = {} }) =>
   });
 
 export const setPath = ({ query = "", data = {} }) =>
-  new Promise<IGunInstance<any, string> | IGunUserInstance<any, string>>(
-    (resolve, reject) => {
-      const [root, path] = query.split("::");
-      const GunContext = parseGunPath({ path, root });
-      const response = GunContext.set(data, event => {
-        // @ts-ignore
-        resolve(response);
-      });
-    }
-  );
+  new Promise<IGunReturnObject<any, string>>((resolve, reject) => {
+    const [root, path] = query.split("::");
+    const GunContext = parseGunPath({ path, root });
+    const response = GunContext.set(data, event => {
+      // @ts-ignore
+      resolve(response);
+    });
+  });
 
-export const listenPath = ({ query = "", callback, map }) => {
+export const listenPath = ({ query = "", callback, map = null }) => {
   const [root, path, method] = query.split("::");
   const GunContext = parseGunPath({ path, root });
 
