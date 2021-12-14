@@ -20,7 +20,7 @@
     "craco-plugin-scoped-css": "^1.1.1",
     "eccrypto": "^1.1.6",
     "embla-carousel": "^4.2.0",
-    "gun": "0.2020.520",
+    "gun": "github:amark/gun#77162fcb68eb61f24d980fa3f3653598f56ee593",
     "immer": "^9.0.1",
     "js-lnurl": "^0.2.5",
     "jwt-decode": "^3.1.2",
@@ -105,6 +105,7 @@
     ]
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^1.0.5",
     "@types/classnames": "^2.2.11",
     "@types/history": "^4.7.3",
     "@types/lodash": "^4.14.168",
