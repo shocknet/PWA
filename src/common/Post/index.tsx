@@ -1,9 +1,10 @@
-import React, {
+import {
   memo,
   useEffect,
   useState,
   useCallback,
-  useLayoutEffect
+  useLayoutEffect,
+  useMemo
 } from "react";
 import * as Common from "shock-common";
 import { Link } from "react-router-dom";
@@ -46,7 +47,7 @@ const Post = ({
   });
   const author = Store.useSelector(Store.selectUser(publicKey));
   const post = Store.useSelector(Store.selectSinglePost(publicKey, id));
-  const [tipCounter, tipValue] = React.useMemo(() => {
+  const [tipCounter, tipValue] = useMemo(() => {
     const tips = Object.values(
       post.tips ||
         {} /* cached data from previous app version won't have the tips object */
@@ -63,7 +64,7 @@ const Post = ({
   const [mediaDetached, setMediaDetached] = useState(false);
   const { observe } = useInView({
     trackVisibility: false,
-    delay: 100,
+    delay: 1000,
     onEnter: () => {
       setMediaAttached(true);
     },
@@ -86,7 +87,7 @@ const Post = ({
     return subscription;
   }, [dispatch, id, publicKey]);
 
-  const liveStatus = React.useMemo<Common.LiveStatus | null>(() => {
+  const liveStatus = useMemo<Common.LiveStatus | null>(() => {
     const stream = Object.values(post.contentItems ?? {}).find(
       item => item.type === "stream/embedded"
     ) as Common.EmbeddedStream;
@@ -98,7 +99,7 @@ const Post = ({
     return null;
   }, [post.contentItems]);
 
-  const viewersCounter = React.useMemo<number | null>(() => {
+  const viewersCounter = useMemo<number | null>(() => {
     const stream = Object.values(post.contentItems ?? {}).find(
       item => item.type === "stream/embedded"
     ) as Common.EmbeddedStream;
@@ -132,66 +133,50 @@ const Post = ({
     });
   }, [getMediaContent, publicKey, unlockedContent]);
 
-  const parseContent = ([key, item]: [string, Common.ContentItem], index) => {
-    if (item.type === "text/paragraph") {
-      return <p key={key}>{item.text}</p>;
-    }
+  const parseContent = useCallback(
+    ([key, item]: [string, Common.ContentItem], index) => {
+      if (item.type === "text/paragraph") {
+        return <p key={key}>{item.text}</p>;
+      }
 
-    let finalMagnetURI = "";
-    if (item.isPrivate) {
-      const path = `${publicKey}>posts>${id}`;
-      const cached = unlockedContent[path];
-      if (cached) {
-        finalMagnetURI = cached;
-      } else {
+      let finalMagnetURI = "";
+      if (item.isPrivate) {
+        const path = `${publicKey}>posts>${id}`;
+        const cached = unlockedContent[path];
+        if (cached) {
+          finalMagnetURI = cached;
+        } else {
+          return (
+            <div key={key}>
+              <i className="fas fa-lock fa-10x"></i>
+            </div>
+          );
+        }
+      }
+
+      if (item.type === "image/embedded") {
         return (
-          <div key={key}>
-            <i className="fas fa-lock fa-10x"></i>
-          </div>
+          <Image
+            id={key}
+            item={{
+              ...item,
+              magnetURI: finalMagnetURI || item.magnetURI
+            }}
+            index={index}
+            postId={id}
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            key={`${id}-${index}`}
+          />
         );
       }
-    }
 
-    if (item.type === "image/embedded") {
-      return (
-        <Image
-          id={key}
-          item={{
-            ...item,
-            magnetURI: finalMagnetURI || item.magnetURI
-          }}
-          index={index}
-          postId={id}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
-          key={`${id}-${index}`}
-          hideRibbon={undefined}
-          width={undefined}
-        />
-      );
-    }
-
-    if (item.type === "video/embedded") {
-      return (
-        <Video
-          item={{
-            ...item,
-            magnetURI: finalMagnetURI || item.magnetURI
-          }}
-          index={index}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
-          key={`${id}-${index}`}
-        />
-      );
-    }
-    if (Common.isEmbeddedStream(item)) {
-      if (item.playbackMagnet) {
+      if (item.type === "video/embedded") {
         return (
           <Video
             item={{
               ...item,
-              magnetURI: item.playbackMagnet
+              magnetURI: finalMagnetURI || item.magnetURI
             }}
             index={index}
             tipCounter={tipCounter}
@@ -200,23 +185,38 @@ const Post = ({
           />
         );
       }
-      return (
-        <Stream
-          item={{
-            ...item,
-            magnetURI: finalMagnetURI || item.magnetURI
-          }}
-          tipCounter={tipCounter}
-          tipValue={tipValue}
-          key={`${id}-${index}`}
-          hideRibbon={undefined}
-          width={undefined}
-        />
-      );
-    }
+      if (Common.isEmbeddedStream(item)) {
+        if (item.playbackMagnet) {
+          return (
+            <Video
+              item={{
+                ...item,
+                magnetURI: item.playbackMagnet
+              }}
+              index={index}
+              tipCounter={tipCounter}
+              tipValue={tipValue}
+              key={`${id}-${index}`}
+            />
+          );
+        }
+        return (
+          <Stream
+            item={{
+              ...item,
+              magnetURI: finalMagnetURI || item.magnetURI
+            }}
+            tipCounter={tipCounter}
+            tipValue={tipValue}
+            key={`${id}-${index}`}
+          />
+        );
+      }
 
-    return null;
-  };
+      return null;
+    },
+    [tipValue, tipCounter, id, unlockedContent, publicKey]
+  );
 
   const nextSlide = useCallback(() => {
     if (!carouselAPI) return;

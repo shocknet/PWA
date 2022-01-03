@@ -381,26 +381,26 @@ export const rifle = ({
   onError
 }) =>
   new Promise((resolve, reject) => {
-    import("../store").then(({ store }) => {
+    import("../store").then(async ({ store }) => {
       const { authenticated } = store.getState().auth;
       const { authToken } = store.getState().node;
 
       if (!authenticated) {
-        return listenPath({
+        const listener = await listenPath({
           query,
           callback: onData
-        }).then(listener => {
-          const id = uniqueId();
-
-          rifleSubscriptions.set(id, {
-            publicKey,
-            onData,
-            query,
-            listener
-          });
-
-          return listener;
         });
+
+        const id = uniqueId();
+
+        rifleSubscriptions.set(id, {
+          publicKey,
+          onData,
+          query,
+          listener
+        });
+
+        return listener;
       }
 
       if (reconnect) {
