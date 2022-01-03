@@ -38,7 +38,7 @@ export const addHostKey = ({ hostId, publicKey }) => dispatch => {
 };
 
 const getDeviceId = () => (dispatch, getState) => {
-  const { deviceId } = getState().node;
+  const { deviceId } = getState().encryption;
 
   if (!deviceId) {
     const newDeviceId = dispatch(generateDeviceId());
