@@ -3,16 +3,16 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/shocknet/PWA?style=flat-square)](https://github.com/shocknet/PWA/commits/master)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Chat](https://img.shields.io/badge/chat-on%20Telegram-blue?style=flat-square)](https://t.me/LightningPage)
-[![Twitter Follow](https://img.shields.io/twitter/follow/MyLightningPage?style=flat-square)](https://twitter.com/mylightningpage)
+[![Twitter Follow](https://img.shields.io/twitter/follow/ShockBTC?style=flat-square)](https://twitter.com/ShockBTC)
 
-![Banner](https://pbs.twimg.com/profile_banners/1413930674986364934/1628017317)
-Lightning.Page runs in a browser and connects to your remote Lightning node, it uses [graph user nodes](https://gun.eco/) to offer a decentralized social network and other features.
+<!-- ![Banner](https://pbs.twimg.com/profile_banners/1413930674986364934/1628017317) -->
+`Page` combines the Bitcoin Lightning Network, WebTorrent, and WUT to offer a decentralized social feeds and business pages that work in any browser.
 
-Running a node for Lightning.Page requires the [Shock API](https://github.com/shocknet/api) backend and [LND](https://github.com/lightningnetwork/lnd)
+Running a node for Lightning.Page requires the [Lightning.Pub](https://github.com/shocknet/Lightning.Pub) and [LND](https://github.com/lightningnetwork/lnd)
 
-If you don't have a node already, hosting is offered in the app, or a _Node installer available at [shocknet/Wizard](https://github.com/shocknet/wizard)_
+#### Page is under heavy iteration and should only be used in development
 
-## Features:
+<!-- ## Features:
 
 - [x] Basic LND Channel and Peer Management
 - [x] Fee Control from [mempool.space](https://github.com/mempool/mempool) source
@@ -35,9 +35,9 @@ If you don't have a node already, hosting is offered in the app, or a _Node inst
 
 ## Try it out
 
-Run it directly from Github: [https://my.Lightning.Page](https://my.Lightning.Page)
+Run it directly from Github: [https://my.Lightning.Page](https://my.Lightning.Page)-->
 
-### Or build from source
+### Build from source
 
 ```
 git clone https://github.com/shocknet/PWA
@@ -54,6 +54,6 @@ Make a PR or send sats to: `bc1q2pn0rf92mt3pznjxq9gg3wkmjv0cmuy88tmfl8`
 
 <hr></hr>
 
-**If you find any issues with this project, or would like to suggest an enhancement, please [tell us](https://github.com/shocknet/PWA/issues).**
+**Feedback is critical, if you find any issues or would like to suggest an enhancement, please [tell us](https://github.com/shocknet/PWA/issues).**
 
-© 2021 [Shock Network, Inc.](https://shock.network)
+© 2022 [Shock Network, Inc.](https://shock.network)
